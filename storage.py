@@ -46,9 +46,9 @@ class Storage(object):
             self.getlock() 
         try:
             if os.path.exists("%s/%s,v" % (self.path,self.filename)):
-                subprocess.call(["rcs","-l","%s/%s" % (self.path, self.filename)])
+                subprocess.call(["rcs","-q","-l","%s/%s" % (self.path, self.filename)])
             else:
-                subprocess.call(["rcs","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
+                subprocess.call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
             objfile = io.open("%s/%s" % (self.path,self.filename), mode="w")
             objfile.write(content)
             objfile.close()
