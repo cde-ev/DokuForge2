@@ -54,7 +54,7 @@ class Storage(object):
             objfile.close()
             args = ["ci","-q","-f","-m%s" % message]
             if user is not None:
-                args.append("-u%s" % user)
+                args.append("-w%s" % user)
             args.append("%s/%s" % (self.path, self.filename))
             subprocess.call(args)
         finally:
