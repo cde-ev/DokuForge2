@@ -3,8 +3,9 @@
 import Cookie
 import jinja2
 import random
-from wsgitools.applications import StaticContent
-from wsgitools.middlewares import TracebackMiddleware
+import os
+from wsgitools.applications import StaticContent, StaticFile
+from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
 
 sysrand = random.SystemRandom()
@@ -60,6 +61,9 @@ class Application:
 def main():
     app = Application()
     app = TracebackMiddleware(app)
+    staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
+                       os.listdir("./static/"))
+    app = SubdirMiddleware(app, staticfiles)
     server = SCGIServer(app, 4000)
     server.run()
 
