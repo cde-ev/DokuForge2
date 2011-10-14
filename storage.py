@@ -60,3 +60,7 @@ class Storage(object):
         finally:
             if not havelock:
                 self.releaselock()
+
+
+    def status(self):
+        return subprocess.check_output(["rlog","-v","%s/%s" % (self.path, self.filename)])
