@@ -1,11 +1,29 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="de">
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="./static/style.css" media="all">
+	<link rel="stylesheet" type="text/css" href="./static/print.css" media="print">
 	<title>Dokuforge2</title>
 </head>
 <body>
+{% block header %}
+   <div id="header">
+   Dokuforge
+   {% if user_status == "logged-in" %}
+   Nutzer
+   {% else %}
+   {% endif %}
+   </div>
+{% endblock %}
 {% block content %}
-Dies sollte nicht sichbar sein.
+Dies sollte nicht sichtbar sein.
+{% endblock %}
+{% block footer %}
+   <div id="footer">
+   	Kontakt: team (at) dokuforge. <p/>
+   	DokuForge – Ein Projekt des CdE e.V
+   </div>
 {% endblock %}
 </body>
 </html>
