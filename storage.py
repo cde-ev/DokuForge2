@@ -1,5 +1,7 @@
 import os, errno
+import io
 import time
+import subprocess
 
 class Storage(object):
     def __init__(self,path,filename):
@@ -35,3 +37,26 @@ class Storage(object):
     def releaselock(self):
         os.rmdir("%s/#lock.%s" % (self.path, self.filename))
     
+    def store(self,content,user=None,message="store called",havelock=False):
+        """
+        Store the given contents; rcs file is create if it does not
+        exist already.
+        """
+        if not havelock:
+            self.getlock() 
+        try:
+            if os.path.exists("%s/%s,v" % (self.path,self.filename)):
+                subprocess.call(["rcs","-l","%s/%s" % (self.path, self.filename)])
+            else:
+                subprocess.call(["rcs","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
+            objfile = io.open("%s/%s" % (self.path,self.filename), mode="w")
+            objfile.write(content)
+            objfile.close()
+            args = ["ci","-q","-f","-m%s" % message]
+            if user is not None:
+                args.append("-u%s" % user)
+            args.append("%s/%s" % (self.path, self.filename))
+            subprocess.call(args)
+        finally:
+            if not havelock:
+                self.releaselock()
