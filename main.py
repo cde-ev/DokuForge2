@@ -99,14 +99,15 @@ app405 = StaticContent("405 Method Not Allowed",
                        "405 Method Not Allowed", anymethod=True)
 
 class RequestState:
-    def __init__(self, environ, start_response, sessiondb, cookiehandler):
+    def __init__(self, environ, start_response, sessiondb, cookiehandler, userdb):
         self.environ = environ
         self.start_response = start_response
         self.outheaders = {}
         self.fieldstorage = None
         self.sessionhandler = SessionHandler(sessiondb, cookiehandler, environ)
-        self.username = self.sessionhandler.get()
         self.emitted = False
+        self.userdb = userdb
+        self.user = self.userdb.db.get(self.sessionhandler.get())
 
     def parse_request(self):
         self.fieldstorage = FieldStorage(environ=self.environ,
@@ -114,11 +115,11 @@ class RequestState:
         return self.fieldstorage
 
     def login(self, username):
-        self.username = username
-        self.outheaders.update(dict(self.sessionhandler.set(username)))
+        self.user = self.userdb.db[username]
+        self.outheaders.update(dict(self.sessionhandler.set(self.user.name)))
 
     def logout(self):
-        self.username = None
+        self.user = None
         self.outheaders.update(dict(self.sessionhandler.delete()))
 
     def get_field(self, key):
@@ -141,7 +142,7 @@ class RequestState:
 
     def emit_template(self, template, extraparams=dict()):
         self.outheaders["Content-Type"] = "text/html; charset=utf8"
-        params = dict(username=self.username)
+        params = dict(user=self.user)
         params.update(extraparams)
         return self.emit_content(template.render(params).encode("utf8"))
 
@@ -158,7 +159,7 @@ class Application:
 
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
-                          self.cookiehandler)
+                          self.cookiehandler, self.userdb)
         if environ["PATH_INFO"] == "/login":
             return self.do_login(rs)
         if environ["PATH_INFO"] == "/edit":

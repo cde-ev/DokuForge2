@@ -10,10 +10,10 @@
 {% block header %}
    <div id="header">
    Dokuforge
-   {% if username is not none %}
-   Hallo {{ username }}!
+   {% if user is not none %}
+   Hallo {{ user.name }}!
    {% else %}
-   <a href="./login.html">Login</a>
+   <a href="./">Login</a>
    {% endif %}
    </div>
 {% endblock %}
