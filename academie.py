@@ -6,7 +6,7 @@ class Academy:
     ...
     """
 
-    def __init__(self, path, courselist = [], title):
+    def __init__(self, path, title, courselist=[]):
         """
         @param: the directory for storing the academy; each academy must have
                 its own directory.
