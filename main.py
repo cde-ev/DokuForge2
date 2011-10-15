@@ -146,6 +146,10 @@ class RequestState:
         params.update(extraparams)
         return self.emit_content(template.render(params).encode("utf8"))
 
+app404 = StaticContent("404 File Not Found",
+                       [("Content-type", "text/plain")],
+                       "404 File Not Found", anymethod=True)
+
 class Application:
     def __init__(self, userdb):
         self.jinjaenv = jinja2.Environment(
@@ -164,9 +168,15 @@ class Application:
             return self.do_login(rs)
         if environ["PATH_INFO"] == "/logout":
             return self.do_logout(rs)
-        if environ["PATH_INFO"] == "/edit":
-            return self.render_edit(rs)
-        return self.render_start(rs)
+        path_parts = environ["PATH_INFO"].split('/')
+        if not path_parts[0]:
+            path_parts.pop(0)
+        if not path_parts or not path_parts[0]:
+            return self.render_start(rs)
+        if path_parts[0] == "df":
+            path_parts.pop(0)
+            return self.do_df(rs, path_parts)
+        return rs.emit_app(app404)
 
     def do_login(self, rs):
         if rs.environ["REQUEST_METHOD"] != "POST":
@@ -189,6 +199,12 @@ class Application:
             return rs.emit_app(app405)
         rs.logout()
         return self.render_start(rs)
+
+    def do_df(self, rs, path_parts):
+        if not path_parts:
+            return self.render_start(rs)
+        # TODO: path_parts[0] is academy name
+        raise AssertionError("fixme: continue")
 
     def render_start(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("start.html"))
