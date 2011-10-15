@@ -76,8 +76,7 @@ class Storage(object):
             try:
                 subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                        self.fullpath()])
-                objfile = file("%s/%s" % (self.path,self.filename), mode="w")
-                objfile.close()
+                file(self.fullpath(), mode="w").close()
                 subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit", 
                                        self.fullpath()])
             finally:
