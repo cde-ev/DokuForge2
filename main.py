@@ -161,11 +161,6 @@ class Application:
         if environ["PATH_INFO"] == "/login":
             return self.do_login(rs)
         rs.outheaders["Content-Type"] = "text/html; charset=utf8"
-        # toggle the login for example
-        if rs.username is None:
-            rs.login("foo")
-        else:
-            rs.logout()
         return self.render_start(rs)
 
     def do_login(self, rs):
@@ -179,7 +174,7 @@ class Application:
             rs.get_field("submit") # just check for existence
         except KeyError:
             return rs.emit_content("200 OK", "missing form fields")
-        if self.userdb.checkLogin(username, password) :
+        if not self.userdb.checkLogin(username, password):
             return rs.emit_content("200 OK", "wrong password")
         rs.login(username)
         return self.render_start(rs)
