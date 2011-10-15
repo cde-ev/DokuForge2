@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% set courses = academy.listCoursesLite() %}
 {% if courses %}
 <ol>
 	{% for course in courses %}

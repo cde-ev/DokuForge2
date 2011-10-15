@@ -248,9 +248,13 @@ class Application:
         return self.render_start(rs)
 
     def do_df(self, rs, path_parts):
-        if not path_parts:
+        if not path_parts or not path_parts[0]:
             return self.render_index(rs)
-        # TODO: path_parts[0] is academy name
+        academy = self.getAcademy(path_parts.pop(0))
+        if academy is None:
+            return rs.emit_app(app404)
+        if not path_parts:
+            return self.render_academy(rs, academy)
         raise AssertionError("fixme: continue")
 
     def render_start(self, rs):
@@ -266,9 +270,9 @@ class Application:
         return rs.emit_template(self.jinjaenv.get_template("index.html"),
                                 params)
 
-    def render_academy(self, rs):
+    def render_academy(self, rs, theacademy):
         return rs.emit_template(self.jinjaenv.get_template("academy.html"),
-                                dict(courses=[]))
+                                dict(academy=academy.AcademyLite(theacademy)))
 
 def main():
     userdbstore = storage.Storage('work', 'userdb')
