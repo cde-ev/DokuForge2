@@ -173,7 +173,7 @@ class Application:
         cur.execute(SessionHandler.create_table)
         self.sessiondb.commit()
         self.userdb = userdb
-        self.acadbstor = acadbstore
+        self.acadbstore = acadbstore
 
     def getAcademy(self, name):
         if re.match('^[-a-zA-Z0-9]*$', name) is None:
