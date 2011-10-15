@@ -47,10 +47,8 @@ class Storage(object):
         if not havelock:
             self.getlock() 
         try:
-            if os.path.exists("%s/%s,v" % (self.path,self.filename)):
-                subprocess.call(["rcs","-q","-l","%s/%s" % (self.path, self.filename)])
-            else:
-                subprocess.call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
+            self.ensureexistence(havelock=True)
+            subprocess.check_call(["rcs","-q","-l","%s/%s" % (self.path, self.filename)])
             objfile = file("%s/%s" % (self.path,self.filename), mode="w")
             objfile.write(content)
             objfile.close()
@@ -58,18 +56,29 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append("%s/%s" % (self.path, self.filename))
-            subprocess.call(args)
+            subprocess.check_call(args)
         finally:
             if not havelock:
                 self.releaselock()
-
-
-    def status(self):
+                
+    def ensureexistence(self,havelock=False):
         if not os.path.exists("%s/%s,v" % (self.path,self.filename)):
-            self.getlock()
-            subprocess.call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
-            self.releaselock()
+            if not havelock:
+                self.getlock() 
+                try:
+                    subprocess.check_call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
+                    objfile = file("%s/%s" % (self.path,self.filename), mode="w")
+                    objfile.close()
+                    subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit", 
+                                           "%s/%s" % (self.path, self.filename)])
+                finally:
+                    if not havelock:
+                        self.releaselock()
+
+    def status(self,havelock=False):
+        self.ensureexistence(havelock=havelock)
         return subprocess.check_output(["rlog","-v","%s/%s" % (self.path, self.filename)]).split()[1]
 
-    def content(self):
+    def content(self, havelock=False):
+        self.ensureexistence(havelock=havelock)
         return subprocess.check_output(["co","-q","-p","%s/%s" % (self.path, self.filename)])
