@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from cgi import FieldStorage
 import Cookie
 import jinja2
 import random
@@ -46,6 +47,7 @@ class Application:
                 loader=jinja2.FileSystemLoader("./templates"))
         self.cookiehandler = CookieHandler()
     def __call__(self, environ, start_response):
+        fs = FieldStorage(environ=environ, fp=environ["wsgi.input"])
         headers = {
             "Content-Type": "text/html; charset=utf8"
         }
