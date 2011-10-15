@@ -14,6 +14,7 @@ from wsgitools.applications import StaticContent, StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
 # import other parts of Dokuforge
+import academy
 import storage
 import user
 
