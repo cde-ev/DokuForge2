@@ -107,7 +107,7 @@ class Academy(AcademyLite):
         """
         Set the groups of this academy to determine when to display it
 
-        @params groups: groups to set
+        @param groups: groups to set
         @type groups: list of str
         """
         s=storage.Storage(self.path,"groups")
