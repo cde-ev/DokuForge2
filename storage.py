@@ -48,7 +48,7 @@ class Storage(object):
             self.getlock() 
         try:
             self.ensureexistence(havelock=True)
-            subprocess.check_call(["rcs","-q","-l","%s/%s" % (self.path, self.filename)])
+            subprocess.check_call(["co","-f","-q","-l","%s/%s" % (self.path, self.filename)])
             objfile = file("%s/%s" % (self.path,self.filename), mode="w")
             objfile.write(content)
             objfile.close()
