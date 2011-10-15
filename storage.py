@@ -20,9 +20,7 @@ class Storage(object):
         @param formatstr: format string that takes exactly one %s
         @rtype: str
         """
-        if filename is None:
-            filename = self.filename
-        return os.path.join(self.path, filename)
+        return os.path.join(self.path, formatstr % self.filename)
 
     def getlock(self):
         """
