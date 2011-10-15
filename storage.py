@@ -71,5 +71,5 @@ class Storage(object):
             self.releaselock()
         return subprocess.check_output(["rlog","-v","%s/%s" % (self.path, self.filename)]).split()[1]
 
-    def getcontents(self):
+    def content(self):
         return subprocess.check_output(["co","-q","-p","%s/%s" % (self.path, self.filename)])
