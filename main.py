@@ -324,7 +324,7 @@ class Application:
             return self.render_course(rs, academy, course)
         action = path_parts.pop(0)
         if action=="createpage":
-            course.newpage()
+            course.newpage(user=rs.user.name)
             return self.render_course(rs, academy, course)
         elif action=="moveup":
             if rs.environ["REQUEST_METHOD"] != "POST":
@@ -335,7 +335,7 @@ class Application:
                 number = int(numberstr)
             except KeyError:
                 number = 0
-            course.swappages(number)
+            course.swappages(number,user=rs.user.name)
             return self.render_course(rs, academy, course)
         else:
             raise AssertionError("fixme: continue")
