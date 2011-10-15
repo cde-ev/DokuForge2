@@ -126,6 +126,11 @@ class RequestState:
         self.emitted = True
         self.start_response(status, self.outheaders.items())
 
+    def emit_app(self, app):
+        assert not self.emitted
+        self.emitted = True
+        return app(self.environ, self.start_response)
+
     def emit_content(self, status, content):
         self.outheaders["Content-Length"] = str(len(content))
         self.emit(status)
@@ -161,7 +166,7 @@ class Application:
 
     def do_login(self, rs):
         if rs.environ["REQUEST_METHOD"] != "POST":
-            return app405(rs.environ, rs.start_response)
+            return rs.emit_app(app405)
         rs.parse_request()
         rs.outheaders["Content-Type"] = "text/plain"
         try:
@@ -169,14 +174,11 @@ class Application:
             password = rs.get_field("password")
             rs.get_field("submit") # just check for existence
         except KeyError:
-            rs.emit("200 OK")
-            return ["missing form fields"]
+            return rs.emit_content("200 OK", "missing form fields")
         if username != password: # FIXME: silly pw check
-            rs.emit("200 OK")
-            return ["wrong password"]
+            return rs.emit_content("200 OK", "wrong password")
         rs.login(username)
-        rs.emit("200 OK")
-        return ["logged in"]
+        return self.render_start(rs)
 
     def render_start(self, rs):
         return rs.emit_template("200 OK",
