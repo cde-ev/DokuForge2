@@ -165,7 +165,7 @@ class Application:
         self.acadbstor = acadbstore
 
     def getAcademy(self, name):
-        if re.match('^[-a-zA-Z0-9]*$', name) == None:
+        if re.match('^[-a-zA-Z0-9]*$', name) is None:
             return None
         lookup = re.findall('^' + name + ' (.*)$',
                             self.acadbstore.content(), re.MULTILINE)
@@ -174,6 +174,25 @@ class Application:
         if not os.path.isdir(lookup[0]):
             return None
         return academy.Academy(lookup[0])
+
+    def createAcademy(self, name, title, groups):
+        if re.match('^[-a-zA-Z0-9]*$', name) is None:
+            return False
+        s = self.acadbstore.content()
+        if not re.search('^' + name + ' ', s, re.MULTILINE) is None:
+            return False
+        path = './df/' + name + '/'
+        if not re.search(' ' + path + '$', s, re.MULTILINE) is None:
+            return False
+        if os.path.exists(path):
+            return False
+        os.makedirs(path)
+        self.acadbstore.store(self.acadbstore.content() + '\n' + name + ' '
+        + path + '\n')
+        aca = academy.Academy(path)
+        aca.settitle(title)
+        aca.setgroups(groups)
+
 
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
