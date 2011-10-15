@@ -9,9 +9,13 @@ class Course:
     other things, the following files; with each rcs file, the associated file
     and locks as described in L{Storage} can be present as well.
 
-    index,v    List of internal page numbers, in order of appearence
+    Index,v    List of internal page numbers, in order of appearence
+               Each line contains the internal page number, followed by a space,
+               optionally followed by internal blob-numbers associated with page.
 
     pageN,v    The page with internal number N
+
+    blobN,v    The blob with the internal number N
     """
 
     def __init__(self,path):
