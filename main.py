@@ -164,7 +164,7 @@ app404 = StaticContent("404 File Not Found",
                        "404 File Not Found", anymethod=True)
 
 class Application:
-    def __init__(self, userdb, acadbstore):
+    def __init__(self, userdb, acapath):
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader("./templates"))
         self.cookiehandler = CookieHandler()
@@ -173,41 +173,28 @@ class Application:
         cur.execute(SessionHandler.create_table)
         self.sessiondb.commit()
         self.userdb = userdb
-        self.acadbstore = acadbstore
+        self.acapath = acapath
 
     def getAcademy(self, name):
-        if re.match('^[-a-zA-Z0-9]*$', name) is None:
+        if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return None
-        lookup = re.findall('^' + name + ' (.*)$',
-                            self.acadbstore.content(), re.MULTILINE)
-        if not len(lookup) == 1:
+        if not os.path.isdir(os.path.join(self.acapath, name)):
             return None
-        if not os.path.isdir(lookup[0]):
-            return None
-        return academy.Academy(lookup[0])
+        return academy.Academy(os.path.join(self.acapath, name))
 
     def createAcademy(self, name, title, groups):
-        if re.match('^[-a-zA-Z0-9]*$', name) is None:
+        if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return False
-        s = self.acadbstore.content()
-        if not re.search('^' + name + ' ', s, re.MULTILINE) is None:
-            return False
-        path = './df/' + name + '/'
-        if not re.search(' ' + path + '$', s, re.MULTILINE) is None:
-            return False
+        path = os.path.join(self.acapath, name)
         if os.path.exists(path):
             return False
         os.makedirs(path)
-        self.acadbstore.store(self.acadbstore.content() + '\n' + name + ' '
-                              + path + '\n')
         aca = academy.Academy(path)
         aca.settitle(title)
         aca.setgroups(groups)
 
     def listAcademies(self):
-        return map(self.getAcademy,
-                   re.findall('^([^ ]*) ', self.acadbstore.content(),
-                              re.MULTILINE))
+        return map(self.getAcademy, os.listdir(self.acapath))
 
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
@@ -280,8 +267,7 @@ def main():
     userdbstore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(userdbstore)
     userdb.load()
-    acadbstore = storage.Storage('work', 'acadb')
-    app = Application(userdb, acadbstore)
+    app = Application(userdb, './df/')
     app = TracebackMiddleware(app)
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))
