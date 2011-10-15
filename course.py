@@ -43,8 +43,7 @@ class CourseLite:
         """
         indexstore = Storage(self.path,"Index")
         index = indexstore.content(havelock=havelock)
-        lines = index.split('\n')
-        lines.pop()
+        lines = index.splitlines()
         return [int(line.split()[0]) for line in lines]
 
     def showpage(self,number):
@@ -90,7 +89,7 @@ class Course(CourseLite):
         s=Storage(self.path,"title")
         s.store(title)
 
-    def newpage(self,havelock=False):
+    def newpage(self):
         """
         create a new page in this course and return its internal number
         """
@@ -119,8 +118,7 @@ class Course(CourseLite):
         indexstore.getlock()
         try:
             index = indexstore.content(havelock=True)
-            lines = index.split('\n')
-            lines.pop()
+            lines = index.splitlines()
             newlines = []
             for line in lines:
                 if int(line.split()[0])!=number:
@@ -138,8 +136,7 @@ class Course(CourseLite):
         indexstore.getlock()
         try:
             index = indexstore.content(havelock=True)
-            lines = index.split('\n')
-            lines.pop()
+            lines = index.splitlines()
             if position<len and position>0:
                 tmp =lines[position-1]
                 lines[position-1]=lines[position]
@@ -202,8 +199,7 @@ class Course(CourseLite):
             newnumber = self.nextpage(havelock=True)
             nextblobstore.store("%d" % (newnumber+1),havelock=True)
             index = indexstore.content()
-            lines = index.split('\n')
-            lines.pop()
+            lines = index.splitlines()
             for i in range(len(lines)):
                 if int(lines[i].split()[0])==number:
                     lines[i] += " %d" % newnumber
@@ -225,8 +221,7 @@ class Course(CourseLite):
         """
         indexstore = Storage(self.path,"Index")
         index = indexstore.content()
-        lines = index.split('\n')
-        lines.pop()
+        lines = index.splitlines()
         for line in lines:
             entries=line.split()
             if int(entries[0]) == number:

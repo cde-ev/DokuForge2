@@ -1,11 +1,8 @@
 import random
-import string
 import ConfigParser
 from cStringIO import StringIO
 
 sysrand = random.SystemRandom()
-
-from common import *
 
 def randpasswordstring(n=6):
     """
