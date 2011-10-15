@@ -5,8 +5,7 @@ doc:
 	epydoc --config epydoc.conf
 
 setup:
-	python createuserdb.py
-	python createacademy.py
+	python createexample.py
 
 clean:
 	rm -rf html work df
