@@ -22,11 +22,25 @@ import user
 sysrand = random.SystemRandom()
 
 class CookieHandler:
+    """Parse and manipulate cookies."""
     def __init__(self, name="sid", bits=64):
+        """
+        @type name: str
+        @param name: the name of the cookie
+        @type bits: int
+        @param bits: number of bits to use for the session id
+        """
+        assert name.isalnum()
+        assert bits > 0
         self.name = name
         self.bits = bits
 
     def get(self, environ):
+        """
+        @type environ: dict
+        @rtype: str or None
+        @returns: the session id if a cookie was found and None otherwise
+        """
         cookiestr = environ.get("HTTP_COOKIE")
         if not cookiestr:
             return None
@@ -45,17 +59,35 @@ class CookieHandler:
             return None
 
     def set(self, value):
+        """
+        @type value: str
+        @param value: session id
+        @rtype: (str, str)
+        @returns: a header as (headername, headervalue) setting the cookie
+        """
         cookiemorsel = Cookie.Morsel()
         cookiemorsel.set(self.name, value, value)
         return ("Set-Cookie", cookiemorsel.OutputString())
 
     def newvalue(self):
+        """
+        @rtype: str
+        @returns: a string with the randomness passed to the ctor
+        """
         return "%x" % random.getrandbits(self.bits)
 
     def new(self):
+        """
+        @rtype: (str, str)
+        @returns: a header as (headername, headervalue) setting a new cookie
+        """
         return self.set(self.newvalue())
 
     def delete(self):
+        """
+        @rtype: (str, str)
+        @returns: a header as (headername, headervalue) deleting the cookie
+        """
         cookiemorsel = Cookie.Morsel()
         cookiemorsel.set(self.name, "", "")
         cookiemorsel["max-age"] = 0
@@ -63,16 +95,27 @@ class CookieHandler:
         return ("Set-Cookie", cookiemorsel.OutputString())
 
 class SessionHandler:
+    """Associate users with session ids in a DBAPI2 database."""
     create_table = "CREATE TABLE IF NOT EXISTS sessions " + \
                    "(sid TEXT, user TEXT, UNIQUE(sid));"
 
     def __init__(self, db, cookiehandler, environ=dict()):
+        """
+        @param db: a DBAPI2 database that has a sessions table as described
+                in the create_table class variable
+        @type cookiehandler: CookieHandler
+        @type environ: dict
+        """
         self.db = db
         self.cookiehandler = cookiehandler
         self.cur = db.cursor()
         self.sid = self.cookiehandler.get(environ)
 
     def get(self):
+        """Find a user session.
+        @rtype: str or None
+        @returns: a username or None
+        """
         if self.sid is None:
             return None
         self.cur.execute("SELECT user FROM sessions WHERE sid = ?;",
@@ -83,6 +126,11 @@ class SessionHandler:
         return results[0][0].encode("utf8")
 
     def set(self, username):
+        """Initiate a user session.
+        @type username: str
+        @rtype: [(str, str)]
+        @returns: a list of headers to be sent with the http response
+        """
         ret = []
         if self.sid is None:
             self.sid = self.cookiehandler.newvalue()
@@ -93,6 +141,10 @@ class SessionHandler:
         return ret
 
     def delete(self):
+        """Delete a user session.
+        @rtype: [(str, str)]
+        @returns: a list of headers to be sent with the http response
+        """
         if self.sid is None:
             return []
         self.cur.execute("DELETE FROM sessions WHERE sid = ?;",

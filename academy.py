@@ -109,7 +109,7 @@ class Academy(AcademyLite):
         candidates = os.listdir(self.path)
         final = copy.deepcopy(candidates)
         for x in candidates:
-            if not os.isdir(os.path.join(self.path, x)):
+            if not os.path.isdir(os.path.join(self.path, x)):
                 final.remove(x)
         return [course.Course(os.path.join(self.path, x)) for x in final]
 
