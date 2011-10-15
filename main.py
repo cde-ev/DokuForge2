@@ -6,6 +6,8 @@ import jinja2
 import random
 import os
 import sqlite3
+import copy
+import re
 from wsgitools.applications import StaticContent, StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
@@ -107,7 +109,7 @@ class RequestState:
         self.sessionhandler = SessionHandler(sessiondb, cookiehandler, environ)
         self.emitted = False
         self.userdb = userdb
-        self.user = self.userdb.db.get(self.sessionhandler.get())
+        self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
 
     def parse_request(self):
         self.fieldstorage = FieldStorage(environ=self.environ,
@@ -115,7 +117,7 @@ class RequestState:
         return self.fieldstorage
 
     def login(self, username):
-        self.user = self.userdb.db[username]
+        self.user = copy.deepcopy(self.userdb.db[username])
         self.outheaders.update(dict(self.sessionhandler.set(self.user.name)))
 
     def logout(self):
@@ -151,7 +153,7 @@ app404 = StaticContent("404 File Not Found",
                        "404 File Not Found", anymethod=True)
 
 class Application:
-    def __init__(self, userdb):
+    def __init__(self, userdb, akadbstore):
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader("./templates"))
         self.cookiehandler = CookieHandler()
@@ -160,6 +162,18 @@ class Application:
         cur.execute(SessionHandler.create_table)
         self.sessiondb.commit()
         self.userdb = userdb
+        self.akadbstor = akadbstore
+
+    def getAcademy(self, name):
+        if re.match('[-a-zA-Z0-9]*', name) == None:
+            return None
+        lookup = re.findall('^' + name + ' (.*)$',
+                            self.akadbstore.content(), re.MULTILINE)
+        if not len(lookup) == 1:
+            return None
+        if not os.path.isdir(lookup[0]):
+            return None
+        return academy.Academy(lookup[0])
 
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
@@ -217,7 +231,8 @@ def main():
     userdbstore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(userdbstore)
     userdb.load()
-    app = Application(userdb)
+    akadbstore = storage.Storage('work', 'akadb')
+    app = Application(userdb, akadbstore)
     app = TracebackMiddleware(app)
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))
@@ -227,3 +242,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
