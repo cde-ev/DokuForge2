@@ -103,7 +103,7 @@ class Course(CourseLite):
         s=Storage(self.path,"title")
         s.store(title)
 
-    def newpage(self):
+    def newpage(self,user=None):
         """
         create a new page in this course and return its internal number
         """
@@ -113,16 +113,16 @@ class Course(CourseLite):
         nextpagestore.getlock()
         try:                    # 
             newnumber = self.nextpage(havelock=True)
-            nextpagestore.store("%d" % (newnumber+1),havelock=True)
+            nextpagestore.store("%d" % (newnumber+1),havelock=True,user=user)
             indexcontents = index.content(havelock=True)
             indexcontents += "%s\n" % newnumber
-            index.store(indexcontents,havelock=True)
+            index.store(indexcontents,havelock=True,user=user)
         finally:
             nextpagestore.releaselock()
             index.releaselock()
         return newnumber
 
-    def delpage(self,number):
+    def delpage(self,number,user=None):
         """
         Delete a page
 
@@ -139,11 +139,11 @@ class Course(CourseLite):
                 if int(line.split()[0])!=number:
                     newlines.append(line)
             newindex="\n".join(newlines) + "\n"
-            indexstore.store(newindex,havelock=True)
+            indexstore.store(newindex,havelock=True,user=user)
         finally:
             indexstore.releaselock()
 
-    def swappages(self,position):
+    def swappages(self,position,user=None):
         """
         swap the page at the given current position with its predecessor
 
@@ -159,7 +159,7 @@ class Course(CourseLite):
                 lines[position-1]=lines[position]
                 lines[position]=tmp
             newindex="\n".join(lines) + "\n"
-            indexstore.store(newindex,havelock=True)
+            indexstore.store(newindex,havelock=True,user=user)
         finally:
             indexstore.releaselock()
 
@@ -184,8 +184,8 @@ class Course(CourseLite):
         @param user: the df-login name of the user to carried out the edit
         @type number: int
         @type version: str
-        @newcontent: unicode
-        @user: str
+        @type newcontent: unicode
+        @type user: str
 
         @returns: a triple (ok,newversion,mergedcontent) where ok is a boolean indicating
                   whether no confilct has occured and (newversion,mergedcontent) a pair
