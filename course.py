@@ -1,5 +1,5 @@
-
 import os
+from storage import Storage
 
 class Course:
     """
@@ -16,6 +16,9 @@ class Course:
     pageN,v    The page with internal number N
 
     blobN,v    The blob with the internal number N
+
+    nextpage,v contains the number of the next available page
+    nextblob,v contains the number of the next available blob
     """
 
     def __init__(self,path):
@@ -24,4 +27,38 @@ class Course:
                 its own directory, and only course data should be stored in this directory
         """
         self.path = path
-        os.makedirs(self.path)
+        try:
+            os.makedirs(self.path)
+        except os.error:
+            pass
+
+    def nextpage(self,havelock=False):
+        """
+        return the number of the next available page, but don't do anything
+        """
+        s = Storage(self.path,"nextpage")
+        vs = s.content(havelock=havelock)
+        if vs=='':
+            vs='0'
+        return int(vs)
+
+    def newpage(self,havelock=False):
+        """
+        create a new page in this course and return its internal number
+        """
+        index = Storage(self.path,"Index")
+        nextpagestore = Storage(self.path,"nextpage")
+        index.getlock()
+        nextpagestore.getlock()
+        try:
+            newnumber = self.nextpage(havelock=True)
+            nextpagestore.store("%d" % (newnumber+1),havelock=True)
+            indexcontents = index.content(havelock=True)
+            indexcontents += "%s\n" % newnumber
+            index.store(indexcontents,havelock=True)
+        finally:
+            nextpagestore.releaselock()
+            index.releaselock()
+        return newnumber
+        
+        
