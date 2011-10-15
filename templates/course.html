@@ -12,7 +12,7 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 		{% if pages.index(page) > 0 %}
 		<form action="{{ basejoin("df/" + academy.name + "/" + course.name + "/moveup") }}" method="post" id="moveup">
 		<input name="submit" value="Hochr&uuml;cken" type="submit">
-		<input name="number" value="{{ pages.index(page) }}" type="hidden"
+		<input name="number" value="{{ pages.index(page) }}" type="hidden">
 		</form>
 		{% endif %}
 	</li>
