@@ -159,10 +159,17 @@ class RequestState:
         return self.emit_content(template.render(params).encode("utf8"))
 
     def emit_permredirect(self, location):
-        self.outheaders["Location"] = urllib.basejoin(self.request_uri,
+        self.outheaders["Location"] = urllib.basejoin(self.application_uri,
                                                       location)
         self.outheaders["Content-Length"] = 0
         self.emit("301 Moved Permanently")
+        return []
+
+    def emit_tempredirect(self, location):
+        self.outheaders["Location"] = urllib.basejoin(self.application_uri,
+                                                      location)
+        self.outheaders["Content-Length"] = 0
+        self.emit("307 Temporarily Moved")
         return []
 
 app404 = StaticContent("404 File Not Found",
@@ -207,7 +214,7 @@ class Application:
         rs = RequestState(environ, start_response, self.sessiondb,
                           self.cookiehandler, self.userdb)
         if not environ["PATH_INFO"]:
-            return rs.emit_permredirect(rs.request_uri + "/")
+            return rs.emit_permredirect("")
         if environ["PATH_INFO"] == "/login":
             return self.do_login(rs)
         if environ["PATH_INFO"] == "/logout":
@@ -248,6 +255,8 @@ class Application:
         return self.render_start(rs)
 
     def do_df(self, rs, path_parts):
+        if not rs.user:
+            return rs.emit_tempredirect("")
         if not path_parts or not path_parts[0]:
             return self.render_index(rs)
         academy = self.getAcademy(path_parts.pop(0))
