@@ -6,6 +6,7 @@ doc:
 
 setup:
 	python createuserdb.py
+	python createacademy.py
 
 clean:
 	rm -rf html work
