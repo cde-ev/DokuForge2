@@ -60,5 +60,13 @@ class Course:
             nextpagestore.releaselock()
             index.releaselock()
         return newnumber
-        
-        
+
+    def listpages(self,havelock=False):
+        """
+        return a list of the available page numbers in correct order
+        """
+        indexstore = Storage(self.path,"Index")
+        index = indexstore.content(havelock=havelock)
+        lines = index.split('\n')
+        lines.pop()
+        return [int(line.split()[0]) for line in lines]
