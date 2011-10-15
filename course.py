@@ -170,3 +170,71 @@ class Course(CourseLite):
         """
         page = Storage(self.path,"page%d" % number)
         return page.endedit(version,newcontent,user=user)
+
+    def nextblob(self,havelock=False):
+        """
+        internal function: return the number of the next available blob, but don't do anything
+        """
+        s = Storage(self.path,"nextblob")
+        vs = s.content(havelock=havelock)
+        if vs=='':
+            vs='0'
+        return int(vs)
+
+    def attachblob(self,number,data,comment="unknown blob",user=None):
+        """
+        Attach a blob to a page
+
+        @param number: the internal number of the page
+        @param title: a short description, e.g., the original file name
+        @param comment: a human readable description, e.g., the caption to be added to this figure 
+        """
+        indexstore = Storage(self.path,"Index")
+        nextblobstore = Storage(self.path,"nextpage")
+        indexstore.getlock()
+        nextblobstore.getlock()
+
+        try:
+            newnumber = self.nextpage(havelock=True)
+            nextblobstore.store("%d" % (newnumber+1),havelock=True)
+            index = indexstore.content()
+            lines = index.split('\n')
+            lines.pop()
+            for i in range(len(lines)):
+                if int(lines[i].split()[0])==number:
+                    lines[i] += " %d" % newnumber
+            newindex="\n".join(lines) + "\n"
+            indexstore.store(newindex,havelock=True)
+        finally:
+            nextblobstore.releaselock()
+            indexstore.releaselock()
+
+
+        blob = Storage(self.path,"blob%d" % newnumber)
+        blob.store(data,user=user,message=comment)
+
+    def listblobs(self,number):
+        """
+        return a list of the blobs associated with the given page
+
+        @param number: the internal page number
+        """
+        indexstore = Storage(self.path,"Index")
+        index = indexstore.content()
+        lines = index.split('\n')
+        lines.pop()
+        for line in lines:
+            entries=line.split()
+            if int(entries[0]) == number:
+                entries.pop(0)
+                return [int(x) for x in entries]
+        return []
+
+    def getblob(self,number):
+        """
+        return the content of a blob
+
+        @param number: the internal number of the blob
+        """
+        blob=Storage(self.path,"blob%d" % number)
+        return blob.content()
