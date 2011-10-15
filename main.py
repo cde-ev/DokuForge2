@@ -6,13 +6,10 @@ import jinja2
 import random
 import os
 import sqlite3
-<<<<<<< HEAD
 import copy
 import re
-=======
 import urllib
 import wsgiref.util
->>>>>>> b7c4da04dda4ba389b47ee558857f65ad4bcf487
 from wsgitools.applications import StaticContent, StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
