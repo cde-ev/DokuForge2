@@ -9,6 +9,10 @@ class CourseLite:
     """
     def __init__(self, obj):
         """
+        constructor for CourseLite objects
+
+        @param obj: either the path to a coures or a Course object
+        @type obj: str or Course or CourseLite
         """
         if isinstance(obj, CourseLite):
             self.path = obj.path
@@ -22,6 +26,9 @@ class CourseLite:
         return os.path.basename(self.path)
 
     def gettitle(self):
+        """
+        @returns: title of the course
+        """
         s=Storage(self.path,"title")
         return s.content()
 
@@ -75,8 +82,12 @@ class Course(CourseLite):
     nextpage,v contains the number of the next available page
     nextblob,v contains the number of the next available blob
     """
-    def __init__(self,obj):
+    def __init__(self, obj):
         """
+        constructor for Course objects
+
+        @param obj: either the path to a coures or a Course object
+        @type obj: str or Course or CourseLite
         """
         if not isinstance(obj, CourseLite):
             try:
@@ -100,7 +111,7 @@ class Course(CourseLite):
         nextpagestore = Storage(self.path,"nextpage")
         index.getlock()
         nextpagestore.getlock()
-        try:
+        try:                    # 
             newnumber = self.nextpage(havelock=True)
             nextpagestore.store("%d" % (newnumber+1),havelock=True)
             indexcontents = index.content(havelock=True)
@@ -116,6 +127,7 @@ class Course(CourseLite):
         Delete a page
 
         @param number: the internal page number
+        @type number: int
         """
         indexstore = Storage(self.path,"Index")
         indexstore.getlock()
@@ -133,7 +145,9 @@ class Course(CourseLite):
 
     def swappages(self,position):
         """
-        the page at the given current position with its predecessor
+        swap the page at the given current position with its predecessor
+
+        @type position: int
         """
         indexstore = Storage(self.path,"Index")
         indexstore.getlock()
@@ -154,6 +168,7 @@ class Course(CourseLite):
         Start editing a page; 
 
         @param number: the internal page number
+        @type number: int
         @returns a pair of an opaque version string and the contents of this page
         """
         page = Storage(self.path,"page%d" % number)
@@ -167,6 +182,10 @@ class Course(CourseLite):
         @param version: the opaque version string, as obtained from edit page
         @param newcontent: the new content of the page, based on editing the said version
         @param user: the df-login name of the user to carried out the edit
+        @type number: int
+        @type version: str
+        @newcontent: unicode
+        @user: str
 
         @returns: a triple (ok,newversion,mergedcontent) where ok is a boolean indicating
                   whether no confilct has occured and (newversion,mergedcontent) a pair
@@ -191,7 +210,11 @@ class Course(CourseLite):
 
         @param number: the internal number of the page
         @param title: a short description, e.g., the original file name
-        @param comment: a human readable description, e.g., the caption to be added to this figure 
+        @param comment: a human readable description, e.g., the caption to be added to this figure
+        @type number: int
+        @type data: str
+        @type comment: str
+        @type user: str
         """
         indexstore = Storage(self.path,"Index")
         nextblobstore = Storage(self.path,"nextpage")
