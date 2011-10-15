@@ -25,8 +25,9 @@ class Course:
 
     def __init__(self,path):
         """
-        @param: the directory for storing the course; each course must have
-                its own directory, and only course data should be stored in this directory
+        @param path: the directory for storing the course; each course must have
+                     its own directory, and only course data should be stored in
+                     this directory
         """
         self.path = path
         try:

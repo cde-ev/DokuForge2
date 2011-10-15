@@ -8,8 +8,8 @@ class Academy:
 
     def __init__(self, path, title, courselist=[]):
         """
-        @param: the directory for storing the academy; each academy must have
-                its own directory.
+        @param path: the directory for storing the academy; each academy must
+                have its own directory.
         """
         self.path = path
         try:
