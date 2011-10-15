@@ -1,4 +1,4 @@
-import random                   # 
+import random
 import string
 import ConfigParser
 from cStringIO import StringIO
@@ -26,15 +26,17 @@ class User:
                   kursleiter, dokuteam
     @ivar password: password of the user
     @ivar permissions: dictionary of permissions, the syntax is as follows:
-                       akademie_x_y_z ... x in {read, write}, y akademiename,
-                                          z kursname
+                       akademie_x_y_z ... x in {read, write}, y akademiename, z kursname
                        df_x ... x in {admin, useradmin, dokuteam}
     """
     def __init__(self, name, status, password, permissions):
         """
         User-Class Constructor
 
-        ...
+        @type name: str
+        @type status: str
+        @type password: str
+        @type permissions: dictionary of permissions
         """
         self.name = name
         self.status = status
@@ -42,17 +44,52 @@ class User:
             password = randpasswordstring(6)
         self.password = password
         self.permissions = permissions
+    def hasPermission(self, perm):
+        """
+        check if user has a permission
+        """
+        if not perm in self.permissions:
+            return False
+        if self.permissions[perm]:
+            return True
+        return False
 
 class UserDB:
+    """
+    Class for the user database
+
+    @ivar db: dictionary containing (username, User object) pairs
+    @ivar storage: storage.Storage object holding the userdb
+    """
     def __init__(self, storage):
+        """
+        @type storage: storage.Storage
+        """
         self.db = dict()
         self.storage = storage
     def addUser(self, name, status, password, permissions):
+        """
+        add a user to the database
+
+        @type name: str
+        @type status: str
+        @type password: str
+        @type permissins: dictionary of permissions
+        """
         if name in self.db:
             return False
         self.db[name] = User(name, status, password, permissions)
         return True
     def modifyUser(self, name, attributes):
+        """
+        modify a user of the database
+
+        @type name: str
+        @type attributes: dictionary of changes to apply, sytax is: (action,
+                          value) where action is one of 'status',
+                          'password', 'permission_grant',
+                          'permission_revoke'
+        """
         if not name in self.db:
             return False
         for (attr_name, attr_value) in attributes:
@@ -66,14 +103,6 @@ class UserDB:
                 self.db[name].permissions[attr_value] = False
             else:
                 print "Unknown attribute", attr_name, "w/ value", attr_value
-    def hasPermission(self, name, perm):
-        if not name in self.db:
-            return False
-        if not perm in self.db[name].permissions:
-            return False
-        if self.db[name].permissions[perm]:
-            return True
-        return False
     def checkLogin(self, name, password):
         """
         @type name: str
