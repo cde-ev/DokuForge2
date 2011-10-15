@@ -12,6 +12,8 @@
    Dokuforge
    {% if username is not none %}
    Hallo {{ username }}!
+   {% else %}
+   <a href="./login.html">Login</a>
    {% endif %}
    </div>
 {% endblock %}
