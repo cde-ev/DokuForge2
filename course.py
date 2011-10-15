@@ -9,6 +9,8 @@ class Course:
     other things, the following files; with each rcs file, the associated file
     and locks as described in L{Storage} can be present as well.
 
+    title,v    The title of this course (as to be printed)
+
     Index,v    List of internal page numbers, in order of appearence
                Each line contains the internal page number, followed by a space,
                optionally followed by internal blob-numbers associated with page.
@@ -32,6 +34,17 @@ class Course:
         except os.error:
             pass
 
+    def settitle(self,title):
+        """
+        Set the title of this course
+        """
+        s=Storage(self.path,"title")
+        s.store(title)
+
+    def gettitle(self):
+        s=Storage(self.path,"title")
+        return s.content()
+        
     def nextpage(self,havelock=False):
         """
         internal function: return the number of the next available page, but don't do anything
