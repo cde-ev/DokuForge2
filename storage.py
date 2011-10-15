@@ -41,6 +41,8 @@ class Storage(object):
         """
         Store the given contents; rcs file is create if it does not
         exist already.
+
+        @param content: the content of the file as str-object
         """
         if not havelock:
             self.getlock() 
@@ -49,7 +51,7 @@ class Storage(object):
                 subprocess.call(["rcs","-q","-l","%s/%s" % (self.path, self.filename)])
             else:
                 subprocess.call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
-            objfile = io.open("%s/%s" % (self.path,self.filename), mode="w")
+            objfile = file("%s/%s" % (self.path,self.filename), mode="w")
             objfile.write(content)
             objfile.close()
             args = ["ci","-q","-f","-m%s" % message]
