@@ -65,15 +65,15 @@ class Storage(object):
         if not os.path.exists("%s/%s,v" % (self.path,self.filename)):
             if not havelock:
                 self.getlock() 
-                try:
-                    subprocess.check_call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
-                    objfile = file("%s/%s" % (self.path,self.filename), mode="w")
-                    objfile.close()
-                    subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit", 
-                                           "%s/%s" % (self.path, self.filename)])
-                finally:
-                    if not havelock:
-                        self.releaselock()
+            try:
+                subprocess.check_call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
+                objfile = file("%s/%s" % (self.path,self.filename), mode="w")
+                objfile.close()
+                subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit", 
+                                       "%s/%s" % (self.path, self.filename)])
+            finally:
+                if not havelock:
+                    self.releaselock()
 
     def status(self,havelock=False):
         self.ensureexistence(havelock=havelock)
