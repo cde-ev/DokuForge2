@@ -3,30 +3,40 @@ import os
 import storage
 import course
 
-class Academy:
+class AcademyLite:
     """
     ...
     """
 
-    def __init__(self, path):
+    def __init__(self, obj):
         """
-        @param path: the directory for storing the academy; each academy must
-                have its own directory.
         """
-        self.path = path
-        try:
-            os.makedirs(self.path)
-        except OSError:
-            pass
-        self.courses = []
-    def settitle(self,title):
+        if isinstance(obj, AcademyLite):
+            self.path = obj.path
+        else:
+            self.path = path
+        self.courses = [course.Course(self.path + '/' + y) for y in [x for x in os.listdir(self.path) if 'course' in x]]
+    def gettitle(self):
+        s=storage.Storage(self.path,"title")
+        return s.content()
+    def getgroups(self):
+        s=storage.Storage(self.path,"groups")
+        return s.content().split(' ')
+
+class Academy(AcademyLite):
+    def __init__(self, obj):
+        """
+        """
+        AcademyLite.__init__(self, obj)
+    def settitle(self, title):
         """
         Set the title of this academy
         """
         s=storage.Storage(self.path,"title")
         s.store(title)
-    def gettitle(self):
-        s=storage.Storage(self.path,"title")
-        return s.content()
-    def load(self):
-        self.courses = [course.Course(y) for y in [x for x in os.listdir(self.path) if 'course' in x]]
+    def setgroups(self, groups):
+        """
+        Set the groups of this academy to determine when to display it
+        """
+        s=storage.Storage(self.path,"groups")
+        s.store(' '.join(x for x in groups))

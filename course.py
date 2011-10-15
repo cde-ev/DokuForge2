@@ -1,7 +1,59 @@
 import os
 from storage import Storage
 
-class Course:
+class CourseLite:
+    """
+    Backend for viewing the file structres related to a course
+
+    A detailed description can be found with the class Course.
+    """
+    def __init__(self,obj):
+        """
+        """
+        if isinstance(obj, CourseLite):
+            self.path = obj.path
+        else:
+            self.path = path
+        try:
+            os.makedirs(self.path)
+        except os.error:
+            pass
+
+    def gettitle(self):
+        s=Storage(self.path,"title")
+        return s.content()
+
+    def nextpage(self,havelock=False):
+        """
+        internal function: return the number of the next available page, but don't do anything
+        """
+        s = Storage(self.path,"nextpage")
+        vs = s.content(havelock=havelock)
+        if vs=='':
+            vs='0'
+        return int(vs)
+
+    def listpages(self,havelock=False):
+        """
+        return a list of the available page numbers in correct order
+        """
+        indexstore = Storage(self.path,"Index")
+        index = indexstore.content(havelock=havelock)
+        lines = index.split('\n')
+        lines.pop()
+        return [int(line.split()[0]) for line in lines]
+
+    def showpage(self,number):
+        """
+        Show the contents of a page
+
+        @param number: the internal number of that page
+        """
+        page = Storage(self.path,"page%d" % number)
+        return page.content()
+
+
+class Course(CourseLite):
     """
     Backend for manipulating the file structres related to a course
 
@@ -22,18 +74,10 @@ class Course:
     nextpage,v contains the number of the next available page
     nextblob,v contains the number of the next available blob
     """
-
-    def __init__(self,path):
+    def __init__(self,obj):
         """
-        @param path: the directory for storing the course; each course must have
-                     its own directory, and only course data should be stored in
-                     this directory
         """
-        self.path = path
-        try:
-            os.makedirs(self.path)
-        except os.error:
-            pass
+        CourseLite.__init__(self, obj)
 
     def settitle(self,title):
         """
@@ -41,20 +85,6 @@ class Course:
         """
         s=Storage(self.path,"title")
         s.store(title)
-
-    def gettitle(self):
-        s=Storage(self.path,"title")
-        return s.content()
-        
-    def nextpage(self,havelock=False):
-        """
-        internal function: return the number of the next available page, but don't do anything
-        """
-        s = Storage(self.path,"nextpage")
-        vs = s.content(havelock=havelock)
-        if vs=='':
-            vs='0'
-        return int(vs)
 
     def newpage(self,havelock=False):
         """
@@ -74,25 +104,6 @@ class Course:
             nextpagestore.releaselock()
             index.releaselock()
         return newnumber
-
-    def listpages(self,havelock=False):
-        """
-        return a list of the available page numbers in correct order
-        """
-        indexstore = Storage(self.path,"Index")
-        index = indexstore.content(havelock=havelock)
-        lines = index.split('\n')
-        lines.pop()
-        return [int(line.split()[0]) for line in lines]
-
-    def showpage(self,number):
-        """
-        Show the contents of a page
-        
-        @param number: the internal number of that page
-        """
-        page = Storage(self.path,"page%d" % number)
-        return page.content()
 
     def delpage(self,number):
         """
@@ -133,7 +144,7 @@ class Course:
             indexstore.store(newindex,havelock=True)
         finally:
             indexstore.releaselock()
-        
+
     def editpage(self,number):
         """
         Start editing a page; 

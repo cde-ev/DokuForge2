@@ -6,8 +6,13 @@ import jinja2
 import random
 import os
 import sqlite3
+<<<<<<< HEAD
+import copy
+import re
+=======
 import urllib
 import wsgiref.util
+>>>>>>> b7c4da04dda4ba389b47ee558857f65ad4bcf487
 from wsgitools.applications import StaticContent, StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
@@ -109,7 +114,7 @@ class RequestState:
         self.sessionhandler = SessionHandler(sessiondb, cookiehandler, environ)
         self.emitted = False
         self.userdb = userdb
-        self.user = self.userdb.db.get(self.sessionhandler.get())
+        self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.request_uri = wsgiref.util.request_uri(environ)
 
     def parse_request(self):
@@ -118,7 +123,7 @@ class RequestState:
         return self.fieldstorage
 
     def login(self, username):
-        self.user = self.userdb.db[username]
+        self.user = copy.deepcopy(self.userdb.db[username])
         self.outheaders.update(dict(self.sessionhandler.set(self.user.name)))
 
     def logout(self):
@@ -160,7 +165,7 @@ app404 = StaticContent("404 File Not Found",
                        "404 File Not Found", anymethod=True)
 
 class Application:
-    def __init__(self, userdb):
+    def __init__(self, userdb, acadbstore):
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader("./templates"))
         self.cookiehandler = CookieHandler()
@@ -169,6 +174,37 @@ class Application:
         cur.execute(SessionHandler.create_table)
         self.sessiondb.commit()
         self.userdb = userdb
+        self.acadbstor = acadbstore
+
+    def getAcademy(self, name):
+        if re.match('^[-a-zA-Z0-9]*$', name) is None:
+            return None
+        lookup = re.findall('^' + name + ' (.*)$',
+                            self.acadbstore.content(), re.MULTILINE)
+        if not len(lookup) == 1:
+            return None
+        if not os.path.isdir(lookup[0]):
+            return None
+        return academy.Academy(lookup[0])
+
+    def createAcademy(self, name, title, groups):
+        if re.match('^[-a-zA-Z0-9]*$', name) is None:
+            return False
+        s = self.acadbstore.content()
+        if not re.search('^' + name + ' ', s, re.MULTILINE) is None:
+            return False
+        path = './df/' + name + '/'
+        if not re.search(' ' + path + '$', s, re.MULTILINE) is None:
+            return False
+        if os.path.exists(path):
+            return False
+        os.makedirs(path)
+        self.acadbstore.store(self.acadbstore.content() + '\n' + name + ' '
+        + path + '\n')
+        aca = academy.Academy(path)
+        aca.settitle(title)
+        aca.setgroups(groups)
+
 
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
@@ -228,7 +264,8 @@ def main():
     userdbstore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(userdbstore)
     userdb.load()
-    app = Application(userdb)
+    acadbstore = storage.Storage('work', 'acadb')
+    app = Application(userdb, acadbstore)
     app = TracebackMiddleware(app)
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))
@@ -238,3 +275,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
