@@ -3,6 +3,7 @@ import os
 import storage
 import course
 import re
+import copy
 
 class AcademyLite:
     """
@@ -29,7 +30,7 @@ class AcademyLite:
         return s.content().split(' ')
     def listCoursesLite(self):
         candidates = os.listdir(self.path)
-        final = candidates
+        final = copy.deepcopy(candidates)
         for x in candidates:
             if not os.path.isdir(os.path.join(self.path, x)):
                 final.remove(x)
@@ -59,7 +60,7 @@ class Academy(AcademyLite):
         c.settitle(title)
     def listCourses(self):
         candidates = os.listdir(self.path)
-        final = candidates
+        final = copy.deepcopy(candidates)
         for x in candidates:
             if not os.isdir(os.path.join(self.path, x)):
                 final.remove(x)

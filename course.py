@@ -7,7 +7,7 @@ class CourseLite:
 
     A detailed description can be found with the class Course.
     """
-    def __init__(self,obj):
+    def __init__(self, obj):
         """
         """
         if isinstance(obj, CourseLite):
