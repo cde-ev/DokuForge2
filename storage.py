@@ -82,7 +82,7 @@ class Storage(object):
 
     def content(self, havelock=False):
         self.ensureexistence(havelock=havelock)
-        return subprocess.check_output(["co","-q","-p","%s/%s" % (self.path, self.filename)])
+        return subprocess.check_output(["co","-q","-p","-kb","%s/%s" % (self.path, self.filename)])
 
     def startedit(self,havelock=False):
         """
