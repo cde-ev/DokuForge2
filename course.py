@@ -85,7 +85,7 @@ class Course(CourseLite):
         s=Storage(self.path,"title")
         s.store(title)
 
-    def newpage(self,havelock=False):
+    def newpage(self):
         """
         create a new page in this course and return its internal number
         """

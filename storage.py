@@ -1,5 +1,4 @@
 import os, errno
-import io
 import time
 import subprocess
 
@@ -154,7 +153,6 @@ class Storage(object):
             args.append("-mstoring original edit conflictig with %s in a branch" % currentversion)
             if user is not None:
                 args.append("-w%s" % user)
-            args.append
             args.append(self.fullpath())
             subprocess.check_call(args)
             # 2.) merge in head
