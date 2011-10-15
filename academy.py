@@ -14,7 +14,7 @@ class AcademyLite:
         if isinstance(obj, AcademyLite):
             self.path = obj.path
         else:
-            self.path = path
+            self.path = obj
         self.courses = [course.Course(self.path + '/' + y) for y in [x for x in os.listdir(self.path) if 'course' in x]]
     def gettitle(self):
         s=storage.Storage(self.path,"title")
