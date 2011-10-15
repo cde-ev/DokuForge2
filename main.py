@@ -162,6 +162,8 @@ class Application:
                           self.cookiehandler, self.userdb)
         if environ["PATH_INFO"] == "/login":
             return self.do_login(rs)
+        if environ["PATH_INFO"] == "/logout":
+            return self.do_logout(rs)
         if environ["PATH_INFO"] == "/edit":
             return self.render_edit(rs)
         return self.render_start(rs)
@@ -180,6 +182,12 @@ class Application:
         if not self.userdb.checkLogin(username, password):
             return rs.emit_content("wrong password")
         rs.login(username)
+        return self.render_start(rs)
+
+    def do_logout(self, rs):
+        if rs.environ["REQUEST_METHOD"] != "POST":
+            return rs.emit_app(app405)
+        rs.logout()
         return self.render_start(rs)
 
     def render_start(self, rs):
