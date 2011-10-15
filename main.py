@@ -151,6 +151,7 @@ class RequestState:
 
     def emit_permredirect(self, location):
         self.outheaders["Location"] = urllib.basejoin(self.request_uri, location)
+        self.outheaders["Content-Length"] = 0
         self.emit("301 Moved Permanently")
         return []
 
