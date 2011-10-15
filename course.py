@@ -13,11 +13,9 @@ class CourseLite:
         if isinstance(obj, CourseLite):
             self.path = obj.path
         else:
+            if not os.path.isdir(obj):
+                return None
             self.path = obj
-        try:
-            os.makedirs(self.path)
-        except os.error:
-            pass
 
     @property
     def name(self):
@@ -80,6 +78,11 @@ class Course(CourseLite):
     def __init__(self,obj):
         """
         """
+        if not isinstance(obj, CourseLite):
+            try:
+                os.makedirs(obj)
+            except os.error:
+                pass
         CourseLite.__init__(self, obj)
 
     def settitle(self,title):
