@@ -13,7 +13,7 @@ class CourseLite:
         if isinstance(obj, CourseLite):
             self.path = obj.path
         else:
-            self.path = path
+            self.path = obj
         try:
             os.makedirs(self.path)
         except os.error:

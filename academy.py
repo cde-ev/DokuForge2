@@ -2,6 +2,7 @@
 import os
 import storage
 import course
+import re
 
 class AcademyLite:
     """
