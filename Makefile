@@ -9,7 +9,7 @@ setup:
 	python createacademy.py
 
 clean:
-	rm -rf html work
+	rm -rf html work df
 	rm -f *.pyc *~
 
 .PHONY: all doc
