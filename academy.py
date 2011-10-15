@@ -74,10 +74,6 @@ class Academy(AcademyLite):
                 final.remove(x)
         return [course.Course(os.path.join(self.path, x)) for x in final]
     def getCourse(self,coursename):
-        if re.match('^[-a-zA-Z0-9]{1,200}$', coursename) is None:
-            return None
-        finalpath = os.path.join(self.path,coursename)
-        if not os.path.isdir(finalpath):
-            return None
-        return Course(finalpath)
+        litecourse = self.getCourseLite(coursename)
+        return Course(litecourse)
         
