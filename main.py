@@ -41,6 +41,13 @@ class CookieHandler:
     def new(self):
         return self.set(self.newvalue())
 
+    def delete(self):
+        cookiemorsel = Cookie.Morsel()
+        cookiemorsel.set(self.name, "", "")
+        cookiemorsel["max-age"] = 0
+        cookiemorsel["expires"] = "Thu, 01-Jan-1970 00:00:01 GMT"
+        return ("Set-Cookie", cookiemorsel.OutputString())
+
 class Application:
     def __init__(self):
         self.jinjaenv = jinja2.Environment(
