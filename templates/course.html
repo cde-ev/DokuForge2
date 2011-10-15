@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+{% set pages = course.listPages() %}
+{% if pages %}
+<ol>
+	{% for page in pages %}
+	<li><a href="{{ basejoin("df/" + academy.name + '/' + course.name + '/' + page) }}">Seite {{ page }}</a></li>
+	{% endfor %}
+</ol>
+{% else %}
+<em>Keine Seiten gefunden gefunden.</em>
+{% endif %}
+{% endblock %}
