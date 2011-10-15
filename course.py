@@ -197,6 +197,8 @@ class Course(CourseLite):
     def nextblob(self,havelock=False):
         """
         internal function: return the number of the next available blob, but don't do anything
+
+        @returns: number of next available blob
         """
         s = Storage(self.path,"nextblob")
         vs = s.content(havelock=havelock)
@@ -211,6 +213,7 @@ class Course(CourseLite):
         @param number: the internal number of the page
         @param title: a short description, e.g., the original file name
         @param comment: a human readable description, e.g., the caption to be added to this figure
+        @param user: the df-login name of the user to carried out the edit
         @type number: int
         @type data: str
         @type comment: str
@@ -244,6 +247,7 @@ class Course(CourseLite):
         return a list of the blobs associated with the given page
 
         @param number: the internal page number
+        @type number: int
         """
         indexstore = Storage(self.path,"Index")
         index = indexstore.content()
@@ -260,6 +264,7 @@ class Course(CourseLite):
         return the content of a blob
 
         @param number: the internal number of the blob
+        @type number: int
         """
         blob=Storage(self.path,"blob%d" % number)
         return blob.content()
