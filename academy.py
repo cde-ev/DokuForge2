@@ -15,7 +15,8 @@ class AcademyLite:
             self.path = obj.path
         else:
             self.path = obj
-        self.courses = [course.Course(self.path + '/' + y) for y in [x for x in os.listdir(self.path) if 'course' in x]]
+        self.courses = [course.Course(os.path.join(self.path, y)) for y in
+                        [x for x in os.listdir(self.path) if 'course' in x]]
     def gettitle(self):
         s=storage.Storage(self.path,"title")
         return s.content()
@@ -40,3 +41,8 @@ class Academy(AcademyLite):
         """
         s=storage.Storage(self.path,"groups")
         s.store(' '.join(x for x in groups))
+    def createCourse(self, name, title):
+        if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
+            return False
+        c = course.Course(os.path.join(self.path, name))
+        c.settitle(title)
