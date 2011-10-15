@@ -4,6 +4,8 @@ from cStringIO import StringIO
 
 sysrand = random.SystemRandom()
 
+from common import strtobool
+
 def randpasswordstring(n=6):
     """
     @returns: random string of length n which is easily readable
