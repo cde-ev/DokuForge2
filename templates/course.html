@@ -10,10 +10,8 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 	<li><a href="{{ basejoin("df/" + academy.name + '/' + course.name
 		+ '/' + page|string) }}">Seite {{ pages.index(page) + 1 }} (intern: {{ page }})</a>
 		{% if pages.index(page) > 0 %}
-		<form action="{{ basejoin("df/" + academy.name + "/" + course.name + "/moveup") }}" method="post" id="moveup">
-		<input name="submit" value="Hochr&uuml;cken" type="submit">
-		<input name="number" value="{{ pages.index(page) }}" type="hidden">
-		</form>
+		{{ button("df/" + academy.name + "/" + course.name + "/moveup", "Hochrücken",
+	           dict(number=pages.index(page))) }}
 		{% endif %}
 	</li>
 	{% endfor %}
@@ -21,7 +19,5 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 {% else %}
 <em>Keine Seiten gefunden gefunden.</em>
 {% endif %}
-<form action="{{ basejoin("df/" + academy.name + "/" + course.name + "/createpage") }}" method="post" id="createpage">
-      <input name="submit" value="Eine Seite anlegen" type="submit">
-</form>
+{{ button("df/" + academy.name + "/" + course.name + "/createpage", "Eine Seite anlegen") }}
 {% endblock %}

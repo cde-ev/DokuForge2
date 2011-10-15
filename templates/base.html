@@ -1,5 +1,5 @@
 {% macro button(action, label, params={}) -%}
-<form action="{{ action|e }}" method="post">
+<form action="{{ basejoin(action)|e }}" method="post">
 	{%- for key, value in params.items() -%}
 	<input type="hidden" name="{{ key|e }}" value="{{ value|e }}">
 	{%- endfor -%}
@@ -20,9 +20,7 @@
    Dokuforge
    {% if user is not none %}
      <p>Hallo {{ user.name }}!</p>
-     <p><form action="logout" method="post" id="logout">
-	  <input name="submit" value="Logout" type="submit">
-	</form>
+     <p>{{ button("logout", "Logout")}}
 	{% if user.hasPermission("df_useradmin") %}
 	<a href="{{ basejoin("useradmin") }}">Nutzeradministration</a>
 	{% endif %}
