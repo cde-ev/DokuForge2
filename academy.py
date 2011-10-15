@@ -1,6 +1,7 @@
 
 import os
 import storage
+import course
 
 class Academy:
     """
@@ -20,7 +21,7 @@ class Academy:
         self.courses = []
     def settitle(self,title):
         """
-        Set the title of this course
+        Set the title of this academy
         """
         s=storage.Storage(self.path,"title")
         s.store(title)
@@ -28,4 +29,4 @@ class Academy:
         s=storage.Storage(self.path,"title")
         return s.content()
     def load(self):
-        print os.listdir(self.path)
+        self.courses = [course.Course(y) for y in [x for x in os.listdir(self.path) if 'course' in x]]
