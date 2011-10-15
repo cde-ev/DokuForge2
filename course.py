@@ -201,3 +201,20 @@ class Course:
 
         blob = Storage(self.path,"blob%d" % newnumber)
         blob.store(data,user=user,message=comment)
+
+    def listblobs(self,number):
+        """
+        return a list of the blobs associated with the given page
+
+        @param number: the internal page number
+        """
+        indexstore = Storage(self.path,"Index")
+        index = indexstore.content()
+        lines = index.split('\n')
+        lines.pop()
+        for line in lines:
+            entries=line.split()
+            if int(entries[0]) == number:
+                entries.pop(0)
+                return [int(x) for x in entries]
+        return []
