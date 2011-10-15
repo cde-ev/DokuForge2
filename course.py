@@ -184,8 +184,8 @@ class Course(CourseLite):
         @param user: the df-login name of the user to carried out the edit
         @type number: int
         @type version: str
-        @newcontent: unicode
-        @user: str
+        @type newcontent: unicode
+        @type user: str
 
         @returns: a triple (ok,newversion,mergedcontent) where ok is a boolean indicating
                   whether no confilct has occured and (newversion,mergedcontent) a pair
