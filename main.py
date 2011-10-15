@@ -153,7 +153,7 @@ app404 = StaticContent("404 File Not Found",
                        "404 File Not Found", anymethod=True)
 
 class Application:
-    def __init__(self, userdb, akadbstore):
+    def __init__(self, userdb, acadbstore):
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader("./templates"))
         self.cookiehandler = CookieHandler()
@@ -162,13 +162,13 @@ class Application:
         cur.execute(SessionHandler.create_table)
         self.sessiondb.commit()
         self.userdb = userdb
-        self.akadbstor = akadbstore
+        self.acadbstor = acadbstore
 
     def getAcademy(self, name):
-        if re.match('[-a-zA-Z0-9]*', name) == None:
+        if re.match('^[-a-zA-Z0-9]*$', name) == None:
             return None
         lookup = re.findall('^' + name + ' (.*)$',
-                            self.akadbstore.content(), re.MULTILINE)
+                            self.acadbstore.content(), re.MULTILINE)
         if not len(lookup) == 1:
             return None
         if not os.path.isdir(lookup[0]):
@@ -231,8 +231,8 @@ def main():
     userdbstore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(userdbstore)
     userdb.load()
-    akadbstore = storage.Storage('work', 'akadb')
-    app = Application(userdb, akadbstore)
+    acadbstore = storage.Storage('work', 'acadb')
+    app = Application(userdb, acadbstore)
     app = TracebackMiddleware(app)
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))
