@@ -192,6 +192,7 @@ class Application:
         aca = academy.Academy(path)
         aca.settitle(title)
         aca.setgroups(groups)
+        return aca
 
     def listAcademies(self):
         return map(self.getAcademy, os.listdir(self.acapath))
