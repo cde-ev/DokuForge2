@@ -5,6 +5,7 @@ import Cookie
 import jinja2
 import random
 import os
+import sqlite3
 from wsgitools.applications import StaticContent, StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
@@ -26,8 +27,12 @@ class CookieHandler:
         except Cookie.CookieError:
             return None
         try:
-            return cookie[self.name].value
+            value = cookie[self.name].value
         except KeyError:
+            return None
+        else:
+            if value.isalnum():
+                return value
             return None
 
     def set(self, value):
@@ -48,11 +53,54 @@ class CookieHandler:
         cookiemorsel["expires"] = "Thu, 01-Jan-1970 00:00:01 GMT"
         return ("Set-Cookie", cookiemorsel.OutputString())
 
+class SessionHandler:
+    create_table = "CREATE TABLE IF NOT EXISTS sessions " + \
+                   "(sid TEXT, user TEXT, UNIQUE(sid));"
+
+    def __init__(self, db, cookiehandler, environ=dict()):
+        self.db = db
+        self.cookiehandler = cookiehandler
+        self.cur = db.cursor()
+        self.sid = self.cookiehandler.get(environ)
+
+    def get(self):
+        if self.sid is None:
+            return None
+        self.cur.execute("SELECT user FROM sessions WHERE sid = ?;",
+                         (self.sid.decode("utf8"),))
+        results = self.cur.fetchall()
+        if len(results) != 1:
+            return None
+        return results[0][0].encode("utf8")
+
+    def set(self, username):
+        ret = []
+        if self.sid is None:
+            self.sid = self.cookiehandler.newvalue()
+            ret.append(self.cookiehandler.set(self.sid))
+        self.cur.execute("INSERT OR REPLACE INTO sessions VALUES (?, ?);",
+                         (self.sid.decode("utf8"), username.decode("utf8")))
+        self.db.commit()
+        return ret
+
+    def delete(self):
+        if self.sid is None:
+            return []
+        self.cur.execute("DELETE FROM sessions WHERE sid = ?;",
+                         (self.sid.decode("utf8"),))
+        self.db.commit()
+        return [self.cookiehandler.delete()]
+
 class Application:
     def __init__(self):
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader("./templates"))
         self.cookiehandler = CookieHandler()
+        self.sessiondb = sqlite3.connect(":memory:")
+        cur = self.sessiondb.cursor()
+        cur.execute(SessionHandler.create_table)
+        self.sessiondb.commit()
+
     def __call__(self, environ, start_response):
         fs = FieldStorage(environ=environ, fp=environ["wsgi.input"])
         headers = {
@@ -60,9 +108,13 @@ class Application:
         }
         content = self.jinjaenv.get_template("base.html").render({}) \
                   .encode("utf8")
-        cookie = self.cookiehandler.get(environ)
-        if cookie is None:
-            headers.__setitem__(*self.cookiehandler.new())
+        sh = SessionHandler(self.sessiondb, self.cookiehandler, environ)
+        user = sh.get()
+        # toggle the login for example
+        if user is None:
+            headers.update(dict(sh.set("foo"))) # set cookie
+        else:
+            headers.update(dict(sh.delete()))
         return StaticContent("200 OK",
                              list(headers.items()),
                              content)(environ, start_response)
