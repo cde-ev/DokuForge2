@@ -1,5 +1,6 @@
 
 import os
+import storage
 
 class Academy:
     """
@@ -16,11 +17,15 @@ class Academy:
             os.makedirs(self.path)
         except OSError:
             pass
-        self.title = ""
         self.courses = []
-    def settitle(self, title):
-        f = open(self.path + '/title', 'w')
-        f.write(title)
-        f.close()
+    def settitle(self,title):
+        """
+        Set the title of this course
+        """
+        s=storage.Storage(self.path,"title")
+        s.store(title)
+    def gettitle(self):
+        s=storage.Storage(self.path,"title")
+        return s.content()
     def load(self):
         print os.listdir(self.path)
