@@ -16,4 +16,6 @@ if __name__ == "__main__":
     userdb.load()
     acadbstore = storage.Storage('work', 'acadb')
     app = Application(userdb, acadbstore)
-    app.createAcademy('za2011-1', 'Beste Akademie ever', ["cde"])
+    aca = app.createAcademy('za2011-1', 'Beste Akademie ever', ["cde"])
+    aca.createCourse('course01', "Internethumor und seine Schuld am Weltuntergang")
+    aca.createCourse('course02', "Helenistische Heldenideale")
