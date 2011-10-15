@@ -161,7 +161,8 @@ class Application:
                           self.cookiehandler)
         if environ["PATH_INFO"] == "/login":
             return self.do_login(rs)
-        rs.outheaders["Content-Type"] = "text/html; charset=utf8"
+        if environ["PATH_INFO"] == "/edit":
+            return self.render_edit(rs)
         return self.render_start(rs)
 
     def do_login(self, rs):
@@ -182,6 +183,10 @@ class Application:
 
     def render_start(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("start.html"))
+
+    def render_edit(self, rs):
+        return rs.emit_template(self.jinjaenv.get_template("edit.html"),
+                                dict(content="edit me"))
 
 def main():
     userdbstore = storage.Storage('.', 'userdb')
