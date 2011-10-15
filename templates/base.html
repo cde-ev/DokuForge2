@@ -1,3 +1,11 @@
+{% macro button(action, label, params={}) -%}
+<form action="{{ action|e }}" method="post">
+	{%- for key, value in params.items() -%}
+	<input type="hidden" name="{{ key|e }}" value="{{ value|e }}">
+	{%- endfor -%}
+	<input type="submit" name="submit" value="{{ label|e }}">
+</form>
+{%- endmacro -%}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="de">
 <head>
