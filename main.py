@@ -103,6 +103,7 @@ class RequestState:
         self.fieldstorage = None
         self.sessionhandler = SessionHandler(sessiondb, cookiehandler, environ)
         self.username = self.sessionhandler.get()
+        self.emitted = False
 
     def parse_request(self):
         self.fieldstorage = FieldStorage(environ=self.environ,
@@ -121,6 +122,8 @@ class RequestState:
         return self.fieldstorage[key].value # raises KeyError
 
     def emit(self, status):
+        assert not self.emitted
+        self.emitted = True
         self.start_response(status, self.outheaders.items())
 
 class Application:
