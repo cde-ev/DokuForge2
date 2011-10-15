@@ -16,7 +16,7 @@
 	  <input name="submit" value="Logout" type="submit">
 	</form>
 	{% if user.hasPermission("df_useradmin") %}
-	<a href="./useradmin.html">Nutzeradministration</a>
+	<a href="{{ basejoin("useradmin") }}">Nutzeradministration</a>
 	{% endif %}
      </p>
    {% else %}
