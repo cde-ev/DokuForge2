@@ -242,7 +242,7 @@ class Application:
         if not self.userdb.checkLogin(username, password):
             return rs.emit_content("wrong password")
         rs.login(username)
-        return self.render_start(rs)
+        return self.render_index(rs)
 
     def do_logout(self, rs):
         if rs.environ["REQUEST_METHOD"] != "POST":
