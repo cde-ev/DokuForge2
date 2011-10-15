@@ -174,7 +174,7 @@ class Application:
             rs.get_field("submit") # just check for existence
         except KeyError:
             return rs.emit_content("200 OK", "missing form fields")
-        if self.userdb.checkLogin(username, password) :
+        if not self.userdb.checkLogin(username, password):
             return rs.emit_content("200 OK", "wrong password")
         rs.login(username)
         return self.render_start(rs)
