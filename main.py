@@ -9,6 +9,9 @@ import sqlite3
 from wsgitools.applications import StaticContent, StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
+# import other parts of Dokuforge
+import storage
+import user
 
 sysrand = random.SystemRandom()
 
@@ -142,7 +145,7 @@ class RequestState:
         return self.emit_content(status, template.render(params).encode("utf8"))
 
 class Application:
-    def __init__(self):
+    def __init__(self, userdb):
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader("./templates"))
         self.cookiehandler = CookieHandler()
@@ -150,6 +153,7 @@ class Application:
         cur = self.sessiondb.cursor()
         cur.execute(SessionHandler.create_table)
         self.sessiondb.commit()
+        self.userdb = userdb
 
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
@@ -175,7 +179,7 @@ class Application:
             rs.get_field("submit") # just check for existence
         except KeyError:
             return rs.emit_content("200 OK", "missing form fields")
-        if username != password: # FIXME: silly pw check
+        if self.userdb.checkLogin(username, password) :
             return rs.emit_content("200 OK", "wrong password")
         rs.login(username)
         return self.render_start(rs)
@@ -185,7 +189,9 @@ class Application:
                                 self.jinjaenv.get_template("start.html"))
 
 def main():
-    app = Application()
+    userdbstore = storage.Storage('.', 'userdb')
+    userdb = user.UserDB(userdbstore)
+    app = Application(userdb)
     app = TracebackMiddleware(app)
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))
