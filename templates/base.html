@@ -11,7 +11,10 @@
    <div id="header">
    Dokuforge
    {% if user is not none %}
-   Hallo {{ user.name }}!
+   <p>Hallo {{ user.name }}!<p/>
+     {% if user.hasPermission("df_useradmin") %}
+     <p><a href="./useradmin.html">Nutzeradministration<a/><p/>
+     {% endif %}
    {% else %}
    <a href="./">Login</a>
    {% endif %}
