@@ -134,15 +134,16 @@ class RequestState:
         self.emitted = True
         return app(self.environ, self.start_response)
 
-    def emit_content(self, status, content):
+    def emit_content(self, content):
         self.outheaders["Content-Length"] = str(len(content))
-        self.emit(status)
+        self.emit("200 Found")
         return [content]
 
-    def emit_template(self, status, template):
+    def emit_template(self, template, extraparams=dict()):
         self.outheaders["Content-Type"] = "text/html; charset=utf8"
         params = dict(username=self.username)
-        return self.emit_content(status, template.render(params).encode("utf8"))
+        params.update(extraparams)
+        return self.emit_content(template.render(params).encode("utf8"))
 
 class Application:
     def __init__(self, userdb):
@@ -173,15 +174,14 @@ class Application:
             password = rs.get_field("password")
             rs.get_field("submit") # just check for existence
         except KeyError:
-            return rs.emit_content("200 OK", "missing form fields")
+            return rs.emit_content("missing form fields")
         if not self.userdb.checkLogin(username, password):
-            return rs.emit_content("200 OK", "wrong password")
+            return rs.emit_content("wrong password")
         rs.login(username)
         return self.render_start(rs)
 
     def render_start(self, rs):
-        return rs.emit_template("200 OK",
-                                self.jinjaenv.get_template("start.html"))
+        return rs.emit_template(self.jinjaenv.get_template("start.html"))
 
 def main():
     userdbstore = storage.Storage('.', 'userdb')
