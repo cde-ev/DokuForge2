@@ -330,12 +330,12 @@ class Application:
             if rs.environ["REQUEST_METHOD"] != "POST":
                 return rs.emit_app(app405)
             rs.parse_request()
-            numberstr = rs.getfield("number")
+            numberstr = rs.get_field("number")
             try:
                 number = int(numberstr)
             except KeyError:
                 number = 0
-            course.swappage(number)
+            course.swappages(number)
             return self.render_course(rs, academy, course)
         else:
             raise AssertionError("fixme: continue")
