@@ -14,7 +14,7 @@
 	{% endfor %}
 </ol>
 {% else %}
-<em>Keine Seiten gefunden gefunden.
+<em>Keine Seiten gefunden gefunden.</em>
 {% endif %}
 <form action="{{ basejoin("df/" + academy.name + "/" + course.name + "/createpage") }}" method="post" id="createpage">
       <input name="submit" value="Eine Seite anlegen" type="submit">
