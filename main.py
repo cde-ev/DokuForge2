@@ -15,6 +15,7 @@ from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
 # import other parts of Dokuforge
 import academy
+import course
 import storage
 import user
 
@@ -262,8 +263,13 @@ class Application:
         academy = self.getAcademy(path_parts.pop(0))
         if academy is None:
             return rs.emit_app(app404)
-        if not path_parts:
+        if not path_parts or not path_parts[0]:
             return self.render_academy(rs, academy)
+        course = academy.getCourse(path_parts.pop(0))
+        if course is None:
+            return rs.emit_app(app404)
+        if not path_parts or  not path_parts[0]:
+            return self.render_course(rs, academy, course)
         raise AssertionError("fixme: continue")
 
     def render_start(self, rs):
@@ -282,6 +288,14 @@ class Application:
     def render_academy(self, rs, theacademy):
         return rs.emit_template(self.jinjaenv.get_template("academy.html"),
                                 dict(academy=academy.AcademyLite(theacademy)))
+
+    def render_course(self, rs, theacademy, thecourse):
+        params = dict(
+            academy=academy.AcademyLite(theacademy),
+            course=course.CourseLite(thecourse))
+        return rs.emit_template(self.jinjaenv.get_template("course.html"),
+                                params)
+
 
 def main():
     userdbstore = storage.Storage('work', 'userdb')
