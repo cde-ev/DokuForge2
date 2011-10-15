@@ -34,7 +34,7 @@ class Course:
 
     def nextpage(self,havelock=False):
         """
-        return the number of the next available page, but don't do anything
+        internal function: return the number of the next available page, but don't do anything
         """
         s = Storage(self.path,"nextpage")
         vs = s.content(havelock=havelock)
