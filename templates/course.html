@@ -4,9 +4,10 @@
 {% if pages %}
 <ol>
 	{% for page in pages %}
-	<li><a href="{{ basejoin("df/" + academy.name + '/' + course.name + '/' + page|string) }}">Seite {{ pages.index(page) + 1 }}</a>
+	<li><a href="{{ basejoin("df/" + academy.name + '/' + course.name
+		+ '/' + page|string) }}">Seite {{ pages.index(page) + 1 }}</a>
 		{% if pages.index(page) > 0 %}
-		<form action="moveup" method="post" id="moveup">
+		<form action={{ basejoin("df/" + academy.name + "/" + course.name + "/moveup") }}" method="post" id="moveup">
 		<input name="submit" value="Hochr&uuml;cken" type="submit">
 		<input name="number" value="{{ pages.index(page) }}" type="hidden"
 		</form>
