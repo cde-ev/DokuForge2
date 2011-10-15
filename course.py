@@ -218,3 +218,12 @@ class Course:
                 entries.pop(0)
                 return [int(x) for x in entries]
         return []
+
+    def getblob(self,number):
+        """
+        return the content of a blob
+
+        @param number: the internal number of the blob
+        """
+        blob=Storage(self.path,"blob%d" % number)
+        return blob.content()
