@@ -2,8 +2,8 @@
 <html lang="de">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="./static/style.css" media="all">
-	<link rel="stylesheet" type="text/css" href="./static/print.css" media="print">
+	<link rel="stylesheet" type="text/css" href="{{ basejoin("static/style.css") }}" media="all">
+	<link rel="stylesheet" type="text/css" href="{{ basejoin("static/print.css") }}" media="print">
 	<title>Dokuforge2</title>
 </head>
 <body>
@@ -35,3 +35,5 @@ Dies sollte nicht sichtbar sein.
 {% endblock %}
 </body>
 </html>
+{# vim:syntax=jinja
+#}
