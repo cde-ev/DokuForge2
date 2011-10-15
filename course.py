@@ -71,6 +71,15 @@ class Course:
         lines.pop()
         return [int(line.split()[0]) for line in lines]
 
+    def showpage(self,number):
+        """
+        Show the contents of a page
+        
+        @param number: the internal number of that page
+        """
+        page = Storage(self.path,"page%d" % number)
+        return page.content()
+
     def editpage(self,number):
         """
         Start editing a page; 
@@ -95,4 +104,4 @@ class Course:
                   for further editing that can be  handled as if obtained from editpage
         """
         page = Storage(self.path,"page%d" % number)
-        page.endedit(version,newcontent,user=user)
+        return page.endedit(version,newcontent,user=user)
