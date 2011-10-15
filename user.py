@@ -1,5 +1,7 @@
-import random
+import random                   # 
 import string
+import ConfigParser
+from cStringIO import StringIO
 
 sysrand = random.SystemRandom()
 
@@ -19,7 +21,14 @@ class User:
     """
     User-Class
 
-    ...
+    @ivar name: name of the user
+    @ivar status: status of the user, valid values are: dokubeauftragter,
+                  kursleiter, dokuteam
+    @ivar password: password of the user
+    @ivar permissions: dictionary of permissions, the syntax is as follows:
+                       akademie_x_y_z ... x in {read, write}, y akademiename,
+                                          z kursname
+                       df_x ... x in {admin, useradmin, dokuteam}
     """
     def __init__(self, name, status, password, permissions):
         """
@@ -35,8 +44,9 @@ class User:
         self.permissions = permissions
 
 class UserDB:
-    def __init__(self):
+    def __init__(self, storage):
         self.db = dict()
+        self.storage = storage
     def addUser(self, name, status, password, permissions):
         if name in self.db:
             return False
@@ -75,6 +85,30 @@ class UserDB:
         if self.db[name].password == password:
             return True
         return False
+    def store(self):
+        config = ConfigParser.SafeConfigParser()
+        content = StringIO()
+        for name in self.db:
+            config.add_section(name)
+            config.set(name, 'name', self.db[name].name)
+            config.set(name, 'status', self.db[name].status)
+            config.set(name, 'password', self.db[name].password)
+            permstr = ','.join('%s %s' % t for t in
+                               self.db[name].permissions.items())
+            config.set(name, 'permissions', permstr)
+        config.write(content)
+        self.storage.store(content.getvalue())
 
-
-
+    def load(self):
+        config = ConfigParser.SafeConfigParser()
+        content = StringIO(self.storage.content())
+        config.readfp(content)
+        # clear after we read the new config, better safe than sorry
+        self.db.clear()
+        for name in config.sections():
+            permissions = dict((perm.split(' ')[0],
+                                strtobool(perm.split(' ')[1]))
+                for perm in config.get(name, 'permissions').split(','))
+            self.addUser(config.get(name, 'name'), config.get(name,
+                                                              'status'),
+                         config.get(name, 'password'), permissions)
