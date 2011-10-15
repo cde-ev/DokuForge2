@@ -105,3 +105,56 @@ class Storage(object):
                 self.releaselock()
 
             
+    def endedit(self,version,newcontent,user=None,havelock=False):
+        """
+        Store new contents in a safe way.
+
+        Check if the version provided is still up to date. If so,
+        store it as new head revision. If not, store it to a branch,
+        merge with new head revision and return new version content pair.
+
+        @param version: the opaque version string optained from startedit
+                        when the user started editing the file
+        @param newcontent: the new content, produced by the user starting from
+                           the content at the provided version
+        @returns: a triple (ok,newversion,mergedcontent) where ok is boolen with value
+                  True if the save was sucessfull (if not, a merge has to be done manually),
+                  and (newversion,mergedcontent) is a state for further editing that can be
+                  used as if obtained from startedit
+        """
+        self.ensureexistence()
+        if not havelock:
+            self.getlock() 
+        try:
+            currentversion = self.status(havelock=True)
+            if currentversion == version:
+                self.store(newcontent, user=user, havelock=True)
+                newversion = self.status(havelock=True)
+                return True,newversion,newcontent
+            ## conflict
+            # 1.) store in a branch
+            subprocess.check_call(["co", "-f", "-q", "-l%s" % version,"%s/%s" % (self.path, self.filename)])
+            objfile = file("%s/%s" % (self.path,self.filename), mode="w")
+            objfile.write(newcontent)
+            objfile.close()
+            args=["ci","-f","-q","-u"]
+            args.append("-mstoring original edit conflictig with %s in a branch" % currentversion)
+            if user is not None:
+                args.append("-w%s" % user)
+            args.append
+            args.append("%s/%s" % (self.path, self.filename))
+            subprocess.check_call(args)
+            # 2.) merge in head
+            os.chmod("%s/%s" % (self.path, self.filename),0600)
+            subprocess.call(["rcsmerge", "-q", "-r%s" % version,
+                             "%s/%s" % (self.path, self.filename)]) # Note: non-zero exit status is OK!
+            objfile = file("%s/%s" % (self.path,self.filename), mode="r")
+            mergedcontent = objfile.read()
+            objfile.close()
+            os.unlink("%s/%s" % (self.path, self.filename))
+            # 3) return new state
+            return False,currentversion,mergedcontent
+        finally:
+            if not havelock:
+                self.releaselock()
+
