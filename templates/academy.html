@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block location%}
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin('df/') }}">Index</a> &gt; <a href="{{ basejoin('df/' + academy.name) }}">{{ academy.gettitle()|e}}</a>
+{% endblock %}
 {% block content %}
 {% set courses = academy.listCoursesLite() %}
 {% if courses %}

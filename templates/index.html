@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block location%}
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin('df/') }}">Index</a>
+{% endblock %}
 {% block content %}
 <ul>
 {% for academy in academies %}
