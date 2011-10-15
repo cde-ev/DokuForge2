@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<ul>
+{% for academy in academies %}
+<li><a href="{{ academy.name }}">{{ academy.gettitle()|e }}</a></li>
+{% else %}
+<li><em>Keine Akademien gefunden.</em></li>
+{% endfor %}
+</ul>
+{% endblock %}

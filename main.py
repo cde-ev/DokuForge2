@@ -6,8 +6,13 @@ import jinja2
 import random
 import os
 import sqlite3
+<<<<<<< HEAD
 import copy
 import re
+=======
+import urllib
+import wsgiref.util
+>>>>>>> b7c4da04dda4ba389b47ee558857f65ad4bcf487
 from wsgitools.applications import StaticContent, StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
@@ -110,6 +115,7 @@ class RequestState:
         self.emitted = False
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
+        self.request_uri = wsgiref.util.request_uri(environ)
 
     def parse_request(self):
         self.fieldstorage = FieldStorage(environ=self.environ,
@@ -147,6 +153,12 @@ class RequestState:
         params = dict(user=self.user)
         params.update(extraparams)
         return self.emit_content(template.render(params).encode("utf8"))
+
+    def emit_permredirect(self, location):
+        self.outheaders["Location"] = urllib.basejoin(self.request_uri, location)
+        self.outheaders["Content-Length"] = 0
+        self.emit("301 Moved Permanently")
+        return []
 
 app404 = StaticContent("404 File Not Found",
                        [("Content-type", "text/plain")],
@@ -197,6 +209,8 @@ class Application:
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
                           self.cookiehandler, self.userdb)
+        if not environ["PATH_INFO"]:
+            return rs.emit_permredirect(rs.request_uri + "/")
         if environ["PATH_INFO"] == "/login":
             return self.do_login(rs)
         if environ["PATH_INFO"] == "/logout":
