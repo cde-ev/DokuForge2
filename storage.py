@@ -68,3 +68,6 @@ class Storage(object):
             subprocess.call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
             self.releaselock()
         return subprocess.check_output(["rlog","-v","%s/%s" % (self.path, self.filename)]).split()[1]
+
+    def getcontents(self):
+        return subprocess.check_output(["co","-q","-p","%s/%s" % (self.path, self.filename)])
