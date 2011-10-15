@@ -4,7 +4,7 @@
 {% if courses %}
 <ol>
 	{% for course in courses %}
-	<li><a href="{{ basejoin(academy.name + '/' + course.name) }}">{{ course.gettitle()|e }}</a></li>
+	<li><a href="{{ basejoin("df/" + academy.name + '/' + course.name) }}">{{ course.gettitle()|e }}</a></li>
 	{% endfor %}
 </ol>
 {% else %}
