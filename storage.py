@@ -19,7 +19,8 @@ class Storage(object):
         Obtain a lock for this Storage object. This is usually done internaly
         by more productive funcitons. Manual intervention is only necessary,
         if several locks have to be obtained before an operation can be carried
-        out. Note that locks have to be obtained in lexicographic order.
+        out. Note that locks have to be obtained in lexicographic order by native
+        byte order (in particular captital letter before lower case letters).
 
         If a lock is obtained manually, the productive functions of this class
         have to be informed aboutthis by setting the named argument havelock to True.
