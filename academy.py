@@ -58,10 +58,21 @@ class Academy(AcademyLite):
     def setgroups(self, groups):
         """
         Set the groups of this academy to determine when to display it
+
+        @params groups: groups to set
+        @type groups: list of str
         """
         s=storage.Storage(self.path,"groups")
         s.store(' '.join(x for x in groups))
     def createCourse(self, name, title):
+        """
+        create a new course
+
+        @param name: internal name of the course
+        @param title: displayed name of the course
+        @type name: str (restricted char set)
+        @type title: str
+        """
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return False
         c = course.Course(os.path.join(self.path, name))
