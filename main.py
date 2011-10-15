@@ -155,7 +155,8 @@ class RequestState:
         return self.emit_content(template.render(params).encode("utf8"))
 
     def emit_permredirect(self, location):
-        self.outheaders["Location"] = urllib.basejoin(self.request_uri, location)
+        self.outheaders["Location"] = urllib.basejoin(self.request_uri,
+                                                      location)
         self.outheaders["Content-Length"] = 0
         self.emit("301 Moved Permanently")
         return []
@@ -200,11 +201,14 @@ class Application:
             return False
         os.makedirs(path)
         self.acadbstore.store(self.acadbstore.content() + '\n' + name + ' '
-        + path + '\n')
+                              + path + '\n')
         aca = academy.Academy(path)
         aca.settitle(title)
         aca.setgroups(groups)
 
+    def listAcademies(self):
+        return re.findall('^([^ ]*) ', self.acadbstore.content(),
+                          re.MULTILINE)
 
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
