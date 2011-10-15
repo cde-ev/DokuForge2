@@ -322,7 +322,12 @@ class Application:
             return rs.emit_app(app404)
         if not path_parts or  not path_parts[0]:
             return self.render_course(rs, academy, course)
-        raise AssertionError("fixme: continue")
+        action = path_parts.pop(0)
+        if action=="createpage":
+            course.newpage()
+            return self.render_course(rs, academy, course)
+        else:
+            raise AssertionError("fixme: continue")
 
     def render_start(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("start.html"))
