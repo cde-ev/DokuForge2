@@ -11,7 +11,7 @@
    <div id="header">
    Dokuforge
    {% if user is not none %}
-   <p>Hallo {{ user.name }}!</p>
+     <p>Hallo {{ user.name }}!</p>
      <p><form action="logout" method="post" id="logout">
 	  <input name="submit" value="Logout" type="submit">
 	</form>
@@ -22,6 +22,7 @@
    {% else %}
    <a href="./">Login</a>
    {% endif %}
+   <p>{% block location %}{% endblock %}</p>
    </div>
 {% endblock %}
 {% block content %}

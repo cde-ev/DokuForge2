@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block location%}
+<a href="{{ basejoin('') }}">Dokuforge</a>
+{% endblock %}
 {% block content %}
 <form action="login" method="post" id="login">
   <p>Nutzername: <input name="username" type="text"><p/>
