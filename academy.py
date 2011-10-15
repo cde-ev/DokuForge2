@@ -17,8 +17,7 @@ class AcademyLite:
             self.path = obj.path
         else:
             self.path = obj
-        self.courses = [course.Course(os.path.join(self.path, y)) for y in
-                        [x for x in os.listdir(self.path) if 'course' in x]]
+
     @property
     def name(self):
         return os.path.basename(self.path)
