@@ -64,5 +64,7 @@ class Storage(object):
 
     def status(self):
         if not os.path.exists("%s/%s,v" % (self.path,self.filename)):
-                subprocess.call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
+            self.getlock()
+            subprocess.call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
+            self.releaselock()
         return subprocess.check_output(["rlog","-v","%s/%s" % (self.path, self.filename)]).split()[1]
