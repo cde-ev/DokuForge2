@@ -251,7 +251,7 @@ class Application:
 
     def do_df(self, rs, path_parts):
         if not path_parts:
-            return self.render_start(rs)
+            return self.render_index(rs)
         # TODO: path_parts[0] is academy name
         raise AssertionError("fixme: continue")
 
@@ -263,8 +263,10 @@ class Application:
                                 dict(content="edit me"))
 
     def render_index(self, rs):
+        params = dict(
+            academies=map(academy.AcademyLite, self.listAcademies()))
         return rs.emit_template(self.jinjaenv.get_template("index.html"),
-                                dict(academies=[]))
+                                params)
 
     def render_academy(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("academy.html"),
