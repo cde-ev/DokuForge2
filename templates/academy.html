@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+{% if courses %}
+<ol>
+	{% for course in courses %}
+	<li><a href="{{ course.name }}">{{ course.gettitle()|e }}</a></li>
+	{% endfor %}
+</ol>
+{% else %}
+<em>Keine Kurse gefunden.</em>
+{% endif %}
+{% endblock %}
