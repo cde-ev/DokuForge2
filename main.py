@@ -161,11 +161,6 @@ class Application:
         if environ["PATH_INFO"] == "/login":
             return self.do_login(rs)
         rs.outheaders["Content-Type"] = "text/html; charset=utf8"
-        # toggle the login for example
-        if rs.username is None:
-            rs.login("foo")
-        else:
-            rs.logout()
         return self.render_start(rs)
 
     def do_login(self, rs):
