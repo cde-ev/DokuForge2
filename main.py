@@ -222,7 +222,10 @@ class Application:
         if not path_parts[0]:
             path_parts.pop(0)
         if not path_parts or not path_parts[0]:
-            return self.render_start(rs)
+            if rs.user:
+                return self.render_index(rs)
+            else:
+                return self.render_start(rs)
         if path_parts[0] == "df":
             path_parts.pop(0)
             return self.do_df(rs, path_parts)
