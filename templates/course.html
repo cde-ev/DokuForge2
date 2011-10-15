@@ -8,6 +8,7 @@
 		{% if pages.index(page) > 0 %}
 		<form action="moveup" method="post" id="moveup">
 		<input name="submit" value="Hochr&uuml;cken" type="submit">
+		<input name="number" value="{{ pages.index(page) }}" type="hidden"
 		</form>
 		{% endif %}
 	</li>
