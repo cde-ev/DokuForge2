@@ -126,6 +126,16 @@ class RequestState:
         self.emitted = True
         self.start_response(status, self.outheaders.items())
 
+    def emit_content(self, status, content):
+        self.outheaders["Content-Length"] = str(len(content))
+        self.emit(status)
+        return [content]
+
+    def emit_template(self, status, template):
+        self.outheaders["Content-Type"] = "text/html; charset=utf8"
+        params = dict(username=self.username)
+        return self.emit_content(status, template.render(params).encode("utf8"))
+
 class Application:
     def __init__(self):
         self.jinjaenv = jinja2.Environment(
@@ -147,10 +157,7 @@ class Application:
             rs.login("foo")
         else:
             rs.logout()
-        content = self.jinjaenv.get_template("start.html").render({}) \
-                  .encode("utf8")
-        rs.emit("200 OK")
-        return [content]
+        return self.render_start(rs)
 
     def do_login(self, rs):
         if rs.environ["REQUEST_METHOD"] != "POST":
@@ -170,6 +177,10 @@ class Application:
         rs.login(username)
         rs.emit("200 OK")
         return ["logged in"]
+
+    def render_start(self, rs):
+        return rs.emit_template("200 OK",
+                                self.jinjaenv.get_template("start.html"))
 
 def main():
     app = Application()

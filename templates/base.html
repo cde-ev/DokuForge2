@@ -10,9 +10,8 @@
 {% block header %}
    <div id="header">
    Dokuforge
-   {% if user_status == "logged-in" %}
-   Nutzer
-   {% else %}
+   {% if username is not none %}
+   Hallo {{ username }}!
    {% endif %}
    </div>
 {% endblock %}
