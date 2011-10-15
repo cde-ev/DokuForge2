@@ -326,6 +326,17 @@ class Application:
         if action=="createpage":
             course.newpage()
             return self.render_course(rs, academy, course)
+        elif action=="moveup":
+            if rs.environ["REQUEST_METHOD"] != "POST":
+                return rs.emit_app(app405)
+            rs.parse_request()
+            numberstr = rs.getfield("number")
+            try:
+                number = int(numberstr)
+            except KeyError:
+                number = 0
+            course.swappage(number)
+            return self.render_course(rs, academy, course)
         else:
             raise AssertionError("fixme: continue")
 
