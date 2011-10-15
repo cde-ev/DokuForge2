@@ -48,7 +48,7 @@ class Storage(object):
             self.getlock() 
         try:
             self.ensureexistence(havelock=True)
-            subprocess.call(["rcs","-q","-l","%s/%s" % (self.path, self.filename)])
+            subprocess.check_call(["rcs","-q","-l","%s/%s" % (self.path, self.filename)])
             objfile = file("%s/%s" % (self.path,self.filename), mode="w")
             objfile.write(content)
             objfile.close()
@@ -56,7 +56,7 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append("%s/%s" % (self.path, self.filename))
-            subprocess.call(args)
+            subprocess.check_call(args)
         finally:
             if not havelock:
                 self.releaselock()
@@ -66,7 +66,7 @@ class Storage(object):
             if not havelock:
                 self.getlock() 
                 try:
-                    subprocess.call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
+                    subprocess.check_call(["rcs","-q","-i","-t-created by store", "%s/%s" % (self.path, self.filename)])
                     objfile = file("%s/%s" % (self.path,self.filename), mode="w")
                     objfile.close()
                     subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit", 
