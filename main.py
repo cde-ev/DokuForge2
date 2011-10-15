@@ -95,6 +95,37 @@ app405 = StaticContent("405 Method Not Allowed",
                        [("Content-type", "text/plain")],
                        "405 Method Not Allowed", anymethod=True)
 
+class RequestState:
+    def __init__(self, environ, start_response, sessiondb, cookiehandler):
+        self.environ = environ
+        self.start_response = start_response
+        self.outheaders = {}
+        self.fieldstorage = None
+        self.sessionhandler = SessionHandler(sessiondb, cookiehandler, environ)
+        self.username = self.sessionhandler.get()
+        self.emitted = False
+
+    def parse_request(self):
+        self.fieldstorage = FieldStorage(environ=self.environ,
+                                         fp=self.environ["wsgi.input"])
+        return self.fieldstorage
+
+    def login(self, username):
+        self.username = username
+        self.outheaders.update(dict(self.sessionhandler.set(username)))
+
+    def logout(self):
+        self.username = None
+        self.outheaders.update(dict(self.sessionhandler.delete()))
+
+    def get_field(self, key):
+        return self.fieldstorage[key].value # raises KeyError
+
+    def emit(self, status):
+        assert not self.emitted
+        self.emitted = True
+        self.start_response(status, self.outheaders.items())
+
 class Application:
     def __init__(self):
         self.jinjaenv = jinja2.Environment(
@@ -106,44 +137,38 @@ class Application:
         self.sessiondb.commit()
 
     def __call__(self, environ, start_response):
-        print environ
+        rs = RequestState(environ, start_response, self.sessiondb,
+                          self.cookiehandler)
         if environ["PATH_INFO"] == "/login":
-            return self.do_login(environ, start_response)
-        fs = FieldStorage(environ=environ, fp=environ["wsgi.input"])
-        headers = {
-            "Content-Type": "text/html; charset=utf8"
-        }
+            return self.do_login(rs)
+        rs.outheaders["Content-Type"] = "text/html; charset=utf8"
+        # toggle the login for example
+        if rs.username is None:
+            rs.login("foo")
+        else:
+            rs.logout()
         content = self.jinjaenv.get_template("start.html").render({}) \
                   .encode("utf8")
-        sh = SessionHandler(self.sessiondb, self.cookiehandler, environ)
-        user = sh.get()
-        # toggle the login for example
-        if user is None:
-            headers.update(dict(sh.set("foo"))) # set cookie
-        else:
-            headers.update(dict(sh.delete()))
-        return StaticContent("200 OK",
-                             list(headers.items()),
-                             content)(environ, start_response)
+        rs.emit("200 OK")
+        return [content]
 
-    def do_login(self, environ, start_response):
-        if environ["REQUEST_METHOD"] != "POST":
-            return app405(environ, start_response)
-        fs = FieldStorage(environ=environ, fp=environ["wsgi.input"])
-        headers = {"Content-type": "text/html"}
+    def do_login(self, rs):
+        if rs.environ["REQUEST_METHOD"] != "POST":
+            return app405(rs.environ, rs.start_response)
+        rs.parse_request()
+        rs.outheaders["Content-Type"] = "text/plain"
         try:
-            username = fs["username"].value
-            password = fs["password"].value
-            fs["submit"] # just check for existence
+            username = rs.get_field("username")
+            password = rs.get_field("password")
+            rs.get_field("submit") # just check for existence
         except KeyError:
-            start_response("200 OK", headers.items())
+            rs.emit("200 OK")
             return ["missing form fields"]
         if username != password: # FIXME: silly pw check
-            start_response("200 OK", headers.items())
+            rs.emit("200 OK")
             return ["wrong password"]
-        sh = SessionHandler(self.sessiondb, self.cookiehandler, environ)
-        headers.update(dict(sh.set(username)))
-        start_response("200 OK", headers.items())
+        rs.login(username)
+        rs.emit("200 OK")
         return ["logged in"]
 
 def main():
