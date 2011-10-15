@@ -19,6 +19,10 @@ class CourseLite:
         except os.error:
             pass
 
+    @property
+    def name(self):
+        return os.path.basename(self.path)
+
     def gettitle(self):
         s=Storage(self.path,"title")
         return s.content()
