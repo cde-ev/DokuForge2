@@ -2,6 +2,16 @@ import os, errno
 import time
 import subprocess
 
+try:
+    check_output = subprocess.check_output
+except AttributeError:
+    def check_output(cmdline):
+        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
+        output, _ = proc.communicate()
+        if proc.returncode:
+            raise subprocess.CalledProcessError()
+        return output
+
 class Storage(object):
     def __init__(self,path,filename):
         """
@@ -85,13 +95,11 @@ class Storage(object):
 
     def status(self,havelock=False):
         self.ensureexistence(havelock=havelock)
-        return subprocess.check_output(["rlog", "-v", self.fullpath()]) \
-                .split()[1]
+        return check_output(["rlog", "-v", self.fullpath()]).split()[1]
 
     def content(self, havelock=False):
         self.ensureexistence(havelock=havelock)
-        return subprocess.check_output(["co", "-q", "-p", "-kb",
-                                        self.fullpath()])
+        return check_output(["co", "-q", "-p", "-kb", self.fullpath()])
 
     def startedit(self,havelock=False):
         """
