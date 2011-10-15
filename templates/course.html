@@ -4,10 +4,19 @@
 {% if pages %}
 <ol>
 	{% for page in pages %}
-	<li><a href="{{ basejoin("df/" + academy.name + '/' + course.name + '/' + page) }}">Seite {{ page }}</a></li>
+	<li><a href="{{ basejoin("df/" + academy.name + '/' + course.name + '/' + page) }}">Seite {{ page }}</a>
+		{% if pages.index(page) > 0 %}
+		<form action="moveup" method="post" id="moveup">
+		<input name="submit" value="Hochr&uuml;cken" type="submit">
+		</form>
+		{% endif %}
+	</li>
 	{% endfor %}
 </ol>
 {% else %}
-<em>Keine Seiten gefunden gefunden.</em>
+<em>Keine Seiten gefunden gefunden.
 {% endif %}
+<form action="createpage" method="post" id="createpage">
+      <input name="submit" value="Eine Seite anlegen" type="submit">
+</form>
 {% endblock %}
