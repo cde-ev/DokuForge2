@@ -114,6 +114,9 @@ class RequestState:
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.request_uri = wsgiref.util.request_uri(environ)
+        self.application_uri = wsgiref.util.application_uri(environ)
+        if not self.application_uri.endswith("/"):
+            self.application_uri += "/"
 
     def parse_request(self):
         self.fieldstorage = FieldStorage(environ=self.environ,
@@ -148,7 +151,10 @@ class RequestState:
 
     def emit_template(self, template, extraparams=dict()):
         self.outheaders["Content-Type"] = "text/html; charset=utf8"
-        params = dict(user=self.user)
+        params = dict(
+            user=self.user,
+            basejoin = lambda tail: urllib.basejoin(self.application_uri, tail)
+        )
         params.update(extraparams)
         return self.emit_content(template.render(params).encode("utf8"))
 
