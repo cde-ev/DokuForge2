@@ -80,6 +80,46 @@ class Course:
         page = Storage(self.path,"page%d" % number)
         return page.content()
 
+    def delpage(self,number):
+        """
+        Delete a page
+
+        @param number: the internal page number
+        """
+        indexstore = Storage(self.path,"Index")
+        indexstore.getlock()
+        try:
+            index = indexstore.content(havelock=True)
+            lines = index.split('\n')
+            lines.pop()
+            newlines = []
+            for line in lines:
+                if int(line.split()[0])!=number:
+                    newlines.append(line)
+            newindex="\n".join(newlines) + "\n"
+            indexstore.store(newindex,havelock=True)
+        finally:
+            indexstore.releaselock()
+
+    def swappages(self,position):
+        """
+        the page at the given current position with its predecessor
+        """
+        indexstore = Storage(self.path,"Index")
+        indexstore.getlock()
+        try:
+            index = indexstore.content(havelock=True)
+            lines = index.split('\n')
+            lines.pop()
+            if position<len and position>0:
+                tmp =lines[position-1]
+                lines[position-1]=lines[position]
+                lines[position]=tmp
+            newindex="\n".join(lines) + "\n"
+            indexstore.store(newindex,havelock=True)
+        finally:
+            indexstore.releaselock()
+        
     def editpage(self,number):
         """
         Start editing a page; 
