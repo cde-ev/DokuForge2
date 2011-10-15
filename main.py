@@ -260,6 +260,14 @@ class Application:
         return rs.emit_template(self.jinjaenv.get_template("edit.html"),
                                 dict(content="edit me"))
 
+    def render_index(self, rs):
+        return rs.emit_template(self.jinjaenv.get_template("index.html"),
+                                dict(academies=[]))
+
+    def render_academy(self, rs):
+        return rs.emit_template(self.jinjaenv.get_template("academy.html"),
+                                dict(courses=[]))
+
 def main():
     userdbstore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(userdbstore)
