@@ -70,3 +70,29 @@ class Course:
         lines = index.split('\n')
         lines.pop()
         return [int(line.split()[0]) for line in lines]
+
+    def editpage(self,number):
+        """
+        Start editing a page; 
+
+        @param number: the internal page number
+        @returns a pair of an opaque version string and the contents of this page
+        """
+        page = Storage(self.path,"page%d" % number)
+        return page.startedit()
+
+    def savepage(self,number,version, newcontent,user=None):
+        """
+        Finish editing a page
+
+        @param number: the internal page number
+        @param version: the opaque version string, as obtained from edit page
+        @param newcontent: the new content of the page, based on editing the said version
+        @param user: the df-login name of the user to carried out the edit
+
+        @returns: a triple (ok,newversion,mergedcontent) where ok is a boolean indicating
+                  whether no confilct has occured and (newversion,mergedcontent) a pair
+                  for further editing that can be  handled as if obtained from editpage
+        """
+        page = Storage(self.path,"page%d" % number)
+        page.endedit(version,newcontent,user=user)
