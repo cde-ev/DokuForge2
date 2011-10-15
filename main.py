@@ -204,9 +204,9 @@ class Application:
         aca.setgroups(groups)
 
     def listAcademies(self):
-        return [getAcademy(x) for x in
-                re.findall('^([^ ]*) ', self.acadbstore.content(),
-                           re.MULTILINE)]
+        return map(self.getAcademy,
+                   re.findall('^([^ ]*) ', self.acadbstore.content(),
+                              re.MULTILINE))
 
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
