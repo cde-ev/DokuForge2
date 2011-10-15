@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+{% if user is none %}
 <form action="login" method="post" id="login">
   <p>Nutzername: <input name="username" type="text"><p/>
   <p>Passwort: <input name="password" type="password"><p/>
-  <p><input name="submit" value="einloggen" type="submit"><p/>
+  <p><input name="submit" value="Login" type="submit"><p/>
 <form/>
+{% endif %}
 {% endblock %}

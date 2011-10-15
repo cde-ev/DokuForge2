@@ -12,9 +12,13 @@
    Dokuforge
    {% if user is not none %}
    <p>Hallo {{ user.name }}!<p/>
-     {% if user.hasPermission("df_useradmin") %}
-     <p><a href="./useradmin.html">Nutzeradministration<a/><p/>
-     {% endif %}
+     <p><form action="logout" method="post" id="logout">
+	  <input name="submit" value="Logout" type="submit">
+	<form/>
+	{% if user.hasPermission("df_useradmin") %}
+	<a href="./useradmin.html">Nutzeradministration<a/>
+	{% endif %}
+     <p/>
    {% else %}
    <a href="./">Login</a>
    {% endif %}
