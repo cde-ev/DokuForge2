@@ -82,3 +82,26 @@ class Storage(object):
     def content(self, havelock=False):
         self.ensureexistence(havelock=havelock)
         return subprocess.check_output(["co","-q","-p","%s/%s" % (self.path, self.filename)])
+
+    def startedit(self,havelock=False):
+        """
+        start editing a file (optimistic synchronisation)
+
+        At dokuforge 2 we try optimistic synchronisation, i.e., we log (noch lock)
+        the version at which a user started editing and at the end just verify if
+        that version is still the head revision.
+
+        @returns: an opaque version string and the contents of the file
+        """
+        self.ensureexistence()
+        if not havelock:
+            self.getlock() 
+        try:
+            status=self.status(havelock=True)
+            content=self.content(havelock=True)
+            return status, content
+        finally:
+            if not havelock:
+                self.releaselock()
+
+            
