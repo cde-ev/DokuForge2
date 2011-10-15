@@ -15,6 +15,8 @@ class AcademyLite:
 
     def __init__(self, obj):
         """
+        @param obj: either a path or an Academy object
+        @type obj: str or Academy object or AcademyLite object
         """
         if isinstance(obj, AcademyLite):
             self.path = obj.path
@@ -23,17 +25,33 @@ class AcademyLite:
 
     @property
     def name(self):
+        """
+        internal name of academy
+        """
         return os.path.basename(self.path)
 
     def gettitle(self):
+        """
+        loads the current title from disk
+
+        @returns: str, the display name of this academy
+        """
         s=storage.Storage(self.path,"title")
         return s.content()
 
     def getgroups(self):
+        """
+        loads the current groups from disk
+
+        @returns: list of str, the groups of which this academy is a member
+        """
         s=storage.Storage(self.path,"groups")
         return s.content().split(' ')
 
     def listCoursesLite(self):
+        """
+        @returns: list of CourseLite object; all courses of this academy
+        """
         candidates = os.listdir(self.path)
         final = copy.deepcopy(candidates)
         for x in candidates:
@@ -41,7 +59,14 @@ class AcademyLite:
                 final.remove(x)
         return [course.CourseLite(os.path.join(self.path, x)) for x in final]
 
-    def getCourseLite(self,coursename):
+    def getCourseLite(self, coursename):
+        """
+        find a course of this academy to a given name
+
+        @param coursename: internal name of course
+        @type coursename: str (restricted char-set)
+        @returns: CourseLite object for course with name coursename
+        """
         if re.match('^[-a-zA-Z0-9]{1,200}$', coursename) is None:
             return None
         finalpath = os.path.join(self.path,coursename)
