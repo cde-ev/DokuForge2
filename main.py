@@ -91,6 +91,10 @@ class SessionHandler:
         self.db.commit()
         return [self.cookiehandler.delete()]
 
+app405 = StaticContent("405 Method Not Allowed",
+                       [("Content-type", "text/plain")],
+                       "405 Method Not Allowed", anymethod=True)
+
 class Application:
     def __init__(self):
         self.jinjaenv = jinja2.Environment(
@@ -102,11 +106,14 @@ class Application:
         self.sessiondb.commit()
 
     def __call__(self, environ, start_response):
+        print environ
+        if environ["PATH_INFO"] == "/login":
+            return self.do_login(environ, start_response)
         fs = FieldStorage(environ=environ, fp=environ["wsgi.input"])
         headers = {
             "Content-Type": "text/html; charset=utf8"
         }
-        content = self.jinjaenv.get_template("base.html").render({}) \
+        content = self.jinjaenv.get_template("start.html").render({}) \
                   .encode("utf8")
         sh = SessionHandler(self.sessiondb, self.cookiehandler, environ)
         user = sh.get()
@@ -118,6 +125,26 @@ class Application:
         return StaticContent("200 OK",
                              list(headers.items()),
                              content)(environ, start_response)
+
+    def do_login(self, environ, start_response):
+        if environ["REQUEST_METHOD"] != "POST":
+            return app405(environ, start_response)
+        fs = FieldStorage(environ=environ, fp=environ["wsgi.input"])
+        headers = {"Content-type": "text/html"}
+        try:
+            username = fs["username"].value
+            password = fs["password"].value
+            fs["submit"] # just check for existence
+        except KeyError:
+            start_response("200 OK", headers.items())
+            return ["missing form fields"]
+        if username != password: # FIXME: silly pw check
+            start_response("200 OK", headers.items())
+            return ["wrong password"]
+        sh = SessionHandler(self.sessiondb, self.cookiehandler, environ)
+        headers.update(dict(sh.set(username)))
+        start_response("200 OK", headers.items())
+        return ["logged in"]
 
 def main():
     app = Application()
