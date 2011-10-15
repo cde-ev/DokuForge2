@@ -184,8 +184,9 @@ class Application:
                                 self.jinjaenv.get_template("start.html"))
 
 def main():
-    userdbstore = storage.Storage('.', 'userdb')
+    userdbstore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(userdbstore)
+    userdb.load()
     app = Application(userdb)
     app = TracebackMiddleware(app)
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
