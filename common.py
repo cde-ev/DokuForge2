@@ -1,3 +1,8 @@
+import random
+import string
+
+sysrand = random.SystemRandom()
+
 def randstring(n=6):
     """
     @returns: random string of length n
