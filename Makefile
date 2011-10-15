@@ -2,7 +2,7 @@
 all: doc
 
 doc:
-	epydoc *.py
+	epydoc --config epydoc.conf
 
 clean:
 	rm -rf html
