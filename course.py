@@ -1,6 +1,18 @@
 import os
 from storage import Storage
 
+import subprocess
+try:
+    check_output = subprocess.check_output
+except AttributeError:
+    def check_output(cmdline):
+        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
+        output, _ = proc.communicate()
+        if proc.returncode:
+            raise subprocess.CalledProcessError()
+        return output
+
+
 class CourseLite:
     """
     Backend for viewing the file structres related to a course
@@ -96,6 +108,12 @@ class Course(CourseLite):
                 pass
         CourseLite.__init__(self, obj)
 
+    def export(self):
+        """
+        return a tar ball containing the full internal information about this course
+        """
+        return check_output(["tar","cvf","-",self.path])
+    
     def settitle(self,title):
         """
         Set the title of this course
