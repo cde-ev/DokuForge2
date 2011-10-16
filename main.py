@@ -345,7 +345,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
-        ok, version, content = self.userdb.storage.endedit(userversion, usercontent)
+        ok, version, content = self.userdb.storage.endedit(userversion, usercontent, user=rs.user.name)
         self.userdb.load()
         return self.render_admin(rs, version, content, ok=ok)
 
