@@ -20,7 +20,7 @@
    Dokuforge
    {% if user is not none %}
      <p>Hallo {{ user.name }}!</p>
-     <p>{{ button("logout", "Logout")}}
+     <p>{{ button("!logout", "Logout")}}
 	{% if user.hasPermission("df_useradmin") %}
 	<a href="{{ basejoin("useradmin") }}">Nutzeradministration</a>
 	{% endif %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block location%}
-Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin('df/' + academy.name) }}">{{ academy.gettitle()|e}}</a>
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin(academy.name) }}">{{ academy.gettitle()|e}}</a>
 {% endblock %}
 {% block content %}
 {% set courses = academy.listCoursesLite() %}
@@ -8,7 +8,7 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 <ol>
 	{% for course in courses %}
 	    {% if user.allowedRead(academy, course) %}
-	    <li><a href="{{ basejoin("df/" + academy.name + '/' + course.name) }}">{{ course.gettitle()|e }}</a></li>
+	    <li><a href="{{ basejoin(academy.name + '/' + course.name + '/') }}">{{ course.gettitle()|e }}</a></li>
 	    {% else %}
 	    <li>{{ course.gettitle()|e }}</li>
 	    {% endif %}
@@ -18,6 +18,6 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 <em>Keine Kurse gefunden.</em>
 {% endif %}
 {% if user.mayExport(academy)%}
-{{ button("df/" + academy.name + "?export", "Exportieren") }}
+{{ button(academy.name + "!export", "Exportieren") }}
 {% endif%}
 {% endblock %}

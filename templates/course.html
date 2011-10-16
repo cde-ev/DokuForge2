@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% block location%}
-Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin('df/' + academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin('df/' + academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a>
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin(academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin(academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a>
 {% endblock %}
 {% block content %}
 {% set pages = course.listpages() %}
 {% if pages %}
 <ol>
 	{% for page in pages %}
-	<li><a href="{{ basejoin("df/" + academy.name + '/' + course.name
-		+ '/' + page|string) }}">{{ pages.index(page) + 1 }}. Seite (#{{ page }})</a>
+	<li><a href="{{ basejoin(academy.name + '/' + course.name
+		+ '/' + page|string + '/') }}">{{ pages.index(page) + 1 }}. Seite (#{{ page }})</a>
 		{% if pages.index(page) > 0 %}
 		   {% if user.allowedWrite(academy, course) %}
-		      {{ button("df/" + academy.name + "/" + course.name + "/moveup", "Hochrücken",
+		      {{ button(academy.name + "/" + course.name + "/!moveup", "Hochrücken",
 	              	 dict(number=pages.index(page))) }}
 		   {% endif %}
 		{% endif %}
@@ -22,9 +22,9 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 <em>Keine Seiten gefunden gefunden.</em>
 {% endif %}
 {% if user.allowedWrite(academy, course) %}
-{{ button("df/" + academy.name + "/" + course.name + "/createpage", "Eine Seite anlegen") }}
+{{ button(academy.name + "/" + course.name + "/!createpage", "Eine Seite anlegen") }}
 {% endif %}
 {% if user.mayExport(academy) %}
-{{ button("df/" + academy.name + "/" + course.name + "?raw", "Roh-Export") }}
+<a href="{{ basejoin(academy.name + "/" . course.name + "/!raw") }}">Roh-Export</a>
 {% endif %}
 {% endblock %}

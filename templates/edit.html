@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block location%}
-Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin('df/' + academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin('df/' + academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a> &gt; <a href="{{ basejoin('df/' + academy.name + '/' + course.name + '/' + page|string) }}">Seite #{{ page|string }} </a> &gt; Editieren</a>
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin(academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin(academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a> &gt; <a href="{{ basejoin(academy.name + '/' + course.name + '/' + page|string) }}">Seite #{{ page|string }} </a> &gt; Editieren</a>
 {% endblock %}
 {% block content %}
 
@@ -14,12 +14,12 @@ Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
 {% endif %}
 
 Seite #{{page}}
-<form action="save" method="post" id="saveedit">
+<form action="!save" method="post" id="saveedit">
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 	<input type="submit" name="saveshow" value="Speichern und Beenden">
 </form>
-<a href="{{basejoin('df/' + academy.name + '/' + course.name + '/' + page|string)}}">Abbrechen</a>
+<a href="{{basejoin(academy.name + '/' + course.name + '/' + page|string + '/')}}">Abbrechen</a>
 {% endblock %}

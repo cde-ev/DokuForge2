@@ -152,29 +152,29 @@ class Application:
         self.routingmap = werkzeug.routing.Map([
             werkzeug.routing.Rule("/", methods=("GET", "HEAD"),
                                   endpoint=self.do_start),
-            werkzeug.routing.Rule("/login", methods=("POST",),
+            werkzeug.routing.Rule("/!login", methods=("POST",),
                                   endpoint=self.do_login),
-            werkzeug.routing.Rule("/logout", methods=("POST",),
+            werkzeug.routing.Rule("/!logout", methods=("POST",),
                                   endpoint=self.do_logout),
-            werkzeug.routing.Rule("/df/", methods=("GET", "HEAD"),
+            werkzeug.routing.Rule("/", methods=("GET", "HEAD"),
                                   endpoint=self.do_index),
-            werkzeug.routing.Rule("/df/<academy>/", methods=("GET", "HEAD"),
+            werkzeug.routing.Rule("/<academy>/", methods=("GET", "HEAD"),
                                   endpoint=self.do_academy),
-            werkzeug.routing.Rule("/df/<academy>/<course>/",
+            werkzeug.routing.Rule("/<academy>/<course>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_course),
-            werkzeug.routing.Rule("/df/<academy>/<course>/createpage",
+            werkzeug.routing.Rule("/<academy>/<course>/createpage",
                                   methods=("POST",),
                                   endpoint=self.do_createpage),
-            werkzeug.routing.Rule("/df/<academy>/<course>/moveup",
+            werkzeug.routing.Rule("/<academy>/<course>/!moveup",
                                   methods=("POST",), endpoint=self.do_moveup),
-            werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>",
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_page),
-            werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>/edit",
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!edit",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_edit),
-            werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>/save",
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!save",
                                   methods=("POST",), endpoint=self.do_save),
         ])
 
@@ -222,8 +222,7 @@ class Application:
     def do_start(self, rs):
         if rs.user is None:
             return self.render_start(rs)
-        return TemporaryRequestRedirect(
-            urllib.basejoin(rs.application_uri, "df/"))
+        return self.render_index(rs)
 
     def do_login(self, rs):
         rs.response.headers.content_type = "text/plain"
