@@ -127,10 +127,6 @@ class RequestState:
         return werkzeug.utils.redirect(
             urllib.basejoin(self.application_uri, location), 307)
 
-resp403 = Response("403 Forbidden", status="403 Forbidden")
-resp404 = Response("404 File Not Found", status="404 File Not Found")
-resp405 = Response("405 Method Not Allowed", status="405 Method Not Allowed")
-
 class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
                                werkzeug.routing.RoutingException):
     code = 307
@@ -256,9 +252,9 @@ class Application:
         aca = self.getAcademy(academy.encode("utf8"))
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
-            return resp404
+            raise werkzeug.exceptions.NotFound()
         if not rs.user.allowedRead(aca.name, c.name):
-            return resp403
+            raise werkzeug.exceptions.Forbidden()
         return self.render_course(rs, aca, c)
 
     def do_createpage(self, rs, academy=None, course=None):
@@ -267,11 +263,11 @@ class Application:
         aca = self.getAcademy(academy.encode("utf8"))
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
-            return resp404
+            return werkzeug.exceptions.NotFound()
         if not rs.user.allowedRead(aca.name, c.name):
-            return resp403
+            return werkzeug.exceptions.Forbidden()
         if not rs.user.allowedWrite(aca.name, c.name):
-            return resp403
+            return werkzeug.exceptions.Forbidden()
         c.newpage(user=rs.user.name)
         return self.render_course(rs, aca, c)
 
@@ -281,11 +277,11 @@ class Application:
         aca = self.getAcademy(academy.encode("utf8"))
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
-            return resp404
+            return werkzeug.exceptions.NotFound()
         if not rs.user.allowedRead(aca.name, c.name):
-            return resp403
+            return werkzeug.exceptions.Forbidden()
         if not rs.user.allowedWrite(aca.name, c.name):
-            return resp403
+            return werkzeug.exceptions.Forbidden()
         numberstr = rs.request.form["number"]
         try:
             number = int(numberstr)
@@ -300,9 +296,9 @@ class Application:
         aca = self.getAcademy(academy.encode("utf8"))
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
-            return resp404
+            return werkzeug.exceptions.NotFound()
         if not rs.user.allowedRead(aca.name, c.name):
-            return resp403
+            return werkzeug.exceptions.Forbidden()
         return self.render_show(rs, aca, c, page)
 
     def do_edit(self, rs, academy = None, course = None, page = None):
@@ -311,11 +307,11 @@ class Application:
         aca = self.getAcademy(academy.encode("utf8"))
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
-            return resp404
+            return werkzeug.exceptions.NotFound()
         if not rs.user.allowedRead(aca.name, c.name):
-            return resp403
+            return werkzeug.exceptions.Forbidden()
         if not rs.user.allowedWrite(aca.name, c.name):
-            return resp403
+            return werkzeug.exceptions.Forbidden()
         version, content = c.editpage(page)
         return self.render_edit(rs, aca, c, page, version, content)
 
@@ -325,11 +321,11 @@ class Application:
         aca = self.getAcademy(academy.encode("utf8"))
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
-            return resp404
+            return werkzeug.exceptions.NotFound()
         if not rs.user.allowedRead(aca.name, c.name):
-            return resp403
+            return werkzeug.exceptions.Forbidden()
         if not rs.user.allowedWrite(aca.name, c.name):
-            return resp403
+            return werkzeug.exceptions.Forbidden()
 
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
