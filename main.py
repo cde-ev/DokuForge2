@@ -308,19 +308,20 @@ class Application:
         return self.render_start(rs)
 
     def do_df(self, rs, path_parts):
+        path_parts = filter(None, path_parts)
         if not rs.user:
             return rs.emit_tempredirect("")
-        if not path_parts or not path_parts[0]:
+        if not path_parts:
             return self.render_index(rs)
         academy = self.getAcademy(path_parts.pop(0))
         if academy is None:
             return rs.emit_app(app404)
-        if not path_parts or not path_parts[0]:
+        if not path_parts:
             return self.render_academy(rs, academy)
         course = academy.getCourse(path_parts.pop(0))
         if course is None:
             return rs.emit_app(app404)
-        if not path_parts or  not path_parts[0]:
+        if not path_parts:
             return self.render_course(rs, academy, course)
         action = path_parts.pop(0)
         if action=="createpage":
