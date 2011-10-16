@@ -335,15 +335,16 @@ class Application:
         if not path_parts:
             return self.render_course(rs, academy, course)
         action = path_parts.pop(0)
-        # fixme action == "show" should be allowed without write permission
-        if not rs.user.allowedWrite(academy.name, course.name):
-            return rs.emit_app(app403)
         if action=="createpage":
+            if not rs.user.allowedWrite(academy.name, course.name):
+                return rs.emit_app(app403)
             if rs.environ["REQUEST_METHOD"] != "POST":
                 return rs.emit_app(app405)
             course.newpage(user=rs.user.name)
             return self.render_course(rs, academy, course)
         elif action=="moveup":
+            if not rs.user.allowedWrite(academy.name, course.name):
+                return rs.emit_app(app403)
             if rs.environ["REQUEST_METHOD"] != "POST":
                 return rs.emit_app(app405)
             rs.parse_request()
