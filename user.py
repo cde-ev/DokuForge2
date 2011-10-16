@@ -61,9 +61,9 @@ class User:
 
     def allowedWrite(self, acaname, coursename = None):
         if coursename is None:
-            return self.hasPermission("akademie_write_%s" % acaname):
+            return self.hasPermission("akademie_write_%s" % acaname)
         else:
-            return self.hasPermission("akademie_write_%s_%s" % (acaname, coursename)):
+            return self.hasPermission("akademie_write_%s_%s" % (acaname, coursename))
 
 
 
