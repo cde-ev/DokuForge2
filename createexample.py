@@ -50,7 +50,7 @@ if __name__ == "__main__":
     app = Application(userdb, './df/')
     aca = createaca("za2011-1", "Beste Akademie ever", ["cde"],
                     [('course01',"Internethumor und seine Schuld am Weltuntergang", 3),
-                     ('course02', "Helenistische Heldenideale", 2)]
+                     ('course02', "Helenistische Heldenideale", 2)])
     (version, cont) = aca.getCourse('course01').editpage(0)
     aca.getCourse('course01').savepage(0, version, """[Example Section]
 This is an example with some nice math: $e^{i\pi}+1=0$.
@@ -58,9 +58,9 @@ This is an example with some nice math: $e^{i\pi}+1=0$.
     aca = createaca("ya2011-1", "Why? Akademie", ["qed", "cde"],
                     [('course01',"Kursqualitaet und ihre Kontrolle", 2),
                      ('course02',"Die Hedonistische Internationale", 3),
-                     ('course03', "Orgateams und ihre Geschichte", 4)]
+                     ('course03', "Orgateams und ihre Geschichte", 4)])
 
     aca = createaca("xa2011-1", "X-Akademie", ["qed"],
                     [('course01',"Area51", 2),
                      ('course02',"Fox Mulders Biographie", 3),
-                     ('course03', "Selbstverteidigung gegen Poltergeister", 4)]
+                     ('course03', "Selbstverteidigung gegen Poltergeister", 4)])
