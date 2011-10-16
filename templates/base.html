@@ -21,8 +21,8 @@
    {% if user is not none %}
      <p>Hallo {{ user.name }}!</p>
      <p>{{ button("!logout", "Logout")}}
-	{% if user.hasPermission("df_useradmin") %}
-	<a href="{{ basejoin("useradmin") }}">Nutzeradministration</a>
+	{% if user.isAdmin() %}
+	<a href="{{ basejoin("!admin") }}">Administration</a>
 	{% endif %}
      </p>
    {% else %}

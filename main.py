@@ -158,12 +158,16 @@ class Application:
                                   endpoint=self.do_logout),
             werkzeug.routing.Rule("/", methods=("GET", "HEAD"),
                                   endpoint=self.do_index),
+            werkzeug.routing.Rule("/!admin", methods=("GET", "HEAD"),
+                                  endpoint=self.do_admin),
+            werkzeug.routing.Rule("/!admin", methods=("POST",),
+                                  endpoint=self.do_adminsave),
             werkzeug.routing.Rule("/<academy>/", methods=("GET", "HEAD"),
                                   endpoint=self.do_academy),
             werkzeug.routing.Rule("/<academy>/<course>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_course),
-            werkzeug.routing.Rule("/<academy>/<course>/createpage",
+            werkzeug.routing.Rule("/<academy>/<course>/!createpage",
                                   methods=("POST",),
                                   endpoint=self.do_createpage),
             werkzeug.routing.Rule("/<academy>/<course>/!moveup",
@@ -347,7 +351,7 @@ class Application:
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        version, content = userdb.startedit()
+        version, content = self.userdb.storage.startedit()
         return self.render_admin(rs, version, content)
 
     def do_adminsave(self, rs):
@@ -356,7 +360,8 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
-        ok, version, content = userdb.endedit(userdb, userversion, usercontent)
+        ok, version, content = self.userdb.storage.endedit(userversion, usercontent)
+        self.userdb.load()
         return self.render_admin(rs, version, content, ok=ok)
 
     def render_start(self, rs):
