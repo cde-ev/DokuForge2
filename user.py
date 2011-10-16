@@ -108,11 +108,11 @@ class UserDB:
         @type passwordn: str
         @returns: True if name and password match an existing user, False otherwise
         """
-        if not name in self.db:
+        try:
+            return self.db[name].password == password
+        except KeyError:
             return False
-        if self.db[name].password == password:
-            return True
-        return False
+
     def store(self):
         config = ConfigParser.SafeConfigParser()
         content = StringIO()
