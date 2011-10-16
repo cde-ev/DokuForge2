@@ -333,7 +333,7 @@ class Application:
                 return resp403
             version, content = course.editpage(page)
             return self.render_edit(rs, academy, course, page, version, content)
-        elif action=="save":
+        elif action=="saveedit":
             if not rs.user.allowedWrite(academy.name, course.name):
                 return resp403
             userversion = rs.request.form["revisionstartedwith"]
@@ -341,6 +341,17 @@ class Application:
 
             ok, version, content = course.savepage(page,userversion,usercontent)
             return self.render_edit(rs, academy, course, page, version, content, ok=ok)
+        elif action="saveshow":
+            if not rs.user.allowedWrite(academy.name, course.name):
+                return resp403
+            userversion = rs.request.form["revisionstartedwith"]
+            usercontent = rs.request.form["content"]
+                
+            ok, version, content = course.savepage(page,userversion,usercontent)
+            if not ok:
+                return self.render_edit(rs, academy, course, page, version, content, ok=ok)
+            
+            return self.render_show(rs, academy, course, page, saved=True)
             
             
         else:
@@ -377,12 +388,13 @@ class Application:
         return rs.emit_template(self.jinjaenv.get_template("course.html"),
                                 params)
 
-    def render_show(self, rs, theacademy, thecourse,thepage):
+    def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage,
-            content=thecourse.showpage(thepage))
+            content=thecourse.showpage(thepage),
+            saved=saved)
         return rs.emit_template(self.jinjaenv.get_template("show.html"),
                                 params)
 
