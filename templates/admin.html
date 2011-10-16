@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block location%}
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin('admin/') }}">Administration</a>
+{% endblock %}
+{% block content %}
+
+{% if ok is none %}
+Bitte Text eingeben und mit &quot;Speichern&quot; beenden.
+{% elif ok %}
+Aenderungen erfolgreich gespeichert.
+{% else %}
+<span class=important>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</span>
+Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
+{% endif %}
+
+<form action="!save" method="post" id="save">
+	<textarea name="content">{{ content|e }}</textarea>
+	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
+	<input type="hidden" name="contentreceived" value="true">
+	<input type="submit" name="saveedit" value="Speichern und Editieren">
+</form>
+<a href="{{ basejoin('admin/') }}">Abbrechen</a>
+{% endblock %}
