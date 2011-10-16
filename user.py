@@ -68,7 +68,7 @@ class User:
     def mayExport(self, acaname):
         if not self.allowedRead(acaname):
             return False
-        return self.hasPermission("df_export"):
+        return self.hasPermission("df_export")
 
 
 
