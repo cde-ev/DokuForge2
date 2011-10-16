@@ -36,8 +36,7 @@ class AcademyLite:
 
         @returns: str, the display name of this academy
         """
-        s=storage.Storage(self.path,"title")
-        return s.content()
+        return storage.Storage(self.path, "title").content()
 
     def getgroups(self):
         """
@@ -45,19 +44,17 @@ class AcademyLite:
 
         @returns: list of str, the groups of which this academy is a member
         """
-        s=storage.Storage(self.path,"groups")
-        return s.content().split(' ')
+        return storage.Storage(self.path, "groups").content().split()
 
     def listCoursesLite(self):
         """
         @returns: list of CourseLite object; all courses of this academy
         """
-        candidates = os.listdir(self.path)
-        final = copy.deepcopy(candidates)
-        for x in candidates:
-            if not os.path.isdir(os.path.join(self.path, x)):
-                final.remove(x)
-        return [course.CourseLite(os.path.join(self.path, x)) for x in final]
+        ret = (os.path.join(self.path, entry)
+               for entry in os.listdir(self.path))
+        ret = filter(os.path.isdir, ret)
+        ret = map(course.CourseLite, ret)
+        return list(ret)
 
     def getCourseLite(self, coursename):
         """
@@ -100,8 +97,7 @@ class Academy(AcademyLite):
         @param title: display name of the academy
         @type title: str
         """
-        s=storage.Storage(self.path,"title")
-        s.store(title)
+        storage.Storage(self.path,"title").store(title)
 
     def setgroups(self, groups):
         """
@@ -110,8 +106,7 @@ class Academy(AcademyLite):
         @param groups: groups to set
         @type groups: list of str
         """
-        s=storage.Storage(self.path,"groups")
-        s.store(' '.join(x for x in groups))
+        storage.Storage(self.path, "groups").store(' '.join(groups))
 
     def createCourse(self, name, title):
         """
@@ -124,8 +119,7 @@ class Academy(AcademyLite):
         """
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return False
-        c = course.Course(os.path.join(self.path, name))
-        c.settitle(title)
+        course.Course(os.path.join(self.path, name)).settitle(title)
 
     def listCourses(self):
         """
