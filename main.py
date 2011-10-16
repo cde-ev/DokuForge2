@@ -43,7 +43,8 @@ class SessionHandler:
         """
         @param db: a DBAPI2 database that has a sessions table as described
                 in the create_table class variable
-        @type environ: dict
+        @type request: werkzeug.wrappers.Request
+        @type response: werkzeug.wrappers.Response
         """
         self.db = db
         self.cur = db.cursor()
