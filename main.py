@@ -261,22 +261,15 @@ class Application:
                 return resp403
             version, content = course.editpage(page)
             return self.render_edit(rs, academy, course, page, version, content)
-        elif action=="saveedit":
-            if not rs.user.allowedWrite(academy.name, course.name):
-                return resp403
-            userversion = rs.request.form["revisionstartedwith"]
-            usercontent = rs.request.form["content"]
-
-            ok, version, content = course.savepage(page,userversion,usercontent)
-            return self.render_edit(rs, academy, course, page, version, content, ok=ok)
-        elif action=="saveshow":
+        elif action=="save":
             if not rs.user.allowedWrite(academy.name, course.name):
                 return resp403
             userversion = rs.request.form["revisionstartedwith"]
             usercontent = rs.request.form["content"]
                 
             ok, version, content = course.savepage(page,userversion,usercontent)
-            if not ok:
+            issaveshow = False
+            if not ok and issaveshow:
                 return self.render_edit(rs, academy, course, page, version, content, ok=ok)
             
             return self.render_show(rs, academy, course, page, saved=True)
