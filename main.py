@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import Cookie
 import jinja2
 import random
 import os
@@ -23,95 +22,31 @@ import user
 
 sysrand = random.SystemRandom()
 
-class CookieHandler:
-    """Parse and manipulate cookies."""
-    def __init__(self, name="sid", bits=64):
-        """
-        @type name: str
-        @param name: the name of the cookie
-        @type bits: int
-        @param bits: number of bits to use for the session id
-        """
-        assert name.isalnum()
-        assert bits > 0
-        self.name = name
-        self.bits = bits
-
-    def get(self, environ):
-        """
-        @type environ: dict
-        @rtype: str or None
-        @returns: the session id if a cookie was found and None otherwise
-        """
-        cookiestr = environ.get("HTTP_COOKIE")
-        if not cookiestr:
-            return None
-        cookie = Cookie.SimpleCookie()
-        try:
-            cookie.load(cookiestr)
-        except Cookie.CookieError:
-            return None
-        try:
-            value = cookie[self.name].value
-        except KeyError:
-            return None
-        else:
-            if value.isalnum():
-                return value
-            return None
-
-    def set(self, value):
-        """
-        @type value: str
-        @param value: session id
-        @rtype: (str, str)
-        @returns: a header as (headername, headervalue) setting the cookie
-        """
-        cookiemorsel = Cookie.Morsel()
-        cookiemorsel.set(self.name, value, value)
-        return ("Set-Cookie", cookiemorsel.OutputString())
-
-    def newvalue(self):
-        """
-        @rtype: str
-        @returns: a string with the randomness passed to the ctor
-        """
-        return "%x" % random.getrandbits(self.bits)
-
-    def new(self):
-        """
-        @rtype: (str, str)
-        @returns: a header as (headername, headervalue) setting a new cookie
-        """
-        return self.set(self.newvalue())
-
-    def delete(self):
-        """
-        @rtype: (str, str)
-        @returns: a header as (headername, headervalue) deleting the cookie
-        """
-        cookiemorsel = Cookie.Morsel()
-        cookiemorsel.set(self.name, "", "")
-        cookiemorsel["max-age"] = 0
-        cookiemorsel["expires"] = "Thu, 01-Jan-1970 00:00:01 GMT"
-        return ("Set-Cookie", cookiemorsel.OutputString())
+def gensid(bits=64):
+    """
+    @type bits: int
+    @param bits: randomness in bits of the resulting string
+    @rtype: str
+    @returns: a random string
+    """
+    return "%x" % random.getrandbits(bits)
 
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database."""
     create_table = "CREATE TABLE IF NOT EXISTS sessions " + \
                    "(sid TEXT, user TEXT, UNIQUE(sid));"
+    cookie_name = "sid"
 
-    def __init__(self, db, cookiehandler, environ=dict()):
+    def __init__(self, db, request, response):
         """
         @param db: a DBAPI2 database that has a sessions table as described
                 in the create_table class variable
-        @type cookiehandler: CookieHandler
         @type environ: dict
         """
         self.db = db
-        self.cookiehandler = cookiehandler
         self.cur = db.cursor()
-        self.sid = self.cookiehandler.get(environ)
+        self.response = response
+        self.sid = request.cookies.get(self.cookie_name)
 
     def get(self):
         """Find a user session.
@@ -130,36 +65,30 @@ class SessionHandler:
     def set(self, username):
         """Initiate a user session.
         @type username: str
-        @rtype: [(str, str)]
-        @returns: a list of headers to be sent with the http response
         """
-        ret = []
         if self.sid is None:
-            self.sid = self.cookiehandler.newvalue()
-            ret.append(self.cookiehandler.set(self.sid))
+            self.sid = gensid()
+            self.response.set_cookie(self.cookie_name, self.sid)
         self.cur.execute("INSERT OR REPLACE INTO sessions VALUES (?, ?);",
                          (self.sid.decode("utf8"), username.decode("utf8")))
         self.db.commit()
-        return ret
 
     def delete(self):
         """Delete a user session.
         @rtype: [(str, str)]
         @returns: a list of headers to be sent with the http response
         """
-        if self.sid is None:
-            return []
-        self.cur.execute("DELETE FROM sessions WHERE sid = ?;",
-                         (self.sid.decode("utf8"),))
-        self.db.commit()
-        return [self.cookiehandler.delete()]
+        if self.sid is not None:
+            self.cur.execute("DELETE FROM sessions WHERE sid = ?;",
+                             (self.sid.decode("utf8"),))
+            self.db.commit()
+            self.response.delete_cookie(self.cookie_name)
 
 class RequestState:
-    def __init__(self, request, sessiondb, cookiehandler, userdb):
+    def __init__(self, request, sessiondb, userdb):
         self.request = request
-        self.outheaders = {}
-        self.sessionhandler = SessionHandler(sessiondb, cookiehandler,
-                                             request.environ)
+        self.response = Response()
+        self.sessionhandler = SessionHandler(sessiondb, request, self.response)
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.request_uri = wsgiref.util.request_uri(request.environ)
@@ -169,17 +98,18 @@ class RequestState:
 
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
-        self.outheaders.update(dict(self.sessionhandler.set(self.user.name)))
+        self.sessionhandler.set(self.user.name)
 
     def logout(self):
         self.user = None
-        self.outheaders.update(dict(self.sessionhandler.delete()))
+        self.sessionhandler.delete()
 
     def emit_content(self, content):
-        return Response(content, headers=self.outheaders)
+        self.response.data = content
+        return self.response
 
     def emit_template(self, template, extraparams=dict()):
-        self.outheaders["Content-Type"] = "text/html; charset=utf8"
+        self.response.content_type = "text/html; charset=utf8"
         params = dict(
             user=self.user,
             basejoin = lambda tail: urllib.basejoin(self.application_uri, tail)
@@ -203,7 +133,6 @@ class Application:
     def __init__(self, userdb, acapath):
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader("./templates"))
-        self.cookiehandler = CookieHandler()
         self.sessiondb = sqlite3.connect(":memory:")
         cur = self.sessiondb.cursor()
         cur.execute(SessionHandler.create_table)
@@ -237,8 +166,7 @@ class Application:
 
     @Request.application
     def __call__(self, request):
-        rs = RequestState(request, self.sessiondb, self.cookiehandler,
-                          self.userdb)
+        rs = RequestState(request, self.sessiondb, self.userdb)
         if not request.environ["PATH_INFO"]:
             return rs.emit_permredirect("")
         if request.environ["PATH_INFO"] == "/login":
@@ -261,7 +189,7 @@ class Application:
     def do_login(self, rs):
         if rs.request.method != "POST":
             return resp405
-        rs.outheaders["Content-Type"] = "text/plain"
+        rs.response.headers.content_type = "text/plain"
         try:
             username = rs.request.form["username"]
             password = rs.request.form["password"]
