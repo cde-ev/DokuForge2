@@ -1,6 +1,7 @@
 import os
 from storage import Storage
 from common import check_output
+from storage import LockDir
 
 class CourseLite:
     """
@@ -116,18 +117,14 @@ class Course(CourseLite):
         """
         index = Storage(self.path,"Index")
         nextpagestore = Storage(self.path,"nextpage")
-        index.getlock()
-        nextpagestore.getlock()
-        try:                    # 
-            newnumber = self.nextpage(havelock=True)
-            nextpagestore.store("%d" % (newnumber+1),havelock=True,user=user)
-            indexcontents = index.content(havelock=True)
-            indexcontents += "%s\n" % newnumber
-            index.store(indexcontents,havelock=True,user=user)
-        finally:
-            nextpagestore.releaselock()
-            index.releaselock()
-        return newnumber
+        with LockDir(index.lockpath) as gotlockindex:
+            with LockDir(nextpagestore.lockpath) as gotlocknextpage:
+                newnumber = self.nextpage(havelock=gotlocknextpage)
+                nextpagestore.store("%d" % (newnumber+1),havelock=gotlocknextpage,user=user)
+                indexcontents = index.content(havelock=gotlockindex)
+                indexcontents += "%s\n" % newnumber
+                index.store(indexcontents,havelock=gotlockindex,user=user)
+                return newnumber
 
     def delpage(self,number,user=None):
         """
@@ -137,9 +134,8 @@ class Course(CourseLite):
         @type number: int
         """
         indexstore = Storage(self.path,"Index")
-        indexstore.getlock()
-        try:
-            index = indexstore.content(havelock=True)
+        with LockDir(indexstore.lockpath) as gotlock:
+            index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
             newlines = []
             for line in lines:
@@ -147,8 +143,6 @@ class Course(CourseLite):
                     newlines.append(line)
             newindex="\n".join(newlines) + "\n"
             indexstore.store(newindex,havelock=True,user=user)
-        finally:
-            indexstore.releaselock()
 
     def swappages(self,position,user=None):
         """
@@ -157,9 +151,8 @@ class Course(CourseLite):
         @type position: int
         """
         indexstore = Storage(self.path,"Index")
-        indexstore.getlock()
-        try:
-            index = indexstore.content(havelock=True)
+        with LockDir(indexstore.lockpath) as gotlock:
+            index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
             if position<len and position>0:
                 tmp =lines[position-1]
@@ -167,8 +160,6 @@ class Course(CourseLite):
                 lines[position]=tmp
             newindex="\n".join(lines) + "\n"
             indexstore.store(newindex,havelock=True,user=user)
-        finally:
-            indexstore.releaselock()
 
     def editpage(self,number):
         """
@@ -228,23 +219,18 @@ class Course(CourseLite):
         """
         indexstore = Storage(self.path,"Index")
         nextblobstore = Storage(self.path,"nextpage")
-        indexstore.getlock()
-        nextblobstore.getlock()
 
-        try:
-            newnumber = self.nextpage(havelock=True)
-            nextblobstore.store("%d" % (newnumber+1),havelock=True)
-            index = indexstore.content()
-            lines = index.splitlines()
-            for i in range(len(lines)):
-                if int(lines[i].split()[0])==number:
-                    lines[i] += " %d" % newnumber
-            newindex="\n".join(lines) + "\n"
-            indexstore.store(newindex,havelock=True)
-        finally:
-            nextblobstore.releaselock()
-            indexstore.releaselock()
-
+        with LockDir(indexstore.lockpath) as gotlockindex:
+            with LockDir(nextblobstore.lockpath) as gotlocknextblob:
+                newnumber = self.nextpage(havelock=gotlocknextblob)
+                nextblobstore.store("%d" % (newnumber+1),havelock=gotlocknextblob)
+                index = indexstore.content()
+                lines = index.splitlines()
+                for i in range(len(lines)):
+                    if int(lines[i].split()[0])==number:
+                        lines[i] += " %d" % newnumber
+                        newindex="\n".join(lines) + "\n"
+                        indexstore.store(newindex,havelock=gotlockindex)
 
         blob = Storage(self.path,"blob%d" % newnumber)
         blob.store(data,user=user,message=comment)
