@@ -52,22 +52,18 @@ class User:
         if self.permissions[perm]:
             return True
         return False
+
     def allowedRead(self, acaname, coursename = None):
         if coursename is None:
-            if self.hasPermission("akademie_read_" + path_parts[0]):
-                return True
+            return self.hasPermission("akademie_read_%s" % acaname):
         else:
-            if self.hasPermission("akademie_read_" + path_parts[0] + "_" + path_parts[1]):
-                return True
-        return False
+            return self.hasPermission("akademie_read_%s_%s" % (acaname, coursename)):
+
     def allowedWrite(self, acaname, coursename = None):
         if coursename is None:
-            if self.hasPermission("akademie_write_" + path_parts[0]):
-                return True
+            return self.hasPermission("akademie_write_%s" % acaname):
         else:
-            if self.hasPermission("akademie_write_" + path_parts[0] + "_" + path_parts[1]):
-                return True
-        return False
+            return self.hasPermission("akademie_write_%s_%s" % (acaname, coursename)):
 
 
 
