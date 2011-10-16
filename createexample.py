@@ -36,7 +36,8 @@ if __name__ == "__main__":
                          ("akademie_write_ya2011-1", True),
                          ("akademie_read_ya2011-1_course01", True),
                          ("akademie_write_ya2011-1_course01", True),
-                         ("akademie_read_ya2011-1_course02", True)]))
+                         ("akademie_read_ya2011-1_course02", True),
+                         ("df_export", True)]))
     userdb.store()
     try:
         os.mkdir("df")

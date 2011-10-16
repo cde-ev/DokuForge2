@@ -17,4 +17,7 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 {% else %}
 <em>Keine Kurse gefunden.</em>
 {% endif %}
+{% if user.mayExport(academy.name)%}
+{{ button("df/" + academy.name + "?export", "Exportieren") }}
+{% endif%}
 {% endblock %}
