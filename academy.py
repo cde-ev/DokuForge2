@@ -4,6 +4,7 @@ import storage
 import course
 import re
 import copy
+import operator
 from course import Course, CourseLite
 
 class AcademyLite:
@@ -54,7 +55,9 @@ class AcademyLite:
                for entry in os.listdir(self.path))
         ret = filter(os.path.isdir, ret)
         ret = map(course.CourseLite, ret)
-        return list(ret)
+        ret = list(ret)
+        ret.sort(key=operator.attrgetter('name'))
+        return ret
 
     def getCourseLite(self, coursename):
         """
