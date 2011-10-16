@@ -8,7 +8,7 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 <ol>
 	{% for page in pages %}
 	<li><a href="{{ basejoin("df/" + academy.name + '/' + course.name
-		+ '/' + page|string) }}">Seite {{ pages.index(page) + 1 }} (intern: {{ page }})</a>
+		+ '/' + page|string) }}">{{ pages.index(page) + 1 }}. Seite (#{{ page }})</a>
 		{% if pages.index(page) > 0 %}
 		{{ button("df/" + academy.name + "/" + course.name + "/moveup", "Hochrücken",
 	           dict(number=pages.index(page))) }}
