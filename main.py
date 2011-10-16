@@ -268,11 +268,13 @@ class Application:
             usercontent = rs.request.form["content"]
                 
             ok, version, content = course.savepage(page,userversion,usercontent)
-            issaveshow = False
-            if not ok and issaveshow:
-                return self.render_edit(rs, academy, course, page, version, content, ok=ok)
             
-            return self.render_show(rs, academy, course, page, saved=True)
+            print rs.request.form
+            issaveshow = "saveshow" in rs.request.form
+            if ok and issaveshow:
+                return self.render_show(rs, academy, course, page, saved=True)
+            
+            return self.render_edit(rs, academy, course, page, version, content, ok=ok)
             
             
         else:
