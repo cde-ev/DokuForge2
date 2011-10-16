@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block location%}
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin('df/') }}">Index</a> &gt; <a href="{{ basejoin('df/' + academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin('df/' + academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a>
+{% endblock %}
+
+{% block content %}
+Seite #{{page}}
+<hr>
+<pre>
+{{ content|e }}
+</pre>
+<hr>
+
+{{ button("df/" + academy.name + "/" + course.name + "/" + page|string + "/edit", "Editieren") }}
+{% endblock %}

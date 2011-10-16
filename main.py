@@ -354,8 +354,14 @@ class Application:
                 number = 0
             course.swappages(number,user=rs.user.name)
             return self.render_course(rs, academy, course)
-        else:
-            raise AssertionError("fixme: continue")
+
+        ## no action at course level, must be a page
+        if not action.isdigit():
+            return rs.emit_app(app404)
+        page = int(action)
+        if not path_parts:
+            return self.render_show(rs, academy, course, page)
+        raise AssertionError("fixme: continue")
 
     def render_start(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("start.html"))
@@ -381,6 +387,14 @@ class Application:
         return rs.emit_template(self.jinjaenv.get_template("course.html"),
                                 params)
 
+    def render_show(self, rs, theacademy, thecourse,thepage):
+        params = dict(
+            academy=academy.AcademyLite(theacademy),
+            course=course.CourseLite(thecourse),
+            page=thepage,
+            content=thecourse.showpage(thepage))
+        return rs.emit_template(self.jinjaenv.get_template("show.html"),
+                                params)
 
 def main():
     userdbstore = storage.Storage('work', 'userdb')
