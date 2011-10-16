@@ -142,7 +142,7 @@ class Course(CourseLite):
                 if int(line.split()[0])!=number:
                     newlines.append(line)
             newindex="\n".join(newlines) + "\n"
-            indexstore.store(newindex,havelock=True,user=user)
+            indexstore.store(newindex,havelock=gotlock,user=user)
 
     def swappages(self,position,user=None):
         """
@@ -159,7 +159,7 @@ class Course(CourseLite):
                 lines[position-1]=lines[position]
                 lines[position]=tmp
             newindex="\n".join(lines) + "\n"
-            indexstore.store(newindex,havelock=True,user=user)
+            indexstore.store(newindex,havelock=gotlock,user=user)
 
     def editpage(self,number):
         """
