@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+Seite #{{page}}
 <form action="save" method="post" id="edit">
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{revision}}"> 
+	<input type="hidden" name="page" value="{{page}}">
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="submit" value="Speichern">
 <form/>
