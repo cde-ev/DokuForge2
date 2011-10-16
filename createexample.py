@@ -19,7 +19,7 @@ if __name__ == "__main__":
     except OSError:
         pass
     mystore = storage.Storage('work', 'userdb')
-    userdb = user.UserDB(mystore)n
+    userdb = user.UserDB(mystore)
     userdb.addUser("arthur", "dokubeauftragter", "mypass",
                    dict([("akademie_read_pa2010", True),
                          ("akademie_read_za2011", True),
