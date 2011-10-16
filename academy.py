@@ -125,7 +125,7 @@ class Academy(AcademyLite):
         """
         @returns: list of Course object; all courses of this academy
         """
-        return list(map(courses.Course, self.listCoursesLite()))
+        return list(map(course.Course, self.listCoursesLite()))
 
     def getCourse(self,coursename):
         """
