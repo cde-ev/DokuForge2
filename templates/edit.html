@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
+
+{% if ok is none %}
+Bitte Text eingeben und mit &quot;Speichern&quot; beenden.
+{% elif ok %}
+Aenderungen erfolgreich gespeichert.
+{% else %}
+<b>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</b>
+Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
+{% endif %}
+
 Seite #{{page}}
-<form action="save" method="post" id="edit">
+<form action="save" method="post" id="save">
 	<textarea name="content">{{ content|e }}</textarea>
-	<input type="hidden" name="revisionstartedwith" value="{{revision}}"> 
-	<input type="hidden" name="page" value="{{page}}">
+	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="submit" value="Speichern">
-<form/>
+</form>
 {% endblock %}

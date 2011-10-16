@@ -9,9 +9,11 @@ import sqlite3
 import copy
 import re
 import urllib
+import werkzeug.utils
+from werkzeug.wrappers import Request, Response
 import wsgiref.util
 import operator
-from wsgitools.applications import StaticContent, StaticFile
+from wsgitools.applications import StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
 # import other parts of Dokuforge
@@ -153,18 +155,12 @@ class SessionHandler:
         self.db.commit()
         return [self.cookiehandler.delete()]
 
-app405 = StaticContent("405 Method Not Allowed",
-                       [("Content-type", "text/plain")],
-                       "405 Method Not Allowed", anymethod=True)
-
 class RequestState:
-    def __init__(self, environ, start_response, sessiondb, cookiehandler, userdb):
+    def __init__(self, environ, sessiondb, cookiehandler, userdb):
         self.environ = environ
-        self.start_response = start_response
         self.outheaders = {}
         self.fieldstorage = None
         self.sessionhandler = SessionHandler(sessiondb, cookiehandler, environ)
-        self.emitted = False
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.request_uri = wsgiref.util.request_uri(environ)
@@ -188,20 +184,8 @@ class RequestState:
     def get_field(self, key):
         return self.fieldstorage[key].value # raises KeyError
 
-    def emit(self, status):
-        assert not self.emitted
-        self.emitted = True
-        self.start_response(status, self.outheaders.items())
-
-    def emit_app(self, app):
-        assert not self.emitted
-        self.emitted = True
-        return app(self.environ, self.start_response)
-
     def emit_content(self, content):
-        self.outheaders["Content-Length"] = str(len(content))
-        self.emit("200 Found")
-        return [content]
+        return Response(content, headers=self.outheaders)
 
     def emit_template(self, template, extraparams=dict()):
         self.outheaders["Content-Type"] = "text/html; charset=utf8"
@@ -213,26 +197,16 @@ class RequestState:
         return self.emit_content(template.render(params).encode("utf8"))
 
     def emit_permredirect(self, location):
-        self.outheaders["Location"] = urllib.basejoin(self.application_uri,
-                                                      location)
-        self.outheaders["Content-Length"] = 0
-        self.emit("301 Moved Permanently")
-        return []
+        return werkzeug.utils.redirect(
+            urllib.basejoin(self.application_uri, location), 301)
 
     def emit_tempredirect(self, location):
-        self.outheaders["Location"] = urllib.basejoin(self.application_uri,
-                                                      location)
-        self.outheaders["Content-Length"] = 0
-        self.emit("307 Temporarily Moved")
-        return []
+        return werkzeug.utils.redirect(
+            urllib.basejoin(self.application_uri, location), 307)
 
-app403 = StaticContent("403 Forbidden",
-                       [("Content-type", "text/plain")],
-                       "403 Forbidden", anymethod=True)
-
-app404 = StaticContent("404 File Not Found",
-                       [("Content-type", "text/plain")],
-                       "404 File Not Found", anymethod=True)
+resp403 = Response("403 Forbidden", status="403 Forbidden")
+resp404 = Response("404 File Not Found", status="404 File Not Found")
+resp405 = Response("405 Method Not Allowed", status="405 Method Not Allowed")
 
 class Application:
     def __init__(self, userdb, acapath):
@@ -270,16 +244,17 @@ class Application:
         ret.sort(key=operator.attrgetter('name'))
         return ret
 
-    def __call__(self, environ, start_response):
-        rs = RequestState(environ, start_response, self.sessiondb,
-                          self.cookiehandler, self.userdb)
-        if not environ["PATH_INFO"]:
+    @Request.application
+    def __call__(self, request):
+        rs = RequestState(request.environ, self.sessiondb, self.cookiehandler,
+                          self.userdb)
+        if not request.environ["PATH_INFO"]:
             return rs.emit_permredirect("")
-        if environ["PATH_INFO"] == "/login":
+        if request.environ["PATH_INFO"] == "/login":
             return self.do_login(rs)
-        if environ["PATH_INFO"] == "/logout":
+        if request.environ["PATH_INFO"] == "/logout":
             return self.do_logout(rs)
-        path_parts = environ["PATH_INFO"].split('/')
+        path_parts = request.environ["PATH_INFO"].split('/')
         if not path_parts[0]:
             path_parts.pop(0)
         if not path_parts or not path_parts[0]:
@@ -290,11 +265,11 @@ class Application:
         if path_parts[0] == "df":
             path_parts.pop(0)
             return self.do_df(rs, path_parts)
-        return rs.emit_app(app404)
+        return resp404
 
     def do_login(self, rs):
         if rs.environ["REQUEST_METHOD"] != "POST":
-            return rs.emit_app(app405)
+            return resp405
         rs.parse_request()
         rs.outheaders["Content-Type"] = "text/plain"
         try:
@@ -310,7 +285,7 @@ class Application:
 
     def do_logout(self, rs):
         if rs.environ["REQUEST_METHOD"] != "POST":
-            return rs.emit_app(app405)
+            return resp405
         rs.logout()
         return self.render_start(rs)
 
@@ -322,31 +297,31 @@ class Application:
             return self.render_index(rs)
         academy = self.getAcademy(path_parts.pop(0))
         if academy is None:
-            return rs.emit_app(app404)
+            return resp404
         if not rs.user.allowedRead(academy.name):
-            return rs.emit_app(app403)
+            return resp403
         if not path_parts:
             return self.render_academy(rs, academy)
         course = academy.getCourse(path_parts.pop(0))
         if course is None:
-            return rs.emit_app(app404)
+            return resp404
         if not rs.user.allowedRead(academy.name, course.name):
-            return rs.emit_app(app403)
+            return resp403
         if not path_parts:
             return self.render_course(rs, academy, course)
         action = path_parts.pop(0)
         if action=="createpage":
             if not rs.user.allowedWrite(academy.name, course.name):
-                return rs.emit_app(app403)
+                return resp403
             if rs.environ["REQUEST_METHOD"] != "POST":
-                return rs.emit_app(app405)
+                return resp405
             course.newpage(user=rs.user.name)
             return self.render_course(rs, academy, course)
         elif action=="moveup":
             if not rs.user.allowedWrite(academy.name, course.name):
-                return rs.emit_app(app403)
+                return resp403
             if rs.environ["REQUEST_METHOD"] != "POST":
-                return rs.emit_app(app405)
+                return resp405
             rs.parse_request()
             numberstr = rs.get_field("number")
             try:
@@ -358,7 +333,7 @@ class Application:
 
         ## no action at course level, must be a page
         if not action.isdigit():
-            return rs.emit_app(app404)
+            return resp404
         page = int(action)
         if not path_parts:
             return self.render_show(rs, academy, course, page)
@@ -366,9 +341,19 @@ class Application:
 
         if action=="edit":
             if not rs.user.allowedWrite(academy.name, course.name):
-                return rs.emit_app(app403)
+                return resp403
             version, content = course.editpage(page)
             return self.render_edit(rs, academy, course, page, version, content)
+        elif action=="save":
+            if not rs.user.allowedWrite(academy.name, course.name):
+                return resp403
+            rs.parse_request()
+            userversion = rs.get_field("revisionstartedwith")
+            usercontent = rs.get_field("content")
+
+            ok, version, content = course.savepage(page,userversion,usercontent)
+            return self.render_edit(rs, academy, course, page, version, content, ok=ok)
+            
             
         else:
             raise AssertionError("fixme: continue")
@@ -376,13 +361,14 @@ class Application:
     def render_start(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("start.html"))
 
-    def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent):
+    def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent, ok=None):
         params= dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage,
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
-            version=theversion)
+            version=theversion,
+            ok=ok)
         return rs.emit_template(self.jinjaenv.get_template("edit.html"),params)
 
 
