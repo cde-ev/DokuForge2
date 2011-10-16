@@ -369,6 +369,16 @@ class Application:
                 return rs.emit_app(app403)
             version, content = course.editpage(page)
             return self.render_edit(rs, academy, course, page, version, content)
+        elif action=="save":
+            if not rs.user.allowedWrite(academy.name, course.name):
+                return rs.emit_app(app403)
+            rs.parse_request()
+            userversion = rs.get_field("revisionstartedwith")
+            usercontent = rs.get_field("content")
+
+            ok, version, content = course.savepage(page,userversion,usercontent)
+            return self.render_edit(rs, academy, course, page, version, content, ok=ok)
+            
             
         else:
             raise AssertionError("fixme: continue")
