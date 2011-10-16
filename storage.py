@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import os, errno
 import time
 import subprocess
@@ -19,6 +20,41 @@ def rlogv(filename):
     else:
         return None
 
+class LockDir:
+    def __init__(self, path):
+        self.path = path
+        self.lockcount = 0
+
+    def __enter__(self):
+        """
+        Obtain a lock for this object. This is usually done internaly
+        by more productive funcitons. Manual intervention is only necessary,
+        if several locks have to be obtained before an operation can be carried
+        out. Note that locks have to be obtained in lexicographic order by native
+        byte order (in particular captital letter before lower case letters).
+
+        Acquiring a this object multiple times will succeed, but you have to
+        release it multiple times, too.
+        """
+        if self.lockcount != 0:
+            self.lockcount += 1
+            return self
+        while True:
+            try:
+                os.mkdir(self.path)
+                self.lockcount = 1
+                return self
+            except OSError, e:
+                if e.errno==errno.EEXIST:
+                    time.sleep(0.2) # evertthing OK, someone else has the lock
+                else:
+                    raise # something else went wrong
+
+    def __exit__(self, _1, _2, _3):
+        self.lockcount -= 1
+        if self.lockcount == 0:
+            os.rmdir(self.path)
+
 
 class Storage(object):
     def __init__(self,path,filename):
@@ -39,41 +75,19 @@ class Storage(object):
         """
         return os.path.join(self.path, formatstr % self.filename)
 
-    def getlock(self):
-        """
-        Obtain a lock for this Storage object. This is usually done internaly
-        by more productive funcitons. Manual intervention is only necessary,
-        if several locks have to be obtained before an operation can be carried
-        out. Note that locks have to be obtained in lexicographic order by native
-        byte order (in particular captital letter before lower case letters).
+    @property
+    def lockpath(self):
+        return self.fullpath("#lock.%s")
 
-        If a lock is obtained manually, the productive functions of this class
-        have to be informed aboutthis by setting the named argument havelock to True.
-        """
-        while True:
-            try:
-                os.mkdir(self.fullpath("#lock.%s"))
-                return
-            except OSError, e:
-                if e.errno==errno.EEXIST:
-                    time.sleep(0.2) # evertthing OK, someone else has the lock
-                else:
-                    raise # something else went wrong
-
-    def releaselock(self):
-        os.rmdir(self.fullpath("#lock.%s"))
-    
-    def store(self,content,user=None,message="store called",havelock=False):
+    def store(self, content, user=None, message="store called", havelock=None):
         """
         Store the given contents; rcs file is create if it does not
         exist already.
 
         @param content: the content of the file as str-object
         """
-        if not havelock:
-            self.getlock() 
-        try:
-            self.ensureexistence(havelock=True)
+        with havelock or LockDir(self.lockpath) as gotlock:
+            self.ensureexistence(havelock=gotlock)
             subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()])
             objfile = file(self.fullpath(), mode="w")
             objfile.write(content)
@@ -83,36 +97,28 @@ class Storage(object):
                 args.append("-w%s" % user)
             args.append(self.fullpath())
             subprocess.check_call(args)
-        finally:
-            if not havelock:
-                self.releaselock()
                 
-    def ensureexistence(self,havelock=False):
+    def ensureexistence(self, havelock=None):
         if not os.path.exists(self.fullpath("%s,v")):
-            if not havelock:
-                self.getlock() 
-            try:
+            with havelock or LockDir(self.lockpath):
                 subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                        self.fullpath()])
                 file(self.fullpath(), mode="w").close()
                 subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit", 
                                        self.fullpath()])
-            finally:
-                if not havelock:
-                    self.releaselock()
 
-    def status(self,havelock=False):
+    def status(self, havelock=None):
         self.ensureexistence(havelock=havelock)
         result = rlogv(self.fullpath("%s,v"))
         if result is None:
             result = rlogv(self.fullpath("RCS/%s,v"))
         return result
 
-    def content(self, havelock=False):
+    def content(self, havelock=None):
         self.ensureexistence(havelock=havelock)
         return check_output(["co", "-q", "-p", "-kb", self.fullpath()])
 
-    def startedit(self,havelock=False):
+    def startedit(self, havelock=None):
         """
         start editing a file (optimistic synchronisation)
 
@@ -122,19 +128,13 @@ class Storage(object):
 
         @returns: an opaque version string and the contents of the file
         """
-        self.ensureexistence()
-        if not havelock:
-            self.getlock() 
-        try:
-            status=self.status(havelock=True)
-            content=self.content(havelock=True)
+        with havelock or LockDir(self.lockpath) as gotlock:
+            self.ensureexistence(havelock=gotlock)
+            status=self.status(havelock=gotlock)
+            content=self.content(havelock=gotlock)
             return status, content
-        finally:
-            if not havelock:
-                self.releaselock()
-
             
-    def endedit(self,version,newcontent,user=None,havelock=False):
+    def endedit(self, version, newcontent, user=None, havelock=None):
         """
         Store new contents in a safe way.
 
@@ -151,14 +151,12 @@ class Storage(object):
                   and (newversion,mergedcontent) is a state for further editing that can be
                   used as if obtained from startedit
         """
-        self.ensureexistence()
-        if not havelock:
-            self.getlock() 
-        try:
-            currentversion = self.status(havelock=True)
+        with havelock or LockDir(self.lockpath) as gotlock:
+            self.ensureexistence(havelock=gotlock)
+            currentversion = self.status(havelock=gotlock)
             if currentversion == version:
-                self.store(newcontent, user=user, havelock=True)
-                newversion = self.status(havelock=True)
+                self.store(newcontent, user=user, havelock=gotlock)
+                newversion = self.status(havelock=gotlock)
                 return True,newversion,newcontent
             ## conflict
             # 1.) store in a branch
@@ -183,7 +181,3 @@ class Storage(object):
             os.unlink(self.fullpath())
             # 3) return new state
             return False,currentversion,mergedcontent
-        finally:
-            if not havelock:
-                self.releaselock()
-
