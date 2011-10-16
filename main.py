@@ -10,6 +10,7 @@ import copy
 import re
 import urllib
 import wsgiref.util
+import operator
 from wsgitools.applications import StaticContent, StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
