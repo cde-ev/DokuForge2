@@ -5,6 +5,7 @@ doc:
 	epydoc --config epydoc.conf
 
 setup:
+	rm -rf work df
 	python createexample.py
 
 clean:
