@@ -341,7 +341,7 @@ class Application:
 
             ok, version, content = course.savepage(page,userversion,usercontent)
             return self.render_edit(rs, academy, course, page, version, content, ok=ok)
-        elif action="saveshow":
+        elif action=="saveshow":
             if not rs.user.allowedWrite(academy.name, course.name):
                 return resp403
             userversion = rs.request.form["revisionstartedwith"]
