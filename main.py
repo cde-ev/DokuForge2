@@ -9,6 +9,7 @@ import re
 import urllib
 import werkzeug.utils
 from werkzeug.wrappers import Request, Response
+import werkzeug.exceptions
 import werkzeug.routing
 import wsgiref.util
 import operator
@@ -130,6 +131,18 @@ resp403 = Response("403 Forbidden", status="403 Forbidden")
 resp404 = Response("404 File Not Found", status="404 File Not Found")
 resp405 = Response("405 Method Not Allowed", status="405 Method Not Allowed")
 
+class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
+                               werkzeug.routing.RoutingException):
+    code = 307
+
+    def __init__(self, new_url):
+        werkzeug.routing.RoutingException.__init__(self, new_url)
+        self.new_url = new_url
+
+    def get_response(self, environ):
+        return werkzeug.utils.redirect(self.new_url, self.code)
+
+
 class Application:
     def __init__(self, userdb, acapath):
         self.jinjaenv = jinja2.Environment(
@@ -146,13 +159,13 @@ class Application:
                                   endpoint=self.do_login),
             werkzeug.routing.Rule("/logout", methods=("POST",),
                                   endpoint=self.do_logout),
-            #werkzeug.routing.Rule("/df/", endpoint=self.do_index),
-            #werkzeug.routing.Rule("/df/<academy>/", endpoint=self.do_academy),
-            #werkzeug.routing.Rule("/df/<academy>/<course>/", endpoint="course"),
-            #werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>",
-            #                      endpoint=self.do_page),
-            #werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>/edit",
-            #                      endpoint=self.do_edit),
+            werkzeug.routing.Rule("/df/", endpoint=self.do_index),
+            werkzeug.routing.Rule("/df/<academy>/", endpoint=self.do_academy),
+            werkzeug.routing.Rule("/df/<academy>/<course>/", endpoint=self.do_course),
+            werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>",
+                                  endpoint=self.do_page),
+            werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>/edit",
+                                  endpoint=self.do_edit),
         ])
 
     def getAcademy(self, name):
@@ -207,6 +220,10 @@ class Application:
             return self.do_df(rs, path_parts)
         return resp404
 
+    def check_login(self, rs):
+        if rs.user is None:
+            raise TemporaryRequestRedirect(rs.application_uri)
+
     def do_login(self, rs):
         rs.response.headers.content_type = "text/plain"
         try:
@@ -223,6 +240,69 @@ class Application:
     def do_logout(self, rs):
         rs.logout()
         return self.render_start(rs)
+
+    def do_index(self, rs):
+        self.check_login(rs)
+        return self.render_index(rs)
+
+    def do_academy(self, rs, academy = None):
+        assert academy is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"))
+        if aca is None:
+            return resp404
+        if not rs.user.allowedRead(aca.name):
+            return resp403
+        return self.render_academy(rs, aca)
+
+    def do_course(self, rs, academy = None, course = None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"))
+        if aca is None:
+            return resp404
+        if not rs.user.allowedRead(aca.name):
+            return resp403
+        c = aca.getCourse(course.encode("utf8"))
+        if c is None:
+            return resp404
+        if not rs.user.allowedRead(aca.name, c.name):
+            return resp403
+        return self.render_course(rs, aca, c)
+
+    def do_page(self, rs, academy = None, course = None, page = None):
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"))
+        if aca is None:
+            return resp404
+        if not rs.user.allowedRead(aca.name):
+            return resp403
+        c = aca.getCourse(course.encode("utf8"))
+        if c is None:
+            return resp404
+        if not rs.user.allowedRead(aca.name, c.name):
+            return resp403
+        return self.render_show(rs, aca, c, page)
+
+    def do_edit(self, rs, academy = None, course = None, page = None):
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"))
+        if aca is None:
+            return resp404
+        if not rs.user.allowedRead(aca.name):
+            return resp403
+        c = aca.getCourse(course.encode("utf8"))
+        if c is None:
+            return resp404
+        if not rs.user.allowedRead(aca.name, c.name):
+            return resp403
+        if not rs.user.allowedWrite(aca.name, c.name):
+            return resp403
+        version, content = c.editpage(page)
+        return self.render_edit(rs, aca, c, page, version, content)
+
 
     def do_df(self, rs, path_parts):
         path_parts = filter(None, path_parts)
