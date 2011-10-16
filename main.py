@@ -9,6 +9,7 @@ import re
 import urllib
 import werkzeug.utils
 from werkzeug.wrappers import Request, Response
+import werkzeug.routing
 import wsgiref.util
 import operator
 from wsgitools.applications import StaticFile
@@ -139,6 +140,20 @@ class Application:
         self.sessiondb.commit()
         self.userdb = userdb
         self.acapath = acapath
+        self.routingmap = werkzeug.routing.Map([
+            werkzeug.routing.Rule("/", endpoint=self.render_start),
+            werkzeug.routing.Rule("/login", methods=("POST",),
+                                  endpoint=self.do_login),
+            werkzeug.routing.Rule("/logout", methods=("POST",),
+                                  endpoint=self.do_logout),
+            #werkzeug.routing.Rule("/df/", endpoint=self.do_index),
+            #werkzeug.routing.Rule("/df/<academy>/", endpoint=self.do_academy),
+            #werkzeug.routing.Rule("/df/<academy>/<course>/", endpoint="course"),
+            #werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>",
+            #                      endpoint=self.do_page),
+            #werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>/edit",
+            #                      endpoint=self.do_edit),
+        ])
 
     def getAcademy(self, name):
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
@@ -167,6 +182,12 @@ class Application:
     @Request.application
     def __call__(self, request):
         rs = RequestState(request, self.sessiondb, self.userdb)
+        try:
+            endpoint, args = \
+                    self.routingmap.bind_to_environ(request.environ).match()
+            return endpoint(rs, **args)
+        except werkzeug.routing.HTTPException, e:
+            return e
         if not request.environ["PATH_INFO"]:
             return rs.emit_permredirect("")
         if request.environ["PATH_INFO"] == "/login":
@@ -187,8 +208,6 @@ class Application:
         return resp404
 
     def do_login(self, rs):
-        if rs.request.method != "POST":
-            return resp405
         rs.response.headers.content_type = "text/plain"
         try:
             username = rs.request.form["username"]
@@ -202,8 +221,6 @@ class Application:
         return self.render_index(rs)
 
     def do_logout(self, rs):
-        if rs.request.method != "POST":
-            return resp405
         rs.logout()
         return self.render_start(rs)
 
