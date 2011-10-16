@@ -52,6 +52,24 @@ class User:
         if self.permissions[perm]:
             return True
         return False
+    def allowedRead(self, acaname, coursename = None):
+        if coursename is None:
+            if self.hasPermission("akademie_read_" + path_parts[0]):
+                return True
+        else:
+            if self.hasPermission("akademie_read_" + path_parts[0] + "_" + path_parts[1]):
+                return True
+        return False
+    def allowedWrite(self, acaname, coursename = None):
+        if coursename is None:
+            if self.hasPermission("akademie_write_" + path_parts[0]):
+                return True
+        else:
+            if self.hasPermission("akademie_write_" + path_parts[0] + "_" + path_parts[1]):
+                return True
+        return False
+
+
 
 class UserDB:
     """
@@ -108,11 +126,11 @@ class UserDB:
         @type passwordn: str
         @returns: True if name and password match an existing user, False otherwise
         """
-        if not name in self.db:
+        try:
+            return self.db[name].password == password
+        except KeyError:
             return False
-        if self.db[name].password == password:
-            return True
-        return False
+
     def store(self):
         config = ConfigParser.SafeConfigParser()
         content = StringIO()
