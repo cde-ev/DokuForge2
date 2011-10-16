@@ -2,16 +2,7 @@ import os, errno
 import time
 import subprocess
 import re
-
-try:
-    check_output = subprocess.check_output
-except AttributeError:
-    def check_output(cmdline):
-        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
-        output, _ = proc.communicate()
-        if proc.returncode:
-            raise subprocess.CalledProcessError()
-        return output
+from common import check_output
 
 def rlogv(filename):
     """
