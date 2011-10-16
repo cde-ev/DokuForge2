@@ -269,7 +269,6 @@ class Application:
                 
             ok, version, content = course.savepage(page,userversion,usercontent)
             
-            print rs.request.form
             issaveshow = "saveshow" in rs.request.form
             if ok and issaveshow:
                 return self.render_show(rs, academy, course, page, saved=True)
