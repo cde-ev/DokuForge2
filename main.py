@@ -315,7 +315,7 @@ class Application:
             numberstr = rs.request.form["number"]
             try:
                 number = int(numberstr)
-            except KeyError:
+            except ValueError:
                 number = 0
             course.swappages(number,user=rs.user.name)
             return self.render_course(rs, academy, course)
