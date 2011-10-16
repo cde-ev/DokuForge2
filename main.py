@@ -192,6 +192,14 @@ class Application:
             raise werkzeug.exceptions.Forbidden()
         return aca
 
+    def getCourse(self, aca, coursename, user=None):
+        c = aca.getCourse(coursename) # checks name
+        if c is None:
+            raise werkzeug.exceptions.NotFound()
+        if user is not None and not user.allowedRead(aca, c):
+            raise werkzeug.exceptions.Forbidden()
+        return c
+
     def createAcademy(self, name, title, groups):
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return False
@@ -252,29 +260,21 @@ class Application:
     def do_academy(self, rs, academy = None):
         assert academy is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
         return self.render_academy(rs, aca)
 
     def do_course(self, rs, academy = None, course = None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            raise werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            raise werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         return self.render_course(rs, aca, c)
 
     def do_createpage(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         c.newpage(user=rs.user.name)
@@ -283,12 +283,8 @@ class Application:
     def do_moveup(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         numberstr = rs.request.form["number"]
@@ -302,23 +298,15 @@ class Application:
     def do_page(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         return self.render_show(rs, aca, c, page)
 
     def do_edit(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         version, content = c.editpage(page)
@@ -327,12 +315,8 @@ class Application:
     def do_save(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
