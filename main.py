@@ -156,21 +156,22 @@ class SessionHandler:
         return [self.cookiehandler.delete()]
 
 class RequestState:
-    def __init__(self, environ, sessiondb, cookiehandler, userdb):
-        self.environ = environ
+    def __init__(self, request, sessiondb, cookiehandler, userdb):
+        self.request = request
         self.outheaders = {}
         self.fieldstorage = None
-        self.sessionhandler = SessionHandler(sessiondb, cookiehandler, environ)
+        self.sessionhandler = SessionHandler(sessiondb, cookiehandler,
+                                             request.environ)
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
-        self.request_uri = wsgiref.util.request_uri(environ)
-        self.application_uri = wsgiref.util.application_uri(environ)
+        self.request_uri = wsgiref.util.request_uri(request.environ)
+        self.application_uri = wsgiref.util.application_uri(request.environ)
         if not self.application_uri.endswith("/"):
             self.application_uri += "/"
 
     def parse_request(self):
-        self.fieldstorage = FieldStorage(environ=self.environ,
-                                         fp=self.environ["wsgi.input"])
+        self.fieldstorage = FieldStorage(environ=self.request.environ,
+                                         fp=self.request.environ["wsgi.input"])
         return self.fieldstorage
 
     def login(self, username):
@@ -246,7 +247,7 @@ class Application:
 
     @Request.application
     def __call__(self, request):
-        rs = RequestState(request.environ, self.sessiondb, self.cookiehandler,
+        rs = RequestState(request, self.sessiondb, self.cookiehandler,
                           self.userdb)
         if not request.environ["PATH_INFO"]:
             return rs.emit_permredirect("")
@@ -268,7 +269,7 @@ class Application:
         return resp404
 
     def do_login(self, rs):
-        if rs.environ["REQUEST_METHOD"] != "POST":
+        if rs.request.method != "POST":
             return resp405
         rs.parse_request()
         rs.outheaders["Content-Type"] = "text/plain"
@@ -284,7 +285,7 @@ class Application:
         return self.render_index(rs)
 
     def do_logout(self, rs):
-        if rs.environ["REQUEST_METHOD"] != "POST":
+        if rs.request.method != "POST":
             return resp405
         rs.logout()
         return self.render_start(rs)
@@ -313,14 +314,14 @@ class Application:
         if action=="createpage":
             if not rs.user.allowedWrite(academy.name, course.name):
                 return resp403
-            if rs.environ["REQUEST_METHOD"] != "POST":
+            if rs.request.method != "POST":
                 return resp405
             course.newpage(user=rs.user.name)
             return self.render_course(rs, academy, course)
         elif action=="moveup":
             if not rs.user.allowedWrite(academy.name, course.name):
                 return resp403
-            if rs.environ["REQUEST_METHOD"] != "POST":
+            if rs.request.method != "POST":
                 return resp405
             rs.parse_request()
             numberstr = rs.get_field("number")
