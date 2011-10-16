@@ -5,9 +5,12 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 {% endblock %}
 
 {% block content %}
+Seite #{{page}}
+<hr>
 <pre>
-{{ conent|e }}
+{{ content|e }}
 </pre>
+<hr>
 
 {{ button("df/" + academy.name + "/" + course.name + "/" + page|string + "/edit", "Editieren") }}
 {% endblock %}
