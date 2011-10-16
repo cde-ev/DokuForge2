@@ -334,14 +334,30 @@ class Application:
 
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
-            
+
         ok, version, content = c.savepage(page, userversion, usercontent)
-        
+
         issaveshow = "saveshow" in rs.request.form
         if ok and issaveshow:
             return self.render_show(rs, aca, c, page, saved=True)
-        
+
         return self.render_edit(rs, aca, c, page, version, content, ok=ok)
+
+    def do_admin(self, rs):
+        self.check_login(rs)
+        if not rs.user.isAdmin():
+            return werkzeug.exceptions.Forbidden()
+        version, content = userdb.startedit()
+        return self.render_admin(rs, version, content)
+
+    def do_adminsave(self, rs):
+        self.check_login(rs)
+        if not rs.user.isAdmin():
+            return werkzeug.exceptions.Forbidden()
+        userversion = rs.request.form["revisionstartedwith"]
+        usercontent = rs.request.form["content"]
+        ok, version, content = userdb.endedit(userdb, userversion, usercontent)
+        return self.render_admin(rs, version, content, ok=ok)
 
     def render_start(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("start.html"))
@@ -383,6 +399,14 @@ class Application:
             saved=saved)
         return rs.emit_template(self.jinjaenv.get_template("show.html"),
                                 params)
+
+    def render_admin(self, rs, theversion, thecontent, ok=None):
+        params= dict(
+            content=thecontent, ## Note: must use the provided content, as it has to fit with the version
+            version=theversion,
+            ok=ok)
+        return rs.emit_template(self.jinjaenv.get_template("admin.html"),params)
+
 
 def main():
     userdbstore = storage.Storage('work', 'userdb')

@@ -80,6 +80,10 @@ class User:
             return False
         return self.hasPermission("df_export")
 
+    def isAdmin(self):
+        return self.hasPermission("df_admin") or self.hasPermission("df_useradmin")
+
+
 
 
 
