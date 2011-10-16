@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from cgi import FieldStorage
 import Cookie
 import jinja2
 import random
@@ -159,7 +158,6 @@ class RequestState:
     def __init__(self, request, sessiondb, cookiehandler, userdb):
         self.request = request
         self.outheaders = {}
-        self.fieldstorage = None
         self.sessionhandler = SessionHandler(sessiondb, cookiehandler,
                                              request.environ)
         self.userdb = userdb
@@ -169,11 +167,6 @@ class RequestState:
         if not self.application_uri.endswith("/"):
             self.application_uri += "/"
 
-    def parse_request(self):
-        self.fieldstorage = FieldStorage(environ=self.request.environ,
-                                         fp=self.request.environ["wsgi.input"])
-        return self.fieldstorage
-
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
         self.outheaders.update(dict(self.sessionhandler.set(self.user.name)))
@@ -181,9 +174,6 @@ class RequestState:
     def logout(self):
         self.user = None
         self.outheaders.update(dict(self.sessionhandler.delete()))
-
-    def get_field(self, key):
-        return self.fieldstorage[key].value # raises KeyError
 
     def emit_content(self, content):
         return Response(content, headers=self.outheaders)
@@ -271,12 +261,11 @@ class Application:
     def do_login(self, rs):
         if rs.request.method != "POST":
             return resp405
-        rs.parse_request()
         rs.outheaders["Content-Type"] = "text/plain"
         try:
-            username = rs.get_field("username")
-            password = rs.get_field("password")
-            rs.get_field("submit") # just check for existence
+            username = rs.request.form["username"]
+            password = rs.request.form["password"]
+            rs.request.form["submit"] # just check for existence
         except KeyError:
             return rs.emit_content("missing form fields")
         if not self.userdb.checkLogin(username, password):
@@ -323,8 +312,7 @@ class Application:
                 return resp403
             if rs.request.method != "POST":
                 return resp405
-            rs.parse_request()
-            numberstr = rs.get_field("number")
+            numberstr = rs.request.form["number"]
             try:
                 number = int(numberstr)
             except KeyError:
@@ -348,9 +336,8 @@ class Application:
         elif action=="save":
             if not rs.user.allowedWrite(academy.name, course.name):
                 return resp403
-            rs.parse_request()
-            userversion = rs.get_field("revisionstartedwith")
-            usercontent = rs.get_field("content")
+            userversion = rs.request.form["revisionstartedwith"]
+            usercontent = rs.request.form["content"]
 
             ok, version, content = course.savepage(page,userversion,usercontent)
             return self.render_edit(rs, academy, course, page, version, content, ok=ok)
