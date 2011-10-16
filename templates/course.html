@@ -25,6 +25,6 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 {{ button(academy.name + "/" + course.name + "/!createpage", "Eine Seite anlegen") }}
 {% endif %}
 {% if user.mayExport(academy) %}
-<a href="{{ basejoin(academy.name + "/" . course.name + "/!raw") }}">Roh-Export</a>
+<a href="{{ basejoin(academy.name + "/" +  course.name + "/!raw") }}">Roh-Export</a>
 {% endif %}
 {% endblock %}
