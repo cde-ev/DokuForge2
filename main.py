@@ -225,6 +225,10 @@ class RequestState:
         self.emit("307 Temporarily Moved")
         return []
 
+app403 = StaticContent("403 Forbidden",
+                       [("Content-type", "text/plain")],
+                       "403 Forbidden", anymethod=True)
+
 app404 = StaticContent("404 File Not Found",
                        [("Content-type", "text/plain")],
                        "404 File Not Found", anymethod=True)
@@ -315,15 +319,24 @@ class Application:
         academy = self.getAcademy(path_parts.pop(0))
         if academy is None:
             return rs.emit_app(app404)
+        if not rs.user.allowedRead(academy.name):
+            return rs.emit_app(app403)
         if not path_parts or not path_parts[0]:
             return self.render_academy(rs, academy)
         course = academy.getCourse(path_parts.pop(0))
         if course is None:
             return rs.emit_app(app404)
+        if not rs.user.allowedRead(academy.name, course.name):
+            return rs.emit_app(app403)
         if not path_parts or  not path_parts[0]:
             return self.render_course(rs, academy, course)
         action = path_parts.pop(0)
+        # fixme action == "show" should be allowed without write permission
+        if not rs.user.allowedWrite(academy.name, course.name):
+            return rs.emit_app(app403)
         if action=="createpage":
+            if rs.environ["REQUEST_METHOD"] != "POST":
+                return rs.emit_app(app405)
             course.newpage(user=rs.user.name)
             return self.render_course(rs, academy, course)
         elif action=="moveup":

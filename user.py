@@ -52,6 +52,24 @@ class User:
         if self.permissions[perm]:
             return True
         return False
+    def allowedRead(self, acaname, coursename = None):
+        if coursename is None:
+            if self.hasPermission("akademie_read_" + path_parts[0]):
+                return True
+        else:
+            if self.hasPermission("akademie_read_" + path_parts[0] + "_" + path_parts[1]):
+                return True
+        return False
+    def allowedWrite(self, acaname, coursename = None):
+        if coursename is None:
+            if self.hasPermission("akademie_write_" + path_parts[0]):
+                return True
+        else:
+            if self.hasPermission("akademie_write_" + path_parts[0] + "_" + path_parts[1]):
+                return True
+        return False
+
+
 
 class UserDB:
     """
