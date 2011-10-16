@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block location%}
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin('df/' + academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin('df/' + academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a> &gt; <a href="{{ basejoin('df/' + academy.name + '/' + course.name + '/' + page|string) }}">Seite #{{ page|string }} </a> &gt; Editieren</a>
+{% endblock %}
 {% block content %}
 
 {% if ok is none %}
@@ -6,15 +9,22 @@ Bitte Text eingeben und mit &quot;Speichern&quot; beenden.
 {% elif ok %}
 Aenderungen erfolgreich gespeichert.
 {% else %}
-<b>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</b>
+<span class=important>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</span>
 Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
 {% endif %}
 
 Seite #{{page}}
-<form action="save" method="post" id="save">
+<form action="saveedit" method="post" id="saveedit">
+	<textarea name="content">{{ content|e }}</textarea>
+	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
+	<input type="hidden" name="contentreceived" value="true">
+	<input type="submit" name="submit" value="Speichern und Editieren">
+</form>
+<form action="saveshow" method="post" id="saveshow">
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="submit" value="Speichern">
 </form>
+<a href="{{basejoin('df/' + academy.name + '/' + course.name + '/' + page|string)}}">Abbrechen</a>
 {% endblock %}
