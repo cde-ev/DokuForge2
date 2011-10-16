@@ -1,6 +1,7 @@
 import os, errno
 import time
 import subprocess
+import re
 
 try:
     check_output = subprocess.check_output
@@ -11,6 +12,22 @@ except AttributeError:
         if proc.returncode:
             raise subprocess.CalledProcessError()
         return output
+
+def rlogv(filename):
+    """
+    Return the head revision of an rcs file
+
+    (needed, as rlog -v is a FreeBSD extension)
+    """
+    f = file(filename, mode="r")
+    content = f.read()
+    f.close()
+    m = re.match(r'^\s*head\s*([0-9.]+)\s*;',content)
+    if m:
+        return m.groups()[0]
+    else:
+        return None
+
 
 class Storage(object):
     def __init__(self,path,filename):
@@ -95,7 +112,10 @@ class Storage(object):
 
     def status(self,havelock=False):
         self.ensureexistence(havelock=havelock)
-        return check_output(["rlog", "-v", self.fullpath()]).split()[1]
+        result = rlogv(self.fullpath("%s,v"))
+        if result is None:
+            result = rlogv(self.fullpath("RCS/%s,v"))
+        return result
 
     def content(self, havelock=False):
         self.ensureexistence(havelock=havelock)
