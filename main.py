@@ -358,14 +358,29 @@ class Application:
         page = int(action)
         if not path_parts:
             return self.render_show(rs, academy, course, page)
-        raise AssertionError("fixme: continue")
+        action = path_parts.pop(0)
+
+        if action=="edit":
+            if not rs.user.allowedWrite(academy.name, course.name):
+                return rs.emit_app(app403)
+            version, content = course.editpage(page)
+            return self.render_edit(rs, academy, course, page, version, content)
+            
+        else:
+            raise AssertionError("fixme: continue")
 
     def render_start(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("start.html"))
 
-    def render_edit(self, rs):
-        return rs.emit_template(self.jinjaenv.get_template("edit.html"),
-                                dict(content="edit me"))
+    def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent):
+        params= dict(
+            academy=academy.AcademyLite(theacademy),
+            course=course.CourseLite(thecourse),
+            page=thepage,
+            content=thecontent, ## Note: must use the provided content, as it has to fit with the version
+            version=theversion)
+        return rs.emit_template(self.jinjaenv.get_template("edit.html"),params)
+
 
     def render_index(self, rs):
         params = dict(
