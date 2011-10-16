@@ -154,26 +154,43 @@ class Application:
         self.userdb = userdb
         self.acapath = acapath
         self.routingmap = werkzeug.routing.Map([
-            werkzeug.routing.Rule("/", endpoint=self.render_start),
+            werkzeug.routing.Rule("/", methods=("GET", "HEAD"),
+                                  endpoint=self.render_start),
             werkzeug.routing.Rule("/login", methods=("POST",),
                                   endpoint=self.do_login),
             werkzeug.routing.Rule("/logout", methods=("POST",),
                                   endpoint=self.do_logout),
-            werkzeug.routing.Rule("/df/", endpoint=self.do_index),
-            werkzeug.routing.Rule("/df/<academy>/", endpoint=self.do_academy),
-            werkzeug.routing.Rule("/df/<academy>/<course>/", endpoint=self.do_course),
+            werkzeug.routing.Rule("/df/", methods=("GET", "HEAD"),
+                                  endpoint=self.do_index),
+            werkzeug.routing.Rule("/df/<academy>/", methods=("GET", "HEAD"),
+                                  endpoint=self.do_academy),
+            werkzeug.routing.Rule("/df/<academy>/<course>/",
+                                  methods=("GET", "HEAD"),
+                                  endpoint=self.do_course),
+            werkzeug.routing.Rule("/df/<academy>/<course>/createpage",
+                                  methods=("POST",),
+                                  endpoint=self.do_createpage),
+            werkzeug.routing.Rule("/df/<academy>/<course>/moveup",
+                                  methods=("POST",), endpoint=self.do_moveup),
             werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>",
+                                  methods=("GET", "HEAD"),
                                   endpoint=self.do_page),
             werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>/edit",
+                                  methods=("GET", "HEAD"),
                                   endpoint=self.do_edit),
+            werkzeug.routing.Rule("/df/<academy>/<course>/<int:page>/save",
+                                  methods=("POST",), endpoint=self.do_save),
         ])
 
-    def getAcademy(self, name):
+    def getAcademy(self, name, user=None):
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
-            return None
+            raise werkzeug.exceptions.NotFound()
         if not os.path.isdir(os.path.join(self.acapath, name)):
-            return None
-        return academy.Academy(os.path.join(self.acapath, name))
+            raise werkzeug.exceptions.NotFound()
+        aca = academy.Academy(os.path.join(self.acapath, name))
+        if user is not None and not user.allowedRead(aca.name):
+            raise werkzeug.exceptions.Forbidden()
+        return aca
 
     def createAcademy(self, name, title, groups):
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
@@ -201,24 +218,6 @@ class Application:
             return endpoint(rs, **args)
         except werkzeug.routing.HTTPException, e:
             return e
-        if not request.environ["PATH_INFO"]:
-            return rs.emit_permredirect("")
-        if request.environ["PATH_INFO"] == "/login":
-            return self.do_login(rs)
-        if request.environ["PATH_INFO"] == "/logout":
-            return self.do_logout(rs)
-        path_parts = request.environ["PATH_INFO"].split('/')
-        if not path_parts[0]:
-            path_parts.pop(0)
-        if not path_parts or not path_parts[0]:
-            if rs.user:
-                return self.render_index(rs)
-            else:
-                return self.render_start(rs)
-        if path_parts[0] == "df":
-            path_parts.pop(0)
-            return self.do_df(rs, path_parts)
-        return resp404
 
     def check_login(self, rs):
         if rs.user is None:
@@ -249,20 +248,12 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"))
-        if aca is None:
-            return resp404
-        if not rs.user.allowedRead(aca.name):
-            return resp403
         return self.render_academy(rs, aca)
 
     def do_course(self, rs, academy = None, course = None):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"))
-        if aca is None:
-            return resp404
-        if not rs.user.allowedRead(aca.name):
-            return resp403
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
             return resp404
@@ -270,14 +261,43 @@ class Application:
             return resp403
         return self.render_course(rs, aca, c)
 
+    def do_createpage(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"))
+        c = aca.getCourse(course.encode("utf8"))
+        if c is None:
+            return resp404
+        if not rs.user.allowedRead(aca.name, c.name):
+            return resp403
+        if not rs.user.allowedWrite(aca.name, c.name):
+            return resp403
+        c.newpage(user=rs.user.name)
+        return self.render_course(rs, aca, c)
+
+    def do_moveup(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"))
+        c = aca.getCourse(course.encode("utf8"))
+        if c is None:
+            return resp404
+        if not rs.user.allowedRead(aca.name, c.name):
+            return resp403
+        if not rs.user.allowedWrite(aca.name, c.name):
+            return resp403
+        numberstr = rs.request.form["number"]
+        try:
+            number = int(numberstr)
+        except ValueError:
+            number = 0
+        c.swappages(number, user=rs.user.name)
+        return self.render_course(rs, aca, c)
+
     def do_page(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"))
-        if aca is None:
-            return resp404
-        if not rs.user.allowedRead(aca.name):
-            return resp403
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
             return resp404
@@ -289,10 +309,6 @@ class Application:
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"))
-        if aca is None:
-            return resp404
-        if not rs.user.allowedRead(aca.name):
-            return resp403
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
             return resp404
@@ -303,78 +319,28 @@ class Application:
         version, content = c.editpage(page)
         return self.render_edit(rs, aca, c, page, version, content)
 
-
-    def do_df(self, rs, path_parts):
-        path_parts = filter(None, path_parts)
-        if not rs.user:
-            return rs.emit_tempredirect("")
-        if not path_parts:
-            return self.render_index(rs)
-        academy = self.getAcademy(path_parts.pop(0))
-        if academy is None:
+    def do_save(self, rs, academy = None, course = None, page = None):
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"))
+        c = aca.getCourse(course.encode("utf8"))
+        if c is None:
             return resp404
-        if not rs.user.allowedRead(academy.name):
+        if not rs.user.allowedRead(aca.name, c.name):
             return resp403
-        if not path_parts:
-            return self.render_academy(rs, academy)
-        course = academy.getCourse(path_parts.pop(0))
-        if course is None:
-            return resp404
-        if not rs.user.allowedRead(academy.name, course.name):
+        if not rs.user.allowedWrite(aca.name, c.name):
             return resp403
-        if not path_parts:
-            return self.render_course(rs, academy, course)
-        action = path_parts.pop(0)
-        if action=="createpage":
-            if not rs.user.allowedWrite(academy.name, course.name):
-                return resp403
-            if rs.request.method != "POST":
-                return resp405
-            course.newpage(user=rs.user.name)
-            return self.render_course(rs, academy, course)
-        elif action=="moveup":
-            if not rs.user.allowedWrite(academy.name, course.name):
-                return resp403
-            if rs.request.method != "POST":
-                return resp405
-            numberstr = rs.request.form["number"]
-            try:
-                number = int(numberstr)
-            except ValueError:
-                number = 0
-            course.swappages(number,user=rs.user.name)
-            return self.render_course(rs, academy, course)
 
-        ## no action at course level, must be a page
-        if not action.isdigit():
-            return resp404
-        page = int(action)
-        if not path_parts:
-            return self.render_show(rs, academy, course, page)
-        action = path_parts.pop(0)
-
-        if action=="edit":
-            if not rs.user.allowedWrite(academy.name, course.name):
-                return resp403
-            version, content = course.editpage(page)
-            return self.render_edit(rs, academy, course, page, version, content)
-        elif action=="save":
-            if not rs.user.allowedWrite(academy.name, course.name):
-                return resp403
-            userversion = rs.request.form["revisionstartedwith"]
-            usercontent = rs.request.form["content"]
-                
-            ok, version, content = course.savepage(page,userversion,usercontent)
+        userversion = rs.request.form["revisionstartedwith"]
+        usercontent = rs.request.form["content"]
             
-            issaveshow = "saveshow" in rs.request.form
-            if ok and issaveshow:
-                return self.render_show(rs, academy, course, page, saved=True)
-            
-            return self.render_edit(rs, academy, course, page, version, content, ok=ok)
-            
-            
-        else:
-            raise AssertionError("fixme: continue")
+        ok, version, content = c.savepage(page, userversion, usercontent)
+        
+        issaveshow = "saveshow" in rs.request.form
+        if ok and issaveshow:
+            return self.render_show(rs, aca, c, page, saved=True)
+        
+        return self.render_edit(rs, aca, c, page, version, content, ok=ok)
 
     def render_start(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("start.html"))
