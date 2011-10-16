@@ -131,12 +131,7 @@ class Academy(AcademyLite):
         """
         @returns: list of Course object; all courses of this academy
         """
-        candidates = os.listdir(self.path)
-        final = copy.deepcopy(candidates)
-        for x in candidates:
-            if not os.path.isdir(os.path.join(self.path, x)):
-                final.remove(x)
-        return [course.Course(os.path.join(self.path, x)) for x in final]
+        return list(map(courses.Course, self.listCoursesLite()))
 
     def getCourse(self,coursename):
         """
