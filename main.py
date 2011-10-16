@@ -375,13 +375,14 @@ class Application:
     def render_start(self, rs):
         return rs.emit_template(self.jinjaenv.get_template("start.html"))
 
-    def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent):
+    def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent, ok=None):
         params= dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage,
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
-            version=theversion)
+            version=theversionm,
+            ok=ok)
         return rs.emit_template(self.jinjaenv.get_template("edit.html"),params)
 
 
