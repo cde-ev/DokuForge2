@@ -14,7 +14,7 @@ if __name__ == "__main__":
     mystore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(mystore)
     userdb.addUser("arthur", "dokubeauftragter", "mypass", dict([("akademie_read_pa2010", True), ("akademie_read_za2011", True), ("akademie_read_za2011_course01", True)]))
-    userdb.addUser("bob", "dokuteam", "secret", dict([("akademie_read_pa2010", True), ("akademie_write_pa2010", True), ("df_useradmin", True), ("akademie_read_za2011", True), ("akademie_read_za2011_course01", True),  ("akademie_write_za2011_course01", True),  ("akademie_read_za2011_course02", True)]))
+    userdb.addUser("bob", "dokuteam", "secret", dict([("akademie_read_pa2010", True), ("akademie_write_pa2010", True), ("df_useradmin", True), ("akademie_read_za2011-1", True), ("akademie_read_za2011-1_course01", True),  ("akademie_write_za2011-1_course01", True),  ("akademie_read_za2011-1_course02", True)]))
     userdb.store()
     try:
         os.mkdir("df")
