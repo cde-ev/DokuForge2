@@ -5,7 +5,13 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 {% block content %}
 <ul>
 {% for academy in academies %}
-<li><a href="{{ basejoin("df/" + academy.name) }}">{{ academy.gettitle()|e }}</a></li>
+  {% if "cde" in academy.getgroups() %}
+    {% if user.allowedRead(academy.name) %}
+    <li><a href="{{ basejoin("df/" + academy.name) }}">{{ academy.gettitle()|e }}</a></li>
+    {% else %}
+    <li>{{ academy.gettitle()|e }}</li>
+    {% endif %}
+  {% endif %}
 {% else %}
 <li><em>Keine Akademien gefunden.</em></li>
 {% endfor %}
