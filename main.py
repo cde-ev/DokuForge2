@@ -382,7 +382,7 @@ class Application:
             course=course.CourseLite(thecourse),
             page=thepage,
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
-            version=theversionm,
+            version=theversion,
             ok=ok)
         return rs.emit_template(self.jinjaenv.get_template("edit.html"),params)
 
