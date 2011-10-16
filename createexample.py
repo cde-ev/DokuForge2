@@ -36,9 +36,7 @@ if __name__ == "__main__":
                          ("akademie_write_ya2011-1", True),
                          ("akademie_read_ya2011-1_course01", True),
                          ("akademie_write_ya2011-1_course01", True),
-                         ("akademie_read_ya2011-1_course02", True),
-                         ("akademie_read_xa2011-1", True),
-                         ("akademie_read_xa2011-1_course01", True)]))
+                         ("akademie_read_ya2011-1_course02", True)]))
     userdb.store()
     try:
         os.mkdir("df")
@@ -60,7 +58,7 @@ This is an example with some nice math: $e^{i\pi}+1=0$.
                      ('course02',"Die Hedonistische Internationale", 3),
                      ('course03', "Orgateams und ihre Geschichte", 4)])
 
-    aca = createaca("xa2011-1", "X-Akademie", ["qed"],
+    aca = createaca("xa2011-1", "X-Akademie", ["cde"],
                     [('course01',"Area51", 2),
                      ('course02',"Fox Mulders Biographie", 3),
                      ('course03', "Selbstverteidigung gegen Poltergeister", 4)])
