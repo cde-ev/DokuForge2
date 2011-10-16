@@ -151,7 +151,7 @@ class Application:
         self.acapath = acapath
         self.routingmap = werkzeug.routing.Map([
             werkzeug.routing.Rule("/", methods=("GET", "HEAD"),
-                                  endpoint=self.render_start),
+                                  endpoint=self.do_start),
             werkzeug.routing.Rule("/login", methods=("POST",),
                                   endpoint=self.do_login),
             werkzeug.routing.Rule("/logout", methods=("POST",),
@@ -218,6 +218,12 @@ class Application:
     def check_login(self, rs):
         if rs.user is None:
             raise TemporaryRequestRedirect(rs.application_uri)
+
+    def do_start(self, rs):
+        if rs.user is None:
+            return self.render_start(rs)
+        return TemporaryRequestRedirect(
+            urllib.basejoin(rs.application_uri, "df/"))
 
     def do_login(self, rs):
         rs.response.headers.content_type = "text/plain"
