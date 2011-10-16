@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
+
+{% if ok is None %}
+Bitte Text eingeben und mit &quot;Speichern&quot; beenden.
+{% elif ok %}
+Aenderungen erfolgreich gespeichert.
+{% else %}
+<b>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</b>
+Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
+{% endif %}
+
 Seite #{{page}}
 <form action="save" method="post" id="edit">
 	<textarea name="content">{{ content|e }}</textarea>
