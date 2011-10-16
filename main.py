@@ -10,6 +10,7 @@ import copy
 import re
 import urllib
 import wsgiref.util
+import operator
 from wsgitools.applications import StaticContent, StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
@@ -265,7 +266,9 @@ class Application:
         return aca
 
     def listAcademies(self):
-        return map(self.getAcademy, os.listdir(self.acapath))
+        ret = map(self.getAcademy, os.listdir(self.acapath))
+        ret.sort(key=operator.attrgetter('name'))
+        return ret
 
     def __call__(self, environ, start_response):
         rs = RequestState(environ, start_response, self.sessiondb,
