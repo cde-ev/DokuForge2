@@ -6,7 +6,7 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
 <ul>
 {% for academy in academies %}
   {% if "cde" in academy.getgroups() %}
-    {% if user.allowedRead(academy.name) %}
+    {% if user.allowedRead(academy) %}
     <li><a href="{{ basejoin("df/" + academy.name) }}">{{ academy.gettitle()|e }}</a></li>
     {% else %}
     <li>{{ academy.gettitle()|e }}</li>

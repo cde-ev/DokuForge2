@@ -26,7 +26,7 @@ class User:
     @ivar password: password of the user
     @ivar permissions: dictionary of permissions, the syntax is as follows:
                        akademie_x_y_z ... x in {read, write}, y akademiename, z kursname
-                       df_x ... x in {admin, useradmin, dokuteam, show_global, read_global, write_global, show_cde, read_cde, write_cde, export}
+                       df_x ... x in {admin, useradmin, show_global, read_global, write_global, show_cde, read_cde, write_cde, export}
     """
     def __init__(self, name, status, password, permissions):
         """
@@ -53,20 +53,30 @@ class User:
             return True
         return False
 
-    def allowedRead(self, acaname, coursename = None):
-        if coursename is None:
-            return self.hasPermission("akademie_read_%s" % acaname)
+    def allowedRead(self, aca, course = None):
+        if self.hasPermission("df_read_global"):
+            return True
+        for g in aca.getgroups():
+            if self.hasPermission("df_read_" + g):
+                return True
+        if course is None:
+            return self.hasPermission("akademie_read_%s" % aca.name)
         else:
-            return self.hasPermission("akademie_read_%s_%s" % (acaname, coursename))
+            return self.hasPermission("akademie_read_%s_%s" % (aca.name, course.name))
 
-    def allowedWrite(self, acaname, coursename = None):
-        if coursename is None:
-            return self.hasPermission("akademie_write_%s" % acaname)
+    def allowedWrite(self, aca, course = None):
+        if self.hasPermission("df_write_global"):
+            return True
+        for g in aca.getgroups():
+            if self.hasPermission("df_write_" + g):
+                return True
+        if course is None:
+            return self.hasPermission("akademie_write_%s" % aca.name)
         else:
-            return self.hasPermission("akademie_write_%s_%s" % (acaname, coursename))
+            return self.hasPermission("akademie_write_%s_%s" % (aca.name, course.name))
 
-    def mayExport(self, acaname):
-        if not self.allowedRead(acaname):
+    def mayExport(self, aca):
+        if not self.allowedRead(aca):
             return False
         return self.hasPermission("df_export")
 

@@ -7,7 +7,7 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 {% if courses %}
 <ol>
 	{% for course in courses %}
-	    {% if user.allowedRead(academy.name, course.name) %}
+	    {% if user.allowedRead(academy, course) %}
 	    <li><a href="{{ basejoin("df/" + academy.name + '/' + course.name) }}">{{ course.gettitle()|e }}</a></li>
 	    {% else %}
 	    <li>{{ course.gettitle()|e }}</li>
@@ -17,7 +17,7 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin
 {% else %}
 <em>Keine Kurse gefunden.</em>
 {% endif %}
-{% if user.mayExport(academy.name)%}
+{% if user.mayExport(academy)%}
 {{ button("df/" + academy.name + "?export", "Exportieren") }}
 {% endif%}
 {% endblock %}

@@ -184,7 +184,7 @@ class Application:
         if not os.path.isdir(os.path.join(self.acapath, name)):
             raise werkzeug.exceptions.NotFound()
         aca = academy.Academy(os.path.join(self.acapath, name))
-        if user is not None and not user.allowedRead(aca.name):
+        if user is not None and not user.allowedRead(aca):
             raise werkzeug.exceptions.Forbidden()
         return aca
 
@@ -259,7 +259,7 @@ class Application:
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
             raise werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca.name, c.name):
+        if not rs.user.allowedRead(aca, c):
             raise werkzeug.exceptions.Forbidden()
         return self.render_course(rs, aca, c)
 
@@ -270,9 +270,9 @@ class Application:
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
             return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca.name, c.name):
+        if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        if not rs.user.allowedWrite(aca.name, c.name):
+        if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         c.newpage(user=rs.user.name)
         return self.render_course(rs, aca, c)
@@ -284,9 +284,9 @@ class Application:
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
             return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca.name, c.name):
+        if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        if not rs.user.allowedWrite(aca.name, c.name):
+        if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         numberstr = rs.request.form["number"]
         try:
@@ -303,7 +303,7 @@ class Application:
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
             return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca.name, c.name):
+        if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.render_show(rs, aca, c, page)
 
@@ -314,9 +314,9 @@ class Application:
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
             return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca.name, c.name):
+        if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        if not rs.user.allowedWrite(aca.name, c.name):
+        if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         version, content = c.editpage(page)
         return self.render_edit(rs, aca, c, page, version, content)
@@ -328,9 +328,9 @@ class Application:
         c = aca.getCourse(course.encode("utf8"))
         if c is None:
             return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca.name, c.name):
+        if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        if not rs.user.allowedWrite(aca.name, c.name):
+        if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
         userversion = rs.request.form["revisionstartedwith"]
