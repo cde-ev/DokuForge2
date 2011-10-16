@@ -12,6 +12,6 @@ Seite #{{page}}
 </pre>
 <hr>
 {% if user.allowedWrite(academy.name, course.name) %}
-{{ button("df/" + academy.name + "/" + course.name + "/" + page|string + "/edit", "Editieren") }}
+<a href="{{basejoin("df/" + academy.name + "/" + course.name + "/" + page|string + "/edit")}}">Editieren</a>
 {% endif %}
 {% endblock %}
