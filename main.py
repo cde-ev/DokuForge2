@@ -102,19 +102,6 @@ class RequestState:
         self.user = None
         self.sessionhandler.delete()
 
-    def emit_content(self, content):
-        self.response.data = content
-        return self.response
-
-    def emit_template(self, template, extraparams=dict()):
-        self.response.content_type = "text/html; charset=utf8"
-        params = dict(
-            user=self.user,
-            basejoin = lambda tail: urllib.basejoin(self.request.url_root, tail)
-        )
-        params.update(extraparams)
-        return self.emit_content(template.render(params).encode("utf8"))
-
 class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
                                werkzeug.routing.RoutingException):
     code = 307
@@ -240,9 +227,11 @@ class Application:
             password = rs.request.form["password"]
             rs.request.form["submit"] # just check for existence
         except KeyError:
-            return rs.emit_content("missing form fields")
+            rs.response.data = "missing form fields"
+            return rs.response
         if not self.userdb.checkLogin(username, password):
-            return rs.emit_content("wrong password")
+            rs.response.data = "wrong password"
+            return rs.response
         rs.login(username)
         return self.render_index(rs)
 
@@ -317,7 +306,8 @@ class Application:
         aca = self.getAcademy(academy.encode("utf8"), rs.user)
         c = self.getCourse(aca, course.encode("utf8"), rs.user)
         rs.response.content_type = "application/octet-stream"
-        return rs.emit_content(c.export())
+        rs.response.data = c.export()
+        return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -388,7 +378,7 @@ class Application:
         return self.render_admin(rs, version, content, ok=ok)
 
     def render_start(self, rs):
-        return rs.emit_template(self.jinjaenv.get_template("start.html"))
+        return self.render("start.html", rs)
 
     def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent, ok=None):
         params= dict(
@@ -398,32 +388,29 @@ class Application:
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
             ok=ok)
-        return rs.emit_template(self.jinjaenv.get_template("edit.html"),params)
+        return self.render("edit.html", rs, params)
 
 
     def render_index(self, rs):
         params = dict(
             academies=map(academy.AcademyLite, self.listAcademies()))
-        return rs.emit_template(self.jinjaenv.get_template("index.html"),
-                                params)
+        return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
-        return rs.emit_template(self.jinjaenv.get_template("academy.html"),
-                                dict(academy=academy.AcademyLite(theacademy)))
+        return self.render("academy.html", rs,
+                           dict(academy=academy.AcademyLite(theacademy)))
 
     def render_deadpages(self, rs, theacademy, thecourse):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse))
-        return rs.emit_template(self.jinjaenv.get_template("dead.html"),
-                                params)
+        return self.render("dead.html", rs, params)
 
     def render_course(self, rs, theacademy, thecourse):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse))
-        return rs.emit_template(self.jinjaenv.get_template("course.html"),
-                                params)
+        return self.render("course.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(
@@ -432,16 +419,25 @@ class Application:
             page=thepage,
             content=thecourse.showpage(thepage),
             saved=saved)
-        return rs.emit_template(self.jinjaenv.get_template("show.html"),
-                                params)
+        return self.render("show.html", rs, params)
 
     def render_admin(self, rs, theversion, thecontent, ok=None):
         params= dict(
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
             ok=ok)
-        return rs.emit_template(self.jinjaenv.get_template("admin.html"),params)
+        return self.render("admin.html", rs, params)
 
+    def render(self, templatename, rs, extraparams=dict()):
+        rs.response.content_type = "text/html; charset=utf8"
+        params = dict(
+            user=rs.user,
+            basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
+        )
+        params.update(extraparams)
+        template = self.jinjaenv.get_template(templatename)
+        rs.response.data = template.render(params).encode("utf8")
+        return rs.response
 
 def main():
     userdbstore = storage.Storage('work', 'userdb')
