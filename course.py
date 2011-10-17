@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import os
 from storage import Storage
 from common import check_output
