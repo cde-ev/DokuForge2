@@ -76,8 +76,8 @@ class Storage(object):
         return os.path.join(self.path, formatstr % self.filename)
 
     @property
-    def lockpath(self):
-        return self.fullpath("#lock.%s")
+    def lock(self):
+        return LockDir(self.fullpath("#lock.%s"))
 
     def store(self, content, user=None, message="store called", havelock=None):
         """
@@ -86,7 +86,7 @@ class Storage(object):
 
         @param content: the content of the file as str-object
         """
-        with havelock or LockDir(self.lockpath) as gotlock:
+        with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()])
             objfile = file(self.fullpath(), mode="w")
@@ -100,7 +100,7 @@ class Storage(object):
                 
     def ensureexistence(self, havelock=None):
         if not os.path.exists(self.fullpath("%s,v")):
-            with havelock or LockDir(self.lockpath):
+            with havelock or self.lock:
                 subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                        self.fullpath()])
                 file(self.fullpath(), mode="w").close()
@@ -128,7 +128,7 @@ class Storage(object):
 
         @returns: an opaque version string and the contents of the file
         """
-        with havelock or LockDir(self.lockpath) as gotlock:
+        with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             status=self.status(havelock=gotlock)
             content=self.content(havelock=gotlock)
@@ -151,7 +151,7 @@ class Storage(object):
                   and (newversion,mergedcontent) is a state for further editing that can be
                   used as if obtained from startedit
         """
-        with havelock or LockDir(self.lockpath) as gotlock:
+        with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             currentversion = self.status(havelock=gotlock)
             if currentversion == version:

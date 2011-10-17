@@ -2,7 +2,6 @@ from __future__ import with_statement
 import os
 from storage import Storage
 from common import check_output
-from storage import LockDir
 
 class CourseLite:
     """
@@ -60,8 +59,8 @@ class CourseLite:
         """
         indexstore = Storage(self.path, "Index")
         nextpage = Storage(self.path, "nextpage")
-        with LockDir(indexstore.lockpath) as gotlockindex:
-            with LockDir(nextpage.lockpath) as gotlocknextpage:
+        with indexstore.lock as gotlockindex:
+            with nextpage.lock as gotlocknextpage:
                 np = self.nextpage(havelock=gotlocknextpage)
                 linkedpages= self.listpages(havelock=gotlockindex)
                 return [x for x in range(np) if x not in linkedpages]
@@ -131,8 +130,8 @@ class Course(CourseLite):
         """
         index = Storage(self.path,"Index")
         nextpagestore = Storage(self.path,"nextpage")
-        with LockDir(index.lockpath) as gotlockindex:
-            with LockDir(nextpagestore.lockpath) as gotlocknextpage:
+        with index.lock as gotlockindex:
+            with nextpagestore.lock as gotlocknextpage:
                 newnumber = self.nextpage(havelock=gotlocknextpage)
                 nextpagestore.store("%d" % (newnumber+1),havelock=gotlocknextpage,user=user)
                 indexcontents = index.content(havelock=gotlockindex)
@@ -148,7 +147,7 @@ class Course(CourseLite):
         @type number: int
         """
         indexstore = Storage(self.path,"Index")
-        with LockDir(indexstore.lockpath) as gotlock:
+        with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
             newlines = []
@@ -165,7 +164,7 @@ class Course(CourseLite):
         @type position: int
         """
         indexstore = Storage(self.path,"Index")
-        with LockDir(indexstore.lockpath) as gotlock:
+        with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
             if position<len and position>0:
@@ -181,8 +180,8 @@ class Course(CourseLite):
         """
         indexstore = Storage(self.path, "Index")
         nextpage = Storage(self.path, "nextpage")
-        with LockDir(indexstore.lockpath) as gotlockindex:
-            with LockDir(nextpage.lockpath) as gotlocknextpage:
+        with indexstore.lock as gotlockindex:
+            with nextpage.lock as gotlocknextpage:
                 np = self.nextpage(havelock=gotlocknextpage)
                 if page >= np:
                     pass # can only relink in the allowed range
@@ -255,8 +254,8 @@ class Course(CourseLite):
         indexstore = Storage(self.path,"Index")
         nextblobstore = Storage(self.path,"nextpage")
 
-        with LockDir(indexstore.lockpath) as gotlockindex:
-            with LockDir(nextblobstore.lockpath) as gotlocknextblob:
+        with indexstore.lock as gotlockindex:
+            with nextblobstore.lock as gotlocknextblob:
                 newnumber = self.nextpage(havelock=gotlocknextblob)
                 nextblobstore.store("%d" % (newnumber+1),havelock=gotlocknextblob)
                 index = indexstore.content()
