@@ -53,6 +53,19 @@ class CourseLite:
         lines = index.splitlines()
         return [int(line.split()[0]) for line in lines]
 
+    def listdeadpages(self):
+        """
+        return a list of the pages not currently linked in the index
+        """
+        indexstore = Storage(self.path, "Index")
+        nextpage = Storage(self.path, "nextpage")
+        with LockDir(indexstore.lockpath) as gotlockindex:
+            with LockDir(nextpage.lockpath) as gotlocknextpage:
+                np = self.nextpage(havelock=gotlocknextpage)
+                linkedpages= self.listpages(havelock=gotlockindex)
+                return [x for x in range(np) if x not in linkedpages]
+            
+
     def showpage(self,number):
         """
         Show the contents of a page
@@ -160,6 +173,27 @@ class Course(CourseLite):
                 lines[position]=tmp
             newindex="\n".join(lines) + "\n"
             indexstore.store(newindex,havelock=gotlock,user=user)
+
+    def relink(self, page, user=None):
+        """
+        relink a (usually deleted) page to the index
+        """
+        indexstore = Storage(self.path, "Index")
+        nextpage = Storage(self.path, "nextpage")
+        with LockDir(indexstore.lockpath) as gotlockindex:
+            with LockDir(nextpage.lockpath) as gotlocknextpage:
+                np = self.nextpage(havelock=gotlocknextpage)
+                if page >= np:
+                    pass # can only relink in the allowed range
+                else:
+                    index = indexstore.content(havelock=gotlockindex)
+                    lines = index.splitlines()
+                    if page in [int(x.split()[0]) for x in lines]:
+                        pass # page already present
+                    else:
+                        lines.append("%d" % page)
+                        newindex="\n".join(lines) + "\n"
+                        indexstore.store(newindex,havelock=gotlockindex,user=user)
 
     def editpage(self,number):
         """

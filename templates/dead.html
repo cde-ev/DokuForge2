@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block location%}
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin(academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin(academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a>
+{% endblock %}
+{% block content %}
+{% set deads=course.listdeadpages() %}
+{% if deads %}
+<ol>
+	{% for page in deads %}
+	<li> #{{ page }} 
+         {{ button(academy.name + "/" + course.name + "/!relink", "wiederherstellen", dict(number=page)) }}
+	</li>
+	{% endfor %}
+</ol>
+{% else %}
+<em>Keine gel&ouml;schten Seiten gefunden gefunden.</em>
+{% endif %}
+{% endblock %}

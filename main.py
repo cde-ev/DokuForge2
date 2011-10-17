@@ -171,8 +171,13 @@ class Application:
             werkzeug.routing.Rule("/<academy>/<course>/!createpage",
                                   methods=("POST",),
                                   endpoint=self.do_createpage),
+            werkzeug.routing.Rule("/<academy>/<course>/!deadpages",
+                                  methods=("GET", "HEAD"),
+                                  endpoint=self.do_showdeadpages),
             werkzeug.routing.Rule("/<academy>/<course>/!moveup",
                                   methods=("POST",), endpoint=self.do_moveup),
+            werkzeug.routing.Rule("/<academy>/<course>/!relink",
+                                  methods=("POST",), endpoint=self.do_relink),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_page),
@@ -273,6 +278,15 @@ class Application:
         c = self.getCourse(aca, course.encode("utf8"), rs.user)
         return self.render_course(rs, aca, c)
 
+    def do_showdeadpages(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        return self.render_deadpages(rs, aca, c)
+
     def do_createpage(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -291,6 +305,21 @@ class Application:
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         c.delpage(page, user=rs.user.name)
+        return self.render_course(rs, aca, c)
+
+    def do_relink(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        numberstr = rs.request.form["number"]
+        try:
+            number = int(numberstr)
+        except ValueError:
+            number = 0
+        c.relink(number, user=rs.user.name)
         return self.render_course(rs, aca, c)
 
     def do_moveup(self, rs, academy=None, course=None):
@@ -384,6 +413,13 @@ class Application:
     def render_academy(self, rs, theacademy):
         return rs.emit_template(self.jinjaenv.get_template("academy.html"),
                                 dict(academy=academy.AcademyLite(theacademy)))
+
+    def render_deadpages(self, rs, theacademy, thecourse):
+        params = dict(
+            academy=academy.AcademyLite(theacademy),
+            course=course.CourseLite(thecourse))
+        return rs.emit_template(self.jinjaenv.get_template("dead.html"),
+                                params)
 
     def render_course(self, rs, theacademy, thecourse):
         params = dict(
