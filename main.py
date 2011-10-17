@@ -181,6 +181,8 @@ class Application:
                                   endpoint=self.do_edit),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!save",
                                   methods=("POST",), endpoint=self.do_save),
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!delete",
+                                  methods=("POST",), endpoint=self.do_delete),
         ])
 
     def getAcademy(self, name, user=None):
@@ -279,6 +281,16 @@ class Application:
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         c.newpage(user=rs.user.name)
+        return self.render_course(rs, aca, c)
+
+    def do_delete(self, rs, academy=None, course=None, page=None):
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        c.delpage(page, user=rs.user.name)
         return self.render_course(rs, aca, c)
 
     def do_moveup(self, rs, academy=None, course=None):
