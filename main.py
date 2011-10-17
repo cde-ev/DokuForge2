@@ -120,14 +120,6 @@ class RequestState:
         params.update(extraparams)
         return self.emit_content(template.render(params).encode("utf8"))
 
-    def emit_permredirect(self, location):
-        return werkzeug.utils.redirect(
-            urllib.basejoin(self.application_uri, location), 301)
-
-    def emit_tempredirect(self, location):
-        return werkzeug.utils.redirect(
-            urllib.basejoin(self.application_uri, location), 307)
-
 class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
                                werkzeug.routing.RoutingException):
     code = 307
