@@ -170,6 +170,8 @@ class Application:
                                   methods=("POST",), endpoint=self.do_moveup),
             werkzeug.routing.Rule("/<academy>/<course>/!relink",
                                   methods=("POST",), endpoint=self.do_relink),
+            werkzeug.routing.Rule("/<academy>/<course>/!raw",
+                                  methods=("GET", "HEAD"), endpoint=self.do_raw),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_page),
@@ -313,6 +315,14 @@ class Application:
             number = 0
         c.relink(number, user=rs.user.name)
         return self.render_course(rs, aca, c)
+
+    def do_raw(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        rs.response.content_type = "application/octet-stream"
+        return rs.emit_content(c.export())
 
     def do_moveup(self, rs, academy=None, course=None):
         assert academy is not None and course is not None

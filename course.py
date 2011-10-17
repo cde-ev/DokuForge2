@@ -115,7 +115,7 @@ class Course(CourseLite):
         """
         return a tar ball containing the full internal information about this course
         """
-        return check_output(["tar","cvf","-",self.path])
+        return check_output(["tar","cf","-",self.path])
     
     def settitle(self,title):
         """
