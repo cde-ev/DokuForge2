@@ -11,7 +11,6 @@ import werkzeug.utils
 from werkzeug.wrappers import Request, Response
 import werkzeug.exceptions
 import werkzeug.routing
-import wsgiref.util
 import operator
 from wsgitools.applications import StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
@@ -94,10 +93,6 @@ class RequestState:
         self.sessionhandler = SessionHandler(sessiondb, request, self.response)
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
-        self.request_uri = wsgiref.util.request_uri(request.environ)
-        self.application_uri = wsgiref.util.application_uri(request.environ)
-        if not self.application_uri.endswith("/"):
-            self.application_uri += "/"
 
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
@@ -115,7 +110,7 @@ class RequestState:
         self.response.content_type = "text/html; charset=utf8"
         params = dict(
             user=self.user,
-            basejoin = lambda tail: urllib.basejoin(self.application_uri, tail)
+            basejoin = lambda tail: urllib.basejoin(self.request.url_root, tail)
         )
         params.update(extraparams)
         return self.emit_content(template.render(params).encode("utf8"))
@@ -231,7 +226,7 @@ class Application:
 
     def check_login(self, rs):
         if rs.user is None:
-            raise TemporaryRequestRedirect(rs.application_uri)
+            raise TemporaryRequestRedirect(rs.request.url_root)
 
     def do_start(self, rs):
         if rs.user is None:
