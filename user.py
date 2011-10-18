@@ -26,7 +26,7 @@ class User:
     @ivar password: password of the user
     @ivar permissions: dictionary of permissions, the syntax is as follows:
                        akademie_x_y_z ... x in {read, write}, y akademiename, z kursname
-                       df_x ... x in {admin, useradmin, show_global, read_global, write_global, show_cde, read_cde, write_cde, export}
+                       df_x ... x in {admin, useradmin, show, read, write, show_cde, read_cde, write_cde, export}
     """
     def __init__(self, name, status, password, permissions):
         """
@@ -54,7 +54,7 @@ class User:
         return False
 
     def allowedRead(self, aca, course = None):
-        if self.hasPermission("df_read_global"):
+        if self.hasPermission("df_read"):
             return True
         for g in aca.getgroups():
             if self.hasPermission("df_read_" + g):
@@ -65,7 +65,7 @@ class User:
             return self.hasPermission("akademie_read_%s_%s" % (aca.name, course.name))
 
     def allowedWrite(self, aca, course = None):
-        if self.hasPermission("df_write_global"):
+        if self.hasPermission("df_write"):
             return True
         for g in aca.getgroups():
             if self.hasPermission("df_write_" + g):
