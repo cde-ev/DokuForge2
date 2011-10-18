@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block location%}
-Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin('!admin') }}">Administration</a>
+{{ trivnavbar([('!admin', "Administration")]) }}
 {% endblock %}
 {% block content %}
 

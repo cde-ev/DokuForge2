@@ -6,6 +6,16 @@
 	<input type="submit" name="submit" value="{{ label|e }}">
 </form>
 {%- endmacro -%}
+{% macro trivnavbar(entries) -%}
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
+{%- for (url, title) in entries -%}
+{%- if url == '' -%}
+{# comment to protect space #} &gt; {{ title|e}}
+{%- else -%}
+{# comment to protect space #} &gt; <a href="{{ basejoin(url) }}">{{ title|e}}</a>
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro -%}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="de">
 <head>

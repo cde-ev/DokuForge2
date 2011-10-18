@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block location%}
-Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin(academy.name) }}">{{ academy.gettitle()|e}}</a>
+{{ trivnavbar([(academy.name, academy.gettitle())]) }}
 {% endblock %}
 {% block content %}
 {% set courses = academy.listCoursesLite() %}
