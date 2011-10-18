@@ -6,12 +6,14 @@ import os
 import sqlite3
 import copy
 import re
+import sys
 import urllib
 import werkzeug.utils
 from werkzeug.wrappers import Request, Response
 import werkzeug.exceptions
 import werkzeug.routing
 import operator
+from wsgiref.simple_server import make_server
 from wsgitools.applications import StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
@@ -448,8 +450,11 @@ def main():
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))
     app = SubdirMiddleware(app, staticfiles)
-    server = SCGIServer(app, 4000)
-    server.run()
+    if sys.argv[1:2] == ["simple"]:
+        make_server("localhost", 8800, app).serve_forever()
+    else:
+        server = SCGIServer(app, 4000)
+        server.run()
 
 if __name__ == '__main__':
     main()
