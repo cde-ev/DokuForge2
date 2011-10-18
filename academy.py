@@ -3,7 +3,6 @@ import os
 import storage
 import course
 import re
-import copy
 import operator
 from course import Course, CourseLite
 

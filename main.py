@@ -6,13 +6,14 @@ import os
 import sqlite3
 import copy
 import re
+import sys
 import urllib
 import werkzeug.utils
 from werkzeug.wrappers import Request, Response
 import werkzeug.exceptions
 import werkzeug.routing
-import wsgiref.util
 import operator
+from wsgiref.simple_server import make_server
 from wsgitools.applications import StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer
@@ -43,7 +44,8 @@ class SessionHandler:
         """
         @param db: a DBAPI2 database that has a sessions table as described
                 in the create_table class variable
-        @type environ: dict
+        @type request: werkzeug.wrappers.Request
+        @type response: werkzeug.wrappers.Response
         """
         self.db = db
         self.cur = db.cursor()
@@ -93,10 +95,6 @@ class RequestState:
         self.sessionhandler = SessionHandler(sessiondb, request, self.response)
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
-        self.request_uri = wsgiref.util.request_uri(request.environ)
-        self.application_uri = wsgiref.util.application_uri(request.environ)
-        if not self.application_uri.endswith("/"):
-            self.application_uri += "/"
 
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
@@ -105,27 +103,6 @@ class RequestState:
     def logout(self):
         self.user = None
         self.sessionhandler.delete()
-
-    def emit_content(self, content):
-        self.response.data = content
-        return self.response
-
-    def emit_template(self, template, extraparams=dict()):
-        self.response.content_type = "text/html; charset=utf8"
-        params = dict(
-            user=self.user,
-            basejoin = lambda tail: urllib.basejoin(self.application_uri, tail)
-        )
-        params.update(extraparams)
-        return self.emit_content(template.render(params).encode("utf8"))
-
-    def emit_permredirect(self, location):
-        return werkzeug.utils.redirect(
-            urllib.basejoin(self.application_uri, location), 301)
-
-    def emit_tempredirect(self, location):
-        return werkzeug.utils.redirect(
-            urllib.basejoin(self.application_uri, location), 307)
 
 class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
                                werkzeug.routing.RoutingException):
@@ -170,8 +147,15 @@ class Application:
             werkzeug.routing.Rule("/<academy>/<course>/!createpage",
                                   methods=("POST",),
                                   endpoint=self.do_createpage),
+            werkzeug.routing.Rule("/<academy>/<course>/!deadpages",
+                                  methods=("GET", "HEAD"),
+                                  endpoint=self.do_showdeadpages),
             werkzeug.routing.Rule("/<academy>/<course>/!moveup",
                                   methods=("POST",), endpoint=self.do_moveup),
+            werkzeug.routing.Rule("/<academy>/<course>/!relink",
+                                  methods=("POST",), endpoint=self.do_relink),
+            werkzeug.routing.Rule("/<academy>/<course>/!raw",
+                                  methods=("GET", "HEAD"), endpoint=self.do_raw),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_page),
@@ -180,6 +164,8 @@ class Application:
                                   endpoint=self.do_edit),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!save",
                                   methods=("POST",), endpoint=self.do_save),
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!delete",
+                                  methods=("POST",), endpoint=self.do_delete),
         ])
 
     def getAcademy(self, name, user=None):
@@ -191,6 +177,14 @@ class Application:
         if user is not None and not user.allowedRead(aca):
             raise werkzeug.exceptions.Forbidden()
         return aca
+
+    def getCourse(self, aca, coursename, user=None):
+        c = aca.getCourse(coursename) # checks name
+        if c is None:
+            raise werkzeug.exceptions.NotFound()
+        if user is not None and not user.allowedRead(aca, c):
+            raise werkzeug.exceptions.Forbidden()
+        return c
 
     def createAcademy(self, name, title, groups):
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
@@ -221,7 +215,7 @@ class Application:
 
     def check_login(self, rs):
         if rs.user is None:
-            raise TemporaryRequestRedirect(rs.application_uri)
+            raise TemporaryRequestRedirect(rs.request.url_root)
 
     def do_start(self, rs):
         if rs.user is None:
@@ -235,9 +229,11 @@ class Application:
             password = rs.request.form["password"]
             rs.request.form["submit"] # just check for existence
         except KeyError:
-            return rs.emit_content("missing form fields")
+            rs.response.data = "missing form fields"
+            return rs.response
         if not self.userdb.checkLogin(username, password):
-            return rs.emit_content("wrong password")
+            rs.response.data = "wrong password"
+            return rs.response
         rs.login(username)
         return self.render_index(rs)
 
@@ -252,43 +248,74 @@ class Application:
     def do_academy(self, rs, academy = None):
         assert academy is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
         return self.render_academy(rs, aca)
 
     def do_course(self, rs, academy = None, course = None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            raise werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            raise werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         return self.render_course(rs, aca, c)
+
+    def do_showdeadpages(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        return self.render_deadpages(rs, aca, c)
 
     def do_createpage(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         c.newpage(user=rs.user.name)
         return self.render_course(rs, aca, c)
 
+    def do_delete(self, rs, academy=None, course=None, page=None):
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        c.delpage(page, user=rs.user.name)
+        return self.render_course(rs, aca, c)
+
+    def do_relink(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        numberstr = rs.request.form["number"]
+        try:
+            number = int(numberstr)
+        except ValueError:
+            number = 0
+        c.relink(number, user=rs.user.name)
+        return self.render_course(rs, aca, c)
+
+    def do_raw(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        rs.response.content_type = "application/octet-stream"
+        rs.response.data = c.export()
+        return rs.response
+
     def do_moveup(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         numberstr = rs.request.form["number"]
@@ -302,23 +329,15 @@ class Application:
     def do_page(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         return self.render_show(rs, aca, c, page)
 
     def do_edit(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         version, content = c.editpage(page)
@@ -327,12 +346,8 @@ class Application:
     def do_save(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"))
-        c = aca.getCourse(course.encode("utf8"))
-        if c is None:
-            return werkzeug.exceptions.NotFound()
-        if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
@@ -360,12 +375,12 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
-        ok, version, content = self.userdb.storage.endedit(userversion, usercontent)
+        ok, version, content = self.userdb.storage.endedit(userversion, usercontent, user=rs.user.name)
         self.userdb.load()
         return self.render_admin(rs, version, content, ok=ok)
 
     def render_start(self, rs):
-        return rs.emit_template(self.jinjaenv.get_template("start.html"))
+        return self.render("start.html", rs)
 
     def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent, ok=None):
         params= dict(
@@ -375,25 +390,29 @@ class Application:
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
             ok=ok)
-        return rs.emit_template(self.jinjaenv.get_template("edit.html"),params)
+        return self.render("edit.html", rs, params)
 
 
     def render_index(self, rs):
         params = dict(
             academies=map(academy.AcademyLite, self.listAcademies()))
-        return rs.emit_template(self.jinjaenv.get_template("index.html"),
-                                params)
+        return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
-        return rs.emit_template(self.jinjaenv.get_template("academy.html"),
-                                dict(academy=academy.AcademyLite(theacademy)))
+        return self.render("academy.html", rs,
+                           dict(academy=academy.AcademyLite(theacademy)))
+
+    def render_deadpages(self, rs, theacademy, thecourse):
+        params = dict(
+            academy=academy.AcademyLite(theacademy),
+            course=course.CourseLite(thecourse))
+        return self.render("dead.html", rs, params)
 
     def render_course(self, rs, theacademy, thecourse):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse))
-        return rs.emit_template(self.jinjaenv.get_template("course.html"),
-                                params)
+        return self.render("course.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(
@@ -402,16 +421,25 @@ class Application:
             page=thepage,
             content=thecourse.showpage(thepage),
             saved=saved)
-        return rs.emit_template(self.jinjaenv.get_template("show.html"),
-                                params)
+        return self.render("show.html", rs, params)
 
     def render_admin(self, rs, theversion, thecontent, ok=None):
         params= dict(
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
             ok=ok)
-        return rs.emit_template(self.jinjaenv.get_template("admin.html"),params)
+        return self.render("admin.html", rs, params)
 
+    def render(self, templatename, rs, extraparams=dict()):
+        rs.response.content_type = "text/html; charset=utf8"
+        params = dict(
+            user=rs.user,
+            basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
+        )
+        params.update(extraparams)
+        template = self.jinjaenv.get_template(templatename)
+        rs.response.data = template.render(params).encode("utf8")
+        return rs.response
 
 def main():
     userdbstore = storage.Storage('work', 'userdb')
@@ -422,8 +450,11 @@ def main():
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))
     app = SubdirMiddleware(app, staticfiles)
-    server = SCGIServer(app, 4000)
-    server.run()
+    if sys.argv[1:2] == ["simple"]:
+        make_server("localhost", 8800, app).serve_forever()
+    else:
+        server = SCGIServer(app, 4000)
+        server.run()
 
 if __name__ == '__main__':
     main()

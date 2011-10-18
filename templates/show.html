@@ -13,5 +13,6 @@ Seite #{{page}}
 <hr>
 {% if user.allowedWrite(academy, course) %}
 <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!edit")}}">Editieren</a>
+{{ button(academy.name + "/" + course.name + "/"  + page|string  + "/!delete", "Löschen", dict()) }}
 {% endif %}
 {% endblock %}

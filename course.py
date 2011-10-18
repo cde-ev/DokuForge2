@@ -1,17 +1,7 @@
+from __future__ import with_statement
 import os
 from storage import Storage
-
-import subprocess
-try:
-    check_output = subprocess.check_output
-except AttributeError:
-    def check_output(cmdline):
-        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
-        output, _ = proc.communicate()
-        if proc.returncode:
-            raise subprocess.CalledProcessError()
-        return output
-
+from common import check_output
 
 class CourseLite:
     """
@@ -63,6 +53,19 @@ class CourseLite:
         lines = index.splitlines()
         return [int(line.split()[0]) for line in lines]
 
+    def listdeadpages(self):
+        """
+        return a list of the pages not currently linked in the index
+        """
+        indexstore = Storage(self.path, "Index")
+        nextpage = Storage(self.path, "nextpage")
+        with indexstore.lock as gotlockindex:
+            with nextpage.lock as gotlocknextpage:
+                np = self.nextpage(havelock=gotlocknextpage)
+                linkedpages= self.listpages(havelock=gotlockindex)
+                return [x for x in range(np) if x not in linkedpages]
+            
+
     def showpage(self,number):
         """
         Show the contents of a page
@@ -112,7 +115,7 @@ class Course(CourseLite):
         """
         return a tar ball containing the full internal information about this course
         """
-        return check_output(["tar","cvf","-",self.path])
+        return check_output(["tar","cf","-",self.path])
     
     def settitle(self,title):
         """
@@ -127,18 +130,14 @@ class Course(CourseLite):
         """
         index = Storage(self.path,"Index")
         nextpagestore = Storage(self.path,"nextpage")
-        index.getlock()
-        nextpagestore.getlock()
-        try:                    # 
-            newnumber = self.nextpage(havelock=True)
-            nextpagestore.store("%d" % (newnumber+1),havelock=True,user=user)
-            indexcontents = index.content(havelock=True)
-            indexcontents += "%s\n" % newnumber
-            index.store(indexcontents,havelock=True,user=user)
-        finally:
-            nextpagestore.releaselock()
-            index.releaselock()
-        return newnumber
+        with index.lock as gotlockindex:
+            with nextpagestore.lock as gotlocknextpage:
+                newnumber = self.nextpage(havelock=gotlocknextpage)
+                nextpagestore.store("%d" % (newnumber+1),havelock=gotlocknextpage,user=user)
+                indexcontents = index.content(havelock=gotlockindex)
+                indexcontents += "%s\n" % newnumber
+                index.store(indexcontents,havelock=gotlockindex,user=user)
+                return newnumber
 
     def delpage(self,number,user=None):
         """
@@ -148,18 +147,15 @@ class Course(CourseLite):
         @type number: int
         """
         indexstore = Storage(self.path,"Index")
-        indexstore.getlock()
-        try:
-            index = indexstore.content(havelock=True)
+        with indexstore.lock as gotlock:
+            index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
             newlines = []
             for line in lines:
                 if int(line.split()[0])!=number:
                     newlines.append(line)
             newindex="\n".join(newlines) + "\n"
-            indexstore.store(newindex,havelock=True,user=user)
-        finally:
-            indexstore.releaselock()
+            indexstore.store(newindex,havelock=gotlock,user=user)
 
     def swappages(self,position,user=None):
         """
@@ -168,18 +164,36 @@ class Course(CourseLite):
         @type position: int
         """
         indexstore = Storage(self.path,"Index")
-        indexstore.getlock()
-        try:
-            index = indexstore.content(havelock=True)
+        with indexstore.lock as gotlock:
+            index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
             if position<len and position>0:
                 tmp =lines[position-1]
                 lines[position-1]=lines[position]
                 lines[position]=tmp
             newindex="\n".join(lines) + "\n"
-            indexstore.store(newindex,havelock=True,user=user)
-        finally:
-            indexstore.releaselock()
+            indexstore.store(newindex,havelock=gotlock,user=user)
+
+    def relink(self, page, user=None):
+        """
+        relink a (usually deleted) page to the index
+        """
+        indexstore = Storage(self.path, "Index")
+        nextpage = Storage(self.path, "nextpage")
+        with indexstore.lock as gotlockindex:
+            with nextpage.lock as gotlocknextpage:
+                np = self.nextpage(havelock=gotlocknextpage)
+                if page >= np:
+                    pass # can only relink in the allowed range
+                else:
+                    index = indexstore.content(havelock=gotlockindex)
+                    lines = index.splitlines()
+                    if page in [int(x.split()[0]) for x in lines]:
+                        pass # page already present
+                    else:
+                        lines.append("%d" % page)
+                        newindex="\n".join(lines) + "\n"
+                        indexstore.store(newindex,havelock=gotlockindex,user=user)
 
     def editpage(self,number):
         """
@@ -239,23 +253,18 @@ class Course(CourseLite):
         """
         indexstore = Storage(self.path,"Index")
         nextblobstore = Storage(self.path,"nextpage")
-        indexstore.getlock()
-        nextblobstore.getlock()
 
-        try:
-            newnumber = self.nextpage(havelock=True)
-            nextblobstore.store("%d" % (newnumber+1),havelock=True)
-            index = indexstore.content()
-            lines = index.splitlines()
-            for i in range(len(lines)):
-                if int(lines[i].split()[0])==number:
-                    lines[i] += " %d" % newnumber
-            newindex="\n".join(lines) + "\n"
-            indexstore.store(newindex,havelock=True)
-        finally:
-            nextblobstore.releaselock()
-            indexstore.releaselock()
-
+        with indexstore.lock as gotlockindex:
+            with nextblobstore.lock as gotlocknextblob:
+                newnumber = self.nextpage(havelock=gotlocknextblob)
+                nextblobstore.store("%d" % (newnumber+1),havelock=gotlocknextblob)
+                index = indexstore.content()
+                lines = index.splitlines()
+                for i in range(len(lines)):
+                    if int(lines[i].split()[0])==number:
+                        lines[i] += " %d" % newnumber
+                        newindex="\n".join(lines) + "\n"
+                        indexstore.store(newindex,havelock=gotlockindex)
 
         blob = Storage(self.path,"blob%d" % newnumber)
         blob.store(data,user=user,message=comment)
