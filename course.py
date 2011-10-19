@@ -243,7 +243,6 @@ class Course(CourseLite):
         Attach a blob to a page
 
         @param number: the internal number of the page
-        @param title: a short description, e.g., the original file name
         @param comment: a human readable description, e.g., the caption to be added to this figure
         @param user: the df-login name of the user to carried out the edit
         @type number: int
