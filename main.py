@@ -150,6 +150,17 @@ class Application:
                                   endpoint=self.do_index),
             werkzeug.routing.Rule("/<academy>/", methods=("GET", "HEAD"),
                                   endpoint=self.do_academy),
+# not yet implemented
+#            werkzeug.routing.Rule("/<academy>/!export", methods=("GET", "HEAD"),
+#                                  endpoint=self.do_export),
+            werkzeug.routing.Rule("/<academy>/!groups", methods=("GET", "HEAD"),
+                                  endpoint=self.do_academygroups),
+            werkzeug.routing.Rule("/<academy>/!groups", methods=("POST",),
+                                  endpoint=self.do_academygroupssave),
+            werkzeug.routing.Rule("/<academy>/!title", methods=("GET", "HEAD"),
+                                  endpoint=self.do_academytitle),
+            werkzeug.routing.Rule("/<academy>/!title", methods=("POST",),
+                                  endpoint=self.do_academytitlesave),
             werkzeug.routing.Rule("/<academy>/<course>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_course),
@@ -444,12 +455,13 @@ class Application:
 
         return self.render_edit(rs, aca, c, page, version, content, ok=ok)
 
-    def do_file(self, rs, filestore, template):
+    def do_file(self, rs, filestore, template, extraparams=dict()):
         version, content = filestore.startedit()
-        return self.render_file(rs, template, version, content)
+        return self.render_file(rs, template, version, content,
+                                extraparams=extraparams)
 
     def do_filesave(self, rs, filestore, template, tryConfigParser=False,
-                    savehook=None):
+                    savehook=None, extraparams=dict()):
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
         if tryConfigParser:
@@ -464,7 +476,41 @@ class Application:
                                                  user=rs.user.name)
         if not savehook is None:
             savehook()
-        return self.render_file(rs, template, version, content, ok=ok)
+        return self.render_file(rs, template, version, content, ok=ok,
+                                extraparams=extraparams)
+
+    def do_academygroups(self, rs, academy):
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca):
+            return werkzeug.exceptions.Forbidden()
+        return self.do_file(rs, storage.Storage(aca.path,"groups"),
+                            "academygroups.html", extraparams={'academy': aca})
+
+    def do_academygroupssave(self, rs, academy):
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca):
+            return werkzeug.exceptions.Forbidden()
+        # fixme: prevent nonexisting groups
+        return self.do_filesave(rs, storage.Storage(aca.path,"groups"),
+                                "academygroups.html", extraparams={'academy': aca})
+
+    def do_academytitle(self, rs, academy):
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca):
+            return werkzeug.exceptions.Forbidden()
+        return self.do_file(rs, storage.Storage(aca.path,"title"),
+                            "academytitle.html", extraparams={'academy': aca})
+
+    def do_academytitlesave(self, rs, academy):
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca):
+            return werkzeug.exceptions.Forbidden()
+        return self.do_filesave(rs, storage.Storage(aca.path,"title"),
+                                "academytitle.html", extraparams={'academy': aca})
 
     def do_admin(self, rs):
         self.check_login(rs)
@@ -549,12 +595,13 @@ class Application:
             )
         return self.render("show.html", rs, params)
 
-    def render_file(self, rs, templatename, theversion, thecontent, ok=None, error=None):
+    def render_file(self, rs, templatename, theversion, thecontent, ok=None, error=None, extraparams=dict()):
         params= dict(
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
             ok=ok,
             error=error)
+        params.update(extraparams)
         return self.render(templatename, rs, params)
 
     def render(self, templatename, rs, extraparams=dict()):

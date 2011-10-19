@@ -18,6 +18,10 @@
 <em>Keine Kurse gefunden.</em>
 {% endif %}
 {% if user.mayExport(academy)%}
-{{ button(academy.name + "!export", "Exportieren") }}
+<a href="{{ basejoin(academy.name + '/!export') }}">Exportieren<a/>
+{% endif%}
+{% if user.isAdmin() %}
+<a href="{{ basejoin(academy.name + '/!title') }}">Titel bearbeiten<a/>
+<a href="{{ basejoin(academy.name + '/!groups') }}">Gruppen bearbeiten<a/>
 {% endif%}
 {% endblock %}
