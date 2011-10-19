@@ -246,6 +246,28 @@ class Course(CourseLite):
                         newindex="\n".join(lines) + "\n"
                         indexstore.store(newindex,havelock=gotlockindex,user=user)
 
+    def relinkblob(self, number, page, user=None):
+        """
+        relink a (usually deleted) blob to the given page in the index
+        """
+        indexstore = Storage(self.path, "Index")
+        nextblob = Storage(self.path, "nextblob")
+        with indexstore.lock as gotlockindex:
+            with nextblob.lock as gotlocknextblob:
+                nb = self.nextblob(havelock=gotlocknextblob)
+                if number >= nb:
+                    return # can only attach an
+                if number < 0:
+                    return # can only attach an
+                index = indexstore.content(havelock=gotlockindex)
+                lines = index.splitlines()
+                for i in range(len(lines)):
+                    if int(lines[i].split()[0]) == page:
+                        lines[i] += " %d" % number
+            newindex="\n".join(lines) + "\n"
+            indexstore.store(newindex,havelock=gotlockindex,user=user)
+                        
+
     def editpage(self,number):
         """
         Start editing a page; 
