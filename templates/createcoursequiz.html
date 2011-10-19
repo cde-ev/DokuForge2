@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block location%}
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               ('', "Kurs hinzufügen")]) }}
+{% endblock %}
+{% block content %}
+
+{% if ok %}
+Bitte die folgenden Angaben ergaenzen.
+{% else %}
+<span class=important>Die Kurserstellung war nicht erfolgreich. Bitte die folgenden Angaben korrigieren.</span>
+{% endif %}
+<form action="!createcourse" method="post" id="createcourse">
+	Interner Name: <input name="name" type="text" value="{{ name }}"><br/>
+	Titel: <input name="title" type="text" value="{{ title }}"><br/>
+	<input type="submit" name="submit" value="Kurs hinzuf&uuml;gen">
+</form>
+<a href="{{basejoin(academy.name + '/')}}">Abbrechen</a>
+{% endblock %}
