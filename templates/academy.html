@@ -20,8 +20,9 @@
 {% if user.mayExport(academy)%}
 <a href="{{ basejoin(academy.name + '/!export') }}">Exportieren<a/>
 {% endif%}
-{% if user.isAdmin() %}
+{% if user.allowedWrite(academy) %}
 <a href="{{ basejoin(academy.name + '/!title') }}">Titel bearbeiten<a/>
 <a href="{{ basejoin(academy.name + '/!groups') }}">Gruppen bearbeiten<a/>
+<a href="{{ basejoin(academy.name + '/!createcourse') }}">Kurs hinzuf&uuml;gen<a/>
 {% endif%}
 {% endblock %}

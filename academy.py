@@ -121,7 +121,10 @@ class Academy(AcademyLite):
         """
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return False
+        if os.path.exists(os.path.join(self.path, name)):
+            return False
         course.Course(os.path.join(self.path, name)).settitle(title)
+        return True
 
     def listCourses(self):
         """
