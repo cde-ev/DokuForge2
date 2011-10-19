@@ -33,6 +33,7 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
      <p>{{ button("!logout", "Logout")}}
 	{% if user.isAdmin() %}
 	<a href="{{ basejoin("!admin") }}">Administration</a>
+	<a href="{{ basejoin("!groups") }}">Gruppenverwaltung</a>
 	{% endif %}
      </p>
    {% else %}
