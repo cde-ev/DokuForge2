@@ -191,6 +191,11 @@ class Application:
                                   endpoint=self.do_showdeadblobs),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!relinkblob",
                                   methods=("POST",), endpoint=self.do_relinkblob),
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!addblob",
+                                  methods=("GET", "HEAD"),
+                                  endpoint=self.do_addblob),
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!attachblob",
+                                  methods=("POST",), endpoint=self.do_attachblob),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_showblob),
@@ -435,6 +440,29 @@ class Application:
         version, content = c.editpage(page)
         return self.render_edit(rs, aca, c, page, version, content)
 
+    def do_addblob(self, rs, academy = None, course = None, page = None):
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        return self.render_addblob(rs, aca, c, page)
+
+    def do_attachblob(self, rs, academy = None, course = None, page = None):
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+
+        usercomment = rs.request.form["comment"]
+        usercontent = rs.request.form["content"]
+
+        c.attachblob(page, usercontent, comment=usercomment, user=rs.user.name)
+        return self.render_show(rs, aca, c, page)
+
     def do_save(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -583,6 +611,14 @@ class Application:
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse))
         return self.render("course.html", rs, params)
+
+    def render_addblob(self, rs, theacademy, thecourse,thepage, saved=False):
+        params = dict(
+            academy=academy.AcademyLite(theacademy),
+            course=course.CourseLite(thecourse),
+            page=thepage,
+            )
+        return self.render("addblob.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(

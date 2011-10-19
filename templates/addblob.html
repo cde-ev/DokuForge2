@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block location%}
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               (academy.name + '/' + course.name, course.gettitle()),
+               (academy.name + '/' + course.name + '/' + page|string, "Seite #" + page|string)]) }}
+{% endblock %}
+
+{% block content %}
+
+
+<form action="!attachblob" method="post" enctype="multipart/form-data">
+  Kommentar: <textarea name="comment"></textarea>
+	<input type="file" name="content">
+	<input type="submit" value="Bild hochladen">
+</form>
+
+{% endblock %}
