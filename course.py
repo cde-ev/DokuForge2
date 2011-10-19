@@ -234,6 +234,8 @@ class Course(CourseLite):
                 np = self.nextpage(havelock=gotlocknextpage)
                 if page >= np:
                     pass # can only relink in the allowed range
+                if page < 0:
+                    pass # can only relink in the allowed range
                 else:
                     index = indexstore.content(havelock=gotlockindex)
                     lines = index.splitlines()
