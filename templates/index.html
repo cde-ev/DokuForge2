@@ -24,4 +24,7 @@
 {% endif %}
 {% endfor %}
 </ul>
+{% if user.mayCreate() %}
+<a href="{{ basejoin('/!createacademy') }}">Neue Akademie anlegen<a/>
+{% endif%}
 {% endblock %}

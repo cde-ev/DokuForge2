@@ -142,6 +142,11 @@ class Application:
                                   endpoint=self.do_admin),
             werkzeug.routing.Rule("/!admin", methods=("POST",),
                                   endpoint=self.do_adminsave),
+            werkzeug.routing.Rule("/!createacademy",
+                                  methods=("GET", "HEAD"),
+                                  endpoint=self.do_createacademyquiz),
+            werkzeug.routing.Rule("/!createacademy", methods=("POST",),
+                                  endpoint=self.do_createacademy),
             werkzeug.routing.Rule("/!groups", methods=("GET", "HEAD"),
                                   endpoint=self.do_groups),
             werkzeug.routing.Rule("/!groups", methods=("POST",),
@@ -368,6 +373,41 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_createcoursequiz(rs, aca)
 
+    def do_createcourse(self, rs, academy=None):
+        assert academy is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca):
+            return werkzeug.exceptions.Forbidden()
+        name = rs.request.form["name"]
+        title = rs.request.form["title"]
+        if aca.createCourse(name, title):
+            return self.render_academy(rs, aca)
+        else:
+            return self.render_createcoursequiz(rs, aca, name=name,
+                                                title=title, ok=False)
+
+    def do_createacademyquiz(self, rs):
+        self.check_login(rs)
+        if not rs.user.mayCreate():
+            return werkzeug.exceptions.Forbidden()
+        return self.render_createacademyquiz(rs)
+
+    def do_createacademy(self, rs):
+        self.check_login(rs)
+        if not rs.user.mayCreate():
+            return werkzeug.exceptions.Forbidden()
+        name = rs.request.form["name"]
+        title = rs.request.form["title"]
+        groups = rs.request.form["groups"].split()
+        if self.createAcademy(name, title, groups):
+            return self.render_index(rs)
+        else:
+            return self.render_createacademyquiz(rs, aca, name=name,
+                                                 title=title,
+                                                 groups=rs.request.form["groups"],
+                                                 ok=False)
+
     def do_createpage(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -526,20 +566,6 @@ class Application:
 
         return self.render_edit(rs, aca, c, page, version, content, ok=ok)
 
-    def do_createcourse(self, rs, academy=None):
-        assert academy is not None
-        self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        if not rs.user.allowedWrite(aca):
-            return werkzeug.exceptions.Forbidden()
-        name = rs.request.form["name"]
-        title = rs.request.form["title"]
-        if aca.createCourse(name, title):
-            return self.render_academy(rs, aca)
-        else:
-            return self.render_createcoursequiz(rs, aca, name=name,
-                                                title=title, ok=False)
-
     def do_academygroups(self, rs, academy=None):
         assert academy is not None
         self.check_login(rs)
@@ -686,6 +712,14 @@ class Application:
                       title=title,
                       ok=ok)
         return self.render("createcoursequiz.html", rs, params)
+
+    def render_createacademyquiz(self, rs, name='', title='', groups='',
+                                 ok=True):
+        params = dict(name=name,
+                      title=title,
+                      groups=groups,
+                      ok=ok)
+        return self.render("createacademyquiz.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(
