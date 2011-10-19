@@ -159,6 +159,23 @@ class Course(CourseLite):
             newindex="\n".join(newlines) + "\n"
             indexstore.store(newindex,havelock=gotlock,user=user)
 
+    def listdeadblobs(self):
+        """
+        return a list of the blobs not currently linked to the index
+        """
+        indexstore = Storage(self.path,"Index")
+        nextblob = Storage(self.path,"nextblob")
+        with indexstore.lock as gotlockindex:
+            index = indexstore.content(havelock=gotlockindex)
+            lines = index.splitlines()
+            availableblobs = []
+            for line in lines:
+                entries = line.split()
+                availableblobs.extend([int(x) for x in entries[1:]])
+            with nextblob.lock as gotlocknextblob:
+                nextblobindex = self.nextblob(havelock=gotlocknextblob)
+                return [n for n in range(nextblobindex) if n not in availableblobs]
+
     def delpage(self,number,user=None):
         """
         Delete a page
