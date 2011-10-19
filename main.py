@@ -409,7 +409,7 @@ class Application:
             config = ConfigParser.SafeConfigParser()
             config.readfp(StringIO(usercontent.encode("utf8")))
         except ConfigParser.ParsingError as err:
-            return self.render_admin(rs, userversion, usercontent, ok = False,
+            return self.render_groups(rs, userversion, usercontent, ok = False,
                                      error = err.message)
         ok, version, content = self.userdb.storage.endedit(userversion, usercontent, user=rs.user.name)
         return self.render_groups(rs, version, content, ok=ok)
