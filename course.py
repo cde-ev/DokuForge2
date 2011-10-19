@@ -255,7 +255,7 @@ class Course(CourseLite):
 
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
-                newnumber = self.nextpage(havelock=gotlocknextblob)
+                newnumber = self.nextblob(havelock=gotlocknextblob)
                 nextblobstore.store("%d" % (newnumber+1),havelock=gotlocknextblob)
                 index = indexstore.content()
                 lines = index.splitlines()
