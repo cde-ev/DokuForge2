@@ -9,8 +9,13 @@ Bitte Text eingeben und mit &quot;Speichern&quot; beenden.
 {% elif ok %}
 Aenderungen erfolgreich gespeichert.
 {% else %}
+{% if error is none %}
 <span class=important>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</span>
 Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
+{% else %}
+<span class=important>Es ist ein Parser-Error aufgetreten.</span>
+Die Änderungen wurden nicht gespeichert. Der Fehler lautet &quot;{{ error|e }}&quot;. Bitte beseitige den Fehler und versuche erneut zu speichern.
+{% endif %}
 {% endif %}
 
 <form action="!admin" method="post" id="save">

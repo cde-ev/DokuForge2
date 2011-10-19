@@ -85,8 +85,6 @@ class User:
 
 
 
-
-
 class UserDB:
     """
     Class for the user database

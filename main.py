@@ -8,6 +8,8 @@ import copy
 import re
 import sys
 import urllib
+import ConfigParser
+from cStringIO import StringIO
 import werkzeug.utils
 from werkzeug.wrappers import Request, Response
 import werkzeug.exceptions
@@ -375,6 +377,12 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
+        try:
+            config = ConfigParser.SafeConfigParser()
+            config.readfp(StringIO(usercontent.encode("utf8")))
+        except ConfigParser.ParsingError as err:
+            return self.render_admin(rs, userversion, usercontent, ok = False,
+                                     error = err.message)
         ok, version, content = self.userdb.storage.endedit(userversion, usercontent, user=rs.user.name)
         self.userdb.load()
         return self.render_admin(rs, version, content, ok=ok)
@@ -423,11 +431,12 @@ class Application:
             saved=saved)
         return self.render("show.html", rs, params)
 
-    def render_admin(self, rs, theversion, thecontent, ok=None):
+    def render_admin(self, rs, theversion, thecontent, ok=None, error=None):
         params= dict(
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
-            ok=ok)
+            ok=ok,
+            error=error)
         return self.render("admin.html", rs, params)
 
     def render(self, templatename, rs, extraparams=dict()):
