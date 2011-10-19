@@ -13,8 +13,21 @@ Seite #{{page}}
 {{ content|e }}
 </pre>
 <hr>
+
+
 {% if user.allowedWrite(academy, course) %}
 <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!edit")}}">Editieren</a>
 {{ button(academy.name + "/" + course.name + "/"  + page|string  + "/!delete", "Löschen", dict()) }}
 {% endif %}
+
+<hr>
+{% if blobs %}
+Zugeordnete Bilder:
+{% for blob in blobs %}
+#[{{ blob }}] <!-- add links to show/delete blob, as soon as implemented -->
+{% endfor %}
+{% else %}
+<em>Keine Bilder zu dieser Seite gefunden.</em>
+{% endif %}
+
 {% endblock %}

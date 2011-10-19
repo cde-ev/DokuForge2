@@ -420,7 +420,9 @@ class Application:
             course=course.CourseLite(thecourse),
             page=thepage,
             content=thecourse.showpage(thepage),
-            saved=saved)
+            saved=saved,
+            blobs=thecourse.listblobs(thepage)
+            )
         return self.render("show.html", rs, params)
 
     def render_admin(self, rs, theversion, thecontent, ok=None):
