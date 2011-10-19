@@ -36,4 +36,8 @@ Zugeordnete Bilder:
 <em>Keine Bilder zu dieser Seite gefunden.</em>
 {% endif %}
 
+{% if user.allowedWrite(academy, course) %}
+<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!deadblobs")}}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+{% endif %}
+
 {% endblock %}
