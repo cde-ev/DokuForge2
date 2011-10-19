@@ -26,7 +26,9 @@ Zugeordnete Bilder:
 <ul>
 {% for blob in blobs %}
 <li> #[{{ blob }}] <!-- add link to show blob, as soon as implemented -->
+{% if user.allowedWrite(academy, course) %}
 {{ button(academy.name + "/" + course.name + "/" + page|string + "/"  + blob|string + "/!delete", "Löschen", dict()) }}
+{% endif %}
 </li>
 {% endfor %}
 </ul>
