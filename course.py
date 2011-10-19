@@ -251,7 +251,7 @@ class Course(CourseLite):
         @type user: str
         """
         indexstore = Storage(self.path,"Index")
-        nextblobstore = Storage(self.path,"nextpage")
+        nextblobstore = Storage(self.path,"nextblob")
 
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
