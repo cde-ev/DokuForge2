@@ -166,7 +166,7 @@ class Storage(object):
             objfile.write(newcontent)
             objfile.close()
             args=["ci","-f","-q","-u"]
-            args.append("-mstoring original edit conflictig with %s in a branch" % currentversion)
+            args.append("-mstoring original edit conflicting with %s in a branch" % currentversion)
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())

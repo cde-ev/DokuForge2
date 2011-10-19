@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -66,6 +66,9 @@ title = Archiv aelterer CdE-Akademien
     aca.getCourse('course01').savepage(0, version, """[Example Section]
 This is an example with some nice math: $e^{i\pi}+1=0$.
 """, "init")
+    aca.getCourse('course01').attachblob(0,"XXXX....lot's of binary ;-)...XXXX","Ein lustiges Bild",user="init")
+    aca.getCourse('course01').attachblob(1,"YYYY....lot's of binary ;-)...YYYY","Ein anderes lustiges Bild",user="init")
+    aca.getCourse('course01').attachblob(0,"ZZZZ....lot's of binary ;-)...ZZZZ","Noch ein lustiges Bild",user="init")
     aca = createaca("ya2011-1", "Why? Akademie", ["qed", "cde"],
                     [('course01',"Kursqualitaet und ihre Kontrolle", 2),
                      ('course02',"Die Hedonistische Internationale", 3),

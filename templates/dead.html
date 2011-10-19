@@ -7,13 +7,13 @@
 {% block content %}
 {% set deads=course.listdeadpages() %}
 {% if deads %}
-<ol>
+<ul>
 	{% for page in deads %}
 	<li> #{{ page }} 
          {{ button(academy.name + "/" + course.name + "/!relink", "wiederherstellen", dict(number=page)) }}
 	</li>
 	{% endfor %}
-</ol>
+</ul>
 {% else %}
 <em>Keine gel&ouml;schten Seiten gefunden gefunden.</em>
 {% endif %}

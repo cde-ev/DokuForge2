@@ -175,6 +175,8 @@ class Application:
                                   methods=("POST",), endpoint=self.do_save),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!delete",
                                   methods=("POST",), endpoint=self.do_delete),
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!delete",
+                                  methods=("POST",), endpoint=self.do_blobdelete),
         ])
 
     def getAcademy(self, name, user=None):
@@ -311,6 +313,16 @@ class Application:
         c.delpage(page, user=rs.user.name)
         return self.render_course(rs, aca, c)
 
+    def do_blobdelete(self, rs, academy=None, course=None, page=None, blob=None):
+        assert academy is not None and course is not None and page is not None and blob is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        c.delblob(blob, user=rs.user.name)
+        return self.render_show(rs, aca, c, page)
+
     def do_relink(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -378,7 +390,7 @@ class Application:
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
 
-        ok, version, content = c.savepage(page, userversion, usercontent)
+        ok, version, content = c.savepage(page, userversion, usercontent, user=rs.user.name)
 
         issaveshow = "saveshow" in rs.request.form
         if ok and issaveshow:
@@ -476,7 +488,9 @@ class Application:
             course=course.CourseLite(thecourse),
             page=thepage,
             content=thecourse.showpage(thepage),
-            saved=saved)
+            saved=saved,
+            blobs=thecourse.listblobs(thepage)
+            )
         return self.render("show.html", rs, params)
 
     def render_admin(self, rs, theversion, thecontent, ok=None, error=None):

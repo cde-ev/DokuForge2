@@ -139,6 +139,26 @@ class Course(CourseLite):
                 index.store(indexcontents,havelock=gotlockindex,user=user)
                 return newnumber
 
+    def delblob(self,number,user=None):
+        """
+        Delete a page
+
+        @param number: the internal page number
+        @type number: int
+        """
+        indexstore = Storage(self.path,"Index")
+        with indexstore.lock as gotlock:
+            index = indexstore.content(havelock=gotlock)
+            lines = index.splitlines()
+            newlines = []
+            for line in lines:
+                entries = line.split()
+                newentries = [entries[0]]
+                newentries.extend([x for x in entries[1:] if int(x) != number])
+                newlines.append(" ".join(newentries))
+            newindex="\n".join(newlines) + "\n"
+            indexstore.store(newindex,havelock=gotlock,user=user)
+
     def delpage(self,number,user=None):
         """
         Delete a page
@@ -243,7 +263,6 @@ class Course(CourseLite):
         Attach a blob to a page
 
         @param number: the internal number of the page
-        @param title: a short description, e.g., the original file name
         @param comment: a human readable description, e.g., the caption to be added to this figure
         @param user: the df-login name of the user to carried out the edit
         @type number: int
@@ -252,11 +271,11 @@ class Course(CourseLite):
         @type user: str
         """
         indexstore = Storage(self.path,"Index")
-        nextblobstore = Storage(self.path,"nextpage")
+        nextblobstore = Storage(self.path,"nextblob")
 
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
-                newnumber = self.nextpage(havelock=gotlocknextblob)
+                newnumber = self.nextblob(havelock=gotlocknextblob)
                 nextblobstore.store("%d" % (newnumber+1),havelock=gotlocknextblob)
                 index = indexstore.content()
                 lines = index.splitlines()
