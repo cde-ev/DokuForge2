@@ -23,9 +23,13 @@ Seite #{{page}}
 <hr>
 {% if blobs %}
 Zugeordnete Bilder:
+<ul>
 {% for blob in blobs %}
-#[{{ blob }}] <!-- add links to show/delete blob, as soon as implemented -->
+<li> #[{{ blob }}] <!-- add link to show blob, as soon as implemented -->
+{{ button(academy.name + "/" + course.name + "/" + page|string + "/"  + blob|string + "/!delete", "Löschen", dict()) }}
+</li>
 {% endfor %}
+</ul>
 {% else %}
 <em>Keine Bilder zu dieser Seite gefunden.</em>
 {% endif %}
