@@ -354,7 +354,7 @@ class Application:
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
 
-        ok, version, content = c.savepage(page, userversion, usercontent)
+        ok, version, content = c.savepage(page, userversion, usercontent, user=rs.user.name)
 
         issaveshow = "saveshow" in rs.request.form
         if ok and issaveshow:
