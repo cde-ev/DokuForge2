@@ -500,7 +500,8 @@ class Application:
             return werkzeug.exceptions.Forbidden()
 
         usercomment = rs.request.form["comment"]
-        usercontent = rs.request.form["content"]
+        # FIXME: use .save(filelike) is possible to reduce memory footprint
+        usercontent = rs.request.files["content"].read()
 
         c.attachblob(page, usercontent, comment=usercomment, user=rs.user.name)
         return self.render_show(rs, aca, c, page)
