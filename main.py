@@ -435,7 +435,8 @@ class Application:
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
 
-        ok, version, content = c.savepage(page, userversion, usercontent, user=rs.user.name)
+        ok, version, content = c.savepage(page, userversion, usercontent,
+                                          user=rs.user.name)
 
         issaveshow = "saveshow" in rs.request.form
         if ok and issaveshow:
@@ -443,50 +444,53 @@ class Application:
 
         return self.render_edit(rs, aca, c, page, version, content, ok=ok)
 
+    def do_file(self, rs, filestore, template):
+        version, content = filestore.startedit()
+        return self.render_file(rs, template, version, content)
+
+    def do_filesave(self, rs, filestore, template, tryConfigParser=False,
+                    savehook=None):
+        userversion = rs.request.form["revisionstartedwith"]
+        usercontent = rs.request.form["content"]
+        if tryConfigParser:
+            try:
+                config = ConfigParser.SafeConfigParser()
+                config.readfp(StringIO(usercontent.encode("utf8")))
+            except ConfigParser.ParsingError as err:
+                return self.render_file(rs, template, userversion,
+                                        usercontent, ok = False,
+                                        error = err.message)
+        ok, version, content = filestore.endedit(userversion, usercontent,
+                                                 user=rs.user.name)
+        if not savehook is None:
+            savehook()
+        return self.render_file(rs, template, version, content, ok=ok)
+
     def do_admin(self, rs):
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        version, content = self.userdb.storage.startedit()
-        return self.render_admin(rs, version, content)
+        return self.do_file(rs, self.userdb.storage, "admin.html")
 
     def do_adminsave(self, rs):
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        userversion = rs.request.form["revisionstartedwith"]
-        usercontent = rs.request.form["content"]
-        try:
-            config = ConfigParser.SafeConfigParser()
-            config.readfp(StringIO(usercontent.encode("utf8")))
-        except ConfigParser.ParsingError as err:
-            return self.render_admin(rs, userversion, usercontent, ok = False,
-                                     error = err.message)
-        ok, version, content = self.userdb.storage.endedit(userversion, usercontent, user=rs.user.name)
-        self.userdb.load()
-        return self.render_admin(rs, version, content, ok=ok)
+        return self.do_filesave(rs, self.userdb.storage, "admin.html",
+                         tryConfigParser = True, savehook = self.userdb.load)
 
     def do_groups(self, rs):
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        version, content = self.groupstore.startedit()
-        return self.render_groups(rs, version, content)
+        return self.do_file(rs, self.groupstore, "groups.html")
 
     def do_groupssave(self, rs):
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        userversion = rs.request.form["revisionstartedwith"]
-        usercontent = rs.request.form["content"]
-        try:
-            config = ConfigParser.SafeConfigParser()
-            config.readfp(StringIO(usercontent.encode("utf8")))
-        except ConfigParser.ParsingError as err:
-            return self.render_groups(rs, userversion, usercontent, ok = False,
-                                     error = err.message)
-        ok, version, content = self.userdb.storage.endedit(userversion, usercontent, user=rs.user.name)
-        return self.render_groups(rs, version, content, ok=ok)
+        return self.do_filesave(rs, self.groupstore, "groups.html",
+                         tryConfigParser = True)
 
     def render_start(self, rs):
         return self.render("start.html", rs)
@@ -545,21 +549,13 @@ class Application:
             )
         return self.render("show.html", rs, params)
 
-    def render_admin(self, rs, theversion, thecontent, ok=None, error=None):
+    def render_file(self, rs, templatename, theversion, thecontent, ok=None, error=None):
         params= dict(
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
             ok=ok,
             error=error)
-        return self.render("admin.html", rs, params)
-
-    def render_groups(self, rs, theversion, thecontent, ok=None, error=None):
-        params= dict(
-            content=thecontent, ## Note: must use the provided content, as it has to fit with the version
-            version=theversion,
-            ok=ok,
-            error=error)
-        return self.render("groups.html", rs, params)
+        return self.render(templatename, rs, params)
 
     def render(self, templatename, rs, extraparams=dict()):
         rs.response.content_type = "text/html; charset=utf8"
