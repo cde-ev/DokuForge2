@@ -3,11 +3,11 @@
 {% block location%}
 {{ trivnavbar([(academy.name, academy.gettitle()),
                (academy.name + '/' + course.name, course.gettitle()),
-               (academy.name + '/' + course.name + '/' + page|string, "Seite #" + page|string)]) }}
+               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string)]) }}
 {% endblock %}
 
 {% block content %}
-Seite #{{page}}
+Teil #{{page}}
 <hr>
 <pre>
 {{ content|e }}
@@ -34,7 +34,7 @@ Zugeordnete Bilder:
 {% endfor %}
 </ul>
 {% else %}
-<em>Keine Bilder zu dieser Seite gefunden.</em>
+<em>Keine Bilder zu diesem Teil gefunden.</em>
 {% endif %}
 
 {% if user.allowedWrite(academy, course) %}

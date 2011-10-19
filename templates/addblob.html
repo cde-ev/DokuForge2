@@ -3,7 +3,8 @@
 {% block location%}
 {{ trivnavbar([(academy.name, academy.gettitle()),
                (academy.name + '/' + course.name, course.gettitle()),
-               (academy.name + '/' + course.name + '/' + page|string, "Seite #" + page|string)]) }}
+               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
+               (academy.name + '/' + course.name + '/' + page|string + / '!addblob', "Bild hochladen")]) }}
 {% endblock %}
 
 {% block content %}

@@ -9,7 +9,7 @@
 <ol>
 	{% for page in pages %}
 	<li><a href="{{ basejoin(academy.name + '/' + course.name
-		+ '/' + page|string + '/') }}">{{ pages.index(page) + 1 }}. Seite (#{{ page }})</a>
+		+ '/' + page|string + '/') }}">{{ pages.index(page) + 1 }}. Teil (#{{ page }})</a>
 		{% if pages.index(page) > 0 %}
 		   {% if user.allowedWrite(academy, course) %}
 		      {{ button(academy.name + "/" + course.name + "/!moveup", "Hochrücken",
@@ -20,11 +20,11 @@
 	{% endfor %}
 </ol>
 {% else %}
-<em>Keine Seiten gefunden gefunden.</em>
+<em>Keine Teile gefunden gefunden.</em>
 {% endif %}
 {% if user.allowedWrite(academy, course) %}
-{{ button(academy.name + "/" + course.name + "/!createpage", "Eine Seite anlegen") }}
-<a href="{{basejoin(academy.name + "/" + course.name + "/!deadpages")}}">gel&ouml;schte Seiten wiederherstellen</a>
+{{ button(academy.name + "/" + course.name + "/!createpage", "Neuen Teil anlegen") }}
+<a href="{{basejoin(academy.name + "/" + course.name + "/!deadpages")}}">gel&ouml;schte Teile wiederherstellen</a>
 {% endif %}
 {% if user.mayExport(academy) %}
 <a href="{{ basejoin(academy.name + "/" +  course.name + "/!raw") }}">Roh-Export</a>
