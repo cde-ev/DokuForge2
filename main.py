@@ -372,6 +372,8 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"), rs.user)
         c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedRead(aca, c):
+            return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         rs.response.data = c.export()
         return rs.response
