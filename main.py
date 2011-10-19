@@ -176,6 +176,11 @@ class Application:
                                   methods=("POST",), endpoint=self.do_relink),
             werkzeug.routing.Rule("/<academy>/<course>/!raw",
                                   methods=("GET", "HEAD"), endpoint=self.do_raw),
+            werkzeug.routing.Rule("/<academy>/<course>/!title",
+                                  methods=("GET", "HEAD"),
+                                  endpoint=self.do_coursetitle),
+            werkzeug.routing.Rule("/<academy>/<course>/!title", methods=("POST",),
+                                  endpoint=self.do_coursetitlesave),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_page),
@@ -261,6 +266,30 @@ class Application:
     def check_login(self, rs):
         if rs.user is None:
             raise TemporaryRequestRedirect(rs.request.url_root)
+
+    def do_file(self, rs, filestore, template, extraparams=dict()):
+        version, content = filestore.startedit()
+        return self.render_file(rs, template, version, content,
+                                extraparams=extraparams)
+
+    def do_filesave(self, rs, filestore, template, tryConfigParser=False,
+                    savehook=None, extraparams=dict()):
+        userversion = rs.request.form["revisionstartedwith"]
+        usercontent = rs.request.form["content"]
+        if tryConfigParser:
+            try:
+                config = ConfigParser.SafeConfigParser()
+                config.readfp(StringIO(usercontent.encode("utf8")))
+            except ConfigParser.ParsingError as err:
+                return self.render_file(rs, template, userversion,
+                                        usercontent, ok = False,
+                                        error = err.message)
+        ok, version, content = filestore.endedit(userversion, usercontent,
+                                                 user=rs.user.name)
+        if not savehook is None:
+            savehook()
+        return self.render_file(rs, template, version, content, ok=ok,
+                                extraparams=extraparams)
 
     def do_start(self, rs):
         if rs.user is None:
@@ -455,31 +484,8 @@ class Application:
 
         return self.render_edit(rs, aca, c, page, version, content, ok=ok)
 
-    def do_file(self, rs, filestore, template, extraparams=dict()):
-        version, content = filestore.startedit()
-        return self.render_file(rs, template, version, content,
-                                extraparams=extraparams)
-
-    def do_filesave(self, rs, filestore, template, tryConfigParser=False,
-                    savehook=None, extraparams=dict()):
-        userversion = rs.request.form["revisionstartedwith"]
-        usercontent = rs.request.form["content"]
-        if tryConfigParser:
-            try:
-                config = ConfigParser.SafeConfigParser()
-                config.readfp(StringIO(usercontent.encode("utf8")))
-            except ConfigParser.ParsingError as err:
-                return self.render_file(rs, template, userversion,
-                                        usercontent, ok = False,
-                                        error = err.message)
-        ok, version, content = filestore.endedit(userversion, usercontent,
-                                                 user=rs.user.name)
-        if not savehook is None:
-            savehook()
-        return self.render_file(rs, template, version, content, ok=ok,
-                                extraparams=extraparams)
-
-    def do_academygroups(self, rs, academy):
+    def do_academygroups(self, rs, academy=None):
+        assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca):
@@ -487,7 +493,8 @@ class Application:
         return self.do_file(rs, storage.Storage(aca.path,"groups"),
                             "academygroups.html", extraparams={'academy': aca})
 
-    def do_academygroupssave(self, rs, academy):
+    def do_academygroupssave(self, rs, academy=None):
+        assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca):
@@ -496,7 +503,8 @@ class Application:
         return self.do_filesave(rs, storage.Storage(aca.path,"groups"),
                                 "academygroups.html", extraparams={'academy': aca})
 
-    def do_academytitle(self, rs, academy):
+    def do_academytitle(self, rs, academy=None):
+        assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca):
@@ -504,13 +512,36 @@ class Application:
         return self.do_file(rs, storage.Storage(aca.path,"title"),
                             "academytitle.html", extraparams={'academy': aca})
 
-    def do_academytitlesave(self, rs, academy):
+    def do_academytitlesave(self, rs, academy=None):
+        assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(aca.path,"title"),
                                 "academytitle.html", extraparams={'academy': aca})
+
+    def do_coursetitle(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        return self.do_file(rs, storage.Storage(c.path,"title"),
+                            "coursetitle.html", extraparams={'academy': aca,
+                                                              'course': c})
+
+    def do_coursetitlesave(self, rs, academy=None, course=None):
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        return self.do_filesave(rs, storage.Storage(c.path,"title"),
+                                "coursetitle.html", extraparams={'academy': aca,
+                                                                 'course': c})
 
     def do_admin(self, rs):
         self.check_login(rs)

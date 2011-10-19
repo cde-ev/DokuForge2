@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block location%}
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               (academy.name + '/' + course.name + '/', course.gettitle()),
+               (academy.name + '/' + course.name + '/!title', "Titel")]) }}
+{% endblock %}
+{% block content %}
+
+{% if ok is none %}
+Bitte Text eingeben und mit &quot;Speichern&quot; beenden.
+{% elif ok %}
+Aenderungen erfolgreich gespeichert.
+{% else %}
+<span class=important>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</span>
+Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
+{% endif %}
+
+<form action="!title" method="post" id="save">
+	<textarea name="content">{{ content.encode("utf8")|e }}</textarea>
+	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
+	<input type="hidden" name="contentreceived" value="true">
+	<input type="submit" name="saveedit" value="Speichern und Editieren">
+</form>
+<a href="{{ basejoin(academy.name + '/' + course.name + '/!title') }}">Abbrechen</a>
+{% endblock %}
