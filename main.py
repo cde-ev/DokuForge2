@@ -119,7 +119,7 @@ class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
 
 
 class Application:
-    def __init__(self, userdb, acapath):
+    def __init__(self, userdb, groupstore, acapath):
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader("./templates"))
         self.sessiondb = sqlite3.connect(":memory:")
@@ -128,6 +128,7 @@ class Application:
         self.sessiondb.commit()
         self.userdb = userdb
         self.acapath = acapath
+        self.groupstore = groupstore
         self.routingmap = werkzeug.routing.Map([
             werkzeug.routing.Rule("/", methods=("GET", "HEAD"),
                                   endpoint=self.do_start),
@@ -141,6 +142,10 @@ class Application:
                                   endpoint=self.do_admin),
             werkzeug.routing.Rule("/!admin", methods=("POST",),
                                   endpoint=self.do_adminsave),
+            werkzeug.routing.Rule("/!groups", methods=("GET", "HEAD"),
+                                  endpoint=self.do_groups),
+            werkzeug.routing.Rule("/!groups", methods=("POST",),
+                                  endpoint=self.do_groupssave),
             werkzeug.routing.Rule("/<academy>/", methods=("GET", "HEAD"),
                                   endpoint=self.do_academy),
             werkzeug.routing.Rule("/<academy>/<course>/",
@@ -387,6 +392,28 @@ class Application:
         self.userdb.load()
         return self.render_admin(rs, version, content, ok=ok)
 
+    def do_groups(self, rs):
+        self.check_login(rs)
+        if not rs.user.isAdmin():
+            return werkzeug.exceptions.Forbidden()
+        version, content = self.groupstore.startedit()
+        return self.render_groups(rs, version, content)
+
+    def do_groupssave(self, rs):
+        self.check_login(rs)
+        if not rs.user.isAdmin():
+            return werkzeug.exceptions.Forbidden()
+        userversion = rs.request.form["revisionstartedwith"]
+        usercontent = rs.request.form["content"]
+        try:
+            config = ConfigParser.SafeConfigParser()
+            config.readfp(StringIO(usercontent.encode("utf8")))
+        except ConfigParser.ParsingError as err:
+            return self.render_admin(rs, userversion, usercontent, ok = False,
+                                     error = err.message)
+        ok, version, content = self.userdb.storage.endedit(userversion, usercontent, user=rs.user.name)
+        return self.render_groups(rs, version, content, ok=ok)
+
     def render_start(self, rs):
         return self.render("start.html", rs)
 
@@ -439,6 +466,14 @@ class Application:
             error=error)
         return self.render("admin.html", rs, params)
 
+    def render_groups(self, rs, theversion, thecontent, ok=None, error=None):
+        params= dict(
+            content=thecontent, ## Note: must use the provided content, as it has to fit with the version
+            version=theversion,
+            ok=ok,
+            error=error)
+        return self.render("groups.html", rs, params)
+
     def render(self, templatename, rs, extraparams=dict()):
         rs.response.content_type = "text/html; charset=utf8"
         params = dict(
@@ -454,7 +489,8 @@ def main():
     userdbstore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(userdbstore)
     userdb.load()
-    app = Application(userdb, './df/')
+    groupstore = storage.Storage('work', 'groupdb')
+    app = Application(userdb, groupstore, './df/')
     app = TracebackMiddleware(app)
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))

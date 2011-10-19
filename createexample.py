@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import os
 from main import Application
@@ -39,6 +40,16 @@ if __name__ == "__main__":
                          ("akademie_read_ya2011-1_course02", True),
                          ("df_export", True)]))
     userdb.store()
+    mygroupstore = storage.Storage('work', 'groupdb')
+    mygroupstore.store("""[cde]
+title = "CdE-Akademien"
+
+[qed]
+title = "QED-Akademien"
+
+[old-cde]
+title = "Archiv aelterer CdE-Akademien"
+""")
     try:
         os.mkdir("df")
     except OSError:
@@ -46,7 +57,7 @@ if __name__ == "__main__":
     userdbstore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(userdbstore)
     userdb.load()
-    app = Application(userdb, './df/')
+    app = Application(userdb, mygroupstore, './df/')
     aca = createaca("za2011-1", "Beste Akademie ever", ["cde"],
                     [('course01',"Internethumor und seine Schuld am Weltuntergang", 3),
                      ('course02', "Helenistische Heldenideale", 2)])
