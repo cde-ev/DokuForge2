@@ -180,6 +180,9 @@ class Application:
                                   endpoint=self.do_showdeadblobs),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!relinkblob",
                                   methods=("POST",), endpoint=self.do_relinkblob),
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/",
+                                  methods=("GET", "HEAD"),
+                                  endpoint=self.do_showblob),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!delete",
                                   methods=("POST",), endpoint=self.do_blobdelete),
         ])
@@ -366,6 +369,17 @@ class Application:
             number = 0
         c.relinkblob(number, page, user=rs.user.name)
         return self.render_show(rs, aca, c, page)
+
+    def do_showblob(self, rs, academy=None, course=None, page=None, blob=None):
+        assert academy is not None and course is not None and page is not None and blob is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        if not rs.user.allowedRead(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        rs.response.content_type = "application/octet-stream"
+        rs.response.data = c.getblob(blob)
+        return rs.response
 
     def do_raw(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
