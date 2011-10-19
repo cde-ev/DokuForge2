@@ -38,17 +38,18 @@ if __name__ == "__main__":
                          ("akademie_read_ya2011-1_course01", True),
                          ("akademie_write_ya2011-1_course01", True),
                          ("akademie_read_ya2011-1_course02", True),
-                         ("df_export", True)]))
+                         ("df_export", True),
+                         ("df_show", True)]))
     userdb.store()
     mygroupstore = storage.Storage('work', 'groupdb')
     mygroupstore.store("""[cde]
-title = "CdE-Akademien"
+title = CdE-Akademien
 
 [qed]
-title = "QED-Akademien"
+title = QED-Akademien
 
 [old-cde]
-title = "Archiv aelterer CdE-Akademien"
+title = Archiv aelterer CdE-Akademien
 """)
     try:
         os.mkdir("df")

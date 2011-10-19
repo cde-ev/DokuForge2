@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar() }}
+{{ trivnavbar([('!expand=' + expandgroup, allgroups[expandgroup]|e)]) }}
 {% endblock %}
 {% block content %}
 <ul>
 {% for academy in academies %}
-  {% if "cde" in academy.getgroups() %}
+  {% if expandgroup in academy.getgroups() %}
     {% if user.allowedRead(academy) %}
     <li><a href="{{ basejoin(academy.name + '/') }}">{{ academy.gettitle()|e }}</a></li>
     {% else %}
@@ -14,6 +14,14 @@
   {% endif %}
 {% else %}
 <li><em>Keine Akademien gefunden.</em></li>
+{% endfor %}
+</ul>
+<hr>
+<ul>
+{% for group in allgroups %}
+{% if user.allowedList(group) %}
+    <li><a href="{{ basejoin('!expand=' + group) }}">{{ allgroups[group]|e }}</a></li>
+{% endif %}
 {% endfor %}
 </ul>
 {% endblock %}

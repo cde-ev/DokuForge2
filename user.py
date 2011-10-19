@@ -83,6 +83,14 @@ class User:
     def isAdmin(self):
         return self.hasPermission("df_admin") or self.hasPermission("df_useradmin")
 
+    def allowedList(self, groupname):
+        if self.hasPermission("df_show") or self.hasPermission("df_show_" +
+                                                               groupname):
+            return True
+
+    def defaultGroup(self):
+        return "cde"
+
 
 
 class UserDB:

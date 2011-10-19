@@ -146,6 +146,8 @@ class Application:
                                   endpoint=self.do_groups),
             werkzeug.routing.Rule("/!groups", methods=("POST",),
                                   endpoint=self.do_groupssave),
+            werkzeug.routing.Rule("/!expand=<group>", methods=("GET", "HEAD"),
+                                  endpoint=self.do_index),
             werkzeug.routing.Rule("/<academy>/", methods=("GET", "HEAD"),
                                   endpoint=self.do_academy),
             werkzeug.routing.Rule("/<academy>/<course>/",
@@ -199,6 +201,10 @@ class Application:
         path = os.path.join(self.acapath, name)
         if os.path.exists(path):
             return False
+        allgroups = self.listGroups()
+        for group in groups:
+            if not group in allgroups:
+                return False
         os.makedirs(path)
         aca = academy.Academy(path)
         aca.settitle(title)
@@ -208,6 +214,17 @@ class Application:
     def listAcademies(self):
         ret = map(self.getAcademy, os.listdir(self.acapath))
         ret.sort(key=operator.attrgetter('name'))
+        return ret
+
+    def listGroups(self):
+        try:
+            config = ConfigParser.SafeConfigParser()
+            config.readfp(StringIO(self.groupstore.content()))
+        except ConfigParser.ParsingError as err:
+            return {}
+        ret = {}
+        for group in config.sections():
+            ret[group] = config.get(group, 'title')
         return ret
 
     @Request.application
@@ -248,9 +265,9 @@ class Application:
         rs.logout()
         return self.render_start(rs)
 
-    def do_index(self, rs):
+    def do_index(self, rs, group = None):
         self.check_login(rs)
-        return self.render_index(rs)
+        return self.render_index(rs, group)
 
     def do_academy(self, rs, academy = None):
         assert academy is not None
@@ -428,9 +445,13 @@ class Application:
         return self.render("edit.html", rs, params)
 
 
-    def render_index(self, rs):
+    def render_index(self, rs, group = None):
+        if group is None:
+            group = rs.user.defaultGroup()
         params = dict(
-            academies=map(academy.AcademyLite, self.listAcademies()))
+            academies=map(academy.AcademyLite, self.listAcademies()),
+            allgroups = self.listGroups(),
+            expandgroup = group)
         return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
