@@ -613,13 +613,13 @@ class Application:
 
     def do_groups(self, rs):
         self.check_login(rs)
-        if not rs.user.isAdmin():
+        if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, self.groupstore, "groups.html")
 
     def do_groupssave(self, rs):
         self.check_login(rs)
-        if not rs.user.isAdmin():
+        if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.groupstore, "groups.html",
                          tryConfigParser = True)

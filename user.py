@@ -26,7 +26,7 @@ class User:
     @ivar password: password of the user
     @ivar permissions: dictionary of permissions, the syntax is as follows:
                        akademie_x_y_z ... x in {read, write}, y akademiename, z kursname
-                       df_x ... x in {admin, useradmin, show, read, write, show_cde, read_cde, write_cde, export}
+                       df_x ... x in {superadmin, admin, show, read, write, show_cde, read_cde, write_cde, export, create}
     """
     def __init__(self, name, status, password, permissions):
         """
@@ -80,8 +80,14 @@ class User:
             return False
         return self.hasPermission("df_export")
 
+    def mayCreate(self):
+        return self.hasPermission("df_create") or self.isSuperAdmin()
+
     def isAdmin(self):
-        return self.hasPermission("df_admin") or self.hasPermission("df_useradmin")
+        return self.hasPermission("df_superadmin") or self.hasPermission("df_admin")
+
+    def isSuperAdmin(self):
+        return self.hasPermission("df_superadmin")
 
     def allowedList(self, groupname):
         if self.hasPermission("df_show") or self.hasPermission("df_show_" +
