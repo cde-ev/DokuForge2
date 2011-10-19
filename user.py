@@ -54,7 +54,7 @@ class User:
         return False
 
     def allowedRead(self, aca, course = None):
-        if self.hasPermission("df_read"):
+        if self.hasPermission("df_read") or self.isSuperAdmin():
             return True
         for g in aca.getgroups():
             if self.hasPermission("df_read_" + g):
@@ -65,7 +65,7 @@ class User:
             return self.hasPermission("akademie_read_%s_%s" % (aca.name, course.name))
 
     def allowedWrite(self, aca, course = None):
-        if self.hasPermission("df_write"):
+        if self.hasPermission("df_write") or self.isSuperAdmin():
             return True
         for g in aca.getgroups():
             if self.hasPermission("df_write_" + g):
@@ -76,6 +76,8 @@ class User:
             return self.hasPermission("akademie_write_%s_%s" % (aca.name, course.name))
 
     def mayExport(self, aca):
+        if self.isSuperAdmin():
+            return True
         if not self.allowedRead(aca):
             return False
         return self.hasPermission("df_export")
@@ -83,16 +85,16 @@ class User:
     def mayCreate(self):
         return self.hasPermission("df_create") or self.isSuperAdmin()
 
+    def allowedList(self, groupname):
+        if self. isSuperAdmin() or self.hasPermission("df_show") or \
+               self.hasPermission("df_show_" + groupname):
+            return True
+
     def isAdmin(self):
         return self.hasPermission("df_superadmin") or self.hasPermission("df_admin")
 
     def isSuperAdmin(self):
         return self.hasPermission("df_superadmin")
-
-    def allowedList(self, groupname):
-        if self.hasPermission("df_show") or self.hasPermission("df_show_" +
-                                                               groupname):
-            return True
 
     def defaultGroup(self):
         return "cde"
