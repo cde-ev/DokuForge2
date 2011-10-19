@@ -1,12 +1,10 @@
 == soon and important ==
 * finish attachment implementation
 * style-guide
-* webfrontend to create academies/courses
 * utf8 support for input
 
 == later and important ==
 * exporter
-* webfrontend to modify academies/coureses
 
 == not so important ==
 * markup parser and fancy display
