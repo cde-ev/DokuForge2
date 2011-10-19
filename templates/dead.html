@@ -2,7 +2,7 @@
 {% block location%}
 {{ trivnavbar([(academy.name, academy.gettitle()),
                (academy.name + '/' + course.name, course.gettitle()),
-               ('', "Attic")])}}
+               (academy.name + '/' + course.name +'/!deadpages', "Attic")])}}
 {% endblock %}
 {% block content %}
 {% set deads=course.listdeadpages() %}

@@ -3,7 +3,7 @@
 {{ trivnavbar([(academy.name, academy.gettitle()),
                (academy.name + '/' + course.name, course.gettitle()),
                (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
-               ('', "Attic")])}}
+               (academy.name + '/' + course.name + '/' + page|string + '/!deadblobs', "Attic")])}}
 {% endblock %}
 {% block content %}
 {% set deads=course.listdeadblobs() %}

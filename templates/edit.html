@@ -3,7 +3,7 @@
 {{ trivnavbar([(academy.name, academy.gettitle()),
                (academy.name + '/' + course.name, course.gettitle()),
                (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
-               ('', "Editieren")]) }}
+               (academy.name + '/' + course.name + '/' + page|string + '/!edit', "Editieren")]) }}
 {% endblock %}
 {% block content %}
 

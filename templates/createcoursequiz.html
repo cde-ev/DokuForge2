@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block location%}
 {{ trivnavbar([(academy.name, academy.gettitle()),
-               ('', "Kurs hinzufügen")]) }}
+               (academy.name + '/!createcourse', "Kurs hinzufügen")]) }}
 {% endblock %}
 {% block content %}
 
