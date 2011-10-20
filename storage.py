@@ -89,14 +89,18 @@ class Storage(object):
         @type content: str or filelike
         @param content: the content of the file
         """
-        if isinstance(content, basestring):
-            content = StringIO(content)
 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()])
             objfile = file(self.fullpath(), mode="w")
-            shutil.copyfileobj(content, objfile)
+            if isinstance(content, basestring):
+                ## Note: we cannot just convert the string into
+                ## file-like by taking StringIO, as this changes the encoding,
+                ## and hence information is lost.
+                objfile.write(content)
+            else:
+                shutil.copyfileobj(content, objfile)
             objfile.close()
             args = ["ci","-q","-f","-m%s" % message]
             if user is not None:
@@ -156,7 +160,12 @@ class Storage(object):
                   True if the save was sucessfull (if not, a merge has to be done manually),
                   and (newversion,mergedcontent) is a state for further editing that can be
                   used as if obtained from startedit
+
+        NOTE: the newcontents are transformed to native line ending (assuming a Unix host).
+              Therefore endedit CANNOT be used to store binaries (however, rcsmerge won't suggest 
+              a sensible merged version for binaries anyway).
         """
+        newcontent="\n".join(newcontent.splitlines()) + "\n" # Transform text to Unix line ending 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             currentversion = self.status(havelock=gotlock)
