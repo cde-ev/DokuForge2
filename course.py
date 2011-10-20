@@ -173,10 +173,12 @@ class Course(CourseLite):
     def newpage(self,user=None):
         """
         create a new page in this course and return its internal number
-        @type user: None or str
+        @type user: None or unicode
         @rtype: int
         """
-        assert user is None or isinstance(user, str)
+        if user is not None:
+            assert isinstance(user, unicode)
+            user = user.encode("utf8")
         index = Storage(self.path,"Index")
         nextpagestore = Storage(self.path,"nextpage")
         with index.lock as gotlockindex:
@@ -194,9 +196,11 @@ class Course(CourseLite):
 
         @param number: the internal page number
         @type number: int
-        @type user: None or str
+        @type user: None or unicode
         """
-        assert user is None or isinstance(user, str)
+        if user is not None:
+            assert isinstance(user, unicode)
+            user = user.encode("utf8")
         indexstore = Storage(self.path,"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
@@ -216,9 +220,11 @@ class Course(CourseLite):
 
         @param number: the internal page number
         @type number: int
-        @type user: None or str
+        @type user: None or unicode
         """
-        assert user is None or isinstance(user, str)
+        if user is not None:
+            assert isinstance(user, unicode)
+            user = user.encode("utf8")
         indexstore = Storage(self.path,"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
@@ -235,9 +241,11 @@ class Course(CourseLite):
         swap the page at the given current position with its predecessor
 
         @type position: int
-        @type user: None or str
+        @type user: None or unicode
         """
-        assert user is None or isinstance(user, str)
+        if user is not None:
+            assert isinstance(user, unicode)
+            user = user.encode("utf8")
         indexstore = Storage(self.path,"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
@@ -253,9 +261,11 @@ class Course(CourseLite):
         """
         relink a (usually deleted) page to the index
         @type page: int
-        @type user: None or str
+        @type user: None or unicode
         """
-        assert user is None or isinstance(user, str)
+        if user is not None:
+            assert isinstance(user, unicode)
+            user = user.encode("utf8")
         indexstore = Storage(self.path, "Index")
         nextpage = Storage(self.path, "nextpage")
         with indexstore.lock as gotlockindex:
@@ -280,9 +290,11 @@ class Course(CourseLite):
         relink a (usually deleted) blob to the given page in the index
         @type number: int
         @type page: int
-        @type user: None or str
+        @type user: None or unicode
         """
-        assert user is None or isinstance(user, str)
+        if user is not None:
+            assert isinstance(user, unicode)
+            user = user.encode("utf8")
         indexstore = Storage(self.path, "Index")
         nextblob = Storage(self.path, "nextblob")
         with indexstore.lock as gotlockindex:
@@ -308,10 +320,11 @@ class Course(CourseLite):
         @param number: the internal page number
         @type number: int
         @returns a pair of an opaque version string and the contents of this page
-        @rtype: (str, str)
+        @rtype: (unicode, unicode)
         """
         page = Storage(self.path,"page%d" % number)
-        return page.startedit()
+        version, content = page.startedit()
+        return (version.decode("utf8"), content.decode("utf8"))
 
     def savepage(self,number,version, newcontent,user=None):
         """
@@ -322,19 +335,24 @@ class Course(CourseLite):
         @param newcontent: the new content of the page, based on editing the said version
         @param user: the df-login name of the user to carried out the edit
         @type number: int
-        @type version: str
+        @type version: unicode
         @type newcontent: unicode
-        @type user: str
+        @type user: unicode
 
         @returns: a triple (ok,newversion,mergedcontent) where ok is a boolean indicating
                   whether no confilct has occured and (newversion,mergedcontent) a pair
                   for further editing that can be  handled as if obtained from editpage
+        @rtype: (unicode, unicode, unicode)
         """
-        assert isinstance(version, str)
+        assert isinstance(version, unicode)
         assert isinstance(newcontent, unicode)
-        assert isinstance(user, str)
+        if user is not None:
+            assert isinstance(user, unicode)
+            user = user.encode("utf8")
         page = Storage(self.path,"page%d" % number)
-        return page.endedit(version, newcontent.encode("utf8"), user=user)
+        ok, version, mergedcontent = page.endedit(version.encode("utf8"),
+                                                  newcontent.encode("utf8"), user=user)
+        return (ok, version.decode("utf8"), mergedcontent.decode("utf8"))
 
     def attachblob(self,number,data,comment="unknown blob",user=None):
         """
@@ -345,12 +363,14 @@ class Course(CourseLite):
         @param user: the df-login name of the user to carried out the edit
         @type number: int
         @type data: str or file-like
-        @type comment: str
-        @type user: str or None
+        @Type comment: unicode
+        @type user: unicode or None
         """
         assert isinstance(data, str) or hasattr(data, "read")
-        assert isinstance(comment, str)
-        assert user is None or isinstance(user, str)
+        assert isinstance(comment, unicode)
+        if user is not None:
+            assert isinstance(user, str)
+            user = user.encode("utf8")
         indexstore = Storage(self.path,"Index")
         nextblobstore = Storage(self.path,"nextblob")
 
@@ -367,7 +387,7 @@ class Course(CourseLite):
                         indexstore.store(newindex,havelock=gotlockindex)
 
         blob = Storage(self.path,"blob%d" % newnumber)
-        blob.store(data,user=user,message=comment)
+        blob.store(data, user=user, message=comment.encode("utf8"))
 
     def listblobs(self,number):
         """
