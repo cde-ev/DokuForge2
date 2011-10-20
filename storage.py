@@ -164,6 +164,9 @@ class Storage(object):
               Therefore endedit CANNOT be used to store binaries (however, rcsmerge won't suggest 
               a sensible merged version for binaries anyway).
         """
+        if isinstance(newcontent, unicode):
+            print "WARNING: passing unicode objects to endedit is a bug! encoding anyway"
+            newcontent = newcontent.encode("utf8")
         newcontent="\n".join(newcontent.splitlines()) + "\n" # Transform text to Unix line ending 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
