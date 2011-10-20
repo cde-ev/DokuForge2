@@ -123,7 +123,7 @@ class Academy(AcademyLite):
             return False
         if os.path.exists(os.path.join(self.path, name)):
             return False
-        course.Course(os.path.join(self.path, name)).settitle(title)
+        course.Course(os.path.join(self.path, name)).settitle(title.decode("utf8"))
         return True
 
     def listCourses(self):

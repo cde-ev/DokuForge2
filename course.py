@@ -19,24 +19,30 @@ class CourseLite:
         if isinstance(obj, CourseLite):
             self.path = obj.path
         else:
+            assert isinstance(obj, str)
             if not os.path.isdir(obj):
                 return None
             self.path = obj
 
     @property
     def name(self):
+        """
+        @rtype: str
+        """
         return os.path.basename(self.path)
 
     def gettitle(self):
         """
         @returns: title of the course
+        @rtype: unicode
         """
         s=Storage(self.path,"title")
-        return s.content()
+        return s.content().decode("utf8")
 
     def nextpage(self,havelock=False):
         """
         internal function: return the number of the next available page, but don't do anything
+        @rtype: int
         """
         s = Storage(self.path,"nextpage")
         vs = s.content(havelock=havelock)
@@ -49,6 +55,7 @@ class CourseLite:
         internal function: return the number of the next available blob, but don't do anything
 
         @returns: number of next available blob
+        @rtype: int
         """
         s = Storage(self.path,"nextblob")
         vs = s.content(havelock=havelock)
@@ -58,7 +65,8 @@ class CourseLite:
 
     def listpages(self,havelock=False):
         """
-        return a list of the available page numbers in correct order
+        @returns: a list of the available page numbers in correct order
+        @rtype: [int]
         """
         indexstore = Storage(self.path,"Index")
         index = indexstore.content(havelock=havelock)
@@ -67,7 +75,8 @@ class CourseLite:
 
     def listdeadpages(self):
         """
-        return a list of the pages not currently linked in the index
+        @returns: a list of the pages not currently linked in the index
+        @rtype: [int]
         """
         indexstore = Storage(self.path, "Index")
         nextpage = Storage(self.path, "nextpage")
@@ -79,7 +88,8 @@ class CourseLite:
             
     def listdeadblobs(self):
         """
-        return a list of the blobs not currently linked to the index
+        @returns: a list of the blobs not currently linked to the index
+        @rtype: [int]
         """
         indexstore = Storage(self.path,"Index")
         nextblob = Storage(self.path,"nextblob")
@@ -99,10 +109,13 @@ class CourseLite:
         """
         Show the contents of a page
 
+        @type number: int
         @param number: the internal number of that page
+        @rtype: unicode
         """
+        assert isinstance(number, int)
         page = Storage(self.path,"page%d" % number)
-        return page.content()
+        return page.content().decode("utf8")
 
 
 class Course(CourseLite):
@@ -142,21 +155,28 @@ class Course(CourseLite):
 
     def export(self):
         """
-        return a tar ball containing the full internal information about this course
+        @returns: a tar ball containing the full internal information about
+                this course
+        @rtype: str
         """
         return check_output(["tar","cf","-",self.path])
     
     def settitle(self,title):
         """
         Set the title of this course
+        @type title: unicode
         """
+        assert isinstance(title, unicode)
         s=Storage(self.path,"title")
-        s.store(title)
+        s.store(title.encode("utf8"))
 
     def newpage(self,user=None):
         """
         create a new page in this course and return its internal number
+        @type user: None or str
+        @rtype: int
         """
+        assert user is None or isinstance(user, str)
         index = Storage(self.path,"Index")
         nextpagestore = Storage(self.path,"nextpage")
         with index.lock as gotlockindex:
@@ -174,7 +194,9 @@ class Course(CourseLite):
 
         @param number: the internal page number
         @type number: int
+        @type user: None or str
         """
+        assert user is None or isinstance(user, str)
         indexstore = Storage(self.path,"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
@@ -194,7 +216,9 @@ class Course(CourseLite):
 
         @param number: the internal page number
         @type number: int
+        @type user: None or str
         """
+        assert user is None or isinstance(user, str)
         indexstore = Storage(self.path,"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
@@ -211,7 +235,9 @@ class Course(CourseLite):
         swap the page at the given current position with its predecessor
 
         @type position: int
+        @type user: None or str
         """
+        assert user is None or isinstance(user, str)
         indexstore = Storage(self.path,"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
@@ -226,7 +252,10 @@ class Course(CourseLite):
     def relink(self, page, user=None):
         """
         relink a (usually deleted) page to the index
+        @type page: int
+        @type user: None or str
         """
+        assert user is None or isinstance(user, str)
         indexstore = Storage(self.path, "Index")
         nextpage = Storage(self.path, "nextpage")
         with indexstore.lock as gotlockindex:
@@ -249,7 +278,11 @@ class Course(CourseLite):
     def relinkblob(self, number, page, user=None):
         """
         relink a (usually deleted) blob to the given page in the index
+        @type number: int
+        @type page: int
+        @type user: None or str
         """
+        assert user is None or isinstance(user, str)
         indexstore = Storage(self.path, "Index")
         nextblob = Storage(self.path, "nextblob")
         with indexstore.lock as gotlockindex:
@@ -275,6 +308,7 @@ class Course(CourseLite):
         @param number: the internal page number
         @type number: int
         @returns a pair of an opaque version string and the contents of this page
+        @rtype: (str, str)
         """
         page = Storage(self.path,"page%d" % number)
         return page.startedit()
@@ -296,8 +330,11 @@ class Course(CourseLite):
                   whether no confilct has occured and (newversion,mergedcontent) a pair
                   for further editing that can be  handled as if obtained from editpage
         """
+        assert isinstance(version, str)
+        assert isinstance(newcontent, unicode)
+        assert isinstance(user, str)
         page = Storage(self.path,"page%d" % number)
-        return page.endedit(version,newcontent.encode('utf8'),user=user)
+        return page.endedit(version, newcontent.encode("utf8"), user=user)
 
     def attachblob(self,number,data,comment="unknown blob",user=None):
         """
@@ -309,8 +346,11 @@ class Course(CourseLite):
         @type number: int
         @type data: str or file-like
         @type comment: str
-        @type user: str
+        @type user: str or None
         """
+        assert isinstance(data, str) or hasattr(data, "read")
+        assert isinstance(comment, str)
+        assert user is None or isinstance(user, str)
         indexstore = Storage(self.path,"Index")
         nextblobstore = Storage(self.path,"nextblob")
 
@@ -335,6 +375,7 @@ class Course(CourseLite):
 
         @param number: the internal page number
         @type number: int
+        @rtype: [int]
         """
         indexstore = Storage(self.path,"Index")
         index = indexstore.content()
@@ -352,6 +393,7 @@ class Course(CourseLite):
 
         @param number: the internal number of the blob
         @type number: int
+        @rtype: str
         """
         blob=Storage(self.path,"blob%d" % number)
         return blob.content()

@@ -12,7 +12,9 @@ def rlogv(filename):
     Return the head revision of an rcs file
 
     (needed, as rlog -v is a FreeBSD extension)
+    @type filename: str
     """
+    assert isinstance(filename, str)
     f = file(filename, mode="r")
     content = f.read()
     f.close()
@@ -24,6 +26,10 @@ def rlogv(filename):
 
 class LockDir:
     def __init__(self, path):
+        """
+        @type path: str"
+        """
+        assert isinstance(path, str)
         self.path = path
         self.lockcount = 0
 
@@ -65,7 +71,11 @@ class Storage(object):
         of a file in this direcotry. With the filename is also associated
         #lock.filename and filename,v as well as any rcs internal locks
         associated with it.
+        @type path: str
+        @type filename: str
         """
+        assert isinstance(path, str)
+        assert isinstance(filename, str)
         self.path=path
         self.filename=filename
 
@@ -75,6 +85,7 @@ class Storage(object):
         @param formatstr: format string that takes exactly one %s
         @rtype: str
         """
+        assert isinstance(formatstr, str)
         return os.path.join(self.path, formatstr % self.filename)
 
     @property
@@ -88,11 +99,10 @@ class Storage(object):
 
         @type content: str or filelike
         @param content: the content of the file
+        @type message: str
         """
-        if isinstance(content, unicode):
-            print "WARNING: passing unicode objects to store is a bug! encoding anyway"
-            content = content.encode("utf8")
         if isinstance(content, basestring):
+            assert isinstance(content, str)
             content = StringIO(content)
 
         with havelock or self.lock as gotlock:
@@ -117,6 +127,9 @@ class Storage(object):
                                        self.fullpath()])
 
     def status(self, havelock=None):
+        """
+        @rtype: str
+        """
         self.ensureexistence(havelock=havelock)
         result = rlogv(self.fullpath("%s,v"))
         if result is None:
@@ -136,6 +149,7 @@ class Storage(object):
         that version is still the head revision.
 
         @returns: an opaque version string and the contents of the file
+        @rtype: (str, str)
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
@@ -151,10 +165,13 @@ class Storage(object):
         store it as new head revision. If not, store it to a branch,
         merge with new head revision and return new version content pair.
 
+        @type version: str
         @param version: the opaque version string optained from startedit
                         when the user started editing the file
+        @type newcontent: str
         @param newcontent: the new content, produced by the user starting from
                            the content at the provided version
+        @type user: None or str
         @returns: a triple (ok,newversion,mergedcontent) where ok is boolen with value
                   True if the save was sucessfull (if not, a merge has to be done manually),
                   and (newversion,mergedcontent) is a state for further editing that can be
@@ -167,6 +184,9 @@ class Storage(object):
         if isinstance(newcontent, unicode):
             print "WARNING: passing unicode objects to endedit is a bug! encoding anyway"
             newcontent = newcontent.encode("utf8")
+        assert isinstance(version, str)
+        assert isinstance(newcontent, str)
+        assert user is None or isinstance(user, str)
         newcontent="\n".join(newcontent.splitlines()) + "\n" # Transform text to Unix line ending 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
