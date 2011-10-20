@@ -21,6 +21,7 @@ class AcademyLite:
         if isinstance(obj, AcademyLite):
             self.path = obj.path
         else:
+            assert isinstance(obj, str)
             self.path = obj
 
     @property
@@ -70,6 +71,7 @@ class AcademyLite:
         """
         if re.match('^[-a-zA-Z0-9]{1,200}$', coursename) is None:
             return None
+        coursename = coursename.encode("utf8")
         finalpath = os.path.join(self.path,coursename)
         if not os.path.isdir(finalpath):
             return None

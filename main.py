@@ -57,7 +57,7 @@ class SessionHandler:
 
     def get(self):
         """Find a user session.
-        @rtype: str or None
+        @rtype: unicode or None
         @returns: a username or None
         """
         if self.sid is None:
@@ -67,17 +67,18 @@ class SessionHandler:
         results = self.cur.fetchall()
         if len(results) != 1:
             return None
-        return results[0][0].encode("utf8")
+        assert isinstance(results[0][0], unicode)
+        return results[0][0]
 
     def set(self, username):
         """Initiate a user session.
-        @type username: str
+        @type username: unicode
         """
         if self.sid is None:
             self.sid = gensid()
             self.response.set_cookie(self.cookie_name, self.sid)
         self.cur.execute("INSERT OR REPLACE INTO sessions VALUES (?, ?);",
-                         (self.sid.decode("utf8"), username.decode("utf8")))
+                         (self.sid.decode("utf8"), username))
         self.db.commit()
 
     def delete(self):
@@ -228,6 +229,7 @@ class Application:
     def getAcademy(self, name, user=None):
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             raise werkzeug.exceptions.NotFound()
+        name = name.encode("utf8")
         if not os.path.isdir(os.path.join(self.acapath, name)):
             raise werkzeug.exceptions.NotFound()
         aca = academy.Academy(os.path.join(self.acapath, name))
