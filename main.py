@@ -249,6 +249,8 @@ class Application:
         path = os.path.join(self.acapath, name)
         if os.path.exists(path):
             return False
+        if len(groups) == 0:
+            return False
         allgroups = self.listGroups()
         for group in groups:
             if not group in allgroups:
@@ -592,6 +594,8 @@ class Application:
 
     def validateGroups(self, groupstring):
         groups = groupstring.split()
+        if len(groups) == 0:
+            return False
         for g in groups:
             if g not in self.listGroups():
                 raise CheckError("Nichtexistente Gruppe gefunden!",
