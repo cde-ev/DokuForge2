@@ -369,7 +369,7 @@ class Course(CourseLite):
         assert isinstance(data, str) or hasattr(data, "read")
         assert isinstance(comment, unicode)
         if user is not None:
-            assert isinstance(user, str)
+            assert isinstance(user, unicode)
             user = user.encode("utf8")
         indexstore = Storage(self.path,"Index")
         nextblobstore = Storage(self.path,"nextblob")
