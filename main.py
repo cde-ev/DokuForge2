@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import jinja2
 import random
@@ -117,6 +118,12 @@ class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
     def get_response(self, environ):
         return werkzeug.utils.redirect(self.new_url, self.code)
 
+class CheckError(StandardError):
+    def __init__(self, msg, exp):
+        self.message = msg
+        self.explanation = exp
+    def __str__(self):
+        return self.message
 
 class Application:
     def __init__(self, userdb, groupstore, acapath):
@@ -287,23 +294,35 @@ class Application:
         return self.render_file(rs, template, version, content,
                                 extraparams=extraparams)
 
-    def do_filesave(self, rs, filestore, template, tryConfigParser=False,
+    def do_filesave(self, rs, filestore, template, checkhook=None,
                     savehook=None, extraparams=dict()):
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
-        if tryConfigParser:
+        if not checkhook is None:
             try:
-                config = ConfigParser.SafeConfigParser()
-                config.readfp(StringIO(usercontent.encode("utf8")))
-            except ConfigParser.ParsingError as err:
-                return self.render_file(rs, template, userversion,
-                                        usercontent, ok = False,
-                                        error = err.message)
-        ok, version, content = filestore.endedit(userversion, usercontent,
+                checkhook(usercontent)
+            except CheckError as err:
+                return self.render_file(rs, template, userversion, usercontent,
+                                        ok=False, error = err,
+                                        extraparams=extraparams)
+        # fixme: why do i need encode("utf8") here?
+        # otherwise the content is filled with bogous chars and configparser
+        # barfs with on error like
+        # ConfigParser.ParsingError: File contains parsing errors: <???>
+	# [line  6]: '\x00\x00\x00\r\x00\x00\x00\n'
+	# [line  7]: '\x00\x00\x00[\x00\x00\x00b\x00\x00\x00o\x00\x00\x00b\x00'
+	# [line 12]: '\x00\x00\x00\r\x00\x00\x00\n'
+	# [line 13]: '\x00\x00\x00'
+        ok, version, content = filestore.endedit(userversion,
+                                                 usercontent.encode("utf8"),
                                                  user=rs.user.name)
         if not savehook is None:
             savehook()
-        return self.render_file(rs, template, version, content, ok=ok,
+        if not ok:
+            return self.render_file(rs, template, version, content, ok=False,
+                                    error = CheckError("Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!", "Bitte l&ouml;se den Konflikt auf und speichere danach erneut."),
+                                    extraparams=extraparams)
+        return self.render_file(rs, template, version, content, ok=True,
                                 extraparams=extraparams)
 
     def do_start(self, rs):
@@ -385,7 +404,8 @@ class Application:
             return self.render_academy(rs, aca)
         else:
             return self.render_createcoursequiz(rs, aca, name=name,
-                                                title=title, ok=False)
+                                                title=title, ok=False,
+                                                error = CheckError("Die Kurserstellung war nicht erfolgreich.", "Bitte die folgenden Angaben korrigieren."))
 
     def do_createacademyquiz(self, rs):
         self.check_login(rs)
@@ -406,7 +426,8 @@ class Application:
             return self.render_createacademyquiz(rs, name=name,
                                                  title=title,
                                                  groups=rs.request.form["groups"],
-                                                 ok=False)
+                                                 ok=False,
+                                                 error = CheckError("Die Akademieerstellung war nicht erfolgreich.", "Bitte die folgenden Angaben korrigieren."))
 
     def do_createpage(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -575,15 +596,23 @@ class Application:
         return self.do_file(rs, storage.Storage(aca.path,"groups"),
                             "academygroups.html", extraparams={'academy': aca})
 
+    def validateGroups(self, groupstring):
+        groups = groupstring.split()
+        for g in groups:
+            if g not in self.listGroups():
+                raise CheckError("Nichtexistente Gruppe gefunden!",
+                                 "Bitte korrigieren und erneut versuchen.")
+
     def do_academygroupssave(self, rs, academy=None):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy.encode("utf8"), rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        # fixme: prevent nonexisting groups
         return self.do_filesave(rs, storage.Storage(aca.path,"groups"),
-                                "academygroups.html", extraparams={'academy': aca})
+                                "academygroups.html",
+                                checkhook = self.validateGroups,
+                                extraparams={'academy': aca})
 
     def do_academytitle(self, rs, academy=None):
         assert academy is not None
@@ -631,12 +660,22 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, self.userdb.storage, "admin.html")
 
+    def tryConfigParser(self, content):
+        try:
+            config = ConfigParser.SafeConfigParser()
+            config.readfp(StringIO(content.encode("utf8")))
+        except ConfigParser.ParsingError as err:
+            raise CheckError("Es ist ein Parser Error aufgetreten!",
+                             "Der Fehler lautetete: " + err.message + \
+                             ". Bitte korrigiere ihn und speichere erneut.")
+
     def do_adminsave(self, rs):
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.userdb.storage, "admin.html",
-                         tryConfigParser = True, savehook = self.userdb.load)
+                                checkhook = self.tryConfigParser,
+                                savehook = self.userdb.load)
 
     def do_groups(self, rs):
         self.check_login(rs)
@@ -649,7 +688,7 @@ class Application:
         if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.groupstore, "groups.html",
-                         tryConfigParser = True)
+                                checkhook = self.tryConfigParser)
 
     def render_start(self, rs):
         return self.render("start.html", rs)
@@ -706,19 +745,21 @@ class Application:
         return self.render("addblob.html", rs, params)
 
     def render_createcoursequiz(self, rs, theacademy, name='', title='',
-                                ok=True):
+                                ok=None, error=None):
         params = dict(academy=academy.AcademyLite(theacademy),
                       name=name,
                       title=title,
-                      ok=ok)
+                      ok=ok,
+                      error=error)
         return self.render("createcoursequiz.html", rs, params)
 
     def render_createacademyquiz(self, rs, name='', title='', groups='',
-                                 ok=True):
+                                 ok=None, error=None):
         params = dict(name=name,
                       title=title,
                       groups=groups,
-                      ok=ok)
+                      ok=ok,
+                      error=error)
         return self.render("createacademyquiz.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse,thepage, saved=False):

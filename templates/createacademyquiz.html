@@ -4,11 +4,8 @@
 {% endblock %}
 {% block content %}
 
-{% if ok %}
-Bitte die folgenden Angaben ergaenzen.
-{% else %}
-<span class=important>Die Akademieerstellung war nicht erfolgreich. Bitte die folgenden Angaben korrigieren.</span>
-{% endif %}
+{{ threeway(ok, "Bitte die folgenden Angaben ergaenzen.", "", error.message,
+            error.explanation) }}
 <form action="!createacademy" method="post" id="createacademy">
 	Interner Name: <input name="name" type="text" value="{{ name }}"><br/>
 	Titel: <input name="title" type="text" value="{{ title }}"><br/>

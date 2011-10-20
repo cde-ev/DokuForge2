@@ -16,6 +16,16 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
 {%- endif -%}
 {%- endfor -%}
 {%- endmacro -%}
+{%- macro threeway(ok, default, success, errormessage, errorexplanation) -%}
+{% if ok is none %}
+{{ default }}
+{% elif ok %}
+{{ success }}
+{% else %}
+<span class=important>{{ errormessage }}</span><br/>
+{{ errorexplanation }}
+{% endif %}
+{%- endmacro -%}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="de">
 <head>

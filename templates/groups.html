@@ -4,20 +4,10 @@
 {% endblock %}
 {% block content %}
 
-{% if ok is none %}
-Bitte Text eingeben und mit &quot;Speichern&quot; beenden.
-{% elif ok %}
-Aenderungen erfolgreich gespeichert.
-{% else %}
-{% if error is none %}
-<span class=important>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</span>
-Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
-{% else %}
-<span class=important>Es ist ein Parser-Error aufgetreten.</span>
-Die Änderungen wurden nicht gespeichert. Der Fehler lautet &quot;{{ error|e }}&quot;. Bitte beseitige den Fehler und versuche erneut zu speichern.
-{% endif %}
-{% endif %}
-
+{{ threeway(ok,
+            "Bitte Text eingeben und mit &quot;Speichern&quot; beenden.",
+            "Aenderungen erfolgreich gespeichert.",
+            error.message, error.explanation) }}
 <form action="!groups" method="post" id="save">
 	<textarea name="content">{{ content.encode("utf8")|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
