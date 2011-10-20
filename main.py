@@ -350,21 +350,21 @@ class Application:
     def do_academy(self, rs, academy = None):
         assert academy is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
         return self.render_academy(rs, aca)
 
     def do_course(self, rs, academy = None, course = None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         return self.render_course(rs, aca, c)
 
     def do_showdeadpages(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.render_deadpages(rs, aca, c)
@@ -372,8 +372,8 @@ class Application:
     def do_showdeadblobs(self, rs, academy=None, course=None, page=None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.render_deadblobs(rs, aca, c, page)
@@ -381,7 +381,7 @@ class Application:
     def do_createcoursequiz(self, rs, academy=None):
         assert academy is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.render_createcoursequiz(rs, aca)
@@ -389,7 +389,7 @@ class Application:
     def do_createcourse(self, rs, academy=None):
         assert academy is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         name = rs.request.form["name"]
@@ -426,8 +426,8 @@ class Application:
     def do_createpage(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         c.newpage(user=rs.user.name)
@@ -436,8 +436,8 @@ class Application:
     def do_delete(self, rs, academy=None, course=None, page=None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         c.delpage(page, user=rs.user.name)
@@ -446,8 +446,8 @@ class Application:
     def do_blobdelete(self, rs, academy=None, course=None, page=None, blob=None):
         assert academy is not None and course is not None and page is not None and blob is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         c.delblob(blob, user=rs.user.name)
@@ -456,8 +456,8 @@ class Application:
     def do_relink(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         numberstr = rs.request.form["number"]
@@ -471,8 +471,8 @@ class Application:
     def do_relinkblob(self, rs, academy=None, course=None, page=None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         numberstr = rs.request.form["number"]
@@ -486,8 +486,8 @@ class Application:
     def do_showblob(self, rs, academy=None, course=None, page=None, blob=None):
         assert academy is not None and course is not None and page is not None and blob is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
@@ -497,8 +497,8 @@ class Application:
     def do_raw(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
@@ -508,8 +508,8 @@ class Application:
     def do_moveup(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         numberstr = rs.request.form["number"]
@@ -523,15 +523,15 @@ class Application:
     def do_page(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         return self.render_show(rs, aca, c, page)
 
     def do_edit(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         version, content = c.editpage(page)
@@ -540,8 +540,8 @@ class Application:
     def do_addblob(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.render_addblob(rs, aca, c, page)
@@ -549,8 +549,8 @@ class Application:
     def do_attachblob(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
@@ -564,8 +564,8 @@ class Application:
     def do_save(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
@@ -584,7 +584,7 @@ class Application:
     def do_academygroups(self, rs, academy=None):
         assert academy is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(aca.path,"groups"),
@@ -600,7 +600,7 @@ class Application:
     def do_academygroupssave(self, rs, academy=None):
         assert academy is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(aca.path,"groups"),
@@ -611,7 +611,7 @@ class Application:
     def do_academytitle(self, rs, academy=None):
         assert academy is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(aca.path,"title"),
@@ -620,7 +620,7 @@ class Application:
     def do_academytitlesave(self, rs, academy=None):
         assert academy is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(aca.path,"title"),
@@ -629,8 +629,8 @@ class Application:
     def do_coursetitle(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(c.path,"title"),
@@ -640,8 +640,8 @@ class Application:
     def do_coursetitlesave(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
         self.check_login(rs)
-        aca = self.getAcademy(academy.encode("utf8"), rs.user)
-        c = self.getCourse(aca, course.encode("utf8"), rs.user)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(c.path,"title"),
