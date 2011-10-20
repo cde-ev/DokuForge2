@@ -160,7 +160,12 @@ class Storage(object):
                   True if the save was sucessfull (if not, a merge has to be done manually),
                   and (newversion,mergedcontent) is a state for further editing that can be
                   used as if obtained from startedit
+
+        NOTE: the newcontents are transformed to native line ending (assuming a Unix host).
+              Therefore endedit CANNOT be used to store binaries (however, rcsmerge won't suggest 
+              a sensible merged version for binaries anyway).
         """
+        newcontent="\n".join(newcontent.splitlines()) + "\n" # Transform text to Unix line ending 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             currentversion = self.status(havelock=gotlock)
