@@ -595,7 +595,8 @@ class Application:
     def validateGroups(self, groupstring):
         groups = groupstring.split()
         if len(groups) == 0:
-            return False
+            raise CheckError("Keine Gruppen gefunden!",
+                             "Jede Akademie muss mindestens einer Gruppe angeh&ouml;ren. Bitte korrigieren und erneut versuchen.")
         for g in groups:
             if g not in self.listGroups():
                 raise CheckError("Nichtexistente Gruppe gefunden!",
