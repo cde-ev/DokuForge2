@@ -267,7 +267,9 @@ class Application:
     def listGroups(self):
         try:
             config = ConfigParser.SafeConfigParser()
-            config.readfp(StringIO(self.groupstore.content()))
+            # fixme: we need encode("utf8") becaus stringio does something
+            #        strange. We get lots of superfluous '\x00'.
+            config.readfp(StringIO(self.groupstore.content().encode("utf8")))
         except ConfigParser.ParsingError as err:
             return {}
         ret = {}
@@ -305,16 +307,8 @@ class Application:
                 return self.render_file(rs, template, userversion, usercontent,
                                         ok=False, error = err,
                                         extraparams=extraparams)
-        # fixme: why do i need encode("utf8") here?
-        # otherwise the content is filled with bogous chars and configparser
-        # barfs with on error like
-        # ConfigParser.ParsingError: File contains parsing errors: <???>
-	# [line  6]: '\x00\x00\x00\r\x00\x00\x00\n'
-	# [line  7]: '\x00\x00\x00[\x00\x00\x00b\x00\x00\x00o\x00\x00\x00b\x00'
-	# [line 12]: '\x00\x00\x00\r\x00\x00\x00\n'
-	# [line 13]: '\x00\x00\x00'
         ok, version, content = filestore.endedit(userversion,
-                                                 usercontent.encode("utf8"),
+                                                 usercontent,
                                                  user=rs.user.name)
         if not savehook is None:
             savehook()

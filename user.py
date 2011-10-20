@@ -177,7 +177,9 @@ class UserDB:
 
     def load(self):
         config = ConfigParser.SafeConfigParser()
-        content = StringIO(self.storage.content())
+        # fixme: we need encode("utf8") becaus stringio does something
+        #        strange. We get lots of superfluous '\x00'.
+        content = StringIO(self.storage.content().encode("utf8"))
         config.readfp(content)
         # clear after we read the new config, better safe than sorry
         self.db.clear()
