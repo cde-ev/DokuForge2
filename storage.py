@@ -89,6 +89,9 @@ class Storage(object):
         @type content: str or filelike
         @param content: the content of the file
         """
+        if isinstance(content, unicode):
+            print "WARNING: passing unicode objects to store is a bug! encoding anyway"
+            content = content.encode("utf8")
         if isinstance(content, basestring):
             content = StringIO(content)
 
