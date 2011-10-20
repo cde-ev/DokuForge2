@@ -181,9 +181,6 @@ class Storage(object):
               Therefore endedit CANNOT be used to store binaries (however, rcsmerge won't suggest 
               a sensible merged version for binaries anyway).
         """
-        if isinstance(newcontent, unicode):
-            print "WARNING: passing unicode objects to endedit is a bug! encoding anyway"
-            newcontent = newcontent.encode("utf8")
         assert isinstance(version, str)
         assert isinstance(newcontent, str)
         assert user is None or isinstance(user, str)
