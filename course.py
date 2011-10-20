@@ -307,7 +307,7 @@ class Course(CourseLite):
         @param comment: a human readable description, e.g., the caption to be added to this figure
         @param user: the df-login name of the user to carried out the edit
         @type number: int
-        @type data: str
+        @type data: str or file-like
         @type comment: str
         @type user: str
         """
