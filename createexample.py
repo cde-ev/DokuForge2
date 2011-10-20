@@ -22,26 +22,26 @@ if __name__ == "__main__":
         pass
     mystore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(mystore)
-    userdb.addUser("arthur", "dokubeauftragter", "mypass",
-                   dict([("akademie_read_pa2010", True),
-                         ("akademie_read_za2011", True),
-                         ("akademie_read_za2011_course01", True)]))
-    userdb.addUser("bob", "dokuteam", "secret",
-                   dict([("akademie_read_pa2010", True),
-                         ("akademie_write_pa2010", True),
-                         ("df_admin", True),
-                         ("df_superadmin", True),
-                         ("akademie_read_za2011-1", True),
-                         ("akademie_read_za2011-1_course01", True),
-                         ("akademie_write_za2011-1_course01", True),
-                         ("akademie_read_za2011-1_course02", True),
-                         ("akademie_read_ya2011-1", True),
-                         ("akademie_write_ya2011-1", True),
-                         ("akademie_read_ya2011-1_course01", True),
-                         ("akademie_write_ya2011-1_course01", True),
-                         ("akademie_read_ya2011-1_course02", True),
-                         ("df_export", True),
-                         ("df_show", True)]))
+    userdb.addUser(u"arthur", u"dokubeauftragter", u"mypass",
+                   dict([(u"akademie_read_pa2010", True),
+                         (u"akademie_read_za2011", True),
+                         (u"akademie_read_za2011_course01", True)]))
+    userdb.addUser(u"bob", u"dokuteam", u"secret",
+                   dict([(u"akademie_read_pa2010", True),
+                         (u"akademie_write_pa2010", True),
+                         (u"df_admin", True),
+                         (u"df_superadmin", True),
+                         (u"akademie_read_za2011-1", True),
+                         (u"akademie_read_za2011-1_course01", True),
+                         (u"akademie_write_za2011-1_course01", True),
+                         (u"akademie_read_za2011-1_course02", True),
+                         (u"akademie_read_ya2011-1", True),
+                         (u"akademie_write_ya2011-1", True),
+                         (u"akademie_read_ya2011-1_course01", True),
+                         (u"akademie_write_ya2011-1_course01", True),
+                         (u"akademie_read_ya2011-1_course02", True),
+                         (u"df_export", True),
+                         (u"df_show", True)]))
     userdb.store()
     mygroupstore = storage.Storage('work', 'groupdb')
     mygroupstore.store("""[cde]

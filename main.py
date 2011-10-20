@@ -271,14 +271,12 @@ class Application:
     def listGroups(self):
         try:
             config = ConfigParser.SafeConfigParser()
-            # fixme: we need encode("utf8") becaus stringio does something
-            #        strange. We get lots of superfluous '\x00'.
-            config.readfp(StringIO(self.groupstore.content().encode("utf8")))
+            config.readfp(StringIO(self.groupstore.content()))
         except ConfigParser.ParsingError as err:
             return {}
         ret = {}
         for group in config.sections():
-            ret[group] = config.get(group, 'title')
+            ret[group.decode("utf8")] = config.get(group, 'title').decode("utf8")
         return ret
 
     @Request.application
