@@ -297,7 +297,7 @@ class Course(CourseLite):
                   for further editing that can be  handled as if obtained from editpage
         """
         page = Storage(self.path,"page%d" % number)
-        return page.endedit(version,newcontent,user=user)
+        return page.endedit(version,newcontent.encode('utf8'),user=user)
 
     def attachblob(self,number,data,comment="unknown blob",user=None):
         """
