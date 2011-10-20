@@ -1,5 +1,7 @@
 from __future__ import with_statement
+from cStringIO import StringIO
 import os, errno
+import shutil
 import time
 import subprocess
 import re
@@ -84,13 +86,17 @@ class Storage(object):
         Store the given contents; rcs file is create if it does not
         exist already.
 
-        @param content: the content of the file as str-object
+        @type content: str or filelike
+        @param content: the content of the file
         """
+        if isinstance(content, basestring):
+            content = StringIO(content)
+
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()])
             objfile = file(self.fullpath(), mode="w")
-            objfile.write(content)
+            shutil.copyfileobj(content, objfile)
             objfile.close()
             args = ["ci","-q","-f","-m%s" % message]
             if user is not None:
