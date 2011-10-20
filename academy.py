@@ -34,17 +34,19 @@ class AcademyLite:
         """
         loads the current title from disk
 
-        @returns: str, the display name of this academy
+        @returns: the display name of this academy
+        @rtype: unicode
         """
-        return storage.Storage(self.path, "title").content()
+        return storage.Storage(self.path, "title").content().decode("utf8")
 
     def getgroups(self):
         """
         loads the current groups from disk
 
-        @returns: list of str, the groups of which this academy is a member
+        @returns: the groups of which this academy is a member
+        @rtype: [unicode]
         """
-        return storage.Storage(self.path, "groups").content().split()
+        return storage.Storage(self.path, "groups").content().decode("utf8").split()
 
     def listCoursesLite(self):
         """
@@ -97,9 +99,10 @@ class Academy(AcademyLite):
         Set the title of this academy
 
         @param title: display name of the academy
-        @type title: str
+        @type title: unicode
         """
-        storage.Storage(self.path,"title").store(title)
+        assert isinstance(title, unicode)
+        storage.Storage(self.path,"title").store(title.encode("utf8"))
 
     def setgroups(self, groups):
         """
@@ -108,7 +111,9 @@ class Academy(AcademyLite):
         @param groups: groups to set
         @type groups: list of str
         """
-        storage.Storage(self.path, "groups").store(' '.join(groups))
+        assert all(isinstance(group, unicode) for group in groups)
+        content = u" ".join(groups)
+        storage.Storage(self.path, "groups").store(content.encode("utf8"))
 
     def createCourse(self, name, title):
         """
@@ -117,13 +122,14 @@ class Academy(AcademyLite):
         @param name: internal name of the course
         @param title: displayed name of the course
         @type name: str (restricted char-set)
-        @type title: str
+        @type title: unicode
         """
+        assert isinstance(title, unicode)
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return False
         if os.path.exists(os.path.join(self.path, name)):
             return False
-        course.Course(os.path.join(self.path, name)).settitle(title.decode("utf8"))
+        course.Course(os.path.join(self.path, name)).settitle(title)
         return True
 
     def listCourses(self):
