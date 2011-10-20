@@ -227,9 +227,15 @@ class Application:
         ])
 
     def getAcademy(self, name, user=None):
+        """
+        @type name: unicode
+        @type user: None or User
+        @rtype: Academy
+        """
+        assert isinstance(name, unicode)
+        name = name.encode("utf8")
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             raise werkzeug.exceptions.NotFound()
-        name = name.encode("utf8")
         if not os.path.isdir(os.path.join(self.acapath, name)):
             raise werkzeug.exceptions.NotFound()
         aca = academy.Academy(os.path.join(self.acapath, name))
@@ -246,17 +252,25 @@ class Application:
         return c
 
     def createAcademy(self, name, title, groups):
+        """
+        @type name: unicode
+        @type title: unicode
+        @rtype: None or Academy
+        """
+        assert isinstance(name, unicode)
+        assert isinstance(title, unicode)
+        name = name.encode("utf8")
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
-            return False
+            return None
         path = os.path.join(self.acapath, name)
         if os.path.exists(path):
-            return False
+            return None
         if len(groups) == 0:
-            return False
+            return None
         allgroups = self.listGroups()
         for group in groups:
             if not group in allgroups:
-                return False
+                return None
         os.makedirs(path)
         aca = academy.Academy(path)
         aca.settitle(title)
@@ -264,7 +278,11 @@ class Application:
         return aca
 
     def listAcademies(self):
-        ret = map(self.getAcademy, os.listdir(self.acapath))
+        """
+        @rtype: [Academy]
+        """
+        ret = [self.getAcademy(p.decode("utf8"))
+               for p in os.listdir(self.acapath)]
         ret.sort(key=operator.attrgetter('name'))
         return ret
 
@@ -295,8 +313,8 @@ class Application:
 
     def do_file(self, rs, filestore, template, extraparams=dict()):
         version, content = filestore.startedit()
-        return self.render_file(rs, template, version, content,
-                                extraparams=extraparams)
+        return self.render_file(rs, template, version.decode("utf8"),
+                                content.decode("utf8"), extraparams=extraparams)
 
     def do_filesave(self, rs, filestore, template, checkhook=None,
                     savehook=None, extraparams=dict()):
@@ -309,9 +327,10 @@ class Application:
                 return self.render_file(rs, template, userversion, usercontent,
                                         ok=False, error = err,
                                         extraparams=extraparams)
-        ok, version, content = filestore.endedit(userversion,
-                                                 usercontent,
-                                                 user=rs.user.name)
+        ok, version, content = filestore.endedit(userversion.encode("utf8"),
+                usercontent.encode("utf8"), user=rs.user.name.encode("utf8"))
+        version = version.decode("utf8")
+        content = content.decode("utf8")
         if not savehook is None:
             savehook()
         if not ok:
@@ -327,6 +346,7 @@ class Application:
         return self.render_index(rs)
 
     def do_login(self, rs):
+        # FIXME: return proper error pages
         rs.response.headers.content_type = "text/plain"
         try:
             username = rs.request.form["username"]

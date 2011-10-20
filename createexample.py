@@ -61,7 +61,7 @@ title = Archiv aelterer CdE-Akademien
     userdb = user.UserDB(userdbstore)
     userdb.load()
     app = Application(userdb, mygroupstore, './df/')
-    aca = createaca("za2011-1", u"Beste Akademie ever", [u"cde"],
+    aca = createaca(u"za2011-1", u"Beste Akademie ever", [u"cde"],
                     [('course01',u"Internethumor und seine Schuld am Weltuntergang", 3),
                      ('course02', u"Helenistische Heldenideale", 2)])
     (version, cont) = aca.getCourse('course01').editpage(0)
@@ -71,12 +71,12 @@ This is an example with some nice math: $e^{i\pi}+1=0$.
     aca.getCourse('course01').attachblob(0,"XXXX....lot's of binary ;-)...XXXX",u"Ein lustiges Bild",user=u"init")
     aca.getCourse('course01').attachblob(1,"YYYY....lot's of binary ;-)...YYYY",u"Ein anderes lustiges Bild",user=u"init")
     aca.getCourse('course01').attachblob(0,"ZZZZ....lot's of binary ;-)...ZZZZ",u"Noch ein lustiges Bild",user=u"init")
-    aca = createaca("ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
+    aca = createaca(u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
                     [('course01',u"Kursqualitaet und ihre Kontrolle", 2),
                      ('course02',u"Die Hedonistische Internationale", 3),
                      ('course03', u"Orgateams und ihre Geschichte", 4)])
 
-    aca = createaca("xa2011-1", u"X-Akademie", [u"cde"],
+    aca = createaca(u"xa2011-1", u"X-Akademie", [u"cde"],
                     [('course01',u"Area51", 2),
                      ('course02',u"Fox Mulders Biographie", 3),
                      ('course03', u"Selbstverteidigung gegen Poltergeister", 4)])
