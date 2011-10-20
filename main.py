@@ -403,7 +403,7 @@ class Application:
         if self.createAcademy(name, title, groups):
             return self.render_index(rs)
         else:
-            return self.render_createacademyquiz(rs, aca, name=name,
+            return self.render_createacademyquiz(rs, name=name,
                                                  title=title,
                                                  groups=rs.request.form["groups"],
                                                  ok=False)
