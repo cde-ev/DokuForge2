@@ -266,6 +266,7 @@ class Application:
         """
         assert isinstance(name, unicode)
         assert isinstance(title, unicode)
+        assert all(isinstance(group, unicode) for group in groups)
         name = name.encode("utf8")
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return None
@@ -620,6 +621,10 @@ class Application:
                             "academygroups.html", extraparams={'academy': aca})
 
     def validateGroups(self, groupstring):
+        """
+        @type groupstring: unicode
+        """
+        assert isinstance(groupstring, unicode)
         groups = groupstring.split()
         if len(groups) == 0:
             return False
@@ -686,6 +691,10 @@ class Application:
         return self.do_file(rs, self.userdb.storage, "admin.html")
 
     def tryConfigParser(self, content):
+        """
+        @type content: unicode
+        """
+        assert isinstance(content, unicode)
         try:
             config = ConfigParser.SafeConfigParser()
             config.readfp(StringIO(content.encode("utf8")))
@@ -719,6 +728,17 @@ class Application:
         return self.render("start.html", rs)
 
     def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent, ok=None):
+        """
+        @type rs: RequestState
+        @type theacademy: Academy
+        @type thecourse: Course
+        @type thepage: int
+        @type theversion: unicode
+        @type thecontent: unicode
+        """
+        assert isinstance(thepage, int)
+        assert isinstance(theversion, unicode)
+        assert isinstance(thecontent, unicode)
         params= dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),

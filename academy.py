@@ -112,7 +112,7 @@ class Academy(AcademyLite):
         Set the groups of this academy to determine when to display it
 
         @param groups: groups to set
-        @type groups: list of str
+        @type groups: list of unicode
         """
         assert all(isinstance(group, unicode) for group in groups)
         content = u" ".join(groups)
