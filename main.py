@@ -529,6 +529,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         rs.response.data = c.getblob(blob)
+	rs.response.headers['Content-Disposition'] = "attachment; filename=%s_%s_%d" % (aca.name, c.name, blob)
         return rs.response
 
     def do_raw(self, rs, academy=None, course=None):
@@ -540,6 +541,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         rs.response.data = c.export()
+	rs.response.headers['Content-Disposition'] = "attachment; filename=%s_%s.tar" % (aca.name, c.name)
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
@@ -634,7 +636,8 @@ class Application:
         assert isinstance(groupstring, unicode)
         groups = groupstring.split()
         if len(groups) == 0:
-            return False
+            raise CheckError("Keine Gruppen gefunden!",
+                             "Jede Akademie muss mindestens einer Gruppe angeh&ouml;ren. Bitte korrigieren und erneut versuchen.")
         for g in groups:
             if g not in self.listGroups():
                 raise CheckError("Nichtexistente Gruppe gefunden!",
