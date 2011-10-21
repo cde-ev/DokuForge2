@@ -494,6 +494,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         rs.response.data = c.getblob(blob)
+	rs.response.headers['Content-Disposition'] = "attachment; filename=%s_%s_%d" % (aca.name, c.name, blob)
         return rs.response
 
     def do_raw(self, rs, academy=None, course=None):
@@ -505,6 +506,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         rs.response.data = c.export()
+	rs.response.headers['Content-Disposition'] = "attachment; filename=%s_%s.tar" % (aca.name, c.name)
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
