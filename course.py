@@ -5,6 +5,12 @@ from storage import Storage
 from common import check_output
 from werkzeug.datastructures import FileStorage
 
+class MetaBlob:
+    def __init__(label, comment, filename):
+        self.label = label
+        self.comment = comment
+        self.filename = filename
+
 class Blob:
     def __init__(data, label, comment, filename):
         self.data = data
@@ -143,9 +149,10 @@ class Course(CourseLite):
 
     pageN,v    The page with internal number N
 
-    blobN,v         The blob with the internal number N
-    blobN.label,v   The label for the blob with internal number N
-    blobN.comment,v The comment for the blob with internal number N
+    blobN,v          The blob with the internal number N
+    blobN.label,v    The label for the blob with internal number N
+    blobN.comment,v  The comment for the blob with internal number N
+    blobN.filename,v The filename for the blob with internal number N
 
     nextpage,v contains the number of the next available page
     nextblob,v contains the number of the next available blob
@@ -444,3 +451,15 @@ class Course(CourseLite):
                     Storage(self.path,"blob%d.label" % number).content.decode("utf8"),
                     Storage(self.path,"blob%d.comment" % number).content.decode("utf8"),
                     Storage(self.path,"blob%d.filename" % number).content.decode("utf8"))
+
+    def getmetablob(self, number):
+        """
+        return the corresponding blob
+
+        @param number: the internal number of the blob
+        @type number: int
+        @rtype: Blob
+        """
+        return MetaBlob(Storage(self.path,"blob%d.label" % number).content.decode("utf8"),
+                        Storage(self.path,"blob%d.comment" % number).content.decode("utf8"),
+                        Storage(self.path,"blob%d.filename" % number).content.decode("utf8"))
