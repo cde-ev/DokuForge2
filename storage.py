@@ -126,6 +126,14 @@ class Storage(object):
                 subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit", 
                                        self.fullpath()])
 
+    def asrcs(self, havelock=None):
+        with havelock or self.lock:
+            self.ensureexistence()
+            f = file(self.fullpath("%s,v"), mode="r")
+            content = f.read()
+            f.close()
+            return content
+
     def status(self, havelock=None):
         """
         @rtype: str
