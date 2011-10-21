@@ -143,7 +143,9 @@ class Course(CourseLite):
 
     pageN,v    The page with internal number N
 
-    blobN,v    The blob with the internal number N
+    blobN,v         The blob with the internal number N
+    blobN.label,v   The label for the blob with internal number N
+    blobN.comment,v The comment for the blob with internal number N
 
     nextpage,v contains the number of the next available page
     nextblob,v contains the number of the next available blob
