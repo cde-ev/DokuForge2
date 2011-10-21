@@ -9,10 +9,10 @@
 
 {% block content %}
 
-
+{{ threeway(ok, "", "", error.message, error.explanation) }}
 <form action="!attachblob" method="post" enctype="multipart/form-data">
-  Bildunterschrift/Kommentar: <textarea name="comment"></textarea>
-  K&uuml;rzel: <textarea name="label"></textarea>
+  Bildunterschrift/Kommentar: <textarea name="comment">{{ comment|e }}</textarea>
+  K&uuml;rzel: <textarea name="label">{{ label|e }}</textarea>
 	<input type="file" name="content">
 	<input type="submit" value="Bild hochladen">
 </form>

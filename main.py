@@ -598,8 +598,12 @@ class Application:
         # a FileStorage is sufficiently file-like for store
         usercontent = rs.request.files["content"]
 
-        c.attachblob(page, usercontent, comment=usercomment, label=userlabel,
-                     user=rs.user.name)
+        if not c.attachblob(page, usercontent, comment=usercomment,
+                            label=userlabel, user=rs.user.name):
+            return self.render_addblob(rs, aca, c, page, comment=usercomment,
+                                       label=userlabel, ok=False,
+                                       error=CheckError("Bildupload fehlgeschlagen!",
+                                                        "Bitte korrigeren und erneut versuchen."))
         return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
@@ -793,11 +797,15 @@ class Application:
             course=course.CourseLite(thecourse))
         return self.render(u"course.html", rs, params)
 
-    def render_addblob(self, rs, theacademy, thecourse,thepage, saved=False):
+    def render_addblob(self, rs, theacademy, thecourse, thepage, comment="",
+                       label="", ok=None, error=None):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage,
+            comment=comment,
+            label=label,
+            error=error
             )
         return self.render(u"addblob.html", rs, params)
 

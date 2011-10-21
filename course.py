@@ -400,6 +400,7 @@ class Course(CourseLite):
         blob.store(data, user=user)
         bloblabel.store(label.encode("utf8"), user=user)
         blobcomment.store(comment.encode("utf8"), user=user)
+        return True
 
     def listblobs(self,number):
         """
