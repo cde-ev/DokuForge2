@@ -9,7 +9,7 @@
             "Aenderungen erfolgreich gespeichert.", error.message,
             error.explanation) }}
 <form action="!title" method="post" id="save">
-	<textarea name="content">{{ content.encode("utf8")|e }}</textarea>
+	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
