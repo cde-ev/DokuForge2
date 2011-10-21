@@ -320,6 +320,13 @@ class Application:
             raise TemporaryRequestRedirect(rs.request.url_root)
 
     def do_file(self, rs, filestore, template, extraparams=dict()):
+        """
+        @type rs: RequestState
+        @type filestore: Storage
+        @type template: unicode
+        @type extraparams: dict
+        """
+        assert isinstance(template, unicode)
         version, content = filestore.startedit()
         return self.render_file(rs, template, version.decode("utf8"),
                                 content.decode("utf8"), extraparams=extraparams)
@@ -618,7 +625,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(aca.path,"groups"),
-                            "academygroups.html", extraparams={'academy': aca})
+                            u"academygroups.html", extraparams={'academy': aca})
 
     def validateGroups(self, groupstring):
         """
@@ -640,7 +647,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(aca.path,"groups"),
-                                "academygroups.html",
+                                u"academygroups.html",
                                 checkhook = self.validateGroups,
                                 extraparams={'academy': aca})
 
@@ -651,7 +658,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(aca.path,"title"),
-                            "academytitle.html", extraparams={'academy': aca})
+                            u"academytitle.html", extraparams={'academy': aca})
 
     def do_academytitlesave(self, rs, academy=None):
         assert academy is not None
@@ -660,7 +667,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(aca.path,"title"),
-                                "academytitle.html", extraparams={'academy': aca})
+                                u"academytitle.html", extraparams={'academy': aca})
 
     def do_coursetitle(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -670,7 +677,7 @@ class Application:
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(c.path,"title"),
-                            "coursetitle.html", extraparams={'academy': aca,
+                            u"coursetitle.html", extraparams={'academy': aca,
                                                               'course': c})
 
     def do_coursetitlesave(self, rs, academy=None, course=None):
@@ -681,14 +688,14 @@ class Application:
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(c.path,"title"),
-                                "coursetitle.html", extraparams={'academy': aca,
+                                u"coursetitle.html", extraparams={'academy': aca,
                                                                  'course': c})
 
     def do_admin(self, rs):
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, self.userdb.storage, "admin.html")
+        return self.do_file(rs, self.userdb.storage, u"admin.html")
 
     def tryConfigParser(self, content):
         """
@@ -707,7 +714,7 @@ class Application:
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, self.userdb.storage, "admin.html",
+        return self.do_filesave(rs, self.userdb.storage, u"admin.html",
                                 checkhook = self.tryConfigParser,
                                 savehook = self.userdb.load)
 
@@ -715,17 +722,17 @@ class Application:
         self.check_login(rs)
         if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, self.groupstore, "groups.html")
+        return self.do_file(rs, self.groupstore, u"groups.html")
 
     def do_groupssave(self, rs):
         self.check_login(rs)
         if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, self.groupstore, "groups.html",
+        return self.do_filesave(rs, self.groupstore, u"groups.html",
                                 checkhook = self.tryConfigParser)
 
     def render_start(self, rs):
-        return self.render("start.html", rs)
+        return self.render(u"start.html", rs)
 
     def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent, ok=None):
         """
@@ -746,7 +753,7 @@ class Application:
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
             ok=ok)
-        return self.render("edit.html", rs, params)
+        return self.render(u"edit.html", rs, params)
 
 
     def render_index(self, rs, group = None):
@@ -756,10 +763,10 @@ class Application:
             academies=map(academy.AcademyLite, self.listAcademies()),
             allgroups = self.listGroups(),
             expandgroup = group)
-        return self.render("index.html", rs, params)
+        return self.render(u"index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
-        return self.render("academy.html", rs,
+        return self.render(u"academy.html", rs,
                            dict(academy=academy.AcademyLite(theacademy)))
 
     def render_deadblobs(self, rs, theacademy, thecourse, thepage):
@@ -767,19 +774,19 @@ class Application:
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage)
-        return self.render("deadblobs.html", rs, params)
+        return self.render(u"deadblobs.html", rs, params)
 
     def render_deadpages(self, rs, theacademy, thecourse):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse))
-        return self.render("dead.html", rs, params)
+        return self.render(u"dead.html", rs, params)
 
     def render_course(self, rs, theacademy, thecourse):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse))
-        return self.render("course.html", rs, params)
+        return self.render(u"course.html", rs, params)
 
     def render_addblob(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(
@@ -787,7 +794,7 @@ class Application:
             course=course.CourseLite(thecourse),
             page=thepage,
             )
-        return self.render("addblob.html", rs, params)
+        return self.render(u"addblob.html", rs, params)
 
     def render_createcoursequiz(self, rs, theacademy, name=u'', title=u'',
                                 ok=None, error=None):
@@ -806,7 +813,7 @@ class Application:
                       title=title,
                       ok=ok,
                       error=error)
-        return self.render("createcoursequiz.html", rs, params)
+        return self.render(u"createcoursequiz.html", rs, params)
 
     def render_createacademyquiz(self, rs, name=u'', title=u'', groups=u'',
                                  ok=None, error=None):
@@ -826,7 +833,7 @@ class Application:
                       groups=groups,
                       ok=ok,
                       error=error)
-        return self.render("createacademyquiz.html", rs, params)
+        return self.render(u"createacademyquiz.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(
@@ -837,9 +844,22 @@ class Application:
             saved=saved,
             blobs=thecourse.listblobs(thepage)
             )
-        return self.render("show.html", rs, params)
+        return self.render(u"show.html", rs, params)
 
-    def render_file(self, rs, templatename, theversion, thecontent, ok=None, error=None, extraparams=dict()):
+    def render_file(self, rs, templatename, theversion, thecontent, ok=None,
+                    error=None, extraparams=dict()):
+        """
+        @type rs: RequestState
+        @type templatename: unicode
+        @type theversion: unicode
+        @type thecontent: unicode
+        @type ok: None or Booleon
+        @type error: None or CheckError
+        @type extraparams: dict
+        """
+        assert isinstance(templatename, unicode)
+        assert isinstance(theversion, unicode)
+        assert isinstance(thecontent, unicode)
         params= dict(
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
@@ -849,6 +869,12 @@ class Application:
         return self.render(templatename, rs, params)
 
     def render(self, templatename, rs, extraparams=dict()):
+        """
+        @type templatename: unicode
+        @type rs: RequestState
+        @type extraparams: dict
+        """
+        assert isinstance(templatename, unicode)
         rs.response.content_type = "text/html; charset=utf8"
         params = dict(
             user=rs.user,
