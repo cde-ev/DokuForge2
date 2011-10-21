@@ -72,7 +72,7 @@ class CourseLite:
         indexstore = Storage(self.path,"Index")
         index = indexstore.content(havelock=havelock)
         lines = index.splitlines()
-        return [int(line.split()[0]) for line in lines]
+        return [int(line.split()[0]) for line in lines if line != ""]
 
     def listdeadpages(self):
         """
@@ -203,6 +203,8 @@ class Course(CourseLite):
                 newnumber = self.nextpage(havelock=gotlocknextpage)
                 nextpagestore.store("%d" % (newnumber+1),havelock=gotlocknextpage,user=user)
                 indexcontents = index.content(havelock=gotlockindex)
+                if indexcontents == "\n":
+                    indexcontents = ""
                 indexcontents += "%s\n" % newnumber
                 index.store(indexcontents,havelock=gotlockindex,user=user)
                 return newnumber
@@ -295,6 +297,7 @@ class Course(CourseLite):
                 else:
                     index = indexstore.content(havelock=gotlockindex)
                     lines = index.splitlines()
+                    lines = [ x for x in lines if x != ""]
                     if page in [int(x.split()[0]) for x in lines]:
                         pass # page already present
                     else:
