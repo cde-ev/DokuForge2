@@ -6,13 +6,13 @@ from common import check_output
 from werkzeug.datastructures import FileStorage
 
 class MetaBlob:
-    def __init__(label, comment, filename):
+    def __init__(self, label, comment, filename):
         self.label = label
         self.comment = comment
         self.filename = filename
 
 class Blob:
-    def __init__(data, label, comment, filename):
+    def __init__(self, data, label, comment, filename):
         self.data = data
         self.label = label
         self.comment = comment
@@ -448,9 +448,9 @@ class Course(CourseLite):
         @rtype: Blob
         """
         return Blob(Storage(self.path,"blob%d" % number).content(),
-                    Storage(self.path,"blob%d.label" % number).content.decode("utf8"),
-                    Storage(self.path,"blob%d.comment" % number).content.decode("utf8"),
-                    Storage(self.path,"blob%d.filename" % number).content.decode("utf8"))
+                    Storage(self.path,"blob%d.label" % number).content().decode("utf8"),
+                    Storage(self.path,"blob%d.comment" % number).content().decode("utf8"),
+                    Storage(self.path,"blob%d.filename" % number).content().decode("utf8"))
 
     def getmetablob(self, number):
         """
@@ -460,6 +460,6 @@ class Course(CourseLite):
         @type number: int
         @rtype: Blob
         """
-        return MetaBlob(Storage(self.path,"blob%d.label" % number).content.decode("utf8"),
-                        Storage(self.path,"blob%d.comment" % number).content.decode("utf8"),
-                        Storage(self.path,"blob%d.filename" % number).content.decode("utf8"))
+        return MetaBlob(Storage(self.path,"blob%d.label" % number).content().decode("utf8"),
+                        Storage(self.path,"blob%d.comment" % number).content().decode("utf8"),
+                        Storage(self.path,"blob%d.filename" % number).content().decode("utf8"))

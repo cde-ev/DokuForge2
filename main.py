@@ -227,10 +227,10 @@ class Application:
                                   endpoint=self.do_downloadblob),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!edit",
                                   methods=("GET", "HEAD"),
-                                  endpoint=self.do_showblobeditable),
+                                  endpoint=self.do_editblob),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!edit",
                                   methods=("POST",),
-                                  endpoint=self.do_editblob),
+                                  endpoint=self.do_saveblob),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!delete",
                                   methods=("POST",), endpoint=self.do_blobdelete),
         ])
@@ -536,12 +536,21 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        pass
-
-    def do_showblobeditable(self, rs, academy=None, course=None, page=None, blob=None):
-        pass
+        theblob = c.getmetablob(blob)
+        return self.render_showblob(rs, aca, c, page, blob, theblob)
 
     def do_editblob(self, rs, academy=None, course=None, page=None, blob=None):
+        assert academy is not None and course is not None and page is not None and blob is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        theblob = c.getmetablob(blob)
+        return self.render_editblob(rs, aca, c, page, blob, theblob)
+
+
+    def do_saveblob(self, rs, academy=None, course=None, page=None, blob=None):
         pass
 
     def do_downloadblob(self, rs, academy=None, course=None, page=None, blob=None):
@@ -552,8 +561,9 @@ class Application:
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
-        rs.response.data = c.getblob(blob).data
-	rs.response.headers['Content-Disposition'] = "attachment; filename=%s_%s_%d" % (aca.name, c.name, blob)
+        theblob = c.getblob(blob)
+        rs.response.data = theblob.data
+	rs.response.headers['Content-Disposition'] = "attachment; filename=%s" % theblob.filename
         return rs.response
 
     def do_raw(self, rs, academy=None, course=None):
@@ -832,6 +842,30 @@ class Application:
             error=error
             )
         return self.render(u"addblob.html", rs, params)
+
+    def render_showblob(self, rs, theacademy, thecourse, thepage, blobnr,
+                        theblob):
+        params = dict(
+            academy=academy.AcademyLite(theacademy),
+            course=course.CourseLite(thecourse),
+            page=thepage,
+            blobnr=blobnr,
+            blob=theblob)
+        return self.render(u"showblob.html", rs, params)
+
+    def render_editblob(self, rs, theacademy, thecourse, thepage, blobnr,
+                        theblob, ok=None, error=None):
+        params = dict(
+            academy=academy.AcademyLite(theacademy),
+            course=course.CourseLite(thecourse),
+            page=thepage,
+            blobnr=blobnr,
+            blob=theblob,
+            ok=ok,
+            error=error
+            )
+        return self.render(u"editblob.html", rs, params)
+
 
     def render_createcoursequiz(self, rs, theacademy, name=u'', title=u'',
                                 ok=None, error=None):
