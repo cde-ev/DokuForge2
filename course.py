@@ -156,6 +156,20 @@ class Course(CourseLite):
                 pass
         CourseLite.__init__(self, obj)
 
+    def getrcs(self, page):
+        """
+        @param page: the internal number of the page
+        @returns: an rcs file describing all versions of this page
+        @rtype: str
+        """
+        if 0 > page:
+            return ""
+        np = self.nextpage()
+        if page >= np:
+            return ""
+        pagestore = Storage(self.path, "page%d" % page)
+        return pagestore.asrcs()
+    
     def export(self):
         """
         @returns: a tar ball containing the full internal information about
