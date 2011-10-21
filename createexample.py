@@ -64,13 +64,13 @@ title = Archiv aelterer CdE-Akademien
     aca = createaca(u"za2011-1", u"Beste Akademie ever", [u"cde"],
                     [(u'course01',u"Internethumor und seine Schuld am Weltuntergang", 3),
                      (u'course02', u"Helenistische Heldenideale", 2)])
-    (version, cont) = aca.getCourse('course01').editpage(0)
-    aca.getCourse('course01').savepage(0, version, u"""[Example Section]
+    (version, cont) = aca.getCourse(u'course01').editpage(0)
+    aca.getCourse(u'course01').savepage(0, version, u"""[Example Section]
 This is an example with some nice math: $e^{i\pi}+1=0$.
 """, u"init")
-    aca.getCourse('course01').attachblob(0,"XXXX....lot's of binary ;-)...XXXX",u"Ein lustiges Bild",user=u"init")
-    aca.getCourse('course01').attachblob(1,"YYYY....lot's of binary ;-)...YYYY",u"Ein anderes lustiges Bild",user=u"init")
-    aca.getCourse('course01').attachblob(0,"ZZZZ....lot's of binary ;-)...ZZZZ",u"Noch ein lustiges Bild",user=u"init")
+    aca.getCourse(u'course01').attachblob(0,"XXXX....lot's of binary ;-)...XXXX",u"Ein lustiges Bild",user=u"init")
+    aca.getCourse(u'course01').attachblob(1,"YYYY....lot's of binary ;-)...YYYY",u"Ein anderes lustiges Bild",user=u"init")
+    aca.getCourse(u'course01').attachblob(0,"ZZZZ....lot's of binary ;-)...ZZZZ",u"Noch ein lustiges Bild",user=u"init")
     aca = createaca(u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
                     [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),
                      (u'course02',u"Die Hedonistische Internationale", 3),
