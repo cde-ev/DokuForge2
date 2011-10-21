@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block location%}
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               (academy.name + '/!groups', "Gruppenverwaltung")]) }}
+{% endblock %}
+{% block content %}
+
+{{ threeway(ok, "Bitte Gruppen eingeben und mit &quot;Speichern&quot; beenden.",
+            "Aenderungen erfolgreich gespeichert.", error.message,
+            error.explanation) }}
+<form action="!groups" method="post" id="save">
+	<textarea name="content">{{ content.encode("utf8")|e }}</textarea>
+	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
+	<input type="hidden" name="contentreceived" value="true">
+	<input type="submit" name="saveedit" value="Speichern und Editieren">
+</form>
+<a href="{{ basejoin(academy.name + '/!groups') }}">Abbrechen</a>
+{% endblock %}

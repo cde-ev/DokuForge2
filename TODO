@@ -1,0 +1,19 @@
+== soon and important ==
+* style-guide
+* utf8 support for input
+
+== later and important ==
+* exporter
+
+== not so important ==
+* markup parser and fancy display
+* nice design
+* upgraded navigation (back-buttons, all sort of cross-links)
+* page estimates
+* nicer admin interface
+* display captions during page listing
+* math display
+* tweaked print.css
+* webaccess to rcs history
+* trail export (to view the current length)
+* interactive page swapping

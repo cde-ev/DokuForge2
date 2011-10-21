@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block location%}
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               (academy.name + '/' + course.name, course.gettitle()),
+               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
+               (academy.name + '/' + course.name + '/' + page|string + '/!deadblobs', "Attic")])}}
+{% endblock %}
+{% block content %}
+{% set deads=course.listdeadblobs() %}
+{% if deads %}
+<ul>
+	{% for blob in deads %}
+	<li> #[{{ blob }}]
+         {{ button(academy.name + "/" + course.name + "/" + page|string + "/!relinkblob", "wiederherstellen", dict(number=blob)) }}
+	</li>
+	{% endfor %}
+</ul>
+{% else %}
+<em>Keine gel&ouml;schten Bilder in diesem Kurs gefunden.</em>
+{% endif %}
+{% endblock %}

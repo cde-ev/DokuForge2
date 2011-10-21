@@ -1,18 +1,45 @@
 {% extends "base.html" %}
 
 {% block location%}
-Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin(academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin(academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a> &gt; <a href="{{ basejoin(academy.name + '/' + course.name + '/' + page|string) }}">Seite #{{ page|string }}</a>
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               (academy.name + '/' + course.name, course.gettitle()),
+               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string)]) }}
 {% endblock %}
 
 {% block content %}
-Seite #{{page}}
+Teil #{{page}}
 <hr>
 <pre>
 {{ content|e }}
 </pre>
 <hr>
+
+
 {% if user.allowedWrite(academy, course) %}
 <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!edit")}}">Editieren</a>
 {{ button(academy.name + "/" + course.name + "/"  + page|string  + "/!delete", "Löschen", dict()) }}
 {% endif %}
+
+<hr>
+{% if blobs %}
+Zugeordnete Bilder:
+<ul>
+{% for blob in blobs %}
+<li> 
+  <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/" + blob|string + "/")}}">#[{{ blob }}]</a>
+{% if user.allowedWrite(academy, course) %}
+{{ button(academy.name + "/" + course.name + "/" + page|string + "/"  + blob|string + "/!delete", "Löschen", dict()) }}
+{% endif %}
+</li>
+{% endfor %}
+</ul>
+{% else %}
+<em>Keine Bilder zu diesem Teil gefunden.</em>
+{% endif %}
+
+{% if user.allowedWrite(academy, course) %}
+<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!addblob")}}">neues Bilder hinzuf&uuml;gen</a>
+<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!deadblobs")}}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+{% endif %}
+
 {% endblock %}

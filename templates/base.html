@@ -6,6 +6,26 @@
 	<input type="submit" name="submit" value="{{ label|e }}">
 </form>
 {%- endmacro -%}
+{% macro trivnavbar(entries) -%}
+Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
+{%- for (url, title) in entries -%}
+{%- if url == '' -%}
+{# comment to protect space #} &gt; {{ title|e}}
+{%- else -%}
+{# comment to protect space #} &gt; <a href="{{ basejoin(url) }}">{{ title|e}}</a>
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro -%}
+{%- macro threeway(ok, default, success, errormessage, errorexplanation) -%}
+{% if ok is none %}
+{{ default }}
+{% elif ok %}
+{{ success }}
+{% else %}
+<span class=important>{{ errormessage }}</span><br/>
+{{ errorexplanation }}
+{% endif %}
+{%- endmacro -%}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="de">
 <head>
@@ -24,6 +44,9 @@
 	{% if user.isAdmin() %}
 	<a href="{{ basejoin("!admin") }}">Administration</a>
 	{% endif %}
+	{% if user.isSuperAdmin() %}
+	<a href="{{ basejoin("!groups") }}">Gruppenverwaltung</a>
+	{% endif %}
      </p>
    {% else %}
    <a href="./">Login</a>
@@ -31,9 +54,11 @@
    <p>{% block location %}{% endblock %}</p>
    </div>
 {% endblock %}
+<hr>
 {% block content %}
 Dies sollte nicht sichtbar sein.
 {% endblock %}
+<hr>
 {% block footer %}
    <div id="footer">
    	Kontakt: team (at) dokuforge. </p>

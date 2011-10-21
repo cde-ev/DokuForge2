@@ -44,6 +44,18 @@ class CourseLite:
             vs='0'
         return int(vs)
 
+    def nextblob(self,havelock=False):
+        """
+        internal function: return the number of the next available blob, but don't do anything
+
+        @returns: number of next available blob
+        """
+        s = Storage(self.path,"nextblob")
+        vs = s.content(havelock=havelock)
+        if vs=='':
+            vs='0'
+        return int(vs)
+
     def listpages(self,havelock=False):
         """
         return a list of the available page numbers in correct order
@@ -65,6 +77,23 @@ class CourseLite:
                 linkedpages= self.listpages(havelock=gotlockindex)
                 return [x for x in range(np) if x not in linkedpages]
             
+    def listdeadblobs(self):
+        """
+        return a list of the blobs not currently linked to the index
+        """
+        indexstore = Storage(self.path,"Index")
+        nextblob = Storage(self.path,"nextblob")
+        with indexstore.lock as gotlockindex:
+            index = indexstore.content(havelock=gotlockindex)
+            lines = index.splitlines()
+            availableblobs = []
+            for line in lines:
+                entries = line.split()
+                availableblobs.extend([int(x) for x in entries[1:]])
+            with nextblob.lock as gotlocknextblob:
+                nextblobindex = self.nextblob(havelock=gotlocknextblob)
+                return [n for n in range(nextblobindex) if n not in availableblobs]
+
 
     def showpage(self,number):
         """
@@ -139,6 +168,26 @@ class Course(CourseLite):
                 index.store(indexcontents,havelock=gotlockindex,user=user)
                 return newnumber
 
+    def delblob(self,number,user=None):
+        """
+        Delete a page
+
+        @param number: the internal page number
+        @type number: int
+        """
+        indexstore = Storage(self.path,"Index")
+        with indexstore.lock as gotlock:
+            index = indexstore.content(havelock=gotlock)
+            lines = index.splitlines()
+            newlines = []
+            for line in lines:
+                entries = line.split()
+                newentries = [entries[0]]
+                newentries.extend([x for x in entries[1:] if int(x) != number])
+                newlines.append(" ".join(newentries))
+            newindex="\n".join(newlines) + "\n"
+            indexstore.store(newindex,havelock=gotlock,user=user)
+
     def delpage(self,number,user=None):
         """
         Delete a page
@@ -185,6 +234,8 @@ class Course(CourseLite):
                 np = self.nextpage(havelock=gotlocknextpage)
                 if page >= np:
                     pass # can only relink in the allowed range
+                if page < 0:
+                    pass # can only relink in the allowed range
                 else:
                     index = indexstore.content(havelock=gotlockindex)
                     lines = index.splitlines()
@@ -194,6 +245,28 @@ class Course(CourseLite):
                         lines.append("%d" % page)
                         newindex="\n".join(lines) + "\n"
                         indexstore.store(newindex,havelock=gotlockindex,user=user)
+
+    def relinkblob(self, number, page, user=None):
+        """
+        relink a (usually deleted) blob to the given page in the index
+        """
+        indexstore = Storage(self.path, "Index")
+        nextblob = Storage(self.path, "nextblob")
+        with indexstore.lock as gotlockindex:
+            with nextblob.lock as gotlocknextblob:
+                nb = self.nextblob(havelock=gotlocknextblob)
+                if number >= nb:
+                    return # can only attach an
+                if number < 0:
+                    return # can only attach an
+                index = indexstore.content(havelock=gotlockindex)
+                lines = index.splitlines()
+                for i in range(len(lines)):
+                    if int(lines[i].split()[0]) == page:
+                        lines[i] += " %d" % number
+            newindex="\n".join(lines) + "\n"
+            indexstore.store(newindex,havelock=gotlockindex,user=user)
+                        
 
     def editpage(self,number):
         """
@@ -224,39 +297,26 @@ class Course(CourseLite):
                   for further editing that can be  handled as if obtained from editpage
         """
         page = Storage(self.path,"page%d" % number)
-        return page.endedit(version,newcontent,user=user)
-
-    def nextblob(self,havelock=False):
-        """
-        internal function: return the number of the next available blob, but don't do anything
-
-        @returns: number of next available blob
-        """
-        s = Storage(self.path,"nextblob")
-        vs = s.content(havelock=havelock)
-        if vs=='':
-            vs='0'
-        return int(vs)
+        return page.endedit(version,newcontent.encode('utf8'),user=user)
 
     def attachblob(self,number,data,comment="unknown blob",user=None):
         """
         Attach a blob to a page
 
         @param number: the internal number of the page
-        @param title: a short description, e.g., the original file name
         @param comment: a human readable description, e.g., the caption to be added to this figure
         @param user: the df-login name of the user to carried out the edit
         @type number: int
-        @type data: str
+        @type data: str or file-like
         @type comment: str
         @type user: str
         """
         indexstore = Storage(self.path,"Index")
-        nextblobstore = Storage(self.path,"nextpage")
+        nextblobstore = Storage(self.path,"nextblob")
 
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
-                newnumber = self.nextpage(havelock=gotlocknextblob)
+                newnumber = self.nextblob(havelock=gotlocknextblob)
                 nextblobstore.store("%d" % (newnumber+1),havelock=gotlocknextblob)
                 index = indexstore.content()
                 lines = index.splitlines()

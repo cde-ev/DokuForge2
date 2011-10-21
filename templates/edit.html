@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block location%}
-Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin(academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin(academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a> &gt; <a href="{{ basejoin(academy.name + '/' + course.name + '/' + page|string) }}">Seite #{{ page|string }} </a> &gt; Editieren</a>
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               (academy.name + '/' + course.name, course.gettitle()),
+               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
+               (academy.name + '/' + course.name + '/' + page|string + '/!edit', "Editieren")]) }}
 {% endblock %}
 {% block content %}
 
@@ -13,7 +16,7 @@ Aenderungen erfolgreich gespeichert.
 Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
 {% endif %}
 
-Seite #{{page}}
+Teil #{{page}}
 <form action="!save" method="post" id="saveedit">
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 

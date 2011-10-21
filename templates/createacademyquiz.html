@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block location%}
+{{ trivnavbar([('/!createacademy', "Akademie anlegen")]) }}
+{% endblock %}
+{% block content %}
+
+{{ threeway(ok, "Bitte die folgenden Angaben ergaenzen.", "", error.message,
+            error.explanation) }}
+<form action="!createacademy" method="post" id="createacademy">
+	Interner Name: <input name="name" type="text" value="{{ name }}"><br/>
+	Titel: <input name="title" type="text" value="{{ title }}"><br/>
+	Gruppen: <input name="groups" type="text" value="{{ groups }}"><br/>
+	<input type="submit" name="submit" value="Akademie anlegen">
+</form>
+<a href="{{basejoin('')}}">Abbrechen</a>
+{% endblock %}

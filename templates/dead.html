@@ -1,18 +1,20 @@
 {% extends "base.html" %}
 {% block location%}
-Navigation: <a href="{{ basejoin('') }}">Dokuforge</a> &gt; <a href="{{ basejoin(academy.name) }}">{{ academy.gettitle()|e}}</a> &gt; <a href="{{ basejoin(academy.name + '/' + course.name) }}">{{ course.gettitle()|e}}</a>
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               (academy.name + '/' + course.name, course.gettitle()),
+               (academy.name + '/' + course.name +'/!deadpages', "Attic")])}}
 {% endblock %}
 {% block content %}
 {% set deads=course.listdeadpages() %}
 {% if deads %}
-<ol>
+<ul>
 	{% for page in deads %}
 	<li> #{{ page }} 
          {{ button(academy.name + "/" + course.name + "/!relink", "wiederherstellen", dict(number=page)) }}
 	</li>
 	{% endfor %}
-</ol>
+</ul>
 {% else %}
-<em>Keine gel&ouml;schten Seiten gefunden gefunden.</em>
+<em>Keine gel&ouml;schten Teile gefunden.</em>
 {% endif %}
 {% endblock %}

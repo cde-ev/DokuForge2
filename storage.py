@@ -1,5 +1,7 @@
 from __future__ import with_statement
+from cStringIO import StringIO
 import os, errno
+import shutil
 import time
 import subprocess
 import re
@@ -84,13 +86,20 @@ class Storage(object):
         Store the given contents; rcs file is create if it does not
         exist already.
 
-        @param content: the content of the file as str-object
+        @type content: str or filelike
+        @param content: the content of the file
         """
+        if isinstance(content, unicode):
+            print "WARNING: passing unicode objects to store is a bug! encoding anyway"
+            content = content.encode("utf8")
+        if isinstance(content, basestring):
+            content = StringIO(content)
+
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()])
             objfile = file(self.fullpath(), mode="w")
-            objfile.write(content)
+            shutil.copyfileobj(content, objfile)
             objfile.close()
             args = ["ci","-q","-f","-m%s" % message]
             if user is not None:
@@ -150,7 +159,15 @@ class Storage(object):
                   True if the save was sucessfull (if not, a merge has to be done manually),
                   and (newversion,mergedcontent) is a state for further editing that can be
                   used as if obtained from startedit
+
+        NOTE: the newcontents are transformed to native line ending (assuming a Unix host).
+              Therefore endedit CANNOT be used to store binaries (however, rcsmerge won't suggest 
+              a sensible merged version for binaries anyway).
         """
+        if isinstance(newcontent, unicode):
+            print "WARNING: passing unicode objects to endedit is a bug! encoding anyway"
+            newcontent = newcontent.encode("utf8")
+        newcontent="\n".join(newcontent.splitlines()) + "\n" # Transform text to Unix line ending 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             currentversion = self.status(havelock=gotlock)
@@ -166,7 +183,7 @@ class Storage(object):
             objfile.write(newcontent)
             objfile.close()
             args=["ci","-f","-q","-u"]
-            args.append("-mstoring original edit conflictig with %s in a branch" % currentversion)
+            args.append("-mstoring original edit conflicting with %s in a branch" % currentversion)
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())

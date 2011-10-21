@@ -26,7 +26,7 @@ class User:
     @ivar password: password of the user
     @ivar permissions: dictionary of permissions, the syntax is as follows:
                        akademie_x_y_z ... x in {read, write}, y akademiename, z kursname
-                       df_x ... x in {admin, useradmin, show_global, read_global, write_global, show_cde, read_cde, write_cde, export}
+                       df_x ... x in {superadmin, admin, show, read, write, show_cde, read_cde, write_cde, export, create}
     """
     def __init__(self, name, status, password, permissions):
         """
@@ -54,7 +54,7 @@ class User:
         return False
 
     def allowedRead(self, aca, course = None):
-        if self.hasPermission("df_read_global"):
+        if self.hasPermission("df_read") or self.isSuperAdmin():
             return True
         for g in aca.getgroups():
             if self.hasPermission("df_read_" + g):
@@ -65,7 +65,7 @@ class User:
             return self.hasPermission("akademie_read_%s_%s" % (aca.name, course.name))
 
     def allowedWrite(self, aca, course = None):
-        if self.hasPermission("df_write_global"):
+        if self.hasPermission("df_write") or self.isSuperAdmin():
             return True
         for g in aca.getgroups():
             if self.hasPermission("df_write_" + g):
@@ -76,14 +76,28 @@ class User:
             return self.hasPermission("akademie_write_%s_%s" % (aca.name, course.name))
 
     def mayExport(self, aca):
+        if self.isSuperAdmin():
+            return True
         if not self.allowedRead(aca):
             return False
         return self.hasPermission("df_export")
 
+    def mayCreate(self):
+        return self.hasPermission("df_create") or self.isSuperAdmin()
+
+    def allowedList(self, groupname):
+        if self. isSuperAdmin() or self.hasPermission("df_show") or \
+               self.hasPermission("df_show_" + groupname):
+            return True
+
     def isAdmin(self):
-        return self.hasPermission("df_admin") or self.hasPermission("df_useradmin")
+        return self.hasPermission("df_superadmin") or self.hasPermission("df_admin")
 
+    def isSuperAdmin(self):
+        return self.hasPermission("df_superadmin")
 
+    def defaultGroup(self):
+        return "cde"
 
 
 
@@ -163,7 +177,9 @@ class UserDB:
 
     def load(self):
         config = ConfigParser.SafeConfigParser()
-        content = StringIO(self.storage.content())
+        # fixme: we need encode("utf8") becaus stringio does something
+        #        strange. We get lots of superfluous '\x00'.
+        content = StringIO(self.storage.content().encode("utf8"))
         config.readfp(content)
         # clear after we read the new config, better safe than sorry
         self.db.clear()
