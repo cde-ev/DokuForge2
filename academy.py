@@ -126,12 +126,13 @@ class Academy(AcademyLite):
         @type name: str (restricted char-set)
         @type title: unicode
         """
+        assert isinstance(name, unicode)
         assert isinstance(title, unicode)
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return False
-        if os.path.exists(os.path.join(self.path, name)):
+        if os.path.exists(os.path.join(self.path, name.encode("utf8"))):
             return False
-        course.Course(os.path.join(self.path, name)).settitle(title)
+        course.Course(os.path.join(self.path, name.encode("utf8"))).settitle(title)
         return True
 
     def listCourses(self):
