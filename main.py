@@ -202,6 +202,9 @@ class Application:
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_page),
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!rcs",
+                                  methods=("GET", "HEAD"),
+                                  endpoint=self.do_rcs),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!edit",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_edit),
@@ -584,6 +587,18 @@ class Application:
         theblob = c.getblob(blob)
         rs.response.data = theblob.data
 	rs.response.headers['Content-Disposition'] = "attachment; filename=%s" % theblob.filename
+        return rs.response
+
+    def do_rcs(self, rs, academy=None, course=None, page=None):
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedRead(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        rs.response.content_type = "application/octet-stream"
+        rs.response.data = c.getrcs(page)
+	rs.response.headers['Content-Disposition'] = "attachment; filename=%d,v" % (page)
         return rs.response
 
     def do_raw(self, rs, academy=None, course=None):

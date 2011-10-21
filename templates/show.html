@@ -19,6 +19,7 @@ Teil #{{page}}
 <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!edit")}}">Editieren</a>
 {{ button(academy.name + "/" + course.name + "/"  + page|string  + "/!delete", "Löschen", dict()) }}
 {% endif %}
+<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!rcs")}}">rcs</a>
 
 <hr>
 {% if blobs %}
