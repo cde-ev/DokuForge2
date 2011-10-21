@@ -551,7 +551,27 @@ class Application:
 
 
     def do_saveblob(self, rs, academy=None, course=None, page=None, blob=None):
-        pass
+        assert academy is not None and course is not None and page is not None and blob is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+
+        newlabel = rs.request.form["label"]
+        newcomment = rs.request.form["comment"]
+        newname = rs.request.form["name"]
+
+        # we omit error handling here, since it seems unlikely, that two
+        # changes for one blob's metadata conflict
+        c.modifyblob(blob, newlabel, newcomment, newname, rs.user.name)
+        theblob = c.getmetablob(blob)
+
+        issaveshow = "saveshow" in rs.request.form
+        if issaveshow:
+            return self.render_showblob(rs, aca, c, page, blob, theblob)
+        return self.render_editblob(rs, aca, c, page, blob, theblob)
+
 
     def do_downloadblob(self, rs, academy=None, course=None, page=None, blob=None):
         assert academy is not None and course is not None and page is not None and blob is not None

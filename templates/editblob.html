@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block location%}
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               (academy.name + '/' + course.name, course.gettitle()),
+               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
+               (academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/', "Bild #" + blobnr|string),
+               (academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/!edit', "Bild editieren" + blobnr|string)]) }}
+{% endblock %}
+
+{% block content %}
+
+{{ threeway(ok, "Bitte Blob bearbeiten.", "Blob erfolgreich ge&auml;ndert.", error.message, error.explanation) }}
+<form action="!edit" method="post" id="editblob">
+  Bildunterschrift/Kommentar: <textarea name="comment">{{ blob.comment|e }}</textarea>
+  K&uuml;rzel: <textarea name="label">{{ blob.label|e }}</textarea>
+  Dateiname: <textarea name="name">{{ blob.filename|e }}</textarea>
+	<input type="submit" name="saveedit" value="Speichern und Editieren">
+	<input type="submit" name="saveshow" value="Speichern und Beenden">
+</form>
+Das K&uuml;rzel darf nur Kleinbuchstaben und Ziffern enthalten.
+
+{% endblock %}

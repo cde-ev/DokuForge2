@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block location%}
+{{ trivnavbar([(academy.name, academy.gettitle()),
+               (academy.name + '/' + course.name, course.gettitle()),
+               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
+               (academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/', "Bild #" + blobnr|string)]) }}
+{% endblock %}
+
+{% block content %}
+
+<p>Bildunterschrift/Kommentar: {{ blob.comment|e }}</p>
+<p>K&uuml;rzel: {{ blob.label|e }}</p>
+<p>Dateiname: {{ blob.filename|e }}</p>
+
+{% if user.allowedWrite(academy, course) %}
+<a href={{ basejoin(academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/!edit') }}>Editieren</a>
+{% endif %}
+
+{% endblock %}

@@ -463,3 +463,20 @@ class Course(CourseLite):
         return MetaBlob(Storage(self.path,"blob%d.label" % number).content().decode("utf8"),
                         Storage(self.path,"blob%d.comment" % number).content().decode("utf8"),
                         Storage(self.path,"blob%d.filename" % number).content().decode("utf8"))
+
+    def modifyblob(self, number, label, comment, filename, user):
+        assert isinstance(number, int)
+        assert isinstance(label, unicode)
+        assert isinstance(comment, unicode)
+        assert isinstance(filename, unicode)
+
+        if re.match('^[a-z0-9]{1,200}$', label) is None:
+            return False
+
+        bloblabel = Storage(self.path,"blob%d.label" % number)
+        blobcomment = Storage(self.path,"blob%d.comment" % number)
+        blobname = Storage(self.path,"blob%d.filename" % number)
+        bloblabel.store(label.encode("utf8"), user=user)
+        blobcomment.store(comment.encode("utf8"), user=user)
+        blobname.store(filename.encode("utf8"), user=user)
+        return True
