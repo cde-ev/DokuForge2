@@ -3,6 +3,14 @@ import os
 import re
 from storage import Storage
 from common import check_output
+from werkzeug.datastructures import FileStorage
+
+class Blob:
+    def __init__(data, label, comment, filename):
+        self.data = data
+        self.label = label
+        self.comment = comment
+        self.filename = filename
 
 class CourseLite:
     """
@@ -369,7 +377,7 @@ class Course(CourseLite):
         @Type comment: unicode
         @type user: unicode or None
         """
-        assert isinstance(data, str) or hasattr(data, "read")
+        assert isinstance(data, FileStorage)
         assert isinstance(comment, unicode)
         assert isinstance(label, unicode)
 
@@ -397,9 +405,11 @@ class Course(CourseLite):
         blob = Storage(self.path,"blob%d" % newnumber)
         bloblabel = Storage(self.path,"blob%d.label" % newnumber)
         blobcomment = Storage(self.path,"blob%d.comment" % newnumber)
+        blobname = Storage(self.path,"blob%d.filename" % newnumber)
         blob.store(data, user=user)
         bloblabel.store(label.encode("utf8"), user=user)
         blobcomment.store(comment.encode("utf8"), user=user)
+        blobname.store(data.filename.encode("utf8"), user=user)
         return True
 
     def listblobs(self,number):
@@ -420,13 +430,15 @@ class Course(CourseLite):
                 return [int(x) for x in entries]
         return []
 
-    def getblob(self,number):
+    def getblob(self, number):
         """
-        return the content of a blob
+        return the corresponding blob
 
         @param number: the internal number of the blob
         @type number: int
-        @rtype: str
+        @rtype: Blob
         """
-        blob=Storage(self.path,"blob%d" % number)
-        return blob.content()
+        return Blob(Storage(self.path,"blob%d" % number).content(),
+                    Storage(self.path,"blob%d.label" % number).content.decode("utf8"),
+                    Storage(self.path,"blob%d.comment" % number).content.decode("utf8"),
+                    Storage(self.path,"blob%d.filename" % number).content.decode("utf8"))
