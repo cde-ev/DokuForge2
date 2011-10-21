@@ -594,10 +594,12 @@ class Application:
             return werkzeug.exceptions.Forbidden()
 
         usercomment = rs.request.form["comment"]
+        userlabel = rs.request.form["label"]
         # a FileStorage is sufficiently file-like for store
         usercontent = rs.request.files["content"]
 
-        c.attachblob(page, usercontent, comment=usercomment, user=rs.user.name)
+        c.attachblob(page, usercontent, comment=usercomment, label=userlabel,
+                     user=rs.user.name)
         return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):

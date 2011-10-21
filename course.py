@@ -354,20 +354,27 @@ class Course(CourseLite):
                                                   newcontent.encode("utf8"), user=user)
         return (ok, version.decode("utf8"), mergedcontent.decode("utf8"))
 
-    def attachblob(self,number,data,comment="unknown blob",user=None):
+    def attachblob(self, number, data, comment="unknown blob", label="fig", user=None):
         """
         Attach a blob to a page
 
         @param number: the internal number of the page
         @param comment: a human readable description, e.g., the caption to be added to this figure
+        @param label: a short label for the blob (only small letters and digits allowed)
         @param user: the df-login name of the user to carried out the edit
         @type number: int
         @type data: str or file-like
+        @type label: unicode
         @Type comment: unicode
         @type user: unicode or None
         """
         assert isinstance(data, str) or hasattr(data, "read")
         assert isinstance(comment, unicode)
+        assert isinstance(label, unicode)
+
+        if re.match('^[a-z0-9]{1,200}$', label) is None:
+            return False
+
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -387,7 +394,11 @@ class Course(CourseLite):
                         indexstore.store(newindex,havelock=gotlockindex)
 
         blob = Storage(self.path,"blob%d" % newnumber)
-        blob.store(data, user=user, message=comment.encode("utf8"))
+        bloblabel = Storage(self.path,"blob%d.label" % newnumber)
+        blobcomment = Storage(self.path,"blob%d.comment" % newnumber)
+        blob.store(data, user=user)
+        bloblabel.store(label.encode("utf8"), user=user)
+        blobcomment.store(comment.encode("utf8"), user=user)
 
     def listblobs(self,number):
         """
