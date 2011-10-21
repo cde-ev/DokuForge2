@@ -557,7 +557,7 @@ class Application:
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         version, content = c.editpage(page)
-        return self.render_edit(rs, aca, c, page, version.decode("utf8"), content.decode("utf8"))
+        return self.render_edit(rs, aca, c, page, version, content)
 
     def do_addblob(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
