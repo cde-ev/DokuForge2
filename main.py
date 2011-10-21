@@ -789,8 +789,18 @@ class Application:
             )
         return self.render("addblob.html", rs, params)
 
-    def render_createcoursequiz(self, rs, theacademy, name='', title='',
+    def render_createcoursequiz(self, rs, theacademy, name=u'', title=u'',
                                 ok=None, error=None):
+        """
+        @type rs: RequestState
+        @type theacademy: Academy
+        @type name: unicode
+        @type title: unicode
+        @type ok: None or Boolean
+        @type error: None or CheckError
+        """
+        assert isinstance(name, unicode)
+        assert isinstance(title, unicode)
         params = dict(academy=academy.AcademyLite(theacademy),
                       name=name,
                       title=title,
@@ -798,8 +808,19 @@ class Application:
                       error=error)
         return self.render("createcoursequiz.html", rs, params)
 
-    def render_createacademyquiz(self, rs, name='', title='', groups='',
+    def render_createacademyquiz(self, rs, name=u'', title=u'', groups=u'',
                                  ok=None, error=None):
+        """
+        @type rs: RequestState
+        @type name: unicode
+        @type title: unicode
+        @type groups: unicode
+        @type ok: None or Boolean
+        @type error: None or CheckError
+        """
+        assert isinstance(name, unicode)
+        assert isinstance(title, unicode)
+        assert isinstance(groups, unicode)
         params = dict(name=name,
                       title=title,
                       groups=groups,
