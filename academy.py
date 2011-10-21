@@ -66,12 +66,13 @@ class AcademyLite:
         find a course of this academy to a given name
 
         @param coursename: internal name of course
-        @type coursename: str (restricted char-set)
+        @type coursename: unicode
         @returns: CourseLite object for course with name coursename
         """
+        assert isinstance(coursename, unicode)
+        coursename = coursename.encode("utf8")
         if re.match('^[-a-zA-Z0-9]{1,200}$', coursename) is None:
             return None
-        coursename = coursename.encode("utf8")
         finalpath = os.path.join(self.path,coursename)
         if not os.path.isdir(finalpath):
             return None
@@ -142,14 +143,15 @@ class Academy(AcademyLite):
         """
         return list(map(course.Course, self.listCoursesLite()))
 
-    def getCourse(self,coursename):
+    def getCourse(self, coursename):
         """
         find a course of this academy to a given name
 
         @param coursename: internal name of course
-        @type coursename: str (restricted char-set)
+        @type coursename: unicode
         @returns: Course object for course with name coursename
         """
+        assert isinstance(coursename, unicode)
         litecourse = self.getCourseLite(coursename)
         if litecourse is None:
             return None

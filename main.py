@@ -244,6 +244,13 @@ class Application:
         return aca
 
     def getCourse(self, aca, coursename, user=None):
+        """
+        @type aca: Academy
+        @type coursename: unicode
+        @type user: None or User
+        @rtype: Course
+        """
+        assert isinstance(coursename, unicode)
         c = aca.getCourse(coursename) # checks name
         if c is None:
             raise werkzeug.exceptions.NotFound()
