@@ -3,12 +3,14 @@
 from cStringIO import StringIO
 from httplib import HTTPMessage
 import mechanize
+import shutil
 import sys
 import unittest
 from urllib import addinfourl
 from urllib2 import BaseHandler
 from wsgiref.validate import validator
 
+import createexample
 from main import Application
 from storage import Storage
 from user import UserDB
@@ -75,6 +77,9 @@ class DokuforgeTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
         global theapplication
+        shutil.rmtree("df")
+        shutil.rmtree("work")
+        createexample.main()
         userdbstore = Storage('work', 'userdb')
         userdb = UserDB(userdbstore)
         userdb.load()
