@@ -136,16 +136,20 @@ class CheckError(StandardError):
         return self.message
 
 class Application:
-    def __init__(self, userdb, groupstore, acapath):
+    def __init__(self, userdb, groupstore, acapath, templatepath, stylepath):
         assert isinstance(acapath, str)
+        assert isinstance(templatepath, str)
+        assert isinstance(stylepath, str)
         self.jinjaenv = jinja2.Environment(
-                loader=jinja2.FileSystemLoader("./templates"))
+                loader=jinja2.FileSystemLoader(templatepath))
         self.sessiondb = sqlite3.connect(":memory:")
         cur = self.sessiondb.cursor()
         cur.execute(SessionHandler.create_table)
         self.sessiondb.commit()
         self.userdb = userdb
         self.acapath = acapath
+        self.templatepath = templatepath
+        self.stylepath = stylepath
         self.groupstore = groupstore
         self.routingmap = werkzeug.routing.Map([
             werkzeug.routing.Rule("/", methods=("GET", "HEAD"),
@@ -169,6 +173,10 @@ class Application:
                                   endpoint=self.do_groups),
             werkzeug.routing.Rule("/!groups", methods=("POST",),
                                   endpoint=self.do_groupssave),
+            werkzeug.routing.Rule("/!style", methods=("GET", "HEAD"),
+                                  endpoint=self.do_styleguide),
+            werkzeug.routing.Rule("/!style=<topic>", methods=("GET", "HEAD"),
+                                  endpoint=self.do_styleguide),
             werkzeug.routing.Rule("/!expand=<group>", methods=("GET", "HEAD"),
                                   endpoint=self.do_index),
             werkzeug.routing.Rule("/<academy>/", methods=("GET", "HEAD"),
@@ -484,6 +492,16 @@ class Application:
                                                  groups=rs.request.form["groups"],
                                                  ok=False,
                                                  error = CheckError(u"Die Akademieerstellung war nicht erfolgreich.", u"Bitte die folgenden Angaben korrigieren."))
+
+    def do_styleguide(self, rs, topic=None):
+        if topic is not None:
+            assert isinstance(topic, unicode)
+            topic = topic.encode("utf8")
+            if not topic in os.listdir(self.templatepath + self.stylepath):
+                return werkzeug.exception.NotFound()
+        else:
+            topic = "index"
+        return self.render_styleguide(rs, topic)
 
     def do_createpage(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -840,6 +858,13 @@ class Application:
     def render_start(self, rs):
         return self.render("start.html", rs)
 
+    def render_styleguide(self, rs, topic):
+        params= dict(
+            topic = topic,
+            includepath = self.stylepath + topic
+            )
+        return self.render("style.html", rs, params)
+
     def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent, ok=None):
         """
         @type rs: RequestState
@@ -1025,7 +1050,7 @@ def main():
     userdb = user.UserDB(userdbstore)
     userdb.load()
     groupstore = storage.Storage('work', 'groupdb')
-    app = Application(userdb, groupstore, './df/')
+    app = Application(userdb, groupstore, './df/', './templates/', './style/')
     app = TracebackMiddleware(app)
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))

@@ -1,0 +1,209 @@
+    <div class="body">
+              <h2>Sonstiges</h2>
+            
+
+
+
+
+<p>Sonderwünsche
+(und alles was hier zu finden ist, fällt in diese Rubrik)
+kosten extra viel Schokolade, da sie später viel Handarbeit erfordern.
+Einige häufiger vorkommende Sonderwünsche werden hier im Style-Guide behandelt,
+da ihr auch bei der Eingabe in DokuForge schon einiges an Arbeit erledigen
+könnt.  Vielleicht wird eure Frage also bereits hier beantwortet. Falls nicht,
+schreibt uns bitte eine Mail an <a href="mailto:team (at)
+dokuforge.de">team (at) dokuforge.de</a>. Wir
+helfen euch gerne weiter und sind auch immer an Feedback zu DokuForge
+interessiert, damit wir das System weiter verbessern können.</p>
+
+<p>Für fast alle Sonderwünsche gilt, dass sie in eine ednote gehören oder mit
+einer solchen gekennzeichnet werden müssen!</p>
+
+
+<h3><a name="tab">Tabellen</a></h3>
+
+<p>Wenn ihr eine Tabelle einfügen möchtet, tut dies bitte in einer ednote.
+Dabei habt ihr zwei Möglichkeiten: Entweder ihr formatiert sie durch das
+Einfügen von Leerzeichen an den richtigen Stellen nach ascii-art, wobei
+deutlich werden sollte, was wie zusammengehört.</p>
+<p>Oder ihr setzt, wenn ihr euch hier schon etwas auskennt, in so einer
+ascii-art Tabelle noch ein paar &bdquo;&amp;&ldquo; und &bdquo;\\&ldquo; an den
+richtigen Stellen, ein &bdquo;\begin{tabular}&ldquo; und ein
+&bdquo;\toprule&ldquo; oben drüber und ein &bdquo;\bottomrule&ldquo; sowie ein
+&bdquo;\end{tabular}&ldquo; unten drunter. Bei Bedarf noch ein
+&bdquo;\midrule&ldquo; zwischendrin (wir verwenden <em>booktabs.sty</em>).</p>
+
+<p>Zu einer Tabelle gehört außerdem eine Tabellenunterschrift, auf die ihr euch
+im Idealfall im Text bezieht.</p>
+
+<p>Zwei Beispiele:</p>
+
+<p><pre>
+{ Tabelle 1 "Mögliche Stellungen griechischer Akzente
+             ohne Berücksichtigung der Silbenlänge"
+
+Akzent            | Akut | Gravis | Zirkumflex
+-----------------------------------------------
+letzte Silbe      |  x   |   x    |     x
+vorletzte Silbe   |  x   |   -    |     x
+drittletzte Silbe |  x   |   -    |     -             
+}
+
+{ Tabelle 1 "Mögliche Stellungen griechischer Akzente
+             ohne Berücksichtigung der Silbenlänge"
+
+\begin{tabular}{lccc}
+\toprule
+Akzent            & Akut & Gravis & Zirkumflex \\
+\midrule
+letzte Silbe      &  x   &   x    &    x   \\
+vorletzte Silbe   &  x   &   --   &    x   \\
+drittletzte Silbe &  x   &   --   &    --  \\
+\bottomrule
+\end{tabular }
+</pre>
+</p>
+
+</li>
+
+<h3><a name="lit">Literaturangaben</a></h3>
+
+<p>Literaturangaben und Quellenangaben (z.B. URLs) stellt bitte nach folgendem Schema in eine ednote:</p>
+
+<p><pre>
+\begin{literatur}
+
+\bitem%
+ {Verfassername, Vorname}%
+ {Titel}%
+ {Ort}%
+ {Jahr, Seiten}%
+
+\urlitem{URL}\\
+ {gegebenenfalls: Titel}%
+
+\end{literatur}
+</pre></p>
+
+<p>Wenn etwas nicht in das Schema passt, steckt es bitte mit einer entsprechenden Anmerkung in eine ednote.</p>
+
+<h3><a name="ged">Gedichte, Dialoge, Parallelitäten</a></h3>
+
+<p>Auch in diesen Fällen ist es nötig, die entsprechenden Texte in eine ednote
+zu packen, damit alle Zeilenumbrüche erhalten bleiben. Bitte verseht dabei eure
+Gedichte, Dialoge etc. mit Anmerkungen in einer ednote wie: &bdquo;Dies ist ein
+GEDICHT, bitte entsprechend setzen!&ldquo;.</p>
+
+<p>Ein Beispiel:</p>
+<p><pre>
+{ Technische Redaktion: Gedicht voraus. Die Einrückung im ersten Vers
+  ist beabsichtigt -- marc 20041227
+}
+
+{ GEDICHT
+
+  R. M. Rilke, Duineser Elegien, 1 (Auszug):
+
+                     Hast du der Gaspara Stampa
+  denn genügend gedacht, daß irgendein Mädchen,
+  dem der Geliebte entging, am gesteigerten Beispiel
+  dieser Liebenden fühlt: daß ich würde wie sie?
+}</pre></p>
+
+<p>In manchen Fällen mag es sinnvoll sein, Texte zweispaltig parallel zu setzen
+(Text und Übersetzung ...). Hierfür gibt es die Parallel-Umgebung. Ihr
+kennzeichnet einfach folgendermaßen in der ednote, was neben was soll:</p>
+
+<p><pre>
+{
+\startparallel
+  ORIGINAL
+
+  .
+  ..
+  ...
+  ....
+\parallel
+  ÜBERSETZUNG
+
+  1x Punkt
+  2x Punkt
+  3x Punkt
+  4x Punkt
+\stopparallel
+}</pre></p>
+
+
+<h3><a name="spr">Schriften</a></h3>
+
+<p>Auch die Eingabe anderer Schriften als der lateinischen ist in DokuForge möglich. Hierfür gibt es bestimmte Umschriftverfahren.</p>
+
+<ul>
+
+<li><p>Umschrift für Arabisch, Kyrillisch und Fraktur</p></li>
+
+<p>Auch arabische, kyrillische und gebrochene Schrift ist möglich. Hierbei
+erfolgt die Eingabe unter Missbrauch des Mathemodus:</p>
+
+<table  width="80%">
+<tr>
+        <td width="40%">Eingabe:</td>
+        <td width="40%">Vorschau:</td>
+</tr>
+<tr>
+        <td>$\cyr kyrillisch$</td>
+        <td><img src="http://www.dokuforge.de/static/kyrillisch.png"></td>
+</tr>
+<tr>
+        <td>$\arab bismi 'l|llahi 'rra.hmAni 'rra.hIm $</td>
+        <td><img src="http://www.dokuforge.de/static/arabisch.png"></td>
+</tr>
+<tr>
+        <td>$\frak Lackmus:papier$</td>
+        <td><img src="http://www.dokuforge.de/static/fraktur.png"></td>
+</tr>
+</table>
+
+<p>Für diese Schriften gibt es spezielle Umschriften. Die Umschrift für
+Arabisch könnt ihr in der Anleitung von <a
+href="http://www.informatik.uni-stuttgart.de/ifi/bs/research/arab.html">Arabtex</a>
+nachlesen. Die Kyrillischumschrift findet ihr im Aufsatz <a
+href="http://home.vrweb.de/~was/x/pmcyr.pdf">Kyrillisch für arme Leute</a>.
+
+</li>
+</ul>
+
+
+<h3><a name="soso">Sondersonderwünsche</a></h3>
+
+<p>Sondersonderwünsche kosten natürlicherweise noch einmal mehr
+Schokolade. Unter den Status eines Sondersonderwunsches fällt alles, was
+bisher nicht erwähnt wurde und somit nicht einmal &bdquo;nur&ldquo; ein
+Sonderwunsch ist. Bei Sondersonderwünschen wendet euch am besten
+frühzeitig an das Dokuteam, um euch nach der Durchführbarkeit und der
+Vorgehensweise zu erkundigen.</p>
+
+<!-- TODO:
+
+- Rezepte?
+
+<table  width="80%">
+<tr>
+	<td width="40%">Eingabe:</td>
+	<td width="40%">Vorschau:</td>
+</tr>
+<tr>
+	<td>
+        
+        </td>
+	<td>
+        
+        </td>
+</tr>
+</table>
+
+
+-->
+
+
+    </div>

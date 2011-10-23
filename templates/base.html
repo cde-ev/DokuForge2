@@ -38,6 +38,7 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
 {% block header %}
    <div id="header">
    Dokuforge
+   <a href="{{ basejoin("!style") }}">Style-Guide</a>
    {% if user is not none %}
      <p>Hallo {{ user.name }}!</p>
      <p>{{ button("!logout", "Logout")}}
