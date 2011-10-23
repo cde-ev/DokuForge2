@@ -6,7 +6,7 @@ from main import Application
 import storage
 import user
 
-def createaca(name, title, groups, courses):
+def createaca(app, name, title, groups, courses):
     assert isinstance(title, unicode)
     aca = app.createAcademy(name, title, groups)
     for c in courses:
@@ -15,7 +15,7 @@ def createaca(name, title, groups, courses):
             aca.getCourse(c[0]).newpage()
     return aca
 
-if __name__ == "__main__":
+def main():
     try:
         os.mkdir("work")
     except OSError:
@@ -61,7 +61,7 @@ title = Archiv aelterer CdE-Akademien
     userdb = user.UserDB(userdbstore)
     userdb.load()
     app = Application(userdb, mygroupstore, './df/')
-    aca = createaca(u"za2011-1", u"Beste Akademie ever", [u"cde"],
+    aca = createaca(app, u"za2011-1", u"Beste Akademie ever", [u"cde"],
                     [(u'course01',u"Internethumor und seine Schuld am Weltuntergang", 3),
                      (u'course02', u"Helenistische Heldenideale", 2)])
     (version, cont) = aca.getCourse(u'course01').editpage(0)
@@ -71,12 +71,15 @@ This is an example with some nice math: $e^{i\pi}+1=0$.
     # aca.getCourse(u'course01').attachblob(0, "XXXX....lot's of binary ;-)...XXXX", u"Ein lustiges Bild", u"myx", user=u"init")
     # aca.getCourse(u'course01').attachblob(1, "YYYY....lot's of binary ;-)...YYYY", u"Ein anderes lustiges Bild", u"somey", user=u"init")
     # aca.getCourse(u'course01').attachblob(0, "ZZZZ....lot's of binary ;-)...ZZZZ", u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
-    aca = createaca(u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
+    aca = createaca(app, u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
                     [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),
                      (u'course02',u"Die Hedonistische Internationale", 3),
                      (u'course03', u"Orgateams und ihre Geschichte", 4)])
 
-    aca = createaca(u"xa2011-1", u"X-Akademie", [u"cde"],
+    aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
                     [(u'course01',u"Area51", 2),
                      (u'course02',u"Fox Mulders Biographie", 3),
                      (u'course03', u"Selbstverteidigung gegen Poltergeister", 4)])
+
+if __name__ == '__main__':
+    main()
