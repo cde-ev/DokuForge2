@@ -6,8 +6,10 @@
 	<input type="submit" name="submit" value="{{ label|e }}">
 </form>
 {%- endmacro -%}
-{% macro trivnavbar(entries) -%}
-Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
+
+
+{%- macro trivnavbar(entries) -%}
+Navigation: <a href="{{ basejoin('docs/') }}">Dokuforge</a>
 {%- for (url, title) in entries -%}
 {%- if url == '' -%}
 {# comment to protect space #} &gt; {{ title|e}}
@@ -16,6 +18,8 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
 {%- endif -%}
 {%- endfor -%}
 {%- endmacro -%}
+
+
 {%- macro threeway(ok, default, success, errormessage, errorexplanation) -%}
 {% if ok is none %}
 {{ default }}
@@ -26,6 +30,8 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
 {{ errorexplanation }}
 {% endif %}
 {%- endmacro -%}
+
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="de">
 <head>
@@ -38,19 +44,19 @@ Navigation: <a href="{{ basejoin('') }}">Dokuforge</a>
 {% block header %}
    <div id="header">
    Dokuforge
-   <a href="{{ basejoin("!style") }}">Style-Guide</a>
+   <a href="{{ basejoin("/style/") }}">Style-Guide</a>
    {% if user is not none %}
      <p>Hallo {{ user.name }}!</p>
-     <p>{{ button("!logout", "Logout")}}
+     <p>{{ button("/logout", "Logout")}}
 	{% if user.isAdmin() %}
-	<a href="{{ basejoin("!admin") }}">Administration</a>
+	<a href="{{ basejoin("/admin") }}">Administration</a>
 	{% endif %}
 	{% if user.isSuperAdmin() %}
-	<a href="{{ basejoin("!groups") }}">Gruppenverwaltung</a>
+	<a href="{{ basejoin("/groups/") }}">Gruppenverwaltung</a>
 	{% endif %}
      </p>
    {% else %}
-   <a href="./">Login</a>
+   <a href="{{ basejoin("") }}">Login</a>
    {% endif %}
    <p>{% block location %}{% endblock %}</p>
    </div>

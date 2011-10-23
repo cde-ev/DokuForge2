@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([('!expand=' + expandgroup, allgroups[expandgroup]|e)]) }}
+{{ trivnavbar([("/groups/" + expandgroup, allgroups[expandgroup]|e)]) }}
 {% endblock %}
 {% block content %}
 <ul>
 {% for academy in academies %}
   {% if expandgroup in academy.getgroups() %}
     {% if user.allowedRead(academy) %}
-    <li><a href="{{ basejoin(academy.name + '/') }}">{{ academy.gettitle()|e }}</a></li>
+    <li><a href="{{ basejoin("/docs/" + academy.name + "/") }}">{{ academy.gettitle()|e }}</a></li>
     {% else %}
     <li>{{ academy.gettitle()|e }}</li>
     {% endif %}
@@ -20,11 +20,11 @@
 <ul>
 {% for group in allgroups %}
 {% if user.allowedList(group) %}
-    <li><a href="{{ basejoin('!expand=' + group) }}">{{ allgroups[group]|e }}</a></li>
+    <li><a href="{{ basejoin("/groups/" + group) }}">{{ allgroups[group]|e }}</a></li>
 {% endif %}
 {% endfor %}
 </ul>
 {% if user.mayCreate() %}
-<a href="{{ basejoin('/!createacademy') }}">Neue Akademie anlegen</a>
+<a href="{{ basejoin("/createacademy") }}">Neue Akademie anlegen</a>
 {% endif%}
 {% endblock %}

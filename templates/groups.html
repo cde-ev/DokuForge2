@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([('!groups', "Gruppenverwaltung")]) }}
+{{ trivnavbar([("/groups/", "Gruppenverwaltung")]) }}
 {% endblock %}
 {% block content %}
 
@@ -8,11 +8,11 @@
             "Bitte Text eingeben und mit &quot;Speichern&quot; beenden.",
             "Aenderungen erfolgreich gespeichert.",
             error.message, error.explanation) }}
-<form action="!groups" method="post" id="save">
+<form action="/groups/!save" method="post" id="save">
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ basejoin('!groups') }}">Abbrechen</a>
+<a href="{{ basejoin("/groups/") }}">Abbrechen</a>
 {% endblock %}

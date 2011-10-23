@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle()),
-               (academy.name + '/' + course.name + '/', course.gettitle()),
-               (academy.name + '/' + course.name + '/!title', "Titel")]) }}
+{{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
+               ("docs/" + academy.name + '/' + course.name + '/', course.gettitle()),
+               ("docs/" + academy.name + '/' + course.name + '/!title', "Titel")]) }}
 {% endblock %}
 {% block content %}
 
@@ -15,5 +15,5 @@
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ basejoin(academy.name + '/' + course.name + '/!title') }}">Abbrechen</a>
+<a href="{{ basejoin("docs/" + academy.name + '/' + course.name + '/!title') }}">Abbrechen</a>
 {% endblock %}

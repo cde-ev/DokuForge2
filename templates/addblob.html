@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle()),
-               (academy.name + '/' + course.name, course.gettitle()),
-               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
-               (academy.name + '/' + course.name + '/' + page|string + '/!addblob', "Bild hochladen")]) }}
+{{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
+               ("docs/" + academy.name + '/' + course.name, course.gettitle()),
+               ("docs/" + academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
+               ("docs/" + academy.name + '/' + course.name + '/' + page|string + '/!addblob', "Bild hochladen")]) }}
 {% endblock %}
 
 {% block content %}

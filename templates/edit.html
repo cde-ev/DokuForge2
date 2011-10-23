@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle()),
-               (academy.name + '/' + course.name, course.gettitle()),
-               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
-               (academy.name + '/' + course.name + '/' + page|string + '/!edit', "Editieren")]) }}
+{{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
+               ("docs/" + academy.name + "/" + course.name, course.gettitle()),
+               ("docs/" + academy.name + "/" + course.name + "/" + page|string, "Teil #" + page|string),
+               ("docs/" + academy.name + "/" + course.name + "/" + page|string + "/!edit", "Editieren")]) }}
 {% endblock %}
 {% block content %}
 
@@ -24,5 +24,5 @@ Teil #{{page}}
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 	<input type="submit" name="saveshow" value="Speichern und Beenden">
 </form>
-<a href="{{basejoin(academy.name + '/' + course.name + '/' + page|string + '/')}}">Abbrechen</a>
+<a href="{{ basejoin("docs/" + academy.name + "/" + course.name + "/" + page|string + "/")}}">Abbrechen</a>
 {% endblock %}
