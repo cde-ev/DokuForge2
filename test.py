@@ -89,7 +89,7 @@ class DokuforgeTests(unittest.TestCase):
         userdb = UserDB(userdbstore)
         userdb.load()
         groupstore = Storage('work', 'groupdb')
-        app = Application(userdb, groupstore, './df/')
+        app = Application(userdb, groupstore, './df/', "./templates/", "./style/")
         theapplication = validator(app)
         self.br = WSGIBrowser()
 
