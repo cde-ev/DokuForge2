@@ -134,5 +134,12 @@ class DokuforgeTests(unittest.TestCase):
         self.do_logout()
         self.assertFalse("!logout" in self.get_data())
 
+    def testAcademy(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.is_loggedin()
+        self.assertTrue("Exportieren" in self.get_data())
+
 if __name__ == '__main__':
     unittest.main()
