@@ -3,6 +3,7 @@
 from cStringIO import StringIO
 from httplib import HTTPMessage
 import mechanize
+import re
 import shutil
 import sys
 import unittest
@@ -88,7 +89,7 @@ class DokuforgeTests(unittest.TestCase):
         userdb = UserDB(userdbstore)
         userdb.load()
         groupstore = Storage('work', 'groupdb')
-        app = Application(userdb, groupstore, './df/')
+        app = Application(userdb, groupstore, './df/', "./templates/", "./style/")
         theapplication = validator(app)
         self.br = WSGIBrowser()
 
@@ -140,6 +141,18 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.is_loggedin()
         self.assertTrue("Exportieren" in self.get_data())
+
+    def testEdit(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(text="Editieren"))
+        form = list(self.br.forms())[1]
+        form["content"] = "wonderful content"
+        self.br.open(form.click(label="Speichern und Beenden"))
+        self.assertTrue("wonderful content" in self.get_data())
 
 if __name__ == '__main__':
     unittest.main()

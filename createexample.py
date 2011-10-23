@@ -61,7 +61,7 @@ title = Archiv aelterer CdE-Akademien
     userdbstore = storage.Storage('work', 'userdb')
     userdb = user.UserDB(userdbstore)
     userdb.load()
-    app = Application(userdb, mygroupstore, './df/')
+    app = Application(userdb, mygroupstore, './df/', "./templates/", "./style/")
     aca = createaca(app, u"za2011-1", u"Beste Akademie ever", [u"cde"],
                     [(u'course01',u"Internethumor und seine Schuld am Weltuntergang", 3),
                      (u'course02', u"Helenistische Heldenideale", 2)])
