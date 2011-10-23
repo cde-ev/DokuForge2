@@ -48,6 +48,10 @@ class WSGIHandler(BaseHandler):
             environ["CONTENT_LENGTH"] = "0"
         environ.update(("HTTP_%s" % key.replace("-", "_").upper(), value)
                        for key, value in request.headers.items())
+        environ.update(("HTTP_%s" % key.replace("-", "_").upper(), value)
+                       for key, value in request.unredirected_hdrs.items())
+        if "HTTP_CONTENT_TYPE" in environ:
+            environ["CONTENT_TYPE"] = environ.pop("HTTP_CONTENT_TYPE")
         fp = StringIO()
         wsgiresp = []
         def start_response(status, headers):
@@ -121,7 +125,7 @@ class DokuforgeTests(unittest.TestCase):
     def testLoginClick(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.click_link(text="Dokuforge")
+        self.br.open(self.br.click_link(text="Dokuforge"))
         self.is_loggedin()
 
     def testLogout(self):
