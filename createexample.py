@@ -5,6 +5,7 @@ import os
 from main import Application
 import storage
 import user
+from werkzeug.datastructures import FileStorage
 
 def createaca(app, name, title, groups, courses):
     assert isinstance(title, unicode)
@@ -68,9 +69,9 @@ title = Archiv aelterer CdE-Akademien
     aca.getCourse(u'course01').savepage(0, version, u"""[Example Section]
 This is an example with some nice math: $e^{i\pi}+1=0$.
 """, u"init")
-    # aca.getCourse(u'course01').attachblob(0, "XXXX....lot's of binary ;-)...XXXX", u"Ein lustiges Bild", u"myx", user=u"init")
-    # aca.getCourse(u'course01').attachblob(1, "YYYY....lot's of binary ;-)...YYYY", u"Ein anderes lustiges Bild", u"somey", user=u"init")
-    # aca.getCourse(u'course01').attachblob(0, "ZZZZ....lot's of binary ;-)...ZZZZ", u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
+    aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "./academy.py"), u"Ein lustiges Bild", u"myx", user=u"init")
+    aca.getCourse(u'course01').attachblob(1, FileStorage(filename = "./storage.py"), u"Ein anderes lustiges Bild", u"somey", user=u"init")
+    aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "./course.py"), u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
     aca = createaca(app, u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
                     [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),
                      (u'course02',u"Die Hedonistische Internationale", 3),
