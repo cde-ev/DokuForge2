@@ -14,7 +14,7 @@ clean:
 
 check: test
 
-test: setup test.py
+test: test.py
 	python test.py
 
 .PHONY: all doc clean setup test check
