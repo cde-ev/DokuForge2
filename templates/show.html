@@ -42,7 +42,7 @@ Zugeordnete Bilder:
 {% endif %}
 
 {% if user.allowedWrite(academy, course) %}
-<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!addblob")}}">neues Bilder hinzuf&uuml;gen</a>
+<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!addblob")}}">neues Bild hinzuf&uuml;gen</a>
 <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!deadblobs")}}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
 {% endif %}
 
