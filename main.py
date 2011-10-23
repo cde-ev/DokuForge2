@@ -977,7 +977,7 @@ class Application:
             page=thepage,
             content=thecourse.showpage(thepage),
             saved=saved,
-            blobs=thecourse.listblobs(thepage)
+            blobs=[thecourse.getmetablob(i) for i in thecourse.listblobs(thepage)]
             )
         return self.render("show.html", rs, params)
 

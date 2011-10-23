@@ -6,17 +6,19 @@ from common import check_output
 from werkzeug.datastructures import FileStorage
 
 class MetaBlob:
-    def __init__(self, label, comment, filename):
+    def __init__(self, label, comment, filename, number):
         self.label = label
         self.comment = comment
         self.filename = filename
+        self.number = number
 
 class Blob:
-    def __init__(self, data, label, comment, filename):
+    def __init__(self, data, label, comment, filename, number):
         self.data = data
         self.label = label
         self.comment = comment
         self.filename = filename
+        self.number = number
 
 class CourseLite:
     """
@@ -466,7 +468,8 @@ class Course(CourseLite):
         return Blob(Storage(self.path,"blob%d" % number).content(),
                     Storage(self.path,"blob%d.label" % number).content().decode("utf8"),
                     Storage(self.path,"blob%d.comment" % number).content().decode("utf8"),
-                    Storage(self.path,"blob%d.filename" % number).content().decode("utf8"))
+                    Storage(self.path,"blob%d.filename" % number).content().decode("utf8"),
+                    number)
 
     def getmetablob(self, number):
         """
@@ -478,7 +481,8 @@ class Course(CourseLite):
         """
         return MetaBlob(Storage(self.path,"blob%d.label" % number).content().decode("utf8"),
                         Storage(self.path,"blob%d.comment" % number).content().decode("utf8"),
-                        Storage(self.path,"blob%d.filename" % number).content().decode("utf8"))
+                        Storage(self.path,"blob%d.filename" % number).content().decode("utf8"),
+                        number)
 
     def modifyblob(self, number, label, comment, filename, user):
         assert isinstance(label, unicode)
