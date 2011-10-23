@@ -12,7 +12,9 @@ clean:
 	rm -rf html work df
 	rm -f *.pyc *~
 
-check:
+check: test
+
+test: setup test.py
 	python test.py
 
-.PHONY: all doc
+.PHONY: all doc clean setup test check
