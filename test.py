@@ -185,10 +185,6 @@ class DokuforgeTests(unittest.TestCase):
             self.br.open(form.click(label="Speichern und Beenden"))
             self.assertTrue(outputstr.encode("utf8") in self.get_data())
         self.is_loggedin()
-        self.br.open(self.br.click_link(text="Editieren"))
-        form = list(self.br.forms())[1]
-        form["content"] = "blank"
-        self.br.open(form.click(label="Speichern und Beenden"))
 
     def testMovePage(self):
         self.br.open(self.url)
@@ -197,7 +193,29 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Hochrücken".encode("utf8")))
-        
+        self.is_loggedin()
+
+    def testCreatePage(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        form = list(self.br.forms())[2]
+        self.br.open(form.click(label=u"Neuen Teil anlegen".encode("utf8")))
+        self.is_loggedin()
+
+    def testCourseTitle(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/!title$")))
+        for (inputstr, outputstr) in teststrings:
+            form = list(self.br.forms())[1]
+            form["content"] = inputstr.encode("utf8")
+            self.br.open(form.click(label="Speichern und Editieren"))
+            self.assertTrue(outputstr.encode("utf8") in self.get_data())
+        self.is_loggedin()
 
 if __name__ == '__main__':
     unittest.main()
