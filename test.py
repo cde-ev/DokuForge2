@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from cStringIO import StringIO
 from httplib import HTTPMessage
@@ -78,13 +79,20 @@ class WSGIBrowser(mechanize.Browser):
     handler_classes = mechanize.Browser.handler_classes.copy()
     handler_classes["http"] = WSGIHandler
 
+teststrings = [
+    (u"simple string", u"simple string"),
+    (u"some chars <>/& here", u"some chars &lt;&gt;/&amp; here"),
+    (u"exotic äöüß 囲碁 chars", u"exotic äöüß 囲碁 chars"),
+    (u"some ' " + u' " quotes', u"some &#39;  &#34; quotes")
+    ]
+
 class DokuforgeTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
         global theapplication
         shutil.rmtree("df", True)
         shutil.rmtree("work", True)
-        createexample.main()
+        createexample.main(size = 1)
         userdbstore = Storage('work', 'userdb')
         userdb = UserDB(userdbstore)
         userdb.load()
@@ -117,10 +125,15 @@ class DokuforgeTests(unittest.TestCase):
         self.do_login()
         self.is_loggedin()
 
-    def testLoginFailed(self):
+    def testLoginFailedUsername(self):
         self.br.open(self.url)
         self.do_login(username="nonexistent")
         # FIXME: sane error message
+        self.assertEqual(self.get_data(), "wrong password")
+
+    def testLoginFailedPassword(self):
+        self.br.open(self.url)
+        self.do_login(password="wrong")
         self.assertEqual(self.get_data(), "wrong password")
 
     def testLoginClick(self):
@@ -142,17 +155,49 @@ class DokuforgeTests(unittest.TestCase):
         self.is_loggedin()
         self.assertTrue("Exportieren" in self.get_data())
 
+    def testCourse(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.is_loggedin()
+        self.assertTrue("Roh-Export" in self.get_data())
+
+    def testPage(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.is_loggedin()
+        self.assertTrue("neues Bild hinzuf" in self.get_data())
+
     def testEdit(self):
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        for (inputstr, outputstr) in teststrings:
+            self.br.open(self.br.click_link(text="Editieren"))
+            form = list(self.br.forms())[1]
+            form["content"] = inputstr.encode("utf8")
+            self.br.open(form.click(label="Speichern und Beenden"))
+            self.assertTrue(outputstr.encode("utf8") in self.get_data())
+        self.is_loggedin()
         self.br.open(self.br.click_link(text="Editieren"))
         form = list(self.br.forms())[1]
-        form["content"] = "wonderful content"
+        form["content"] = "blank"
         self.br.open(form.click(label="Speichern und Beenden"))
-        self.assertTrue("wonderful content" in self.get_data())
+
+    def testMovePage(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        form = list(self.br.forms())[1]
+        self.br.open(form.click(label=u"Hochrücken".encode("utf8")))
+        
 
 if __name__ == '__main__':
     unittest.main()
