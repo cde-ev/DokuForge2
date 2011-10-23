@@ -19,7 +19,8 @@ import operator
 from wsgiref.simple_server import make_server
 from wsgitools.applications import StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
-from wsgitools.scgi.asynchronous import SCGIServer
+from wsgitools.scgi.asynchronous import SCGIServer as AsynchronousSCGIServer
+from wsgitools.scgi.forkpool import SCGIServer as ForkpoolSCGIServer
 # import other parts of Dokuforge
 import academy
 import course
@@ -136,13 +137,14 @@ class CheckError(StandardError):
         return self.message
 
 class Application:
-    def __init__(self, userdb, groupstore, acapath, templatepath, stylepath):
+    def __init__(self, userdb, groupstore, acapath, templatepath, stylepath,
+                 sessiondbpath=":memory:"):
         assert isinstance(acapath, str)
         assert isinstance(templatepath, str)
         assert isinstance(stylepath, str)
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader(templatepath))
-        self.sessiondb = sqlite3.connect(":memory:")
+        self.sessiondb = sqlite3.connect(sessiondbpath)
         cur = self.sessiondb.cursor()
         cur.execute(SessionHandler.create_table)
         self.sessiondb.commit()
@@ -1050,15 +1052,24 @@ def main():
     userdb = user.UserDB(userdbstore)
     userdb.load()
     groupstore = storage.Storage('work', 'groupdb')
-    app = Application(userdb, groupstore, './df/', './templates/', './style/')
+    if sys.argv[1:2] == ["forkpool"]:
+        app = Application(userdb, groupstore, './df/', './templates/',
+                          './style/', sessiondbpath="./work/sessiondb.sqlite3")
+    else:
+        app = Application(userdb, groupstore, './df/', './templates/',
+                          './style/')
     app = TracebackMiddleware(app)
     staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
                        os.listdir("./static/"))
     app = SubdirMiddleware(app, staticfiles)
     if sys.argv[1:2] == ["simple"]:
         make_server("localhost", 8800, app).serve_forever()
+    elif sys.argv[1:2] == ["forkpool"]:
+        server = ForkpoolSCGIServer(app, 4000)
+        server.enable_sighandler()
+        server.run()
     else:
-        server = SCGIServer(app, 4000)
+        server = AsynchronousSCGIServer(app, 4000)
         server.run()
 
 if __name__ == '__main__':
