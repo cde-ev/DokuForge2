@@ -27,7 +27,7 @@ Zugeordnete Bilder:
 <ul>
 {% for blob in blobs %}
 <li> 
-  <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/" + blob|string + "/")}}">#[{{ blob.number }}] ({{ blob.filename }})</a>
+  <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/" + blob|string + "/")}}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
 {% if user.allowedWrite(academy, course) %}
 {{ button(academy.name + "/" + course.name + "/" + page|string + "/"  + blob.number|string + "/!delete", "Löschen", dict()) }}
 {% endif %}
