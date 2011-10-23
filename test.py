@@ -81,8 +81,8 @@ class DokuforgeTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
         global theapplication
-        shutil.rmtree("df")
-        shutil.rmtree("work")
+        shutil.rmtree("df", True)
+        shutil.rmtree("work", True)
         createexample.main()
         userdbstore = Storage('work', 'userdb')
         userdb = UserDB(userdbstore)
