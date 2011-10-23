@@ -19,7 +19,10 @@ Teil #{{page}}
 <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!edit")}}">Editieren</a>
 {{ button(academy.name + "/" + course.name + "/"  + page|string  + "/!delete", "Löschen", dict()) }}
 {% endif %}
-<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!rcs")}}">rcs</a>
+<a href="{{basejoin(academy.name + "/" + course.name + "/" +
+														  page|string
+														  +
+														  "/!rcs")}}">rcs</a>
 
 <hr>
 {% if blobs %}
@@ -27,7 +30,7 @@ Zugeordnete Bilder:
 <ul>
 {% for blob in blobs %}
 <li> 
-  <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/" + blob|string + "/")}}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
+  <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/" + blob.number|string + "/")}}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
 {% if user.allowedWrite(academy, course) %}
 {{ button(academy.name + "/" + course.name + "/" + page|string + "/"  + blob.number|string + "/!delete", "Löschen", dict()) }}
 {% endif %}
