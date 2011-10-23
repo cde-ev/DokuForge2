@@ -19,4 +19,11 @@
 
 <a href={{ basejoin(academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/!download') }}>herunterladen</a>
 
+{% if blobhash is not none %}
+MD5 Summe des Bildes ist {{ blobhash }}.
+{% else %}
+<a href={{ basejoin(academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/!md5') }}>MD5-Summe berechnen</a>
+{% endif %}
+
+
 {% endblock %}

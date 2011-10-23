@@ -26,6 +26,13 @@ import course
 import storage
 import user
 
+try:
+    import hashlib
+    getmd5 = hashlib.md5
+except ImportError:
+    import md5
+    getmd5 = md5.new
+
 sysrand = random.SystemRandom()
 
 def gensid(bits=64):
@@ -225,6 +232,9 @@ class Application:
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_showblob),
+            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!md5",
+                                  methods=("GET", "HEAD"),
+                                  endpoint=self.do_md5blob),
             werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!download",
                                   methods=("GET", "HEAD"),
                                   endpoint=self.do_downloadblob),
@@ -576,6 +586,19 @@ class Application:
         return self.render_editblob(rs, aca, c, page, blob, theblob)
 
 
+    def do_md5blob(self, rs, academy=None, course=None, page=None, blob=None):
+        assert academy is not None and course is not None and page is not None and blob is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedRead(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        theblob = c.getblob(blob)
+        h = getmd5()
+        h.update(theblob.data)
+        blobhash = h.hexdigest()
+        return self.render_showblob(rs, aca, c, page, blob, theblob, blobhash=blobhash)
+
     def do_downloadblob(self, rs, academy=None, course=None, page=None, blob=None):
         assert academy is not None and course is not None and page is not None and blob is not None
         self.check_login(rs)
@@ -879,13 +902,14 @@ class Application:
         return self.render(u"addblob.html", rs, params)
 
     def render_showblob(self, rs, theacademy, thecourse, thepage, blobnr,
-                        theblob):
+                        theblob, blobhash=None):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage,
             blobnr=blobnr,
-            blob=theblob)
+            blob=theblob,
+            blobhash=blobhash)
         return self.render(u"showblob.html", rs, params)
 
     def render_editblob(self, rs, theacademy, thecourse, thepage, blobnr,
