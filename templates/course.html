@@ -9,7 +9,7 @@
 <ol>
 	{% for page in pages %}
 	<li><a href="{{ basejoin(academy.name + '/' + course.name
-		+ '/' + page|string + '/') }}">{{ pages.index(page) + 1 }}. Teil (#{{ page }})</a>
+		+ '/' + page|string + '/') }}"> Teil #{{ page }}</a>
 		{% if pages.index(page) > 0 %}
 		   {% if user.allowedWrite(academy, course) %}
 		      {{ button(academy.name + "/" + course.name + "/!moveup", "Hochrücken",
