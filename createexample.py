@@ -69,9 +69,9 @@ title = Archiv aelterer CdE-Akademien
     aca.getCourse(u'course01').savepage(0, version, u"""[Example Section]
 This is an example with some nice math: $e^{i\pi}+1=0$.
 """, u"init")
-    aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "./academy.py"), u"Ein lustiges Bild", u"myx", user=u"init")
-    aca.getCourse(u'course01').attachblob(1, FileStorage(filename = "./storage.py"), u"Ein anderes lustiges Bild", u"somey", user=u"init")
-    aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "./course.py"), u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
+    aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "academy.py", stream=file("./academy.py",mode="r")), u"Ein lustiges Bild", u"myx", user=u"init")
+    aca.getCourse(u'course01').attachblob(1, FileStorage(filename = "storage.py", stream=file("./storage.py", mode="r")), u"Ein anderes lustiges Bild", u"somey", user=u"init")
+    aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "course.py", stream=file("./course.py", mode="r")), u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
     aca = createaca(app, u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
                     [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),
                      (u'course02',u"Die Hedonistische Internationale", 3),
