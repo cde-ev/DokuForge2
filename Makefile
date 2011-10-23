@@ -12,4 +12,7 @@ clean:
 	rm -rf html work df
 	rm -f *.pyc *~
 
+check:
+	python test.py
+
 .PHONY: all doc
