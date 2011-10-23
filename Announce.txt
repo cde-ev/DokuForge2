@@ -1,0 +1,41 @@
+Liebe Dokuteam-Kollegen,
+
+wie bereits im Sommer angekuendigt, wird das alte Dokuforge durch
+eine komplette Neuimplementierung abgeloest. Dabei wurden auch einige
+grundlegende Designentscheidungen neu ueberdacht. Es aendert sich also
+einiges! Deswegen bitten wir auch erfahrene Dokuteammitglieder sich
+mit dem neuen Dokuforge vertraut zu machen. Hier noch mal die
+wichtigsten Aenderungen im Ueberblick.
+
+* Das neue Dokuforge hat optimistische synchronisation. Es gibt also
+  keinerlei locks mehr; statt dessen wird erst im nachhinein
+  ueberprueft, ob ein Konflikt aufgetreten ist. In diesem Fall wird ein
+  Vorschlag gemacht, wie man diese Aenderungen zusammenfuehren
+  kann. Dieser Vorschlag muss dann, nachdem er ueberprueft wurde,
+  erneut gespeichert werden!
+
+* Anlegen von Akademien und Kursen, sowie verwalten der Nutzeraccounts
+  geschieht jetzt ueber das Webinterface. Also diesbezueglich bitte
+  *keine* mails mehr an root@ schreiben.
+
+Daneben gibt es noch ein paar Details, hauptsaechlich fuer
+interessierte.
+
+* Einsehen alter Versionen ist jetzt etwas, was jeder kann, der die
+  Seite ueberhaupt lesen kann. Entsprechend koennen wir auch souveraen
+  auf entsprechende "Hilfe, ich hab versehentlich einen ganz wichtigen
+  Absatz geloescht" mails reagieren. Im Augenblick ist das noch
+  rudimentaer, durch herunterladen einer rcs(1) Datei; aber ein
+  Schritt nach vorne ist es trotzdem, da es im Dokuteam vermutlich
+  mehr Menschen gibt, die mit rcs umgehen koennen, als es aktive
+  Dokuteammitglieder mit Zugriff auf den Server gibt...
+
+Leider hat das neue Dokuforge gegenueber dem alten Momentan noch ein
+paar Nachteile. Ein echter Export oder eine echte Vorschau ist noch
+nicht implementiert; aber wir arbeiten drann.
+
+Viele Gruesse,
+  Helmut, Klaus, Markus
+
+
+
