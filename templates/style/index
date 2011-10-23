@@ -1,0 +1,58 @@
+    
+    <div class="body">
+              <h2>Richtlinien für die Erstellung der Dokumentation</h2>
+            
+
+
+
+
+<p>
+  An dieser Stelle haben wir ein paar Regeln für die Erstellung der
+  Dokumentation zusammengestellt.
+</p> 
+
+<p>
+  Das Ziel dieser Regeln ist es, die Dokumentation später möglichst einheitlich
+  aussehen zu lassen. Deswegen möchten wir euch bitten, diese Regeln zu
+  beachten, da wir sonst später eure Texte nachbearbeiten müssen, was sehr viel
+  Zeit kostet.
+</p>
+
+<p>
+  Vielen Dank!
+</p>
+
+<h3>Der Style-Guide &ndash; Inhalt</h3>
+
+<ol>
+  <li>
+    <p><a href="!style=intro">Intro</a></p>
+        <p>Über die Geschichte, den Sinn und die Philosophie von DokuForge.</p>
+  </li>
+  <li>
+    <p><a href="!style=hilfe">Hilfe</a></p>
+        <p>Kurzer Leitfaden für die Benutzung von DokuForge.</p>
+  </li>
+  <li>
+    <p><a href="!style=grundlagen">Grundlagen im Umgang mit DokuForge</a></p>
+        <p>Hier findet ihr eine Einleitung in die Benutzung von DokuForge und
+       Hinweise, was beim Schreiben der Dokus unbedingt zu beachten ist. Diese
+       Seite sollte von <em>jedem</em> gelesen werden.</p>
+  </li>
+  <li>
+    <p><a href="!style=abbildungen">Abbildungen</a></p>
+        <p>Wer Abbildungen einfügen möchte, sollte sich diese Seite zu Herzen nehmen.</p>
+  </li>
+  <li>
+    <p><a href="!style=mathe">Mathematik-Umgebung</a></p>
+        <p>Dieses Thema ist so umfangreich, dass wir ihm ebenfalls eine eigene Seite
+       gewidmet haben.</p>
+  </li>
+  <li>
+    <p><a href="!style=spezielles">Sonstiges</a></p>
+        <p>Auf dieser Seite haben wir das Meiste von dem zusammengetragen, was wiederholt
+       vorkommt, aber nicht in das normale Eingabeschema passt: Gedichte, Literaturangaben,        Tabellen, Fremdsprachen, ...
+    </p>
+  </li></ol>
+
+    </div>

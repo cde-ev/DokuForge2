@@ -1,0 +1,47 @@
+    <div class="body">
+              <h2>Über die Geschichte, den Sinn und die Philosophie von DokuForge</h2>
+            
+
+<h3>DokuForge &ndash; Hintergründe</h3>
+
+<p>
+Ein wesentlicher Bestandteil der Deutschen SchülerAkademien und infolgedessen auch der JGW- und CdE-Akademien ist die Dokumentation der Kursarbeit. Aufarbeitung des Stoffes, Darstellung des Stoffes für andere, Erinnerung für sich selbst und die Mitkursteilnehmer sind nur einige der Aspekte, die das Konzept Dokumentation so außerordentlich sinnvoll machen und ihren großen Erfolg erklären.
+</p>
+
+<p>
+Doch wie wird Doku realisiert? Mehrere Jahre wurde die beträchtliche redaktionelle Arbeit meist allein von Marco Kuhlmann erledigt, dem wir hier herzlich danken möchten. Dass dieser Aufwand von einer Person nicht lange tragbar ist, versteht sich von selbst. Wie kann man also eine effizientere Dokumentationserstellung erreichen? Wie eine breite und dennoch harmonisierende und funktionierende Arbeitsteilung?
+</p>
+
+<h3>DokuForge &ndash; das CdE-Dokusystem</h3>
+
+<p>
+Mit DokuForge wurde ein System geschaffen, das von jedem benutzt werden kann und einfach zu bedienen ist. Über ein Webinterface geben die Dokubeauftragten eines Kurses ihre Texte ein, die von ihrem Kurs geschrieben wurden. Dabei benutzen sie eine einfache Markupsprache, um z.B. bestimmte Wörter als Überschrift oder Hervorhebung zu kennzeichnen. Nach Abschluss der Eingabephase beginnt die Korrekturphase, in der der letzte Schliff an Rechtschreibung und Grammatik gelegt wird.
+</p>
+
+<p>
+Aus diesen Daten erzeugt nun DokuForge ein LaTeX-Dokument, wobei es so viele typographische Aufgaben wie möglich automatisch umsetzt und damit nur noch Problemfälle und typographische Feinarbeit für die manuelle Endredaktion übrig lässt.
+</p>
+
+<p>
+Möglichst weitgehende Automatisierung der Dokumentation unter Gewährleistung der inneren Konsistenz ist also die Idee hinter DokuForge.</p>
+<p>Dies bedeutet:</p>
+<p>Es gibt bewusst nur sehr wenige und dafür wohlüberlegte Formatierungsmöglichkeiten in DokuForge.</p> 
+<p>Formatierung bedeutet in DokuForge, Text als etwas Bestimmtes (z.B. als normaler Inhalt, Überschrift oder Hervorhebung) auszuzeichnen, und nicht, etwas fett oder kursiv zu setzen.</p>
+<p>DokuForge ist eine Texterfassung kein Textformatierungsspielplatz. Die Benutzer liefern die Inhalte, DokuForge (und in letzter Instanz das Dokuteam) kümmert sich um die Formatierung.</p>
+<p>Nur so wird die innere Konsistenz gewährleistet, die der entscheidende typographische Faktor ist, da sie optimale Lesbarkeit garantiert. Für den Einzelnen bedeutet das, sich auf Weniges beschränken zu müssen; für das Ganze verhindert es, in Flickschusterei auszuarten.
+</p>
+
+<p>
+Also kurzgefasst:
+<ul>
+<li>Texterfassung, keine Textformatierung</li>
+<li>Konsistenz</li>
+<li>Weniger ist mehr</li> 
+</ul>
+
+
+
+
+
+    </div>
+

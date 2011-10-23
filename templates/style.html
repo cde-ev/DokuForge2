@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block location%}
+{{ trivnavbar([('!style', "Style-Guide",),
+               ('!style=' + topic, topic|capitalize)]) }}
+{% endblock %}
+{% block content %}
+{% include includepath %}
+{% endblock %}
