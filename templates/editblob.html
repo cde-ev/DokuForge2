@@ -11,7 +11,11 @@
 {% block content %}
 
 {{ threeway(ok, "Bitte Blob bearbeiten.", "Blob erfolgreich ge&auml;ndert.", error.message, error.explanation) }}
+{% if recurse is not none %}
+<form action="{{recurse}}/!edit" method="post" id="editblob">
+{% else %}
 <form action="!edit" method="post" id="editblob">
+{% endif %}
   Bildunterschrift/Kommentar: <textarea name="comment">{{ blob.comment|e }}</textarea>
   K&uuml;rzel: <textarea name="label">{{ blob.label|e }}</textarea>
   Dateiname: <textarea name="name">{{ blob.filename|e }}</textarea>

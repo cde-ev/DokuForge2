@@ -128,6 +128,8 @@ class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
 
 class CheckError(StandardError):
     def __init__(self, msg, exp):
+        assert isinstance(msg, unicode)
+        assert isinstance(exp, unicode)
         self.message = msg
         self.explanation = exp
     def __str__(self):
@@ -373,7 +375,7 @@ class Application:
             savehook()
         if not ok:
             return self.render_file(rs, template, version, content, ok=False,
-                                    error = CheckError("Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!", "Bitte l&ouml;se den Konflikt auf und speichere danach erneut."),
+                                    error = CheckError(u"Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!", u"Bitte l&ouml;se den Konflikt auf und speichere danach erneut."),
                                     extraparams=extraparams)
         return self.render_file(rs, template, version, content, ok=True,
                                 extraparams=extraparams)
@@ -459,7 +461,7 @@ class Application:
         else:
             return self.render_createcoursequiz(rs, aca, name=name,
                                                 title=title, ok=False,
-                                                error = CheckError("Die Kurserstellung war nicht erfolgreich.", "Bitte die folgenden Angaben korrigieren."))
+                                                error = CheckError(u"Die Kurserstellung war nicht erfolgreich.", u"Bitte die folgenden Angaben korrigieren."))
 
     def do_createacademyquiz(self, rs):
         self.check_login(rs)
@@ -481,7 +483,7 @@ class Application:
                                                  title=title,
                                                  groups=rs.request.form["groups"],
                                                  ok=False,
-                                                 error = CheckError("Die Akademieerstellung war nicht erfolgreich.", "Bitte die folgenden Angaben korrigieren."))
+                                                 error = CheckError(u"Die Akademieerstellung war nicht erfolgreich.", u"Bitte die folgenden Angaben korrigieren."))
 
     def do_createpage(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -691,12 +693,14 @@ class Application:
         # a FileStorage is sufficiently file-like for store
         usercontent = rs.request.files["content"]
 
-        if not c.attachblob(page, usercontent, comment=usercomment,
-                            label=userlabel, user=rs.user.name):
-            return self.render_addblob(rs, aca, c, page, comment=usercomment,
-                                       label=userlabel, ok=False,
-                                       error=CheckError("Bildupload fehlgeschlagen!",
-                                                        "Bitte korrigeren und erneut versuchen."))
+        if re.match('^[a-z0-9]{1,200}$', userlabel) is None:
+            blob = c.attachblob(page, usercontent, comment=usercomment,
+                            label=u"somefig", user=rs.user.name)
+            theblob = c.getmetablob(blob)
+            return self.render_editblob(rs, aca, c, page, blob, theblob, ok=False,
+                                       error=CheckError(u"K&uuml;rzel falsch formatiert!",
+                                                        u"Bitte korrigeren und speichern."),
+                                        recurse = blob)
         return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
@@ -735,12 +739,12 @@ class Application:
         assert isinstance(groupstring, unicode)
         groups = groupstring.split()
         if len(groups) == 0:
-            raise CheckError("Keine Gruppen gefunden!",
-                             "Jede Akademie muss mindestens einer Gruppe angeh&ouml;ren. Bitte korrigieren und erneut versuchen.")
+            raise CheckError(u"Keine Gruppen gefunden!",
+                             u"Jede Akademie muss mindestens einer Gruppe angeh&ouml;ren. Bitte korrigieren und erneut versuchen.")
         for g in groups:
             if g not in self.listGroups():
-                raise CheckError("Nichtexistente Gruppe gefunden!",
-                                 "Bitte korrigieren und erneut versuchen.")
+                raise CheckError(u"Nichtexistente Gruppe gefunden!",
+                                 u"Bitte korrigieren und erneut versuchen.")
 
     def do_academygroupssave(self, rs, academy=None):
         assert academy is not None
@@ -808,9 +812,9 @@ class Application:
             config = ConfigParser.SafeConfigParser()
             config.readfp(StringIO(content.encode("utf8")))
         except ConfigParser.ParsingError as err:
-            raise CheckError("Es ist ein Parser Error aufgetreten!",
-                             "Der Fehler lautetete: " + err.message + \
-                             ". Bitte korrigiere ihn und speichere erneut.")
+            raise CheckError(u"Es ist ein Parser Error aufgetreten!",
+                             u"Der Fehler lautetete: " + err.message + \
+                             u". Bitte korrigiere ihn und speichere erneut.")
 
     def do_adminsave(self, rs):
         self.check_login(rs)
@@ -913,7 +917,7 @@ class Application:
         return self.render("showblob.html", rs, params)
 
     def render_editblob(self, rs, theacademy, thecourse, thepage, blobnr,
-                        theblob, ok=None, error=None):
+                        theblob, ok=None, error=None, recurse=None):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
@@ -921,7 +925,8 @@ class Application:
             blobnr=blobnr,
             blob=theblob,
             ok=ok,
-            error=error
+            error=error,
+            recurse=recurse
             )
         return self.render("editblob.html", rs, params)
 

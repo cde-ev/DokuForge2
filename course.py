@@ -407,7 +407,7 @@ class Course(CourseLite):
         assert isinstance(label, unicode)
 
         if re.match('^[a-z0-9]{1,200}$', label) is None:
-            return False
+            return None
 
         if user is not None:
             assert isinstance(user, unicode)
@@ -435,7 +435,7 @@ class Course(CourseLite):
         bloblabel.store(label.encode("utf8"), user=user)
         blobcomment.store(comment.encode("utf8"), user=user)
         blobname.store(data.filename.encode("utf8"), user=user)
-        return True
+        return newnumber
 
     def listblobs(self,number):
         """
