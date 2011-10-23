@@ -135,6 +135,7 @@ class CheckError(StandardError):
 
 class Application:
     def __init__(self, userdb, groupstore, acapath):
+        assert isinstance(acapath, str)
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader("./templates"))
         self.sessiondb = sqlite3.connect(":memory:")
@@ -345,10 +346,10 @@ class Application:
         """
         @type rs: RequestState
         @type filestore: Storage
-        @type template: unicode
+        @type template: str
         @type extraparams: dict
         """
-        assert isinstance(template, unicode)
+        assert isinstance(template, str)
         version, content = filestore.startedit()
         return self.render_file(rs, template, version.decode("utf8"),
                                 content.decode("utf8"), extraparams=extraparams)
@@ -725,7 +726,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(aca.path,"groups"),
-                            u"academygroups.html", extraparams={'academy': aca})
+                            "academygroups.html", extraparams={'academy': aca})
 
     def validateGroups(self, groupstring):
         """
@@ -748,7 +749,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(aca.path,"groups"),
-                                u"academygroups.html",
+                                "academygroups.html",
                                 checkhook = self.validateGroups,
                                 extraparams={'academy': aca})
 
@@ -759,7 +760,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(aca.path,"title"),
-                            u"academytitle.html", extraparams={'academy': aca})
+                            "academytitle.html", extraparams={'academy': aca})
 
     def do_academytitlesave(self, rs, academy=None):
         assert academy is not None
@@ -768,7 +769,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(aca.path,"title"),
-                                u"academytitle.html", extraparams={'academy': aca})
+                                "academytitle.html", extraparams={'academy': aca})
 
     def do_coursetitle(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -778,7 +779,7 @@ class Application:
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(c.path,"title"),
-                            u"coursetitle.html", extraparams={'academy': aca,
+                            "coursetitle.html", extraparams={'academy': aca,
                                                               'course': c})
 
     def do_coursetitlesave(self, rs, academy=None, course=None):
@@ -789,14 +790,14 @@ class Application:
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(c.path,"title"),
-                                u"coursetitle.html", extraparams={'academy': aca,
+                                "coursetitle.html", extraparams={'academy': aca,
                                                                  'course': c})
 
     def do_admin(self, rs):
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, self.userdb.storage, u"admin.html")
+        return self.do_file(rs, self.userdb.storage, "admin.html")
 
     def tryConfigParser(self, content):
         """
@@ -815,7 +816,7 @@ class Application:
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, self.userdb.storage, u"admin.html",
+        return self.do_filesave(rs, self.userdb.storage, "admin.html",
                                 checkhook = self.tryConfigParser,
                                 savehook = self.userdb.load)
 
@@ -823,17 +824,17 @@ class Application:
         self.check_login(rs)
         if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, self.groupstore, u"groups.html")
+        return self.do_file(rs, self.groupstore, "groups.html")
 
     def do_groupssave(self, rs):
         self.check_login(rs)
         if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, self.groupstore, u"groups.html",
+        return self.do_filesave(rs, self.groupstore, "groups.html",
                                 checkhook = self.tryConfigParser)
 
     def render_start(self, rs):
-        return self.render(u"start.html", rs)
+        return self.render("start.html", rs)
 
     def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent, ok=None):
         """
@@ -844,7 +845,6 @@ class Application:
         @type theversion: unicode
         @type thecontent: unicode
         """
-        assert isinstance(thepage, int)
         assert isinstance(theversion, unicode)
         assert isinstance(thecontent, unicode)
         params= dict(
@@ -854,7 +854,7 @@ class Application:
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
             ok=ok)
-        return self.render(u"edit.html", rs, params)
+        return self.render("edit.html", rs, params)
 
 
     def render_index(self, rs, group = None):
@@ -864,10 +864,10 @@ class Application:
             academies=map(academy.AcademyLite, self.listAcademies()),
             allgroups = self.listGroups(),
             expandgroup = group)
-        return self.render(u"index.html", rs, params)
+        return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
-        return self.render(u"academy.html", rs,
+        return self.render("academy.html", rs,
                            dict(academy=academy.AcademyLite(theacademy)))
 
     def render_deadblobs(self, rs, theacademy, thecourse, thepage):
@@ -875,19 +875,19 @@ class Application:
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage)
-        return self.render(u"deadblobs.html", rs, params)
+        return self.render("deadblobs.html", rs, params)
 
     def render_deadpages(self, rs, theacademy, thecourse):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse))
-        return self.render(u"dead.html", rs, params)
+        return self.render("dead.html", rs, params)
 
     def render_course(self, rs, theacademy, thecourse):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse))
-        return self.render(u"course.html", rs, params)
+        return self.render("course.html", rs, params)
 
     def render_addblob(self, rs, theacademy, thecourse, thepage, comment="",
                        label="", ok=None, error=None):
@@ -899,7 +899,7 @@ class Application:
             label=label,
             error=error
             )
-        return self.render(u"addblob.html", rs, params)
+        return self.render("addblob.html", rs, params)
 
     def render_showblob(self, rs, theacademy, thecourse, thepage, blobnr,
                         theblob, blobhash=None):
@@ -910,7 +910,7 @@ class Application:
             blobnr=blobnr,
             blob=theblob,
             blobhash=blobhash)
-        return self.render(u"showblob.html", rs, params)
+        return self.render("showblob.html", rs, params)
 
     def render_editblob(self, rs, theacademy, thecourse, thepage, blobnr,
                         theblob, ok=None, error=None):
@@ -923,7 +923,7 @@ class Application:
             ok=ok,
             error=error
             )
-        return self.render(u"editblob.html", rs, params)
+        return self.render("editblob.html", rs, params)
 
 
     def render_createcoursequiz(self, rs, theacademy, name=u'', title=u'',
@@ -943,7 +943,7 @@ class Application:
                       title=title,
                       ok=ok,
                       error=error)
-        return self.render(u"createcoursequiz.html", rs, params)
+        return self.render("createcoursequiz.html", rs, params)
 
     def render_createacademyquiz(self, rs, name=u'', title=u'', groups=u'',
                                  ok=None, error=None):
@@ -963,7 +963,7 @@ class Application:
                       groups=groups,
                       ok=ok,
                       error=error)
-        return self.render(u"createacademyquiz.html", rs, params)
+        return self.render("createacademyquiz.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(
@@ -974,20 +974,20 @@ class Application:
             saved=saved,
             blobs=thecourse.listblobs(thepage)
             )
-        return self.render(u"show.html", rs, params)
+        return self.render("show.html", rs, params)
 
     def render_file(self, rs, templatename, theversion, thecontent, ok=None,
                     error=None, extraparams=dict()):
         """
         @type rs: RequestState
-        @type templatename: unicode
+        @type templatename: str
         @type theversion: unicode
         @type thecontent: unicode
         @type ok: None or Booleon
         @type error: None or CheckError
         @type extraparams: dict
         """
-        assert isinstance(templatename, unicode)
+        assert isinstance(templatename, str)
         assert isinstance(theversion, unicode)
         assert isinstance(thecontent, unicode)
         params= dict(
@@ -1000,11 +1000,11 @@ class Application:
 
     def render(self, templatename, rs, extraparams=dict()):
         """
-        @type templatename: unicode
+        @type templatename: str
         @type rs: RequestState
         @type extraparams: dict
         """
-        assert isinstance(templatename, unicode)
+        assert isinstance(templatename, str)
         rs.response.content_type = "text/html; charset=utf8"
         params = dict(
             user=rs.user,

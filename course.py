@@ -128,7 +128,6 @@ class CourseLite:
         @param number: the internal number of that page
         @rtype: unicode
         """
-        assert isinstance(number, int)
         page = Storage(self.path,"page%d" % number)
         return page.content().decode("utf8")
 
@@ -482,7 +481,6 @@ class Course(CourseLite):
                         Storage(self.path,"blob%d.filename" % number).content().decode("utf8"))
 
     def modifyblob(self, number, label, comment, filename, user):
-        assert isinstance(number, int)
         assert isinstance(label, unicode)
         assert isinstance(comment, unicode)
         assert isinstance(filename, unicode)
