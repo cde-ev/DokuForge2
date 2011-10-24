@@ -17,7 +17,8 @@ Feedback. Hier jetzt nochmal die wichtigsten Aenderungen im Ueberblick.
   ueberprueft, ob ein Konflikt aufgetreten ist. In diesem Fall wird ein
   Vorschlag gemacht, wie man diese Aenderungen zusammenfuehren
   kann. Dieser Vorschlag muss dann, nachdem er ueberprueft wurde,
-  erneut gespeichert werden!
+  erneut gespeichert werden! (Die konfligierende Version wird intern
+  natuerlich trotzdem gespeichert.)
 
 * Anlegen von Akademien und Kursen, sowie verwalten der Nutzeraccounts
   geschieht jetzt ueber das Webinterface. Also diesbezueglich bitte
