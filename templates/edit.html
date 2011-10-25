@@ -17,12 +17,12 @@ Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
 {% endif %}
 
 Teil #{{page}}
-<form action="!save" method="post" id="saveedit">
+<form action="{{ buildurl("save", academy=academy.name, course=course.name, page=page) }}" method="post" id="saveedit">
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 	<input type="submit" name="saveshow" value="Speichern und Beenden">
 </form>
-<a href="{{ basejoin("docs/" + academy.name + "/" + course.name + "/" + page|string + "/")}}">Abbrechen</a>
+<a href="{{ buildurl("page", academy=academy.name, course=course.name, page=page) }}">Abbrechen</a>
 {% endblock %}

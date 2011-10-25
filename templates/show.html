@@ -16,10 +16,10 @@ Teil #{{page}}
 
 
 {% if user.allowedWrite(academy, course) %}
-<a href="{{basejoin("docs/" + academy.name + "/" + course.name + "/" + page|string + "/!edit")}}">Editieren</a>
+<a href="{{ buildurl("edit", academy=academy.name, course=course.name, page=page) }}">Editieren</a>
 {{ button("docs/" + academy.name + "/" + course.name + "/"  + page|string  + "/!delete", "Löschen", dict()) }}
 {% endif %}
-<a href="{{basejoin("docs/" + academy.name + "/" + course.name + "/" + page|string + "/!rcs")}}">rcs</a>
+<a href="{{ buildurl("rcs", academy=academy.name, course=course.name, page=page) }}">rcs</a>
 
 <hr>
 {% if blobs %}
@@ -27,7 +27,7 @@ Zugeordnete Bilder:
 <ul>
 {% for blob in blobs %}
 <li> 
-  <a href="{{basejoin("docs/" + academy.name + "/" + course.name + "/" + page|string + "/" + blob.number|string + "/")}}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
+  <a href="{{ buildurl("showblob", academy=academy.name, course=course.name, page=page, blob=blob.number) }}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
 {% if user.allowedWrite(academy, course) %}
 {{ button("docs/" + academy.name + "/" + course.name + "/" + page|string + "/"  + blob.number|string + "/!delete", "Löschen", dict()) }}
 {% endif %}
@@ -39,8 +39,8 @@ Zugeordnete Bilder:
 {% endif %}
 
 {% if user.allowedWrite(academy, course) %}
-<a href="{{basejoin("docs/" + academy.name + "/" + course.name + "/" + page|string + "/!addblob")}}">neues Bild hinzuf&uuml;gen</a>
-<a href="{{basejoin("docs/" + academy.name + "/" + course.name + "/" + page|string + "/!deadblobs")}}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+<a href="{{ buildurl("addblob", academy=academy.name, course=course.name, page=page) }}">neues Bild hinzuf&uuml;gen</a>
+<a href="{{ buildurl("showdeadblobs", academy=academy.name, course=course.name, page=page) }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
 {% endif %}
 
 {% endblock %}

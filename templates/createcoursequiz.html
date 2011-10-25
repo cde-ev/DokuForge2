@@ -7,10 +7,10 @@
 
 {{ threeway(ok, "Bitte die folgenden Angaben ergaenzen.", "", error.message,
             error.explanation) }}
-<form action="!createcourse" method="post" id="createcourse">
+<form action="{{ buildurl("createcourse", academy=academy.name) }}" method="post" id="createcourse">
 	Interner Name: <input name="name" type="text" value="{{ name }}"><br/>
 	Titel: <input name="title" type="text" value="{{ title }}"><br/>
 	<input type="submit" name="submit" value="Kurs hinzuf&uuml;gen">
 </form>
-<a href="{{ basejoin("docs/" + academy.name + "/") }}">Abbrechen</a>
+<a href="{{ buildurl("academy", academy=academy.name) }}">Abbrechen</a>
 {% endblock %}

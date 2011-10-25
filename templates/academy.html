@@ -8,7 +8,7 @@
 <ol>
 	{% for course in courses %}
 	    {% if user.allowedRead(academy, course) %}
-	    <li><a href="{{ basejoin("docs/" + academy.name + '/' + course.name + '/') }}">{{ course.gettitle()|e }}</a></li>
+	    <li><a href="{{ buildurl("course", academy=academy.name, course=course.name) }}">{{ course.gettitle()|e }}</a></li>
 	    {% else %}
 	    <li>{{ course.gettitle()|e }}</li>
 	    {% endif %}
@@ -18,11 +18,13 @@
 <em>Keine Kurse gefunden.</em>
 {% endif %}
 {% if user.mayExport(academy)%}
-<a href="{{ basejoin("docs/" + academy.name + '/!export') }}">Exportieren</a>
+{# 
+<a href="{{ buildurl("export", academy=academy.name) }}">Exportieren</a>
+#} FIXME: this should be an "Exportieren" button
 {% endif%}
 {% if user.allowedWrite(academy) %}
-<a href="{{ basejoin("docs/" + academy.name + '/!title') }}">Titel bearbeiten</a>
-<a href="{{ basejoin("docs/" + academy.name + '/!groups') }}">Gruppen bearbeiten</a>
-<a href="{{ basejoin("docs/" + academy.name + '/!createcourse') }}">Kurs hinzuf&uuml;gen</a>
+<a href="{{ buildurl("academytitle", academy=academy.name) }}">Titel bearbeiten</a>
+<a href="{{ buildurl("academygroups", academy=academy.name) }}">Gruppen bearbeiten</a>
+<a href="{{ buildurl("createcoursequiz", academy=academy.name) }}">Kurs hinzuf&uuml;gen</a>
 {% endif%}
 {% endblock %}
