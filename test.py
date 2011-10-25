@@ -270,5 +270,27 @@ class DokuforgeTests(unittest.TestCase):
         self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
         self.is_loggedin()
 
+    def testCreateCourse(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("/!createcourse$")))
+        print self.get_data()
+        form = list(self.br.forms())[1]
+        print form
+        form["name"] = "course03"
+        # fixme there is no title controle, but there should be one
+        # form["title"] = "Testkurs"
+        self.br.open(form.click(label=u"Kurs hinzufügen".encode("utf8")))
+        self.assertTrue("Area51" in self.get_data())
+        # self.assertTrue("Testkurs" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/!createcourse$")))
+        form = list(self.br.forms())[1]
+        form["name"] = "foo_bar"
+        # form["title"] = "next Testkurs"
+        self.br.open(form.click(label=u"Kurs hinzufügen".encode("utf8")))
+        self.assertTrue("Die Kurserstellung war nicht erfolgreich." in self.get_data())
+        self.is_loggedin()
+
 if __name__ == '__main__':
     unittest.main()
