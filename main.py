@@ -905,7 +905,9 @@ class Application:
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
-            page=thepage)
+            page=thepage,
+            blobs=[thecourse.getmetablob(i) for i in thecourse.listdeadblobs()]
+)
         return self.render("deadblobs.html", rs, params)
 
     def render_deadpages(self, rs, theacademy, thecourse):

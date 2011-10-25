@@ -6,12 +6,11 @@
                (academy.name + '/' + course.name + '/' + page|string + '/!deadblobs', "Attic")])}}
 {% endblock %}
 {% block content %}
-{% set deads=course.listdeadblobs() %}
-{% if deads %}
+{% if blobs %}
 <ul>
-	{% for blob in deads %}
-	<li> #[{{ blob }}]
-         {{ button(academy.name + "/" + course.name + "/" + page|string + "/!relinkblob", "wiederherstellen", dict(number=blob)) }}
+	{% for blob in blobs %}
+	<li> #[{{ blob.number }}] ({{ blob.filename|e  }})
+         {{ button(academy.name + "/" + course.name + "/" + page|string + "/!relinkblob", "wiederherstellen", dict(number=blob.number)) }}
 	</li>
 	{% endfor %}
 </ul>
