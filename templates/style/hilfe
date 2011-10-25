@@ -18,32 +18,18 @@ Ehre und darfst deine Schokolade mit uns teilen.</p>
 
 <p>Um deine Dokubeiträge zu erfassen, musst du dich zunächst in
 DokuForge einloggen. Hierfür hast du einen Benutzernamen und ein Passwort
-bekommen.  Anschließend kannst du deine Akademie auswählen. Hier ist
-mit einem &bdquo;*&ldquo; gekennzeichnet, welche Kurse du editieren darfst.
-Dafür klickst du auf den dazugehörigen Kurstitel.</p>
+bekommen.  Anschließend kannst du deine Akademie auswählen, danach Deinen Kurs.
+Dafür klickst du auf den Namen der Akademie, und dann auf den dazugehörigen Kurstitel.</p>
+
 
 <p>Jetzt kannst du bestehende Texte in dieser Kursdoku anschauen, editieren
 oder neue Seiten hinzufügen.</p>
-
-<p>Durch Klicken auf &bdquo;Editieren&ldquo; wechselst du in den Editiermodus.
-Mit &bdquo;neuen Teil vor/hinter diesem Teil einfügen&ldquo; kannst du eine
-neue Seite vor oder hinter einer schon bestehenden (an die Position, an der sie
-auch später im fertigen Dokument stehen soll) einfügen. Nun kannst du im
-Editierfeld deinen Text eingeben.</p>
-
-<p>Solange du den Editiermodus nicht durch &bdquo;Editieren beenden&ldquo;
-verlassen hast, ist die Seite gesperrt. Wird diese Seite von dir oder einer
-anderen Person in einem anderen Browserfenster aufgerufen, so erscheint ein
-Hinweis, dass die Seite gesperrt ist. Es ist daher <em>ganz wichtig, den
-Editiervorgang mit &bdquo;Editieren beenden&ldquo; abzuschließen</em>. Nur so
-wird dein Text gespeichert, und nur so wird die Sperre wieder aufgehoben.</p>
-
 
 <h3>Ein paar Regeln</h3>
 
 <p>Damit die Arbeit mit DokuForge reibungslos läuft und das Verhältnis
 zum Dokuteam ungetrübt bleibt, bitten wir dich, bei der Texteingabe
-folgende Punkte zu beachten:</p>
+folgende Punkte zu beachten.</p>
 
 <ul>
 <li>
@@ -68,35 +54,12 @@ von Hand an die allgemein gültigen Standards anpassen und die Vorschau
 
 <li>
 
-<p>Bitte benutze die Vorschau-Funktion von DokuForge. In ihr kannst du auch
-Schnitzer der obigen Art leicht erkennen (<font color="red">?</font>signalrot
-und anklagend-fragend<font color="red">?</font>).</p>
-
-<p>Sprich: Ob der Text, den du gerade geschrieben hast, nach deinem Wunsch von
-DokuForge erfasst wird, kannst du an der Vorschau überprüfen.
-Hierfür gibt es den &bdquo;Vorschau aktualisieren&ldquo;-Button. Über
-dem Eingabefeld erscheint dann der gesetzte Text. Falls etwas nicht so
-aussieht, wie du es gewollt hast, suche bitte den Fehler zunächst in
-deinem Text. Oft ist es nur eine vergessene Klammer oder Ähnliches.
-Mögliche Änderungen kannst du jederzeit in das Textfeld eingeben und
-die Vorschau aktualisieren.</p>
-
-</li>
-
-<li>
-
 <p>Bist du fertig mit deiner Eingabe, lies den Text bitte noch einmal
 Korrektur. Jeder Fehler, den du schon findest und eliminierst, kann später
 nicht mehr vergessen werden und sich nicht mehr durch die Endkorrektur mogeln.</p>
 
 </li>
 
-<li>
-
-<p>Um die Eingabe zu beenden, klicke bitte unbedingt auf den Button
-&bdquo;Editieren beenden&ldquo;.</p>
-
-</li>
 <li>
 
 <p>Pro Kurs gibt es außerdem eine Längenbeschränkung, die
@@ -110,7 +73,7 @@ Länge einzuhalten.</p>
 <p>Nun kann es losgehen.</p>
 
 <p>Oder sollten wir noch nicht erwähnt haben, dass du den Style-Guide
-lesen und die Vorschau benutzen solltest?</p>
+lesen solltest?</p>
 
 <p>Viel Spaß und Erfolg!</p>
 
