@@ -229,5 +229,46 @@ class DokuforgeTests(unittest.TestCase):
         self.assertFalse("Teil #0" in self.get_data())
         self.is_loggedin()
 
+    def testRestorePage(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        form = list(self.br.forms())[1]
+        self.br.open(form.click(label=u"Löschen".encode("utf8")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/!deadpages$")))
+        form = list(self.br.forms())[1]
+        self.br.open(form.click(label="wiederherstellen"))
+        self.assertTrue("Teil #0" in self.get_data())
+        self.is_loggedin()
+
+    def testAcademyTitle(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("/!title$")))
+        for (inputstr, outputstr) in teststrings:
+            form = list(self.br.forms())[1]
+            form["content"] = inputstr.encode("utf8")
+            self.br.open(form.click(label="Speichern und Editieren"))
+            self.assertTrue(outputstr.encode("utf8") in self.get_data())
+        self.is_loggedin()
+
+    def testAcademyGroups(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(text="Gruppen bearbeiten"))
+        form = list(self.br.forms())[1]
+        form["content"] = "cde qed"
+        self.br.open(form.click(label="Speichern und Editieren"))
+        self.assertTrue("Aenderungen erfolgreich gespeichert." in self.get_data())
+        form = list(self.br.forms())[1]
+        form["content"] = "cde spam"
+        self.br.open(form.click(label="Speichern und Editieren"))
+        self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
+        self.is_loggedin()
+
 if __name__ == '__main__':
     unittest.main()
