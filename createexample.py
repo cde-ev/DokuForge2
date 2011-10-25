@@ -83,10 +83,14 @@ title = Archiv aelterer CdE-Akademien
                          (u'course02',u"Die Hedonistische Internationale", 3),
                          (u'course03', u"Orgateams und ihre Geschichte", 4)])
 
-    aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
-                    [(u'course01',u"Area51", 2),
-                     (u'course02',u"Fox Mulders Biographie", 3),
-                     (u'course03', u"Selbstverteidigung gegen Poltergeister", 4)])
+    if size > 10:
+        aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
+                        [(u'course01',u"Area51", 2),
+                         (u'course02',u"Fox Mulders Biographie", 3),
+                         (u'course03', u"Selbstverteidigung gegen Poltergeister", 4)])
+    elif size > 0:
+        aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
+                        [(u'course01',u"Area51", 2)])
 
 if __name__ == '__main__':
     main()
