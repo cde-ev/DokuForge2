@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle())]) }}
+{{ navbar([("academy", academy.gettitle())]) }}
 {% endblock %}
 {% block content %}
 {% set courses = academy.listCoursesLite() %}

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
-               ("docs/" + academy.name + '/' + course.name, course.gettitle()),
-               ("docs/" + academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
-               ("docs/" + academy.name + '/' + course.name + '/' + page|string + '/!deadblobs', "Attic")])}}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle()),
+           ("page", "Teil #" + page|string),
+           ("deadblobs", "Attic")])}}
 {% endblock %}
 {% block content %}
 {% set deads=course.listdeadblobs() %}
@@ -11,7 +11,7 @@
 <ul>
 	{% for blob in deads %}
 	<li> #[{{ blob }}]
-         {{ button("docs/" + academy.name + "/" + course.name + "/" + page|string + "/!relinkblob", "wiederherstellen", dict(number=blob)) }}
+         {{ button(buildurl("relinkblob"), "wiederherstellen", dict(number=blob)) }}
 	</li>
 	{% endfor %}
 </ul>

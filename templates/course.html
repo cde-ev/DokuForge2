@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
-               ("docs/" + academy.name + '/' + course.name, course.gettitle())]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle())]) }}
 {% endblock %}
 {% block content %}
 {% set pages = course.listpages() %}
@@ -11,7 +11,7 @@
 	<li><a href="{{ buildurl('page', {'page': page}) }}"> Teil #{{ page }}</a>
 		{% if pages.index(page) > 0 %}
 		   {% if user.allowedWrite(academy, course) %}
-		      {{ button("docs/" + academy.name + "/" + course.name + "/!moveup", "Hochrücken",
+		      {{ button(buildurl("moveup", {'page': page}), "Hochrücken",
 	              	 dict(number=pages.index(page))) }}
 		   {% endif %}
 		{% endif %}
@@ -22,7 +22,7 @@
 <em>Keine Teile gefunden gefunden.</em>
 {% endif %}
 {% if user.allowedWrite(academy, course) %}
-{{ button("docs/" + academy.name + "/" + course.name + "/!createpage", "Neuen Teil anlegen") }}
+{{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
 <a href="{{ buildurl("showdeadpages") }}">gel&ouml;schte Teile wiederherstellen</a>
 {% endif %}
 {% if user.mayExport(academy) %}

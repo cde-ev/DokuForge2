@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([("/groups/" + expandgroup, allgroups[expandgroup]|e)]) }}
+{{ navbar([("groupindex", allgroups[group]|e)]) }}
 {% endblock %}
 {% block content %}
 <ul>
 {% for academy in academies %}
-  {% if expandgroup in academy.getgroups() %}
+  {% if group in academy.getgroups() %}
     {% if user.allowedRead(academy) %}
     <li><a href="{{ buildurl("academy", {'academy': academy}) }}">{{ academy.gettitle()|e }}</a></li>
     {% else %}
@@ -18,9 +18,9 @@
 </ul>
 <hr>
 <ul>
-{% for group in allgroups %}
-{% if user.allowedList(group) %}
-    <li><a href="{{ buildurl("groupindex", {'group': group}) }}">{{ allgroups[group]|e }}</a></li>
+{% for onegroup in allgroups %}
+{% if user.allowedList(onegroup) %}
+    <li><a href="{{ buildurl("groupindex", {'group': onegroup}) }}">{{ allgroups[onegroup]|e }}</a></li>
 {% endif %}
 {% endfor %}
 </ul>

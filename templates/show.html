@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block location%}
-{{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
-               ("docs/" + academy.name + "/" + course.name, course.gettitle()),
-               ("docs/" + academy.name + "/" + course.name + "/" + page|string, "Teil #" + page|string)]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle()),
+           ("page", "Teil #" + page|string)]) }}
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@ Teil #{{page}}
 
 {% if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit") }}">Editieren</a>
-{{ button("docs/" + academy.name + "/" + course.name + "/"  + page|string  + "/!delete", "Löschen", dict()) }}
+{{ button(buildurl("delete"), "Löschen", dict()) }}
 {% endif %}
 <a href="{{ buildurl("rcs") }}">rcs</a>
 
@@ -29,7 +29,7 @@ Zugeordnete Bilder:
 <li> 
   <a href="{{ buildurl("showblob", {'blob': blob.number}) }}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
 {% if user.allowedWrite(academy, course) %}
-{{ button("docs/" + academy.name + "/" + course.name + "/" + page|string + "/"  + blob.number|string + "/!delete", "Löschen", dict()) }}
+{{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
 {% endif %}
 </li>
 {% endfor %}

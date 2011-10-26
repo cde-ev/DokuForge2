@@ -727,8 +727,7 @@ class Application:
             theblob = c.getmetablob(blob)
             return self.render_editblob(rs, aca, c, page, blob, theblob, ok=False,
                                        error=CheckError(u"K&uuml;rzel falsch formatiert!",
-                                                        u"Bitte korrigeren und speichern."),
-                                        recurse = blob)
+                                                        u"Bitte korrigeren und speichern."))
         return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
@@ -902,7 +901,7 @@ class Application:
         params = dict(
             academies=map(academy.AcademyLite, self.listAcademies()),
             allgroups = self.listGroups(),
-            expandgroup = group)
+            group = group)
         return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
@@ -952,7 +951,7 @@ class Application:
         return self.render("showblob.html", rs, params)
 
     def render_editblob(self, rs, theacademy, thecourse, thepage, blobnr,
-                        theblob, ok=None, error=None, recurse=None):
+                        theblob, ok=None, error=None):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
@@ -960,8 +959,7 @@ class Application:
             blobnr=blobnr,
             blob=theblob,
             ok=ok,
-            error=error,
-            recurse=recurse
+            error=error
             )
         return self.render("editblob.html", rs, params)
 

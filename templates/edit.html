@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
-               ("docs/" + academy.name + "/" + course.name, course.gettitle()),
-               ("docs/" + academy.name + "/" + course.name + "/" + page|string, "Teil #" + page|string),
-               ("docs/" + academy.name + "/" + course.name + "/" + page|string + "/!edit", "Editieren")]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle()),
+           ("page", "Teil #" + page|string),
+           ("edit", "Editieren")]) }}
 {% endblock %}
 {% block content %}
 

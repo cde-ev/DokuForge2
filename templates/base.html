@@ -6,20 +6,21 @@
 	<input type="submit" name="submit" value="{{ label|e }}">
 </form>
 {%- endmacro -%}
+
 {%- macro buildurl(name, extraargs={}) -%}
 {{ composeurl(name, context(), extraargs) }}
 {%- endmacro -%}
-{%- macro trivnavbar(entries) -%}
+
+{%- macro navbar(entries) -%}
 Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
-{%- for (url, title) in entries -%}
+{%- for (point, title) in entries -%}
 {%- if url == '' -%}
 {# comment to protect space #} &gt; {{ title|e}}
 {%- else -%}
-{# comment to protect space #} &gt; <a href="{{ basejoin(url) }}">{{ title|e}}</a>
+{# comment to protect space #} &gt; <a href="{{buildurl(point)}}">{{ title|e}}</a>
 {%- endif -%}
 {%- endfor -%}
 {%- endmacro -%}
-
 
 {%- macro threeway(ok, default, success, errormessage, errorexplanation) -%}
 {% if ok is none %}
@@ -31,7 +32,6 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 {{ errorexplanation }}
 {% endif %}
 {%- endmacro -%}
-
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="de">
@@ -48,7 +48,7 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
    <a href="{{ buildurl("styleguide") }}">Style-Guide</a>
    {% if user is not none %}
      <p>Hallo {{ user.name }}!</p>
-     <p>{{ button("/logout", "Logout")}}
+     <p>{{ button(buildurl("logout"), "Logout")}}
 	{% if user.isAdmin() %}
 	<a href="{{ buildurl("admin") }}">Administration</a>
 	{% endif %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
-               ("docs/" + academy.name + '/!title', "Titel")]) }}
+{{ navbar([("academy", academy.gettitle()),
+               ("academytitle", "Titel")]) }}
 {% endblock %}
 {% block content %}
 
@@ -14,5 +14,5 @@
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ buildurl("academytitle") }}">Abbrechen</a>
+<a href="{{buildurl("academytitle")}}">Abbrechen</a>
 {% endblock %}

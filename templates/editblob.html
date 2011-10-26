@@ -1,21 +1,17 @@
 {% extends "base.html" %}
 
 {% block location%}
-{{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
-               ("docs/" + academy.name + "/" + course.name, course.gettitle()),
-               ("docs/" + academy.name + "/" + course.name + "/" + page|string, "Teil #" + page|string),
-               ("docs/" + academy.name + "/" + course.name + "/" + page|string + "/" + blobnr|string + "/", "Bild #" + blobnr|string),
-               ("docs/" + academy.name + "/" + course.name + "/" + page|string + "/" + blobnr|string + "/!edit", "Bild editieren")]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle()),
+           ("page", "Teil #" + page|string),
+           ("blob", "Bild #" + blobnr|string),
+           ("editblob", "Bild editieren")]) }}
 {% endblock %}
 
 {% block content %}
 
 {{ threeway(ok, "Bitte Blob bearbeiten.", "Blob erfolgreich ge&auml;ndert.", error.message, error.explanation) }}
-{% if recurse is not none %}
-<form action="{{recurse}}/!edit" method="post" id="editblob">
-{% else %}
-<form action="!edit" method="post" id="editblob">
-{% endif %}
+<form action="{{buildurl("editblob", {'blob': blobnr})}}" method="post" id="editblob">
   Bildunterschrift/Kommentar: <textarea name="comment">{{ blob.comment|e }}</textarea>
   K&uuml;rzel: <textarea name="label">{{ blob.label|e }}</textarea>
   Dateiname: <textarea name="name">{{ blob.filename|e }}</textarea>

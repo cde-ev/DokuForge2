@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([('/createacademy', "Akademie anlegen")]) }}
+{{ navbar([("createacademy", "Akademie anlegen")]) }}
 {% endblock %}
 {% block content %}
 
 {{ threeway(ok, "Bitte die folgenden Angaben ergaenzen.", "", error.message,
             error.explanation) }}
-<form action="/createacademy" method="post" id="createacademy">
+<form action="{{buildurl("createacademy")}}" method="post" id="createacademy">
 	Interner Name: <input name="name" type="text" value="{{ name }}"><br/>
 	Titel: <input name="title" type="text" value="{{ title }}"><br/>
 	Gruppen: <input name="groups" type="text" value="{{ groups }}"><br/>
