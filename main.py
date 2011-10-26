@@ -45,6 +45,10 @@ def gensid(bits=64):
     """
     return "%x" % random.getrandbits(bits)
 
+@jinja2.contextfunction
+def get_context(c):
+        return c
+
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database."""
     create_table = "CREATE TABLE IF NOT EXISTS sessions " + \
@@ -249,12 +253,18 @@ class Application:
         self.allparams = ['academy', 'course', 'page', 'blob', 'group', 'topic']
 
 
-    def constructurl(self, name, rs, **args):
-        params = dict()
+    def constructurl(self, name, rs, params, extraparams):
+        args = params.get_all()
+        args.update(extraparams)
+        finalparams = dict()
+        print args
         for p in self.allparams:
             if self.routingmap.is_endpoint_expecting(name, p):
-                params[p] = args[p]
-        return rs.mapadapter.build(name, params)
+                if p == 'academy' or p == 'course':
+                    finalparams[p] = args[p].name
+                else:
+                    finalparams[p] = args[p]
+        return rs.mapadapter.build(name, finalparams)
 
     def getAcademy(self, name, user=None):
         """
@@ -1040,11 +1050,12 @@ class Application:
         rs.response.content_type = "text/html; charset=utf8"
         params = dict(
             user = rs.user,
-            buildurl = lambda name, **params: self.constructurl(name, rs, **params),
+            composeurl = lambda name, params, extraparams: self.constructurl(name, rs, params, extraparams),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
         )
         params.update(extraparams)
         template = self.jinjaenv.get_template(templatename)
+        template.globals['context']=get_context
         rs.response.data = template.render(params).encode("utf8")
         return rs.response
 

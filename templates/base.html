@@ -6,8 +6,9 @@
 	<input type="submit" name="submit" value="{{ label|e }}">
 </form>
 {%- endmacro -%}
-
-
+{%- macro buildurl(name, extraargs={}) -%}
+{{ composeurl(name, context(), extraargs) }}
+{%- endmacro -%}
 {%- macro trivnavbar(entries) -%}
 Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 {%- for (url, title) in entries -%}
