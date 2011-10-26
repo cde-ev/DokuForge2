@@ -257,7 +257,6 @@ class Application:
         args = params.get_all()
         args.update(extraparams)
         finalparams = dict()
-        print args
         for p in self.allparams:
             if self.routingmap.is_endpoint_expecting(name, p):
                 if p == 'academy' or p == 'course':

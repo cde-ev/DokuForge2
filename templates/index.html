@@ -7,7 +7,7 @@
 {% for academy in academies %}
   {% if expandgroup in academy.getgroups() %}
     {% if user.allowedRead(academy) %}
-    <li><a href="{{ buildurl("academy", academy=academy.name) }}">{{ academy.gettitle()|e }}</a></li>
+    <li><a href="{{ buildurl("academy", {'academy': academy}) }}">{{ academy.gettitle()|e }}</a></li>
     {% else %}
     <li>{{ academy.gettitle()|e }}</li>
     {% endif %}
@@ -20,7 +20,7 @@
 <ul>
 {% for group in allgroups %}
 {% if user.allowedList(group) %}
-    <li><a href="{{ buildurl("groupindex", group=group) }}">{{ allgroups[group]|e }}</a></li>
+    <li><a href="{{ buildurl("groupindex", {'group': group}) }}">{{ allgroups[group]|e }}</a></li>
 {% endif %}
 {% endfor %}
 </ul>

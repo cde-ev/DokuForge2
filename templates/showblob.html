@@ -14,15 +14,15 @@
 <p>Dateiname: {{ blob.filename|e }}</p>
 
 {% if user.allowedWrite(academy, course) %}
-<a href={{ buildurl("editblob", academy=academy.name, course=course.name, page=page, blob=blobnr) }}>Editieren</a>
+<a href={{ buildurl("editblob") }}>Editieren</a>
 {% endif %}
 
-<a href={{ buildurl("downloadblob", academy=academy.name, course=course.name, page=page, blob=blobnr) }}>herunterladen</a>
+<a href={{ buildurl("downloadblob") }}>herunterladen</a>
 
 {% if blobhash is not none %}
 MD5 Summe des Bildes ist {{ blobhash }}.
 {% else %}
-<a href={{ buildurl("md5blob", academy=academy.name, course=course.name, page=page, blob=blobnr) }}>MD5-Summe berechnen</a>
+<a href={{ buildurl("md5blob") }}>MD5-Summe berechnen</a>
 {% endif %}
 
 

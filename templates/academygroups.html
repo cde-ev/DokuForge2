@@ -8,11 +8,11 @@
 {{ threeway(ok, "Bitte Gruppen eingeben und mit &quot;Speichern&quot; beenden.",
             "Aenderungen erfolgreich gespeichert.", error.message,
             error.explanation) }}
-<form action="{{ buildurl("academygroupssave", academy=academy.name) }}" method="post" id="save">
+<form action="{{ buildurl("academygroupssave") }}" method="post" id="save">
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ buildurl("academygroups", academy=academy.name) }}">Abbrechen</a>
+<a href="{{ buildurl("academygroups") }}">Abbrechen</a>
 {% endblock %}

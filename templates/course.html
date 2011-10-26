@@ -8,7 +8,7 @@
 {% if pages %}
 <ol>
 	{% for page in pages %}
-	<li><a href="{{ buildurl("page", academy=academy.name, course=course.name, page=page) }}"> Teil #{{ page }}</a>
+	<li><a href="{{ buildurl('page', {'page': page}) }}"> Teil #{{ page }}</a>
 		{% if pages.index(page) > 0 %}
 		   {% if user.allowedWrite(academy, course) %}
 		      {{ button("docs/" + academy.name + "/" + course.name + "/!moveup", "Hochrücken",
@@ -23,13 +23,13 @@
 {% endif %}
 {% if user.allowedWrite(academy, course) %}
 {{ button("docs/" + academy.name + "/" + course.name + "/!createpage", "Neuen Teil anlegen") }}
-<a href="{{ buildurl("showdeadpages", academy=academy.name, course=course.name) }}">gel&ouml;schte Teile wiederherstellen</a>
+<a href="{{ buildurl("showdeadpages") }}">gel&ouml;schte Teile wiederherstellen</a>
 {% endif %}
 {% if user.mayExport(academy) %}
-<a href="{{ buildurl("raw", academy=academy.name, course=course.name) }}">Roh-Export</a>
+<a href="{{ buildurl("raw") }}">Roh-Export</a>
 {% endif %}
 {% if user.allowedWrite(academy) and user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("coursetitle", academy=academy.name, course=course.name) }}">Titel bearbeiten</a>
+<a href="{{ buildurl("coursetitle") }}">Titel bearbeiten</a>
 </a>
 {% endif %}
 {% endblock %}
