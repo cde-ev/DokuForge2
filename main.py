@@ -246,6 +246,15 @@ class Application:
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/!delete",
                  methods=("POST",), endpoint="blobdelete"),
         ], converters=dict(identifier=IdentifierConverter))
+        self.allparams = ['academy', 'course', 'page', 'blob', 'group', 'topic']
+
+
+    def constructurl(self, name, rs, **args):
+        params = dict()
+        for p in self.allparams:
+            if self.routingmap.is_endpoint_expecting(name, p):
+                params[p] = args[p]
+        return rs.mapadapter.build(name, params)
 
     def getAcademy(self, name, user=None):
         """
@@ -1030,8 +1039,8 @@ class Application:
         assert isinstance(templatename, str)
         rs.response.content_type = "text/html; charset=utf8"
         params = dict(
-            user=rs.user,
-            buildurl=lambda name, **params: rs.mapadapter.build(name, params),
+            user = rs.user,
+            buildurl = lambda name, **params: self.constructurl(name, rs, **params),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
         )
         params.update(extraparams)
