@@ -31,43 +31,21 @@ die Autorenangabe, die Hervorhebung, das Schlagwort und Aufzählungen.<p>
 
 <ul>
 <li><p><em>Absätze</em> werden in DokuForge durch Leerzeilen getrennt. Wenn ihr einen neuen Absatz anfangen wollt, müsst ihr also zweimal Enter drücken. Einmal reicht nicht!</p>
-<p>
-<table width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-        Ein einfacher<br>
-	Zeilenumbruch wird von DokuForge nicht als Absatz erkannt.
-	<p>
-	Erst eine Leerzeile erzeugt einen neuen Absatz.
-        </td>
-	<td>
-        Ein einfacher Zeilenumbruch wird von DokuForge nicht als Absatz erkannt.
-	<p>
-	Erst eine Leerzeile erzeugt einen neuen Absatz.
-        </td>
-</tr>
-</table>
-</p>
+<pre>
+Ein einfacher
+Zeilenumbruch wird von DokuForge nicht als Absatz erkannt.
+
+Erst eine Leerzeile erzeugt einen neuen Absatz.
+</pre>
 </li>
 
     <li><p>Eine <em>Überschrift</em> steht am Anfang einer Zeile und wird
     in eckige Klammern gesetzt. Sie wird dabei nicht nummeriert &ndash; dies
     geschieht später automatisch. Das sieht dann so aus:<p>
 
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>[Überschrift]</td>
-	<td><h3>Überschrift</h3></td>
-</tr>
-</table>
+<pre>
+[Überschrift]
+</pre>
 
 <p>Es gibt nur eine Überschriftenebene! Also keine Unterüberschriften (weder
 kursiv, noch fett,&nbsp;...).</p>
@@ -82,92 +60,43 @@ kursiv, noch fett,&nbsp;...).</p>
     Zeilenumbruch eine <em>Autorenangabe</em> gesetzt werden. Autorenangaben
     gehören in runde Klammern.</p>
 
-<table width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>[Überschrift]<br>
-            (Vorname Nachname)
-	</td>
-	<td><h3>Überschrift</h3>
-            <i>Vorname Nachname</i>
-	</td>
-</tr>
-<tr> 
-	<td>
-            [Überschrift]<br>            (Vorname Nachname, Vorname Nachname und Vorname Nachname)        </td>
-	<td>
-            <h3>Überschrift</h3>            <i>Vorname Nachname, Vorname Nachname und Vorname Nachname</i>        </td>
-</tr>
-</table>
-    <p>Bitte kein &bdquo;von&ldquo; zu Beginn und die Autoren mit Komma getrennt, sowie ein &bdquo;und&ldquo; vor dem letzten Autor.</p></li>
+<pre>
+[Überschrift]
+(Vorname Nachname)
+</pre>
+    <p>Bitte kein &bdquo;von&ldquo; zu Beginn und die Autoren mit Komma getrennt, sowie ein &bdquo;und&ldquo; vor dem letzten Autor.</p>
+<pre>
+[Überschrift]
+(Vorname Nachname, Vorname Nachname und Vorname Nachname)
+</pre>
+</li>
 
     <li><p>Möchte man etwas im Text <em>hervorheben</em>, kann man es zwischen Unterstriche setzen.<p>
 
-<table width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-        Hervorhebungen im Text dienen _nur_ dazu, etwas hervorzuheben und _keinesfalls_ für Überschriften, Autorenangaben am Ende eines Absatzes o.Ä.
-        </td>
-	<td>
-        Hervorhebungen im Text dienen <i>nur</i> dazu, etwas hervorzuheben und <i>keinesfalls</i> für Überschriften, Autorenangaben am Ende eines Absatzes o.Ä.
-        </td>
-</tr>
-</table>
+<pre>
+Hervorhebungen im Text dienen _nur_ dazu, etwas hervorzuheben und _keinesfalls_ für Überschriften, Autorenangaben am Ende eines Absatzes o.Ä.
+</pre>
 </li>
 
 <li><p>Am Anfang eines Absatzes gibt es die Möglichkeit, ein Wort als <em>Schlagwort</em> auszuzeichnen, indem man es in Sternchen einschließt.</p>
 
-<table width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
+<pre>
 *Schlagworte* dienen also dazu, das entscheidende Wort hervorzuheben, das in
-diesem Absatz genauer erläutert wird.<br><br>
+diesem Absatz genauer erläutert wird.
 
 *Wichtig* ist, dass es keine Unterüberschriften sind und dass diese
 Formatierung nicht dazu benutzt wird, beliebigen Text fett zu setzen.
-
-        </td>
-	<td>
-
-<b>Schlagworte</b>&nbsp;dienen also dazu, das entscheidende Wort hervorzuheben,
-das in diesem Absatz genauer erläutert wird.<br><br>
-
-<b>Wichtig</b>&nbsp;ist, dass es keine Unterüberschriften sind und dass diese
-Formatierung nicht dazu benutzt wird, beliebigen Text fett zu setzen.
-
-
-</td>
-</tr>
-</table>
+</pre>
 </li>
 
 <li><p>Aufzählungen funktionieren denkbar einfach: Ein einzelner Bindestrich am Anfang einer Zeile führt zum gewünschten Ergebnis.</p>
 
-<table width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td> <!--- FIMXE: echte DokuForge-Vorschau nimmt schwarze Punkte&nbsp;... -->
-        - erster Punkt<br>- zweiter Punkt<br>- noch ein .<br>- viele Punkte:&nbsp;...<br>
-        </td>
-	<td>
-        <ul><li>erster Punkt</li><li>zweiter Punkt</li><li>noch ein .</li><li>viele Punkte:&nbsp;...</li></ul>
-        </td>
-</tr>
-</table>
+<pre>
+- erster Punkt
+- zweiter Punkt
+- noch ein .
+- viele Punkte: ...
+</pre>
 </li>
 
 </ul>
@@ -185,44 +114,19 @@ folgenden Punkte zu beachten!</p>
 <li><p>Vor drei Punkten (Ellipse) wird im Deutschen ein Leerzeichen gesetzt&nbsp;...</p></li>
 <li><p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur) eingegeben werden. DokuForge wird automatisch korrekte deutsche Anführungszeichen setzen.</p></li>
 <li><p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden hier zur Eingabe zwei Bindestriche &bdquo;--&ldquo;. Wichtig ist, dass Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen, während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt werden. Das heißt:</p>
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-	"DokuForge" schreibt man --&nbsp;und dies verhält sich bei "Style-Guide"
-	anders&nbsp;-- ohne Bindestrich. Das hat auch sicher 5--7 gute Gründe.
-        </td>
-	<td>
-	&bdquo;DokuForge&ldquo; schreibt man --&nbsp;und dies verhält sich bei
-	&bdquo;Style-Guide&ldquo; anders&nbsp;-- ohne Bindestrich. Das hat auch
-	sicher 5--7 gute Gründe.
-        </td>
-</tr>
-</table>
+
+<pre>
+"DokuForge" schreibt man --&nbsp;und dies verhält sich bei "Style-Guide"
+anders -- ohne Bindestrich. Das hat auch sicher 5--7 gute Gründe.
+</pre>
 </li>
 
 <li><p>Einheiten erkennt DokuForge auch. Sie müssen dafür lediglich mit einem Leerzeichen hinter ihre Zahl gesetzt werden.</p>
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-        1 m ist noch nicht so viel.<br>
-        1 m$^2$ ist schon mehr.<br>
-        Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
-        </td>
-	<td>
-        1 m ist noch nicht so viel.<br>
-        1 m&sup2; ist schon mehr.<br>
-        Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
-        </td>
-</tr>
-</table>
+<pre>
+1 m ist noch nicht so viel.
+1 m$^2$ ist schon mehr
+Es gibt aber auch so etwas wie 5 l, 12 kWh oder 300 eV.
+</pre>
 </li>
 
 <li><p>Im Gegensatz dazu gehört vor das Prozentzeichen und vor
@@ -249,26 +153,13 @@ reserviert. Bitte entweder eine ednote oder die Abkürzung USD verwenden.</p>
 
 <p>Das Dollarzeichen ist allerdings relevant, wenn du Exponenten darstellen
 willst. Quadratmeter, Kubikzentimeter und Dinge dieser Art bitte
-folgendermaßen eingeben:</p>
+folgendermaßen eingeben.</p>
 
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-        5 m$^2$<br>
-        300 m$^3$<br>
-        7 km$^{800}$ sind zwar relativ unsinnig, aber ein Beispiel.
-        </td>
-	<td>
-        5 m&sup2;<br>
-        300 m&sup3;<br>
-        7 km<sup>800</sup> sind zwar relativ unsinnig, aber ein Beispiel.
-        </td>
-</tr>
-</table>
+<pre>
+5 m$^2$<br>
+300 m$^3$<br>
+7 km$^{800}$ sind zwar relativ unsinnig, aber ein Beispiel.
+</pre>
 </li>
 
 <li><p>Bitte gebt Brüche in der Form &bdquo;1/2&ldquo; ein und nicht als &bdquo;&frac12;&ldquo;!
@@ -323,36 +214,17 @@ PfingstAkademie                KüA (Plural: KüAs)
 
 <p>Falls ihr uns (denen, die die Doku endgültig setzen) etwas mitteilen wollt,
 könnt ihr es in einem <em>separaten</em> Absatz in geschweifte Klammern
-schreiben.  Diese sogenannte <em>ednote</em> sieht zum Beispiel so aus:</p>
+schreiben.  Diese sogenannte <em>ednote</em> sieht zum Beispiel so aus.</p>
 
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td><pre>
+<pre>
 { Im folgenden Absatz sind ganz viele
   Rechtschreibfehler. Diese sind absichtlich,
   also bitte stehen lassen! Da sie das Auge
   beleidigen, sind natuerlich schon ein paar
   Tafeln Schokolade zu euch unterwegs.  Danke!
-                           -- silke 20050709 }</pre>
-        </td>
-	<td><pre style="background-color: rgb(170, 204, 255);">
-  Im folgenden Absatz sind ganz viele
-  Rechtschreibfehler. Diese sind absichtlich,
-  also bitte stehen lassen! Da sie das Auge
-  beleidigen, sind natuerlich schon ein paar
-  Tafeln Schokolade zu euch unterwegs.  Danke!
-                           -- silke 20050709</pre>
-        </td>
-</tr>
-</table>
+                           -- silke 20050709 }
+</pre>
 
-<p>In ednotes gibt es keinen automatischen Zeilenumbruch. Es wäre also schön,
-wenn ihr jeweils nach einer geeigneten Zeilenlänge (z.B. der Breite des
-Eingabefeldes&nbsp;...) selbst umbrecht.</p>
 <p>ednotes werden auch für einige besondere Dinge wie Gedichte, Tabellen oder
 andere Schriften verwendet. Mehr Informationen dazu gibt es im Kapitel <a
 href="!style=spezielles">Spezielles</a></p>
