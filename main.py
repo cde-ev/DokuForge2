@@ -142,7 +142,7 @@ class CheckError(StandardError):
         return self.message
 
 class IdentifierConverter(werkzeug.routing.BaseConverter):
-    regex = '[a-z][a-z0-9-]{0,199}'
+    regex = '[a-z][a-zA-Z0-9-]{0,199}'
 
 class Application:
     def __init__(self, userdb, groupstore, acapath, templatepath, stylepath,
