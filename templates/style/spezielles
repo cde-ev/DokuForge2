@@ -1,9 +1,5 @@
-    <div class="body">
-              <h2>Sonstiges</h2>
-            
-
-
-
+<div class="body">
+<h2>Sonstiges</h2>
 
 <p>Sonderwünsche
 (und alles was hier zu finden ist, fällt in diese Rubrik)
@@ -46,7 +42,7 @@ Akzent            | Akut | Gravis | Zirkumflex
 -----------------------------------------------
 letzte Silbe      |  x   |   x    |     x
 vorletzte Silbe   |  x   |   -    |     x
-drittletzte Silbe |  x   |   -    |     -             
+drittletzte Silbe |  x   |   -    |     -
 }
 
 { Tabelle 1 "Mögliche Stellungen griechischer Akzente
@@ -134,46 +130,6 @@ kennzeichnet einfach folgendermaßen in der ednote, was neben was soll:</p>
 }</pre></p>
 
 
-<h3><a name="spr">Schriften</a></h3>
-
-<p>Auch die Eingabe anderer Schriften als der lateinischen ist in DokuForge möglich. Hierfür gibt es bestimmte Umschriftverfahren.</p>
-
-<ul>
-
-<li><p>Umschrift für Arabisch, Kyrillisch und Fraktur</p></li>
-
-<p>Auch arabische, kyrillische und gebrochene Schrift ist möglich. Hierbei
-erfolgt die Eingabe unter Missbrauch des Mathemodus:</p>
-
-<table  width="80%">
-<tr>
-        <td width="40%">Eingabe:</td>
-        <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-        <td>$\cyr kyrillisch$</td>
-        <td><img src="http://www.dokuforge.de/static/kyrillisch.png"></td>
-</tr>
-<tr>
-        <td>$\arab bismi 'l|llahi 'rra.hmAni 'rra.hIm $</td>
-        <td><img src="http://www.dokuforge.de/static/arabisch.png"></td>
-</tr>
-<tr>
-        <td>$\frak Lackmus:papier$</td>
-        <td><img src="http://www.dokuforge.de/static/fraktur.png"></td>
-</tr>
-</table>
-
-<p>Für diese Schriften gibt es spezielle Umschriften. Die Umschrift für
-Arabisch könnt ihr in der Anleitung von <a
-href="http://www.informatik.uni-stuttgart.de/ifi/bs/research/arab.html">Arabtex</a>
-nachlesen. Die Kyrillischumschrift findet ihr im Aufsatz <a
-href="http://home.vrweb.de/~was/x/pmcyr.pdf">Kyrillisch für arme Leute</a>.
-
-</li>
-</ul>
-
-
 <h3><a name="soso">Sondersonderwünsche</a></h3>
 
 <p>Sondersonderwünsche kosten natürlicherweise noch einmal mehr
@@ -183,27 +139,4 @@ Sonderwunsch ist. Bei Sondersonderwünschen wendet euch am besten
 frühzeitig an das Dokuteam, um euch nach der Durchführbarkeit und der
 Vorgehensweise zu erkundigen.</p>
 
-<!-- TODO:
-
-- Rezepte?
-
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-        
-        </td>
-	<td>
-        
-        </td>
-</tr>
-</table>
-
-
--->
-
-
-    </div>
+</div>
