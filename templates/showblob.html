@@ -4,14 +4,14 @@
 {{ trivnavbar([("docs/" + academy.name, academy.gettitle()),
                ("docs/" + academy.name + "/" + course.name, course.gettitle()),
                ("docs/" + academy.name + "/" + course.name + "/" + page|string, "Teil #" + page|string),
-               ("docs/" + academy.name + "/" + course.name + "/" + page|string + "/" + blobnr|string + "/", "Bild #" + blobnr|string)]) }}
+               ("docs/" + academy.name + "/" + course.name + "/" + page|string + "/" + blob|string + "/", "Bild #" + blob|string)]) }}
 {% endblock %}
 
 {% block content %}
 
-<p>Bildunterschrift/Kommentar: {{ blob.comment|e }}</p>
-<p>K&uuml;rzel: {{ blob.label|e }}</p>
-<p>Dateiname: {{ blob.filename|e }}</p>
+<p>Bildunterschrift/Kommentar: {{ theblob.comment|e }}</p>
+<p>K&uuml;rzel: {{ theblob.label|e }}</p>
+<p>Dateiname: {{ theblob.filename|e }}</p>
 
 {% if user.allowedWrite(academy, course) %}
 <a href={{ buildurl("editblob") }}>Editieren</a>

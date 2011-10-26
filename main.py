@@ -252,7 +252,6 @@ class Application:
         ], converters=dict(identifier=IdentifierConverter))
         self.allparams = ['academy', 'course', 'page', 'blob', 'group', 'topic']
 
-
     def constructurl(self, name, rs, params, extraparams):
         args = params.get_all()
         args.update(extraparams)
@@ -947,8 +946,8 @@ class Application:
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage,
-            blobnr=blobnr,
-            blob=theblob,
+            blob=blobnr,
+            theblob=theblob,
             blobhash=blobhash)
         return self.render("showblob.html", rs, params)
 
