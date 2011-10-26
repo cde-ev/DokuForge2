@@ -1,9 +1,5 @@
-    <div class="body">
-              <h2>Ein kurzer Leitfaden für die Benutzung von DokuForge</h2>
-            
-
-
-
+<div class="body">
+<h2>Ein kurzer Leitfaden für die Benutzung von DokuForge</h2>
 
 <p>Dich hat es erwischt? Du bist Dokusklave deines Kurses? Du hast dich
 freiwillig gemeldet, hast im richtigen Moment gezuckt oder wurdest freiwillig
@@ -44,7 +40,7 @@ Worte eingestreut. Schließlich ist zu beachten, dass DokuForge
 Absätze durch Leerzeilen und nicht (wie diese Programme) nur durch einen
 Zeilenumbruch trennt.</p>
 
-<p>Wir empfehlen daher zum Vorschreiben der Texte <em>dringend</em> das (im
+<p>Wir empfehlen daher dem unbedarften Nutzer zum Vorschreiben der Texte <em>dringend</em> das (im
 Lieferumfang von Windows enthaltene) Programm notepad (Editor) &ndash; wer
 unbedingt Word verwenden will, muss die eingegebenen Texte <em>unbedingt</em>
 von Hand an die allgemein gültigen Standards anpassen und die Vorschau
@@ -77,5 +73,4 @@ lesen solltest?</p>
 
 <p>Viel Spaß und Erfolg!</p>
 
-
-    </div>
+</div>
