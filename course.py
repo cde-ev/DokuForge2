@@ -48,6 +48,26 @@ class Course:
         except os.error:
             pass
 
+    def getstorage(self, filename):
+        """
+        @type filename: str
+        @param filename: passed to Storage as second param
+        @rtype: Storage
+        @returns: a Storage build from self.path and filename
+        """
+        assert isinstance(filename, str)
+        return Storage(self.path, filename)
+
+    def getcontent(self, filename, havelock=None):
+        """
+        @type filename: str
+        @param filename: passed to Storage as second param
+        @type havelock: None or LockDir
+        @rtype: str
+        @returns: the content of the Storage buil from self.path and filename
+        """
+        return self.getstorage(filename).content(havelock=havelock)
+
     @property
     def name(self):
         """
@@ -60,41 +80,33 @@ class Course:
         @returns: title of the course
         @rtype: unicode
         """
-        s=Storage(self.path,"title")
-        return s.content().decode("utf8")
+        return self.getcontent("title").decode("utf8")
 
-    def nextpage(self,havelock=False):
+    def nextpage(self, havelock=None):
         """
         internal function: return the number of the next available page, but don't do anything
+        @type havelock: None or LockDir
         @rtype: int
         """
-        s = Storage(self.path,"nextpage")
-        vs = s.content(havelock=havelock)
-        if vs=='':
-            vs='0'
-        return int(vs)
+        return int(self.getcontent("nextpage", havelock) or "0")
 
-    def nextblob(self,havelock=False):
+    def nextblob(self, havelock=None):
         """
         internal function: return the number of the next available blob, but don't do anything
 
+        @type havelock: None or LockDir
         @returns: number of next available blob
         @rtype: int
         """
-        s = Storage(self.path,"nextblob")
-        vs = s.content(havelock=havelock)
-        if vs=='':
-            vs='0'
-        return int(vs)
+        return int(self.getcontent("nextblob", havelock) or "0")
 
-    def listpages(self,havelock=False):
+    def listpages(self, havelock=None):
         """
+        @type havelock: None or LockDir
         @returns: a list of the available page numbers in correct order
         @rtype: [int]
         """
-        indexstore = Storage(self.path,"Index")
-        index = indexstore.content(havelock=havelock)
-        lines = index.splitlines()
+        lines = self.getcontent("Index", havelock).splitlines()
         return [int(line.split()[0]) for line in lines if line != ""]
 
     def listdeadpages(self):
@@ -102,8 +114,8 @@ class Course:
         @returns: a list of the pages not currently linked in the index
         @rtype: [int]
         """
-        indexstore = Storage(self.path, "Index")
-        nextpage = Storage(self.path, "nextpage")
+        indexstore = self.getstorage("Index")
+        nextpage = self.getstorage("nextpage")
         with indexstore.lock as gotlockindex:
             with nextpage.lock as gotlocknextpage:
                 np = self.nextpage(havelock=gotlocknextpage)
@@ -115,8 +127,8 @@ class Course:
         @returns: a list of the blobs not currently linked to the index
         @rtype: [int]
         """
-        indexstore = Storage(self.path,"Index")
-        nextblob = Storage(self.path,"nextblob")
+        indexstore = self.getstorage("Index")
+        nextblob = self.getstorage("nextblob")
         with indexstore.lock as gotlockindex:
             index = indexstore.content(havelock=gotlockindex)
             lines = index.splitlines()
@@ -137,19 +149,7 @@ class Course:
         @param number: the internal number of that page
         @rtype: unicode
         """
-        page = Storage(self.path,"page%d" % number)
-        return page.content().decode("utf8")
-
-
-    def getstorage(self, filename):
-        """
-        @type filename: str
-        @param filename: passed to Storage as second param
-        @rtype: Storage
-        @returns: a Storage build from self.path and filename
-        """
-        assert isinstance(filename, str)
-        return Storage(self.path, filename)
+        return self.getcontent("page%d" % number).decode("utf8")
 
     def getrcs(self, page):
         """
@@ -159,8 +159,7 @@ class Course:
         """
         if 0 > page:
             return ""
-        np = self.nextpage()
-        if page >= np:
+        if page >= self.nextpage():
             return ""
         return self.getstorage("page%d" % page).asrcs()
     
@@ -424,10 +423,7 @@ class Course:
         @type number: int
         @rtype: [int]
         """
-        indexstore = self.getstorage("Index")
-        index = indexstore.content()
-        lines = index.splitlines()
-        for line in lines:
+        for line in self.getcontent("Index").splitlines():
             entries=line.split()
             if int(entries[0]) == number:
                 entries.pop(0)
