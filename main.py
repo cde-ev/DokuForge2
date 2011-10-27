@@ -578,7 +578,7 @@ class Application:
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
         theblob = c.viewblob(blob)
-        return self.render_showblob(rs, aca, c, page, blob, theblob)
+        return self.render_showblob(rs, aca, c, page, theblob)
 
     def do_editblob(self, rs, academy=None, course=None, page=None, blob=None):
         assert academy is not None and course is not None and page is not None and blob is not None
@@ -610,7 +610,7 @@ class Application:
 
         issaveshow = "saveshow" in rs.request.form
         if issaveshow:
-            return self.render_showblob(rs, aca, c, page, blob, theblob)
+            return self.render_showblob(rs, aca, c, page, theblob)
         return self.render_editblob(rs, aca, c, page, theblob)
 
 
@@ -625,7 +625,7 @@ class Application:
         h = getmd5()
         h.update(theblob["data"])
         blobhash = h.hexdigest()
-        return self.render_showblob(rs, aca, c, page, blob, theblob, blobhash=blobhash)
+        return self.render_showblob(rs, aca, c, page, theblob, blobhash=blobhash)
 
     def do_downloadblob(self, rs, academy=None, course=None, page=None, blob=None):
         assert academy is not None and course is not None and page is not None and blob is not None
@@ -939,14 +939,13 @@ class Application:
             )
         return self.render("addblob.html", rs, params)
 
-    def render_showblob(self, rs, theacademy, thecourse, thepage, blobnr,
-                        theblob, blobhash=None):
+    def render_showblob(self, rs, theacademy, thecourse, thepage, theblob,
+                        blobhash=None):
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            blob=blobnr,
-            theblob=theblob,
+            blob=theblob,
             blobhash=blobhash)
         return self.render("showblob.html", rs, params)
 
