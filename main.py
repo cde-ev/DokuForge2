@@ -257,6 +257,8 @@ class Application:
                     finalparams[key] = value["name"]
                 else:
                     finalparams[key] = value
+        ## we cannot do a simple update since there is a bit of magic as the
+        ## view objects need to be unpacked
         for key, value in kwargs.items():
             if key in ("academy", "course"):
                 finalparams[key] = value["name"]
