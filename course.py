@@ -5,6 +5,8 @@ from storage import Storage
 from common import check_output
 from werkzeug.datastructures import FileStorage
 
+import view
+
 class MetaBlob:
     def __init__(self, label, comment, filename, number):
         self.label = label
@@ -172,6 +174,16 @@ class Course(CourseLite):
                 pass
         CourseLite.__init__(self, obj)
 
+    def getstorage(self, filename):
+        """
+        @type filename: str
+        @param filename: passed to Storage as second param
+        @rtype: Storage
+        @returns: a Storage build from self.path and filename
+        """
+        assert isinstance(filename, str)
+        return Storage(self.path, filename)
+
     def getrcs(self, page):
         """
         @param page: the internal number of the page
@@ -183,8 +195,7 @@ class Course(CourseLite):
         np = self.nextpage()
         if page >= np:
             return ""
-        pagestore = Storage(self.path, "page%d" % page)
-        return pagestore.asrcs()
+        return self.getstorage("page%d" % page).asrcs()
     
     def export(self):
         """
@@ -200,8 +211,7 @@ class Course(CourseLite):
         @type title: unicode
         """
         assert isinstance(title, unicode)
-        s=Storage(self.path,"title")
-        s.store(title.encode("utf8"))
+        self.getstorage("title").store(title.encode("utf8"))
 
     def newpage(self,user=None):
         """
@@ -212,8 +222,8 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        index = Storage(self.path,"Index")
-        nextpagestore = Storage(self.path,"nextpage")
+        index = self.getstorage("Index")
+        nextpagestore = self.getstorage("nextpage")
         with index.lock as gotlockindex:
             with nextpagestore.lock as gotlocknextpage:
                 newnumber = self.nextpage(havelock=gotlocknextpage)
@@ -236,7 +246,7 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path,"Index")
+        indexstore = self.getstorage("Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
@@ -260,7 +270,7 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path,"Index")
+        indexstore = self.getstorage("Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
@@ -281,7 +291,7 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path,"Index")
+        indexstore = self.getstorage("Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
@@ -301,8 +311,8 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path, "Index")
-        nextpage = Storage(self.path, "nextpage")
+        indexstore = self.getstorage("Index")
+        nextpage = self.getstorage("nextpage")
         with indexstore.lock as gotlockindex:
             with nextpage.lock as gotlocknextpage:
                 np = self.nextpage(havelock=gotlocknextpage)
@@ -331,8 +341,8 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path, "Index")
-        nextblob = Storage(self.path, "nextblob")
+        indexstore = self.getstorage("Index")
+        nextblob = self.getstorage("nextblob")
         with indexstore.lock as gotlockindex:
             with nextblob.lock as gotlocknextblob:
                 nb = self.nextblob(havelock=gotlocknextblob)
@@ -358,7 +368,7 @@ class Course(CourseLite):
         @returns a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
         """
-        page = Storage(self.path,"page%d" % number)
+        page = self.getstorage("page%d" % number)
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -385,7 +395,7 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        page = Storage(self.path,"page%d" % number)
+        page = self.getstorage("page%d" % number)
         ok, version, mergedcontent = page.endedit(version.encode("utf8"),
                                                   newcontent.encode("utf8"), user=user)
         return (ok, version.decode("utf8"), mergedcontent.decode("utf8"))
@@ -414,8 +424,8 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path,"Index")
-        nextblobstore = Storage(self.path,"nextblob")
+        indexstore = self.getstorage("Index")
+        nextblobstore = self.getstorage("nextblob")
 
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
@@ -429,10 +439,10 @@ class Course(CourseLite):
                         newindex="\n".join(lines) + "\n"
                         indexstore.store(newindex,havelock=gotlockindex)
 
-        blob = Storage(self.path,"blob%d" % newnumber)
-        bloblabel = Storage(self.path,"blob%d.label" % newnumber)
-        blobcomment = Storage(self.path,"blob%d.comment" % newnumber)
-        blobname = Storage(self.path,"blob%d.filename" % newnumber)
+        blob = self.getstorage("blob%d" % newnumber)
+        bloblabel = self.getstorage("blob%d.label" % newnumber)
+        blobcomment = self.getstorage("blob%d.comment" % newnumber)
+        blobname = self.getstorage("blob%d.filename" % newnumber)
         blob.store(data, user=user)
         bloblabel.store(label.encode("utf8"), user=user)
         blobcomment.store(comment.encode("utf8"), user=user)
@@ -447,7 +457,7 @@ class Course(CourseLite):
         @type number: int
         @rtype: [int]
         """
-        indexstore = Storage(self.path,"Index")
+        indexstore = self.getstorage("Index")
         index = indexstore.content()
         lines = index.splitlines()
         for line in lines:
@@ -457,7 +467,7 @@ class Course(CourseLite):
                 return [int(x) for x in entries]
         return []
 
-    def getblob(self, number):
+    def viewblob(self, number):
         """
         return the corresponding blob
 
@@ -465,24 +475,13 @@ class Course(CourseLite):
         @type number: int
         @rtype: Blob
         """
-        return Blob(Storage(self.path,"blob%d" % number).content(),
-                    Storage(self.path,"blob%d.label" % number).content().decode("utf8"),
-                    Storage(self.path,"blob%d.comment" % number).content().decode("utf8"),
-                    Storage(self.path,"blob%d.filename" % number).content().decode("utf8"),
-                    number)
-
-    def getmetablob(self, number):
-        """
-        return the corresponding blob
-
-        @param number: the internal number of the blob
-        @type number: int
-        @rtype: Blob
-        """
-        return MetaBlob(Storage(self.path,"blob%d.label" % number).content().decode("utf8"),
-                        Storage(self.path,"blob%d.comment" % number).content().decode("utf8"),
-                        Storage(self.path,"blob%d.filename" % number).content().decode("utf8"),
-                        number)
+        ldu = view.liftdecodeutf8
+        return view.LazyView(dict(
+            data=self.getstorage("blob%d" % number).content,
+            label=ldu(self.getstorage("blob%d.label" % number).content),
+            comment=ldu(self.getstorage("blob%d.comment" % number).content),
+            filename=ldu(self.getstorage("blob%d.filename" % number).content),
+            number=lambda:number))
 
     def modifyblob(self, number, label, comment, filename, user):
         assert isinstance(label, unicode)
@@ -492,9 +491,9 @@ class Course(CourseLite):
         if re.match('^[a-z0-9]{1,200}$', label) is None:
             return False
 
-        bloblabel = Storage(self.path,"blob%d.label" % number)
-        blobcomment = Storage(self.path,"blob%d.comment" % number)
-        blobname = Storage(self.path,"blob%d.filename" % number)
+        bloblabel = self.getstorage("blob%d.label" % number)
+        blobcomment = self.getstorage("blob%d.comment" % number)
+        blobname = self.getstorage("blob%d.filename" % number)
         bloblabel.store(label.encode("utf8"), user=user)
         blobcomment.store(comment.encode("utf8"), user=user)
         blobname.store(filename.encode("utf8"), user=user)

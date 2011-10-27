@@ -578,7 +578,7 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        theblob = c.getmetablob(blob)
+        theblob = c.viewblob(blob)
         return self.render_showblob(rs, aca, c, page, blob, theblob)
 
     def do_editblob(self, rs, academy=None, course=None, page=None, blob=None):
@@ -588,7 +588,7 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        theblob = c.getmetablob(blob)
+        theblob = c.viewblob(blob)
         return self.render_editblob(rs, aca, c, page, blob, theblob)
 
 
@@ -607,7 +607,7 @@ class Application:
         # we omit error handling here, since it seems unlikely, that two
         # changes for one blob's metadata conflict
         c.modifyblob(blob, newlabel, newcomment, newname, rs.user.name)
-        theblob = c.getmetablob(blob)
+        theblob = c.viewblob(blob)
 
         issaveshow = "saveshow" in rs.request.form
         if issaveshow:
@@ -622,9 +622,9 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        theblob = c.getblob(blob)
+        theblob = c.viewblob(blob)
         h = getmd5()
-        h.update(theblob.data)
+        h.update(theblob["data"])
         blobhash = h.hexdigest()
         return self.render_showblob(rs, aca, c, page, blob, theblob, blobhash=blobhash)
 
@@ -636,9 +636,10 @@ class Application:
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
-        theblob = c.getblob(blob)
-        rs.response.data = theblob.data
-	rs.response.headers['Content-Disposition'] = "attachment; filename=%s" % theblob.filename
+        theblob = c.viewblob(blob)
+        rs.response.data = theblob["data"]
+	rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=%s" % theblob["filename"]
         return rs.response
 
     def do_rcs(self, rs, academy=None, course=None, page=None):
@@ -722,7 +723,7 @@ class Application:
         if re.match('^[a-z0-9]{1,200}$', userlabel) is None:
             blob = c.attachblob(page, usercontent, comment=usercomment,
                             label=u"somefig", user=rs.user.name)
-            theblob = c.getmetablob(blob)
+            theblob = c.viewblob(blob)
             return self.render_editblob(rs, aca, c, page, blob, theblob, ok=False,
                                        error=CheckError(u"K&uuml;rzel falsch formatiert!",
                                                         u"Bitte korrigeren und speichern."))
@@ -911,7 +912,7 @@ class Application:
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage,
-            blobs=[thecourse.getmetablob(i) for i in thecourse.listdeadblobs()]
+            blobs=[thecourse.viewblob(i) for i in thecourse.listdeadblobs()]
 )
         return self.render("deadblobs.html", rs, params)
 
@@ -1010,7 +1011,7 @@ class Application:
             page=thepage,
             content=thecourse.showpage(thepage),
             saved=saved,
-            blobs=[thecourse.getmetablob(i) for i in thecourse.listblobs(thepage)]
+            blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)]
             )
         return self.render("show.html", rs, params)
 
