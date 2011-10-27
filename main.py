@@ -251,14 +251,19 @@ class Application:
     def buildurl(self, rs, name, kwargs):
         finalparams = {}
         ## the parameters were saved in Application.render
-        params = rs.params
-        params.update(kwargs)
         for key, value in rs.params.items():
             if self.routingmap.is_endpoint_expecting(name, key):
                 if key in ("academy", "course"):
                     finalparams[key] = value["name"]
                 else:
                     finalparams[key] = value
+        ## we cannot do a simple update since there is a bit of magic as the
+        ## view objects need to be unpacked
+        for key, value in kwargs.items():
+            if key in ("academy", "course"):
+                finalparams[key] = value["name"]
+            else:
+                finalparams[key] = value
         return rs.mapadapter.build(name, finalparams)
 
     def getAcademy(self, name, user=None):
