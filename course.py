@@ -200,6 +200,8 @@ class Course(CourseLite):
         @type title: unicode
         """
         assert isinstance(title, unicode)
+        if title == u"":
+            return False
         s=Storage(self.path,"title")
         s.store(title.encode("utf8"))
 

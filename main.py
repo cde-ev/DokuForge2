@@ -306,6 +306,8 @@ class Application:
         name = name.encode("utf8")
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
             return None
+        if title == u"":
+            return None
         path = os.path.join(self.acapath, name)
         if os.path.exists(path):
             return None

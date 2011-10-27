@@ -105,6 +105,8 @@ class Academy(AcademyLite):
         @type title: unicode
         """
         assert isinstance(title, unicode)
+        if title == u"":
+            return False
         storage.Storage(self.path,"title").store(title.encode("utf8"))
 
     def setgroups(self, groups):
@@ -131,6 +133,8 @@ class Academy(AcademyLite):
         assert isinstance(title, unicode)
         name = name.encode("utf8")
         if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
+            return False
+        if title == u"":
             return False
         if os.path.exists(os.path.join(self.path, name)):
             return False
