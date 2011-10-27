@@ -255,7 +255,8 @@ alte Version<br>
 <p>
 Eine Anmerkung für die alten Hasen: Im alten Dokuforge konnte dies nicht
 passieren, da es Locks gab und immer nur einer eine Seite editieren
-durfte.
+durfte; daf&uuml;r gibt es jetzt die ganzen Probleme mit stale locks und
+dem ber&uuml;chtigtem &quot;Lock brechen&quot; nicht mehr.
 </p>
 
 
