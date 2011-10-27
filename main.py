@@ -928,7 +928,7 @@ class Application:
         return self.render("course.html", rs, params)
 
     def render_addblob(self, rs, theacademy, thecourse, thepage, comment="",
-                       label="", ok=None, error=None):
+                       label="", error=None):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
