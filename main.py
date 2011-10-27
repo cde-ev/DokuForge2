@@ -582,8 +582,7 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        theblob = c.viewblob(blob)
-        return self.render_showblob(rs, aca, c, page, theblob)
+        return self.render_showblob(rs, aca, c, page, blob)
 
     def do_editblob(self, rs, academy=None, course=None, page=None, blob=None):
         assert academy is not None and course is not None and page is not None and blob is not None
@@ -592,8 +591,7 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        theblob = c.viewblob(blob)
-        return self.render_editblob(rs, aca, c, page, theblob)
+        return self.render_editblob(rs, aca, c, page, blob)
 
 
     def do_saveblob(self, rs, academy=None, course=None, page=None, blob=None):
@@ -611,12 +609,11 @@ class Application:
         # we omit error handling here, since it seems unlikely, that two
         # changes for one blob's metadata conflict
         c.modifyblob(blob, newlabel, newcomment, newname, rs.user.name)
-        theblob = c.viewblob(blob)
 
         issaveshow = "saveshow" in rs.request.form
         if issaveshow:
-            return self.render_showblob(rs, aca, c, page, theblob)
-        return self.render_editblob(rs, aca, c, page, theblob)
+            return self.render_showblob(rs, aca, c, page, blob)
+        return self.render_editblob(rs, aca, c, page, blob)
 
 
     def do_md5blob(self, rs, academy=None, course=None, page=None, blob=None):
@@ -626,11 +623,10 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        theblob = c.viewblob(blob)
         h = getmd5()
         h.update(theblob["data"])
         blobhash = h.hexdigest()
-        return self.render_showblob(rs, aca, c, page, theblob, blobhash=blobhash)
+        return self.render_showblob(rs, aca, c, page, blob, blobhash=blobhash)
 
     def do_downloadblob(self, rs, academy=None, course=None, page=None, blob=None):
         assert academy is not None and course is not None and page is not None and blob is not None
@@ -727,8 +723,7 @@ class Application:
         if re.match('^[a-z0-9]{1,200}$', userlabel) is None:
             blob = c.attachblob(page, usercontent, comment=usercomment,
                             label=u"somefig", user=rs.user.name)
-            theblob = c.viewblob(blob)
-            return self.render_editblob(rs, aca, c, page, theblob, ok=False,
+            return self.render_editblob(rs, aca, c, page, blob, ok=False,
                                        error=CheckError(u"K&uuml;rzel falsch formatiert!",
                                                         u"Bitte korrigeren und speichern."))
         return self.render_show(rs, aca, c, page)
@@ -944,23 +939,23 @@ class Application:
             )
         return self.render("addblob.html", rs, params)
 
-    def render_showblob(self, rs, theacademy, thecourse, thepage, theblob,
+    def render_showblob(self, rs, theacademy, thecourse, thepage, blob,
                         blobhash=None):
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            blob=theblob,
+            blob=thecourse.viewblob(blob),
             blobhash=blobhash)
         return self.render("showblob.html", rs, params)
 
-    def render_editblob(self, rs, theacademy, thecourse, thepage, theblob,
-                        ok=None, error=None):
+    def render_editblob(self, rs, theacademy, thecourse, thepage, blob, ok=None,
+                        error=None):
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            blob=theblob,
+            blob=thecourse.viewblob(blob),
             ok=ok,
             error=error
             )
