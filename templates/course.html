@@ -11,7 +11,7 @@
 	<li><a href="{{ buildurl('page', {'page': page}) }}"> Teil #{{ page }}</a>
 		{% if pages.index(page) > 0 %}
 		   {% if user.allowedWrite(academy, course) %}
-		      {{ button(buildurl("moveup", {'page': page}), "Hochrücken",
+		      {{ button(buildurl("moveup"), "Hochrücken",
 	              	 dict(number=pages.index(page))) }}
 		   {% endif %}
 		{% endif %}
