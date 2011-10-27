@@ -259,5 +259,15 @@ durfte; daf&uuml;r gibt es jetzt die ganzen Probleme mit stale locks und
 dem ber&uuml;chtigtem &quot;Lock brechen&quot; nicht mehr.
 </p>
 
+<p>
+Eine Anmerkung f&uuml;r Technik-Freaks: tatsaechlich wird bei dem
+Versuch, eine konfligierende &Auml;nderung hochzuladen diese Version
+in einem Branch gespeichert und erst dann mit <tt>rcsmerge</tt> ein
+Mergevorschlag erstellt. Insbesondere hat man nicht nur eine Chance
+f&uuml;r einen Merge und ein beim Mergen abschmierender browser ist
+keine Katastrophe, da man &uuml;ber den rcs-Export an alles
+herankommt, was man fuer einen erneuten merge-Versuch ben&ouml;tigt.
+</p>
+
 
 </div>
