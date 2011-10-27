@@ -108,7 +108,7 @@ class RequestState:
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.mapadapter = mapadapter
-        self.params = None # set later
+        self.params = None # set later in Application.render
 
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
@@ -250,6 +250,7 @@ class Application:
 
     def buildurl(self, rs, name, kwargs):
         finalparams = {}
+        ## the parameters were saved in Application.render
         params = rs.params
         params.update(kwargs)
         for key, value in rs.params.items():
@@ -1046,6 +1047,7 @@ class Application:
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
         )
         params.update(extraparams)
+        ## grab a copy of the parameters for url building
         rs.params = params
         template = self.jinjaenv.get_template(templatename)
         rs.response.data = template.render(params).encode("utf8")
