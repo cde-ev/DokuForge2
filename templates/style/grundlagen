@@ -1,9 +1,5 @@
-    <div class="body">
-              <h2>Grundlagen von DokuForge</h2>
-            
-
-
-
+<div class="body">
+<h2>Grundlagen von DokuForge</h2>
 
 <p>Hier geben wir eine Einführung in die Benutzung von DokuForge. Diese Seite
 sollte von allen gelesen werden, die mit DokuForge arbeiten.</p>
@@ -21,6 +17,7 @@ viel Zeit kostet.</p>
  <li><p><a href="#gl">Gliederung, Hervorhebungen und Aufzählungen</a></p></li>
  <li><p><a href="#sch">Abkürzungen und Schreibweisen</a></p></li>
  <li><p><a href="#ed">ednotes</a></p></li>
+ <li><p><a href="#kon">Konflikte</a></p></li>
 </ol>
 
 <h3><a name="gl">Gliederung, Hervorhebungen und Aufzählungen</a></h3>
@@ -234,5 +231,32 @@ einfach eine E-Mail an <a href="mailto:team (at) dokuforge.de">team (at)
 dokuforge.de</a> schreiben. Wir helfen euch gerne weiter und sind auch für die
 Weiterentwicklung von DokuForge auf euer Feedback angewiesen.</p>
 
+<h3><a name="kon">Konflikte</a></h3>
 
-    </div>
+<p>
+Wenn ihr einen Text zum editieren öffnet, bekommt ihre eine aktuelle Kopie
+des Textes. Wenn ihr jetzt eine umfangreiche Änderung vornehmt, kann es
+passieren, dass derweil jemand einen Kommafehler beseitigt und eure Kopie
+des Textes gar nicht mehr aktuell ist. Wenn ihr nun versucht zu speichern,
+so erzeugt dies ein Konflikt. Keine Panik, dabei gehen keinerlei Änderungen
+verloren. Aber ihr müsst schauen wie sich die beiden unterschiedlichen
+Versionen wieder vereinen lassen und erneut speichern. Bei dem Beispiel mit
+der Kommakorrektur wäre dies recht einfach, aber bei komplexeren Fällen kann
+es auch komplizierter werden. Dabei sind die einzelnen Konfliktstellen wie
+folgt gekennzeichnet.
+</p>
+<p>
+&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br>
+neue Version<br>
+=======<br>
+alte Version<br>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;<br>
+</p>
+<p>
+Eine Anmerkung für die alten Hasen: Im alten Dokuforge konnte dies nicht
+passieren, da es Locks gab und immer nur einer eine Seite editieren
+durfte.
+</p>
+
+
+</div>
