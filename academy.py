@@ -4,7 +4,7 @@ import storage
 import course
 import re
 import operator
-from course import Course, CourseLite
+from course import Course
 
 class AcademyLite:
     """
@@ -49,25 +49,28 @@ class AcademyLite:
         """
         return storage.Storage(self.path, "groups").content().decode("utf8").split()
 
-    def listCoursesLite(self):
+    def viewCourses(self):
+        return [course.view() for course in self.listCourses()]
+
+    def listCourses(self):
         """
-        @returns: list of CourseLite object; all courses of this academy
+        @returns: list of Course object; all courses of this academy
         """
         ret = (os.path.join(self.path, entry)
                for entry in os.listdir(self.path))
         ret = filter(os.path.isdir, ret)
-        ret = map(course.CourseLite, ret)
+        ret = map(course.Course, ret)
         ret = list(ret)
         ret.sort(key=operator.attrgetter('name'))
         return ret
 
-    def getCourseLite(self, coursename):
+    def getCourse(self, coursename):
         """
         find a course of this academy to a given name
 
         @param coursename: internal name of course
         @type coursename: unicode
-        @returns: CourseLite object for course with name coursename
+        @returns: Course object for course with name coursename
         """
         assert isinstance(coursename, unicode)
         coursename = coursename.encode("utf8")
@@ -76,7 +79,7 @@ class AcademyLite:
         finalpath = os.path.join(self.path,coursename)
         if not os.path.isdir(finalpath):
             return None
-        return CourseLite(finalpath)
+        return Course(finalpath)
 
 
 class Academy(AcademyLite):
@@ -136,24 +139,4 @@ class Academy(AcademyLite):
             return False
         course.Course(os.path.join(self.path, name)).settitle(title)
         return True
-
-    def listCourses(self):
-        """
-        @returns: list of Course object; all courses of this academy
-        """
-        return list(map(course.Course, self.listCoursesLite()))
-
-    def getCourse(self, coursename):
-        """
-        find a course of this academy to a given name
-
-        @param coursename: internal name of course
-        @type coursename: unicode
-        @returns: Course object for course with name coursename
-        """
-        assert isinstance(coursename, unicode)
-        litecourse = self.getCourseLite(coursename)
-        if litecourse is None:
-            return None
-        return Course(litecourse)
 

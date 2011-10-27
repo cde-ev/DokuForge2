@@ -2,7 +2,7 @@
 
 {% block location%}
 {{ navbar([("academy", academy.gettitle()),
-           ("course", course.gettitle()),
+           ("course", course.title),
 	   ("page", "Teil #" + page|string),
 	   ("showblob", "Bild #" + blob|string)]) }}
 {% endblock %}

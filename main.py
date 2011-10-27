@@ -23,7 +23,6 @@ from wsgitools.scgi.asynchronous import SCGIServer as AsynchronousSCGIServer
 from wsgitools.scgi.forkpool import SCGIServer as ForkpoolSCGIServer
 # import other parts of Dokuforge
 import academy
-import course
 import storage
 import user
 
@@ -256,8 +255,10 @@ class Application:
         params.update(kwargs)
         for key, value in rs.params.items():
             if self.routingmap.is_endpoint_expecting(name, key):
-                if key == 'academy' or key == 'course':
+                if key == 'academy':
                     finalparams[key] = value.name
+                elif key == 'course':
+                    finalparams[key] = value["name"]
                 else:
                     finalparams[key] = value
         return rs.mapadapter.build(name, finalparams)
@@ -810,7 +811,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(c.path,"title"),
                             "coursetitle.html", extraparams={'academy': aca,
-                                                              'course': c})
+                                                              'course': c.view()})
 
     def do_coursetitlesave(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -821,7 +822,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(c.path,"title"),
                                 "coursetitle.html", extraparams={'academy': aca,
-                                                                 'course': c})
+                                                                 'course': c.view()})
 
     def do_admin(self, rs):
         self.check_login(rs)
@@ -886,7 +887,7 @@ class Application:
         assert isinstance(thecontent, unicode)
         params= dict(
             academy=academy.AcademyLite(theacademy),
-            course=course.CourseLite(thecourse),
+            course=thecourse.view(),
             page=thepage,
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
             version=theversion,
@@ -910,7 +911,7 @@ class Application:
     def render_deadblobs(self, rs, theacademy, thecourse, thepage):
         params = dict(
             academy=academy.AcademyLite(theacademy),
-            course=course.CourseLite(thecourse),
+            course=thecourse.view(),
             page=thepage,
             blobs=[thecourse.viewblob(i) for i in thecourse.listdeadblobs()]
 )
@@ -919,20 +920,20 @@ class Application:
     def render_deadpages(self, rs, theacademy, thecourse):
         params = dict(
             academy=academy.AcademyLite(theacademy),
-            course=course.CourseLite(thecourse))
+            course=thecourse.view())
         return self.render("dead.html", rs, params)
 
     def render_course(self, rs, theacademy, thecourse):
         params = dict(
             academy=academy.AcademyLite(theacademy),
-            course=course.CourseLite(thecourse))
+            course=thecourse.view())
         return self.render("course.html", rs, params)
 
     def render_addblob(self, rs, theacademy, thecourse, thepage, comment="",
                        label="", error=None):
         params = dict(
             academy=academy.AcademyLite(theacademy),
-            course=course.CourseLite(thecourse),
+            course=thecourse.view(),
             page=thepage,
             comment=comment,
             label=label,
@@ -944,7 +945,7 @@ class Application:
                         theblob, blobhash=None):
         params = dict(
             academy=academy.AcademyLite(theacademy),
-            course=course.CourseLite(thecourse),
+            course=thecourse.view(),
             page=thepage,
             blob=blobnr,
             theblob=theblob,
@@ -955,7 +956,7 @@ class Application:
                         theblob, ok=None, error=None):
         params = dict(
             academy=academy.AcademyLite(theacademy),
-            course=course.CourseLite(thecourse),
+            course=thecourse.view(),
             page=thepage,
             blobnr=blobnr,
             blob=theblob,
@@ -1007,7 +1008,7 @@ class Application:
     def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(
             academy=academy.AcademyLite(theacademy),
-            course=course.CourseLite(thecourse),
+            course=thecourse.view(),
             page=thepage,
             content=thecourse.showpage(thepage),
             saved=saved,

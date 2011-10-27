@@ -5,8 +5,9 @@ from cStringIO import StringIO
 sysrand = random.SystemRandom()
 
 from common import strtobool
-from course import CourseLite
+from course import Course
 from academy import AcademyLite
+from view import LazyView
 
 def randpasswordstring(n=6):
     """
@@ -61,11 +62,17 @@ class User:
     def allowedRead(self, aca, course = None):
         """
         @type aca: AcademyLite
-        @type course: None or CourseLite
+        @type course: None or Course or LazyView
         @rtype: bool
         """
         assert isinstance(aca, AcademyLite)
-        assert course is None or isinstance(course, CourseLite)
+        if course is None:
+            pass
+        elif isinstance(course, LazyView):
+            course = course["name"]
+        else:
+            assert isinstance(course, Course)
+            course = course.name
         if self.hasPermission(u"df_read") or self.isSuperAdmin():
             return True
         for g in aca.getgroups():
@@ -74,16 +81,22 @@ class User:
         if course is None:
             return self.hasPermission(u"akademie_read_%s" % aca.name)
         else:
-            return self.hasPermission(u"akademie_read_%s_%s" % (aca.name, course.name))
+            return self.hasPermission(u"akademie_read_%s_%s" % (aca.name, course))
 
     def allowedWrite(self, aca, course = None):
         """
         @type aca: AcademyLite
-        @type course: None or CourseLite
+        @type course: None or Course or LazyView
         @rtype: bool
         """
         assert isinstance(aca, AcademyLite)
-        assert course is None or isinstance(course, CourseLite)
+        if course is None:
+            pass
+        elif isinstance(course, LazyView):
+            course = course["name"]
+        else:
+            assert isinstance(course, Course)
+            course = course.name
         if self.hasPermission(u"df_write") or self.isSuperAdmin():
             return True
         for g in aca.getgroups():

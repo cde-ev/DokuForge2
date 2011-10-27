@@ -7,26 +7,46 @@ from werkzeug.datastructures import FileStorage
 
 import view
 
-class CourseLite:
+class Course:
     """
-    Backend for viewing the file structres related to a course
+    Backend for manipulating the file structres related to a course
 
-    A detailed description can be found with the class Course.
+    A course is described by a directory. This directory may contain, among
+    other things, the following files; with each rcs file, the associated file
+    and locks as described in L{Storage} can be present as well.
+
+    title,v    The title of this course (as to be printed)
+
+    Index,v    List of internal page numbers, in order of appearence
+               Each line contains the internal page number, followed by a space,
+               optionally followed by internal blob-numbers associated with page.
+
+    pageN,v    The page with internal number N
+
+    blobN,v          The blob with the internal number N
+    blobN.label,v    The label for the blob with internal number N
+    blobN.comment,v  The comment for the blob with internal number N
+    blobN.filename,v The filename for the blob with internal number N
+
+    nextpage,v contains the number of the next available page
+    nextblob,v contains the number of the next available blob
     """
     def __init__(self, obj):
         """
-        constructor for CourseLite objects
+        constructor for Course objects
 
         @param obj: either the path to a coures or a Course object
-        @type obj: str or Course or CourseLite
+        @type obj: str or Course
         """
-        if isinstance(obj, CourseLite):
+        if isinstance(obj, Course):
             self.path = obj.path
         else:
             assert isinstance(obj, str)
-            if not os.path.isdir(obj):
-                return None
             self.path = obj
+        try:
+            os.makedirs(self.path)
+        except os.error:
+            pass
 
     @property
     def name(self):
@@ -120,44 +140,6 @@ class CourseLite:
         page = Storage(self.path,"page%d" % number)
         return page.content().decode("utf8")
 
-
-class Course(CourseLite):
-    """
-    Backend for manipulating the file structres related to a course
-
-    A course is described by a directory. This directory may contain, among
-    other things, the following files; with each rcs file, the associated file
-    and locks as described in L{Storage} can be present as well.
-
-    title,v    The title of this course (as to be printed)
-
-    Index,v    List of internal page numbers, in order of appearence
-               Each line contains the internal page number, followed by a space,
-               optionally followed by internal blob-numbers associated with page.
-
-    pageN,v    The page with internal number N
-
-    blobN,v          The blob with the internal number N
-    blobN.label,v    The label for the blob with internal number N
-    blobN.comment,v  The comment for the blob with internal number N
-    blobN.filename,v The filename for the blob with internal number N
-
-    nextpage,v contains the number of the next available page
-    nextblob,v contains the number of the next available blob
-    """
-    def __init__(self, obj):
-        """
-        constructor for Course objects
-
-        @param obj: either the path to a coures or a Course object
-        @type obj: str or Course or CourseLite
-        """
-        if not isinstance(obj, CourseLite):
-            try:
-                os.makedirs(obj)
-            except os.error:
-                pass
-        CourseLite.__init__(self, obj)
 
     def getstorage(self, filename):
         """
@@ -485,3 +467,15 @@ class Course(CourseLite):
         blobcomment.store(comment.encode("utf8"), user=user)
         blobname.store(filename.encode("utf8"), user=user)
         return True
+
+    def view(self):
+        """
+        @rtype: LazyView
+        @returns: a mapping providing the keys: name(str), pages([int]),
+                deadpages([int]), title(unicode)
+        """
+        return view.LazyView(dict(
+            name=lambda:self.name,
+            pages=lambda:self.listpages(),
+            deadpages=self.listdeadpages,
+            title=self.gettitle))

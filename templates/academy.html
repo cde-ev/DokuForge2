@@ -3,14 +3,14 @@
 {{ navbar([("academy", academy.gettitle())]) }}
 {% endblock %}
 {% block content %}
-{% set courses = academy.listCoursesLite() %}
+{% set courses = academy.viewCourses() %}
 {% if courses %}
 <ol>
 	{% for course in courses %}
 	    {% if user.allowedRead(academy, course) %}
-	    <li><a href="{{ buildurl("course", {'course': course}) }}">{{ course.gettitle()|e }}</a></li>
+	    <li><a href="{{ buildurl("course", {'course': course}) }}">{{ course.title|e }}</a></li>
 	    {% else %}
-	    <li>{{ course.gettitle()|e }}</li>
+	    <li>{{ course.title|e }}</li>
 	    {% endif %}
 	{% endfor %}
 </ol>
