@@ -257,7 +257,11 @@ class Application:
                     finalparams[key] = value["name"]
                 else:
                     finalparams[key] = value
-        finalparams.update(kwargs)
+        for key, value in kwargs.items():
+            if key in ("academy", "course"):
+                finalparams[key] = value["name"]
+            else:
+                finalparams[key] = value
         return rs.mapadapter.build(name, finalparams)
 
     def getAcademy(self, name, user=None):
