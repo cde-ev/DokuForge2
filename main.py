@@ -927,16 +927,11 @@ class Application:
             course=thecourse.view())
         return self.render("course.html", rs, params)
 
-    def render_addblob(self, rs, theacademy, thecourse, thepage, comment="",
-                       label="", error=None):
+    def render_addblob(self, rs, theacademy, thecourse, thepage):
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
-            page=thepage,
-            comment=comment,
-            label=label,
-            error=error
-            )
+            page=thepage)
         return self.render("addblob.html", rs, params)
 
     def render_showblob(self, rs, theacademy, thecourse, thepage, blob,
