@@ -346,8 +346,12 @@ class Course(CourseLite):
                 index = indexstore.content(havelock=gotlockindex)
                 lines = index.splitlines()
                 for i in range(len(lines)):
-                    if int(lines[i].split()[0]) == page:
-                        lines[i] += " %d" % number
+                    lineparts=lines[i].split()
+                    if int(lineparts[0]) == page:
+                        if number in [int(x) for x in lineparts[1:]]:
+                            pass # want a set-like semantics
+                        else:
+                            lines[i] += " %d" % number
             newindex="\n".join(lines) + "\n"
             indexstore.store(newindex,havelock=gotlockindex,user=user)
                         
