@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block location%}
-{{ navbar([("academy", academy.gettitle()),
-               ("academygroups", "Gruppenverwaltung")]) }}
+{{ navbar([("academy", {}, academy.gettitle()),
+	   ("academygroups", {}, "Gruppenverwaltung")]) }}
 {% endblock %}
 {% block content %}
 

@@ -45,10 +45,6 @@ def gensid(bits=64):
     """
     return "%x" % random.getrandbits(bits)
 
-@jinja2.contextfunction
-def get_context(c):
-        return c
-
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database."""
     create_table = "CREATE TABLE IF NOT EXISTS sessions " + \
@@ -112,6 +108,8 @@ class RequestState:
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.mapadapter = mapadapter
+        self.endpoint = None # set later
+        self.endpointargs = None # set later
 
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
@@ -252,16 +250,12 @@ class Application:
         ], converters=dict(identifier=IdentifierConverter))
         self.allparams = ['academy', 'course', 'page', 'blob', 'group', 'topic']
 
-    def constructurl(self, name, rs, params, extraparams):
-        args = params.get_all()
-        args.update(extraparams)
-        finalparams = dict()
-        for p in self.allparams:
-            if self.routingmap.is_endpoint_expecting(name, p):
-                if p == 'academy' or p == 'course':
-                    finalparams[p] = args[p].name
-                else:
-                    finalparams[p] = args[p]
+    def buildurl(self, rs, name, kwargs):
+        finalparams = {}
+        for key, value in rs.endpointargs.items():
+            if self.routingmap.is_endpoint_expecting(name, key):
+                finalparams[key] = value
+        finalparams.update(kwargs)
         return rs.mapadapter.build(name, finalparams)
 
     def getAcademy(self, name, user=None):
@@ -349,6 +343,8 @@ class Application:
         rs = RequestState(request, self.sessiondb, self.userdb, mapadapter)
         try:
             endpoint, args = mapadapter.match()
+            rs.endpoint = endpoint
+            rs.endpointargs = args
             return getattr(self, "do_%s" % endpoint)(rs, **args)
         except werkzeug.routing.HTTPException, e:
             return e
@@ -1046,12 +1042,11 @@ class Application:
         rs.response.content_type = "text/html; charset=utf8"
         params = dict(
             user = rs.user,
-            composeurl = lambda name, params, extraparams: self.constructurl(name, rs, params, extraparams),
+            buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
         )
         params.update(extraparams)
         template = self.jinjaenv.get_template(templatename)
-        template.globals['context']=get_context
         rs.response.data = template.render(params).encode("utf8")
         return rs.response
 

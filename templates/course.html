@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block location%}
-{{ navbar([("academy", academy.gettitle()),
-           ("course", course.gettitle())]) }}
+{{ navbar([("academy", {}, academy.gettitle()),
+           ("course", {}, course.gettitle())]) }}
 {% endblock %}
 {% block content %}
 {% set pages = course.listpages() %}

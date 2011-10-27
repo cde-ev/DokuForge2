@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block location%}
-{{ navbar([("academy", academy.gettitle()),
-           ("course", course.gettitle()),
-           ("page", "Teil #" + page|string),
-           ("edit", "Editieren")]) }}
+{{ navbar([("academy", {}, academy.gettitle()),
+           ("course", {}, course.gettitle()),
+	   ("page", {}, "Teil #" + page|string),
+	   ("edit", {}, "Editieren")]) }}
 {% endblock %}
 {% block content %}
 

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block location%}
-{{ navbar([("academy", academy.gettitle()),
-           ("course", course.gettitle()),
-           ("deadpages", "Attic")])}}
+{{ navbar([("academy", {}, academy.gettitle()),
+           ("course", {}, course.gettitle()),
+	   ("deadpages", {}, "Attic")])}}
 {% endblock %}
 {% block content %}
 {% set deads=course.listdeadpages() %}
