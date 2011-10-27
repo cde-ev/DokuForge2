@@ -721,13 +721,15 @@ class Application:
         # a FileStorage is sufficiently file-like for store
         usercontent = rs.request.files["content"]
 
-        blob = c.attachblob(page, usercontent, comment=usercomment,
-                            label=u"somefig", user=rs.user.name)
         if re.match('^[a-z0-9]{1,200}$', userlabel) is None:
+            blob = c.attachblob(page, usercontent, comment=usercomment,
+                                label=u"somefig", user=rs.user.name)
             theblob = c.getmetablob(blob)
             return self.render_editblob(rs, aca, c, page, blob, theblob, ok=False,
                                        error=CheckError(u"K&uuml;rzel falsch formatiert!",
                                                         u"Bitte korrigeren und speichern."))
+        c.attachblob(page, usercontent, comment=usercomment,
+                     label=userlabel, user=rs.user.name)
         return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
