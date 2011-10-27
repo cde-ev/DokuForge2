@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle()),
-               (academy.name + '/' + course.name, course.gettitle()),
-               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string)]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle()),
+	   ("page", "Teil #" + page|string)]) }}
 {% endblock %}
 
 {% block content %}
@@ -16,13 +16,10 @@ Teil #{{page}}
 
 
 {% if user.allowedWrite(academy, course) %}
-<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!edit")}}">Editieren</a>
-{{ button(academy.name + "/" + course.name + "/"  + page|string  + "/!delete", "Löschen", dict()) }}
+<a href="{{ buildurl("edit") }}">Editieren</a>
+{{ button(buildurl("delete"), "Löschen", dict()) }}
 {% endif %}
-<a href="{{basejoin(academy.name + "/" + course.name + "/" +
-														  page|string
-														  +
-														  "/!rcs")}}">rcs</a>
+<a href="{{ buildurl("rcs") }}">rcs</a>
 
 <hr>
 {% if blobs %}
@@ -30,9 +27,9 @@ Zugeordnete Bilder:
 <ul>
 {% for blob in blobs %}
 <li> 
-  <a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/" + blob.number|string + "/")}}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
+  <a href="{{ buildurl("showblob", {'blob': blob.number}) }}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
 {% if user.allowedWrite(academy, course) %}
-{{ button(academy.name + "/" + course.name + "/" + page|string + "/"  + blob.number|string + "/!delete", "Löschen", dict()) }}
+{{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
 {% endif %}
 </li>
 {% endfor %}
@@ -42,8 +39,8 @@ Zugeordnete Bilder:
 {% endif %}
 
 {% if user.allowedWrite(academy, course) %}
-<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!addblob")}}">neues Bild hinzuf&uuml;gen</a>
-<a href="{{basejoin(academy.name + "/" + course.name + "/" + page|string + "/!deadblobs")}}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+<a href="{{ buildurl("addblob") }}">neues Bild hinzuf&uuml;gen</a>
+<a href="{{ buildurl("showdeadblobs") }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
 {% endif %}
 
 {% endblock %}

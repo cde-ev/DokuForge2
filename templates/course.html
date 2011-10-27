@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle()),
-               (academy.name + '/' + course.name, course.gettitle())]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle())]) }}
 {% endblock %}
 {% block content %}
 {% set pages = course.listpages() %}
 {% if pages %}
 <ol>
 	{% for page in pages %}
-	<li><a href="{{ basejoin(academy.name + '/' + course.name
-		+ '/' + page|string + '/') }}"> Teil #{{ page }}</a>
+	<li><a href="{{ buildurl('page', {'page': page}) }}"> Teil #{{ page }}</a>
 		{% if pages.index(page) > 0 %}
 		   {% if user.allowedWrite(academy, course) %}
-		      {{ button(academy.name + "/" + course.name + "/!moveup", "Hochrücken",
+		      {{ button(buildurl("moveup"), "Hochrücken",
 	              	 dict(number=pages.index(page))) }}
 		   {% endif %}
 		{% endif %}
@@ -23,14 +22,14 @@
 <em>Keine Teile gefunden gefunden.</em>
 {% endif %}
 {% if user.allowedWrite(academy, course) %}
-{{ button(academy.name + "/" + course.name + "/!createpage", "Neuen Teil anlegen") }}
-<a href="{{basejoin(academy.name + "/" + course.name + "/!deadpages")}}">gel&ouml;schte Teile wiederherstellen</a>
+{{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
+<a href="{{ buildurl("showdeadpages") }}">gel&ouml;schte Teile wiederherstellen</a>
 {% endif %}
 {% if user.mayExport(academy) %}
-<a href="{{ basejoin(academy.name + "/" + course.name + "/!raw") }}">Roh-Export</a>
+<a href="{{ buildurl("raw") }}">Roh-Export</a>
 {% endif %}
 {% if user.allowedWrite(academy) and user.allowedWrite(academy, course) %}
-<a href="{{basejoin(academy.name + "/" + course.name + "/!title")}}">Titel bearbeiten</a>
+<a href="{{ buildurl("coursetitle") }}">Titel bearbeiten</a>
 </a>
 {% endif %}
 {% endblock %}

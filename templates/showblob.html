@@ -1,28 +1,28 @@
 {% extends "base.html" %}
 
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle()),
-               (academy.name + '/' + course.name, course.gettitle()),
-               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
-               (academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/', "Bild #" + blobnr|string)]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle()),
+	   ("page", "Teil #" + page|string),
+	   ("showblob", "Bild #" + blob|string)]) }}
 {% endblock %}
 
 {% block content %}
 
-<p>Bildunterschrift/Kommentar: {{ blob.comment|e }}</p>
-<p>K&uuml;rzel: {{ blob.label|e }}</p>
-<p>Dateiname: {{ blob.filename|e }}</p>
+<p>Bildunterschrift/Kommentar: {{ theblob.comment|e }}</p>
+<p>K&uuml;rzel: {{ theblob.label|e }}</p>
+<p>Dateiname: {{ theblob.filename|e }}</p>
 
 {% if user.allowedWrite(academy, course) %}
-<a href={{ basejoin(academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/!edit') }}>Editieren</a>
+<a href={{ buildurl("editblob") }}>Editieren</a>
 {% endif %}
 
-<a href={{ basejoin(academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/!download') }}>herunterladen</a>
+<a href={{ buildurl("downloadblob") }}>herunterladen</a>
 
 {% if blobhash is not none %}
 MD5 Summe des Bildes ist {{ blobhash }}.
 {% else %}
-<a href={{ basejoin(academy.name + '/' + course.name + '/' + page|string + '/' + blobnr|string + '/!md5') }}>MD5-Summe berechnen</a>
+<a href={{ buildurl("md5blob") }}>MD5-Summe berechnen</a>
 {% endif %}
 
 

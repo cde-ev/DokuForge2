@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle()),
-               (academy.name + '/!title', "Titel")]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("academytitle", "Titel")]) }}
 {% endblock %}
 {% block content %}
 
 {{ threeway(ok, "Bitte Titel eingeben und mit &quot;Speichern&quot; beenden.",
             "Aenderungen erfolgreich gespeichert.", error.message,
             error.explanation) }}
-<form action="!title" method="post" id="save">
+<form action="{{ buildurl("academytitlesave") }}" method="post" id="save">
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ basejoin(academy.name + '/!title') }}">Abbrechen</a>
+<a href="{{buildurl("academytitle")}}">Abbrechen</a>
 {% endblock %}
