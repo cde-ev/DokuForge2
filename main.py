@@ -131,6 +131,7 @@ class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
 
 class CheckError(StandardError):
     def __init__(self, msg, exp):
+        StandardError.__init__(self, msg)
         assert isinstance(msg, unicode)
         assert isinstance(exp, unicode)
         self.message = msg
