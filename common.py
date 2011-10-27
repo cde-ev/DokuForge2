@@ -24,6 +24,11 @@ def randstring(n=6):
     return ''.join(sysrand.choice(chars) for x in range(n))
 
 def strtobool(s):
+    """
+    @returns: Boolean version of s
+    @type s: str
+    @rtype: bool
+    """
     if s == "True" or s == "true" or s == "t":
         return True
     return False

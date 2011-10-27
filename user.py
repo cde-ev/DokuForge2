@@ -212,6 +212,11 @@ class UserDB:
             return False
 
     def store(self):
+        """
+        Store the user database on disk.
+
+        We use ConfigParser and the accompanying format.
+        """
         config = ConfigParser.SafeConfigParser()
         content = StringIO()
         for name in self.db:
@@ -225,10 +230,16 @@ class UserDB:
                     .encode("utf8")
             config.set(ename, 'permissions', permstr)
         config.write(content)
+        ## seek to the start, so we know what to store
         content.seek(0)
         self.storage.store(content)
 
     def load(self):
+        """
+        Load the user database from disk.
+
+        This erases all in-memory changes.
+        """
         config = ConfigParser.SafeConfigParser()
         content = StringIO(self.storage.content())
         config.readfp(content)
@@ -236,7 +247,7 @@ class UserDB:
         self.db.clear()
         for name in config.sections():
             permissions = dict((perm.split(' ')[0].decode("utf8"),
-                                strtobool(perm.split(' ')[1]))
+                                strtobool(perm.split(' ')[1].decode("utf8")))
                 for perm in config.get(name, 'permissions').split(','))
             self.addUser(config.get(name, 'name').decode("utf8"),
                          config.get(name, 'status').decode("utf8"),
