@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle()),
-               (academy.name + '/' + course.name, course.gettitle()),
-               (academy.name + '/' + course.name +'/!deadpages', "Attic")])}}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle()),
+	   ("deadpages", "Attic")])}}
 {% endblock %}
 {% block content %}
 {% set deads=course.listdeadpages() %}
@@ -10,7 +10,7 @@
 <ul>
 	{% for page in deads %}
 	<li> #{{ page }} 
-         {{ button(academy.name + "/" + course.name + "/!relink", "wiederherstellen", dict(number=page)) }}
+         {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
 	</li>
 	{% endfor %}
 </ul>

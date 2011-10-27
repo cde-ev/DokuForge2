@@ -118,7 +118,7 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(form.click())
 
     def is_loggedin(self):
-        self.assertTrue("!logout" in self.get_data())
+        self.assertTrue("/logout" in self.get_data())
 
     def testLogin(self):
         self.br.open(self.url)
@@ -146,7 +146,7 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(self.url)
         self.do_login()
         self.do_logout()
-        self.assertFalse("!logout" in self.get_data())
+        self.assertFalse("/logout" in self.get_data())
 
     def testAcademy(self):
         self.br.open(self.url)

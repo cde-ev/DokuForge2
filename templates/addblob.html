@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
 {% block location%}
-{{ trivnavbar([(academy.name, academy.gettitle()),
-               (academy.name + '/' + course.name, course.gettitle()),
-               (academy.name + '/' + course.name + '/' + page|string, "Teil #" + page|string),
-               (academy.name + '/' + course.name + '/' + page|string + '/!addblob', "Bild hochladen")]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle()),
+	   ("page", "Teil #" + page|string),
+	   ("addblob", "Bild hochladen")]) }}
 {% endblock %}
 
 {% block content %}
 
 {{ threeway(ok, "", "", error.message, error.explanation) }}
-<form action="!attachblob" method="post" enctype="multipart/form-data">
+<form action="{{ buildurl("attachblob") }}" method="post" enctype="multipart/form-data">
   Bildunterschrift/Kommentar: <textarea name="comment">{{ comment|e }}</textarea>
   K&uuml;rzel: <textarea name="label">{{ label|e }}</textarea>
 	<input type="file" name="content">

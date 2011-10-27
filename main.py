@@ -101,12 +101,14 @@ class SessionHandler:
             self.response.delete_cookie(self.cookie_name)
 
 class RequestState:
-    def __init__(self, request, sessiondb, userdb):
+    def __init__(self, request, sessiondb, userdb, mapadapter):
         self.request = request
         self.response = Response()
         self.sessionhandler = SessionHandler(sessiondb, request, self.response)
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
+        self.mapadapter = mapadapter
+        self.params = None # set later in Application.render
 
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
@@ -136,6 +138,9 @@ class CheckError(StandardError):
     def __str__(self):
         return self.message
 
+class IdentifierConverter(werkzeug.routing.BaseConverter):
+    regex = '[a-z][a-zA-Z0-9-]{0,199}'
+
 class Application:
     def __init__(self, userdb, groupstore, acapath, templatepath, stylepath,
                  sessiondbpath=":memory:"):
@@ -153,113 +158,108 @@ class Application:
         self.templatepath = templatepath
         self.stylepath = stylepath
         self.groupstore = groupstore
+        rule = werkzeug.routing.Rule
         self.routingmap = werkzeug.routing.Map([
-            werkzeug.routing.Rule("/", methods=("GET", "HEAD"),
-                                  endpoint=self.do_start),
-            werkzeug.routing.Rule("/!login", methods=("POST",),
-                                  endpoint=self.do_login),
-            werkzeug.routing.Rule("/!logout", methods=("POST",),
-                                  endpoint=self.do_logout),
-            werkzeug.routing.Rule("/", methods=("GET", "HEAD"),
-                                  endpoint=self.do_index),
-            werkzeug.routing.Rule("/!admin", methods=("GET", "HEAD"),
-                                  endpoint=self.do_admin),
-            werkzeug.routing.Rule("/!admin", methods=("POST",),
-                                  endpoint=self.do_adminsave),
-            werkzeug.routing.Rule("/!createacademy",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_createacademyquiz),
-            werkzeug.routing.Rule("/!createacademy", methods=("POST",),
-                                  endpoint=self.do_createacademy),
-            werkzeug.routing.Rule("/!groups", methods=("GET", "HEAD"),
-                                  endpoint=self.do_groups),
-            werkzeug.routing.Rule("/!groups", methods=("POST",),
-                                  endpoint=self.do_groupssave),
-            werkzeug.routing.Rule("/!style", methods=("GET", "HEAD"),
-                                  endpoint=self.do_styleguide),
-            werkzeug.routing.Rule("/!style=<topic>", methods=("GET", "HEAD"),
-                                  endpoint=self.do_styleguide),
-            werkzeug.routing.Rule("/!expand=<group>", methods=("GET", "HEAD"),
-                                  endpoint=self.do_index),
-            werkzeug.routing.Rule("/<academy>/", methods=("GET", "HEAD"),
-                                  endpoint=self.do_academy),
-            werkzeug.routing.Rule("/<academy>/!createcourse",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_createcoursequiz),
-            werkzeug.routing.Rule("/<academy>/!createcourse", methods=("POST",),
-                                  endpoint=self.do_createcourse),
+            rule("/", methods=("GET", "HEAD"), endpoint="start"),
+            rule("/login", methods=("POST",), endpoint="login"),
+            rule("/logout", methods=("POST",), endpoint="logout"),
+            rule("/docs/", methods=("GET", "HEAD"), endpoint="index"),
+            rule("/admin/", methods=("GET", "HEAD"), endpoint="admin"),
+            rule("/admin/!save", methods=("POST",), endpoint="adminsave"),
+            rule("/createacademy", methods=("GET", "HEAD"),
+                 endpoint="createacademyquiz"),
+            rule("/createacademy", methods=("POST",),
+                 endpoint="createacademy"),
+            rule("/groups/", methods=("GET", "HEAD"), endpoint="groups"),
+            rule("/groups/!save", methods=("POST",),
+                 endpoint="groupssave"),
+            rule("/style/", methods=("GET", "HEAD"),
+                 endpoint="styleguide"),
+            rule("/style/<identifier:topic>", methods=("GET", "HEAD"),
+                 endpoint="styleguidetopic"),
+            rule("/groups/<identifier:group>", methods=("GET", "HEAD"),
+                 endpoint="groupindex"),
+
+            # academy specific pages
+            rule("/docs/<identifier:academy>/", methods=("GET", "HEAD"),
+                 endpoint="academy"),
+            rule("/docs/<identifier:academy>/!createcourse",
+                 methods=("GET", "HEAD"), endpoint="createcoursequiz"),
+            rule("/docs/<identifier:academy>/!createcourse",
+                 methods=("POST",), endpoint="createcourse"),
 # not yet implemented
-#            werkzeug.routing.Rule("/<academy>/!export", methods=("GET", "HEAD"),
-#                                  endpoint=self.do_export),
-            werkzeug.routing.Rule("/<academy>/!groups", methods=("GET", "HEAD"),
-                                  endpoint=self.do_academygroups),
-            werkzeug.routing.Rule("/<academy>/!groups", methods=("POST",),
-                                  endpoint=self.do_academygroupssave),
-            werkzeug.routing.Rule("/<academy>/!title", methods=("GET", "HEAD"),
-                                  endpoint=self.do_academytitle),
-            werkzeug.routing.Rule("/<academy>/!title", methods=("POST",),
-                                  endpoint=self.do_academytitlesave),
-            werkzeug.routing.Rule("/<academy>/<course>/",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_course),
-            werkzeug.routing.Rule("/<academy>/<course>/!createpage",
-                                  methods=("POST",),
-                                  endpoint=self.do_createpage),
-            werkzeug.routing.Rule("/<academy>/<course>/!deadpages",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_showdeadpages),
-            werkzeug.routing.Rule("/<academy>/<course>/!moveup",
-                                  methods=("POST",), endpoint=self.do_moveup),
-            werkzeug.routing.Rule("/<academy>/<course>/!relink",
-                                  methods=("POST",), endpoint=self.do_relink),
-            werkzeug.routing.Rule("/<academy>/<course>/!raw",
-                                  methods=("GET", "HEAD"), endpoint=self.do_raw),
-            werkzeug.routing.Rule("/<academy>/<course>/!title",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_coursetitle),
-            werkzeug.routing.Rule("/<academy>/<course>/!title", methods=("POST",),
-                                  endpoint=self.do_coursetitlesave),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_page),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!rcs",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_rcs),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!edit",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_edit),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!save",
-                                  methods=("POST",), endpoint=self.do_save),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!delete",
-                                  methods=("POST",), endpoint=self.do_delete),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!deadblobs",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_showdeadblobs),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!relinkblob",
-                                  methods=("POST",), endpoint=self.do_relinkblob),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!addblob",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_addblob),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/!attachblob",
-                                  methods=("POST",), endpoint=self.do_attachblob),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_showblob),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!md5",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_md5blob),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!download",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_downloadblob),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!edit",
-                                  methods=("GET", "HEAD"),
-                                  endpoint=self.do_editblob),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!edit",
-                                  methods=("POST",),
-                                  endpoint=self.do_saveblob),
-            werkzeug.routing.Rule("/<academy>/<course>/<int:page>/<int:blob>/!delete",
-                                  methods=("POST",), endpoint=self.do_blobdelete),
-        ])
+#            rule("/docs/<identifier:academy>/!export", methods=("GET", "HEAD"),
+#                 endpoint="export"),
+            rule("/docs/<identifier:academy>/!groups", methods=("GET", "HEAD"),
+                 endpoint="academygroups"),
+            rule("/docs/<identifier:academy>/!groups", methods=("POST",),
+                 endpoint="academygroupssave"),
+            rule("/docs/<identifier:academy>/!title", methods=("GET", "HEAD"),
+                 endpoint="academytitle"),
+            rule("/docs/<identifier:academy>/!title", methods=("POST",),
+                 endpoint="academytitlesave"),
+
+            # course-specific pages
+            rule("/docs/<identifier:academy>/<identifier:course>/",
+                 methods=("GET", "HEAD"), endpoint="course"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!createpage",
+                 methods=("POST",), endpoint="createpage"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!deadpages",
+                 methods=("GET", "HEAD"), endpoint="showdeadpages"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!moveup",
+                 methods=("POST",), endpoint="moveup"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!relink",
+                 methods=("POST",), endpoint="relink"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!raw",
+                 methods=("GET", "HEAD"), endpoint="raw"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!title",
+                 methods=("GET", "HEAD"), endpoint="coursetitle"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!title",
+                 methods=("POST",), endpoint="coursetitlesave"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/",
+                 methods=("GET", "HEAD"), endpoint="page"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!rcs",
+                 methods=("GET", "HEAD"), endpoint="rcs"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!edit",
+                 methods=("GET", "HEAD"), endpoint="edit"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!save",
+                 methods=("POST",), endpoint="save"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!delete",
+                 methods=("POST",), endpoint="delete"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!deadblobs",
+                 methods=("GET", "HEAD"), endpoint="showdeadblobs"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!relinkblob",
+                 methods=("POST",), endpoint="relinkblob"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!addblob",
+                 methods=("GET", "HEAD"), endpoint="addblob"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!attachblob",
+                 methods=("POST",), endpoint="attachblob"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/",
+                 methods=("GET", "HEAD"), endpoint="showblob"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/!md5",
+                 methods=("GET", "HEAD"), endpoint="md5blob"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/!download",
+                 methods=("GET", "HEAD"), endpoint="downloadblob"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/!edit",
+                 methods=("GET", "HEAD"), endpoint="editblob"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/!edit",
+                 methods=("POST",), endpoint="saveblob"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/!delete",
+                 methods=("POST",), endpoint="blobdelete"),
+        ], converters=dict(identifier=IdentifierConverter))
+
+    def buildurl(self, rs, name, kwargs):
+        finalparams = {}
+        ## the parameters were saved in Application.render
+        params = rs.params
+        params.update(kwargs)
+        for key, value in rs.params.items():
+            if self.routingmap.is_endpoint_expecting(name, key):
+                if key == 'academy' or key == 'course':
+                    finalparams[key] = value.name
+                else:
+                    finalparams[key] = value
+        return rs.mapadapter.build(name, finalparams)
 
     def getAcademy(self, name, user=None):
         """
@@ -342,11 +342,11 @@ class Application:
 
     @Request.application
     def __call__(self, request):
-        rs = RequestState(request, self.sessiondb, self.userdb)
+        mapadapter = self.routingmap.bind_to_environ(request.environ)
+        rs = RequestState(request, self.sessiondb, self.userdb, mapadapter)
         try:
-            endpoint, args = \
-                    self.routingmap.bind_to_environ(request.environ).match()
-            return endpoint(rs, **args)
+            endpoint, args = mapadapter.match()
+            return getattr(self, "do_%s" % endpoint)(rs, **args)
         except werkzeug.routing.HTTPException, e:
             return e
 
@@ -415,7 +415,11 @@ class Application:
         rs.logout()
         return self.render_start(rs)
 
-    def do_index(self, rs, group = None):
+    def do_index(self, rs):
+        self.check_login(rs)
+        return self.render_index(rs, None)
+
+    def do_groupindex(self, rs, group=None):
         self.check_login(rs)
         return self.render_index(rs, group)
 
@@ -495,14 +499,15 @@ class Application:
                                                  ok=False,
                                                  error = CheckError(u"Die Akademieerstellung war nicht erfolgreich.", u"Bitte die folgenden Angaben korrigieren."))
 
-    def do_styleguide(self, rs, topic=None):
-        if topic is not None:
-            assert isinstance(topic, unicode)
-            topic = topic.encode("utf8")
-            if not topic in os.listdir(self.templatepath + self.stylepath):
-                return werkzeug.exception.NotFound()
-        else:
-            topic = "index"
+    def do_styleguide(self, rs):
+        return self.do_styleguidetopic(rs, u"index")
+
+    def do_styleguidetopic(self, rs, topic=None):
+        assert isinstance(topic, unicode)
+        topic = topic.encode("utf8")
+        if not topic in os.listdir(os.path.join(self.templatepath,
+                                                self.stylepath)):
+            raise werkzeug.exception.NotFound()
         return self.render_styleguide(rs, topic)
 
     def do_createpage(self, rs, academy=None, course=None):
@@ -719,8 +724,7 @@ class Application:
             theblob = c.getmetablob(blob)
             return self.render_editblob(rs, aca, c, page, blob, theblob, ok=False,
                                        error=CheckError(u"K&uuml;rzel falsch formatiert!",
-                                                        u"Bitte korrigeren und speichern."),
-                                        recurse = blob)
+                                                        u"Bitte korrigeren und speichern."))
         return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
@@ -894,7 +898,7 @@ class Application:
         params = dict(
             academies=map(academy.AcademyLite, self.listAcademies()),
             allgroups = self.listGroups(),
-            expandgroup = group)
+            group = group)
         return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
@@ -940,13 +944,13 @@ class Application:
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage,
-            blobnr=blobnr,
-            blob=theblob,
+            blob=blobnr,
+            theblob=theblob,
             blobhash=blobhash)
         return self.render("showblob.html", rs, params)
 
     def render_editblob(self, rs, theacademy, thecourse, thepage, blobnr,
-                        theblob, ok=None, error=None, recurse=None):
+                        theblob, ok=None, error=None):
         params = dict(
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
@@ -954,8 +958,7 @@ class Application:
             blobnr=blobnr,
             blob=theblob,
             ok=ok,
-            error=error,
-            recurse=recurse
+            error=error
             )
         return self.render("editblob.html", rs, params)
 
@@ -1041,10 +1044,13 @@ class Application:
         assert isinstance(templatename, str)
         rs.response.content_type = "text/html; charset=utf8"
         params = dict(
-            user=rs.user,
+            user = rs.user,
+            buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
         )
         params.update(extraparams)
+        ## grab a copy of the parameters for url building
+        rs.params = params
         template = self.jinjaenv.get_template(templatename)
         rs.response.data = template.render(params).encode("utf8")
         return rs.response
