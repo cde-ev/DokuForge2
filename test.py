@@ -457,6 +457,30 @@ permissions = df_superadmin True,df_admin True
         self.assertTrue("MD5 Summe des Bildes ist" in self.get_data())
         self.is_loggedin()
 
+    def testEditBlob(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/!edit$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Real Shiny blob"
+        form["label"] = "blub"
+        form["name"] = "README"
+        self.br.open(form.click(label="Speichern"))
+        self.assertTrue("Bildunterschrift/Kommentar: Real Shiny blob" in self.get_data())
+        self.assertTrue("K&uuml;rzel: blub" in self.get_data())
+        self.assertTrue("Dateiname: README" in self.get_data())
+        self.is_loggedin()
+
     def testDeleteBlob(self):
         self.br.open(self.url)
         self.do_login()
