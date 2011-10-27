@@ -960,8 +960,8 @@ class Application:
             academy=academy.AcademyLite(theacademy),
             course=course.CourseLite(thecourse),
             page=thepage,
-            blobnr=blobnr,
-            blob=theblob,
+            blob=blobnr,
+            theblob=theblob,
             ok=ok,
             error=error
             )

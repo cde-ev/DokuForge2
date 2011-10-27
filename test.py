@@ -407,5 +407,99 @@ permissions = df_superadmin True,df_admin True
         self.assertTrue(u"Sondersonderwünsche".encode("utf8") in self.get_data())
         self.is_loggedin()
 
+    def testAddBlob(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
+        self.assertTrue("Zugeordnete Bilder" in self.get_data())
+        self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
+        self.is_loggedin()
+
+    def testShowBlob(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
+        self.assertTrue("Bildunterschrift/Kommentar: Shiny blob" in self.get_data())
+        self.assertTrue("K&uuml;rzel: blob" in self.get_data())
+        self.is_loggedin()
+
+    def testMD5Blob(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/!md5$")))
+        self.assertTrue("MD5 Summe des Bildes ist" in self.get_data())
+        self.is_loggedin()
+
+    def testDeleteBlob(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
+        self.assertTrue("Zugeordnete Bilder" in self.get_data())
+        self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
+        form = list(self.br.forms())[2]
+        self.br.open(form.click(label=u"Löschen".encode("utf8")))
+        self.assertTrue("Keine Bilder zu diesem Teil gefunden." in self.get_data())
+        self.assertFalse("#[0] (README-rlog.txt)" in self.get_data())
+        self.is_loggedin()
+
+    def testRestoreBlob(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
+        form = list(self.br.forms())[2]
+        self.br.open(form.click(label=u"Löschen".encode("utf8")))
+        self.assertTrue("Keine Bilder zu diesem Teil gefunden." in self.get_data())
+        self.assertFalse("#[0] (README-rlog.txt)" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!deadblobs$")))
+        self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
+        form = list(self.br.forms())[1]
+        self.br.open(form.click(label="wiederherstellen"))
+        self.assertTrue("Zugeordnete Bilder" in self.get_data())
+        self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
+        self.is_loggedin()
+
 if __name__ == '__main__':
     unittest.main()
