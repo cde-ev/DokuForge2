@@ -476,6 +476,6 @@ class Course:
         """
         return view.LazyView(dict(
             name=lambda:self.name,
-            pages=lambda:self.listpages(),
+            pages=self.listpages,
             deadpages=self.listdeadpages,
             title=self.gettitle))
