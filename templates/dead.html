@@ -2,14 +2,14 @@
 {% block location%}
 {{ navbar([("academy", academy.gettitle()),
            ("course", course.gettitle()),
-	   ("deadpages", "Attic")])}}
+	   ("showdeadpages", "Attic")])}}
 {% endblock %}
 {% block content %}
 {% set deads=course.listdeadpages() %}
 {% if deads %}
 <ul>
 	{% for page in deads %}
-	<li> #{{ page }} 
+	<li> #{{ page }}
          {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
 	</li>
 	{% endfor %}
