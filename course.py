@@ -7,21 +7,6 @@ from werkzeug.datastructures import FileStorage
 
 import view
 
-class MetaBlob:
-    def __init__(self, label, comment, filename, number):
-        self.label = label
-        self.comment = comment
-        self.filename = filename
-        self.number = number
-
-class Blob:
-    def __init__(self, data, label, comment, filename, number):
-        self.data = data
-        self.label = label
-        self.comment = comment
-        self.filename = filename
-        self.number = number
-
 class CourseLite:
     """
     Backend for viewing the file structres related to a course
@@ -473,7 +458,9 @@ class Course(CourseLite):
 
         @param number: the internal number of the blob
         @type number: int
-        @rtype: Blob
+        @rtype: LazyView
+        @returns: a mapping providing the keys: data(str), label(unicode),
+                  comment(unicode), filename(unicode) and number(int)
         """
         ldu = view.liftdecodeutf8
         return view.LazyView(dict(
