@@ -29,6 +29,25 @@ class Academy:
             assert isinstance(obj, str)
             self.path = obj
 
+    def getstorage(self, filename):
+        """
+        @type filename: str
+        @param filename: passed to Storage as second param
+        @rtype: Storage
+        @returns: a Storage build from self.path and filename
+        """
+        assert isinstance(filename, str)
+        return storage.Storage(self.path, filename)
+
+    def getcontent(self, filename):
+        """
+        @type filename: str
+        @param filename: passed to Storage as second param
+        @rtype: str
+        @returns: the content of the Storage buil from self.path and filename
+        """
+        return self.getstorage(filename).content()
+
     @property
     def name(self):
         """
@@ -43,7 +62,7 @@ class Academy:
         @returns: the display name of this academy
         @rtype: unicode
         """
-        return storage.Storage(self.path, "title").content().decode("utf8")
+        return self.getcontent("title").decode("utf8")
 
     def getgroups(self):
         """
@@ -52,7 +71,7 @@ class Academy:
         @returns: the groups of which this academy is a member
         @rtype: [unicode]
         """
-        return storage.Storage(self.path, "groups").content().decode("utf8").split()
+        return self.getcontent("groups").decode("utf8").split()
 
     def viewCourses(self):
         return [course.view() for course in self.listCourses()]
@@ -95,7 +114,7 @@ class Academy:
         @type title: unicode
         """
         assert isinstance(title, unicode)
-        storage.Storage(self.path,"title").store(title.encode("utf8"))
+        self.getstorage("title").store(title.encode("utf8"))
 
     def setgroups(self, groups):
         """
@@ -106,7 +125,7 @@ class Academy:
         """
         assert all(isinstance(group, unicode) for group in groups)
         content = u" ".join(groups)
-        storage.Storage(self.path, "groups").store(content.encode("utf8"))
+        self.getstorage("groups").store(content.encode("utf8"))
 
     def createCourse(self, name, title):
         """
