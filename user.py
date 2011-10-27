@@ -135,7 +135,7 @@ class User:
 
     def defaultGroup(self):
         """
-        @rtype: str
+        @rtype: unicode
         """
         return u"cde"
 
@@ -152,9 +152,10 @@ class UserDB:
         """
         self.db = dict()
         self.storage = storage
+
     def addUser(self, name, status, password, permissions):
         """
-        add a user to the database
+        add a user to the database in memory
 
         @type name: unicode
         @type status: unicode
@@ -171,9 +172,10 @@ class UserDB:
             return False
         self.db[name] = User(name, status, password, permissions)
         return True
+
     def modifyUser(self, name, attributes):
         """
-        modify a user of the database
+        modify a user of the database in memory
 
         @type name: unicode
         @type attributes: {unicode: unicode}
@@ -198,6 +200,7 @@ class UserDB:
                 self.db[name].permissions[attr_value] = False
             else:
                 print "Unknown attribute", attr_name, "w/ value", attr_value
+
     def checkLogin(self, name, password):
         """
         @type name: unicode
