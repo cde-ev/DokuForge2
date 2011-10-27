@@ -498,10 +498,7 @@ class Application:
         if self.createAcademy(name, title, groups):
             return self.render_index(rs)
         else:
-            return self.render_createacademyquiz(rs, name=name,
-                                                 title=title,
-                                                 groups=rs.request.form["groups"],
-                                                 ok=False,
+            return self.render_createacademyquiz(rs, ok=False,
                                                  error = CheckError(u"Die Akademieerstellung war nicht erfolgreich.", u"Bitte die folgenden Angaben korrigieren."))
 
     def do_styleguide(self, rs):
@@ -976,23 +973,13 @@ class Application:
                       error=error)
         return self.render("createcoursequiz.html", rs, params)
 
-    def render_createacademyquiz(self, rs, name=u'', title=u'', groups=u'',
-                                 ok=None, error=None):
+    def render_createacademyquiz(self, rs, ok=None, error=None):
         """
         @type rs: RequestState
-        @type name: unicode
-        @type title: unicode
-        @type groups: unicode
         @type ok: None or Boolean
         @type error: None or CheckError
         """
-        assert isinstance(name, unicode)
-        assert isinstance(title, unicode)
-        assert isinstance(groups, unicode)
-        params = dict(name=name,
-                      title=title,
-                      groups=groups,
-                      ok=ok,
+        params = dict(ok=ok,
                       error=error)
         return self.render("createacademyquiz.html", rs, params)
 
@@ -1039,6 +1026,7 @@ class Application:
         rs.response.content_type = "text/html; charset=utf8"
         params = dict(
             user = rs.user,
+            form=rs.request.form,
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
         )
