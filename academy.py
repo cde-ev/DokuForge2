@@ -147,6 +147,11 @@ class Academy:
         return True
 
     def view(self):
+        """
+        @rtype: LazyView
+        @returns: a mapping providing the keys: name(str), title(unicode),
+            courses([Course.view()]), groups([unicode])
+        """
         return view.LazyView(dict(
             name=lambda:self.name,
             title=self.gettitle,
