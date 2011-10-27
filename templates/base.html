@@ -24,7 +24,7 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 {% elif ok %}
 {{ success }}
 {% else %}
-<span class=important>{{ errormessage }}</span><br/>
+<span class=important>{{ errormessage }}</span><br>
 {{ errorexplanation }}
 {% endif %}
 {%- endmacro -%}

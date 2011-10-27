@@ -289,5 +289,31 @@ class DokuforgeTests(unittest.TestCase):
         self.assertTrue("Die Kurserstellung war nicht erfolgreich." in self.get_data())
         self.is_loggedin()
 
+    def testCreateAcademy(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(url_regex=re.compile("/createacademy$")))
+        form = list(self.br.forms())[1]
+        form["name"] = "newacademy-2001"
+        form["title"] = "Testakademie"
+        form["groups"] = "cde"
+        self.br.open(form.click(label="Akademie anlegen"))
+        self.assertTrue("Testakademie" in self.get_data())
+        self.assertTrue("X-Akademie" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/createacademy$")))
+        form = list(self.br.forms())[1]
+        form["name"] = "foo_bar"
+        form["title"] = "next Testakademie"
+        form["groups"] = "cde"
+        self.br.open(form.click(label="Akademie anlegen"))
+        self.assertTrue("Die Akademieerstellung war nicht erfolgreich." in self.get_data())
+        form = list(self.br.forms())[1]
+        form["name"] = "foobar"
+        form["title"] = "next Testakademie"
+        form["groups"] = "cde spam"
+        self.br.open(form.click(label="Akademie anlegen"))
+        self.assertTrue("Die Akademieerstellung war nicht erfolgreich." in self.get_data())
+        self.is_loggedin()
+
 if __name__ == '__main__':
     unittest.main()
