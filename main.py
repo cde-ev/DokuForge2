@@ -507,7 +507,7 @@ class Application:
         topic = topic.encode("utf8")
         if not topic in os.listdir(os.path.join(self.templatepath,
                                                 self.stylepath)):
-            raise werkzeug.exception.NotFound()
+            raise werkzeug.exceptions.NotFound()
         return self.render_styleguide(rs, topic)
 
     def do_createpage(self, rs, academy=None, course=None):
