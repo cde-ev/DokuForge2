@@ -5,20 +5,25 @@ import course
 import re
 import operator
 from course import Course
+import view
 
-class AcademyLite:
+class Academy:
     """
-    Backend for viewing the file structres related to an academy
+    Backend for manipulating the file structres related to a course
 
-    A detailed description can be found with the class Academy.
+    It is characterised by the path of a directory. The directory should
+    contain the following files. All directories within this directory are
+    assumed to contain a course.
+
+    title,v    The title of this display name of this academy
+    groups,v   The groups in which this academy is a member
     """
-
     def __init__(self, obj):
         """
         @param obj: either a path or an Academy object
-        @type obj: str or Academy object or AcademyLite object
+        @type obj: str or Academy
         """
-        if isinstance(obj, AcademyLite):
+        if isinstance(obj, Academy):
             self.path = obj.path
         else:
             assert isinstance(obj, str)
@@ -82,24 +87,6 @@ class AcademyLite:
         return Course(finalpath)
 
 
-class Academy(AcademyLite):
-    """
-    Backend for manipulating the file structres related to a course
-
-    It is characterised by the path of a directory. The directory should
-    contain the following files. All directories within this directory are
-    assumed to contain a course.
-
-    title,v    The title of this display name of this academy
-    groups,v   The groups in which this academy is a member
-    """
-    def __init__(self, obj):
-        """
-        @param obj: either a path or an Academy object
-        @type obj: str or Academy object or AcademyLite object
-        """
-        AcademyLite.__init__(self, obj)
-
     def settitle(self, title):
         """
         Set the title of this academy
@@ -140,3 +127,9 @@ class Academy(AcademyLite):
         course.Course(os.path.join(self.path, name)).settitle(title)
         return True
 
+    def view(self):
+        return view.LazyView(dict(
+            name=lambda:self.name,
+            title=self.gettitle,
+            courses=self.viewCourses,
+            groups=self.getgroups))

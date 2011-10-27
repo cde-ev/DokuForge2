@@ -5,11 +5,11 @@
 {% block content %}
 <ul>
 {% for academy in academies %}
-  {% if group in academy.getgroups() %}
+  {% if group in academy.groups %}
     {% if user.allowedRead(academy) %}
-    <li><a href="{{ buildurl("academy", {'academy': academy}) }}">{{ academy.gettitle()|e }}</a></li>
+    <li><a href="{{ buildurl("academy", {'academy': academy}) }}">{{ academy.title|e }}</a></li>
     {% else %}
-    <li>{{ academy.gettitle()|e }}</li>
+    <li>{{ academy.title|e }}</li>
     {% endif %}
   {% endif %}
 {% else %}

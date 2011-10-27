@@ -255,9 +255,7 @@ class Application:
         params.update(kwargs)
         for key, value in rs.params.items():
             if self.routingmap.is_endpoint_expecting(name, key):
-                if key == 'academy':
-                    finalparams[key] = value.name
-                elif key == 'course':
+                if key in ("academy", "course"):
                     finalparams[key] = value["name"]
                 else:
                     finalparams[key] = value
@@ -757,7 +755,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(aca.path,"groups"),
-                            "academygroups.html", extraparams={'academy': aca})
+                            "academygroups.html", extraparams={'academy': aca.view()})
 
     def validateGroups(self, groupstring):
         """
@@ -782,7 +780,7 @@ class Application:
         return self.do_filesave(rs, storage.Storage(aca.path,"groups"),
                                 "academygroups.html",
                                 checkhook = self.validateGroups,
-                                extraparams={'academy': aca})
+                                extraparams={'academy': aca.view()})
 
     def do_academytitle(self, rs, academy=None):
         assert academy is not None
@@ -791,7 +789,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(aca.path,"title"),
-                            "academytitle.html", extraparams={'academy': aca})
+                            "academytitle.html", extraparams={'academy': aca.view()})
 
     def do_academytitlesave(self, rs, academy=None):
         assert academy is not None
@@ -800,7 +798,7 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(aca.path,"title"),
-                                "academytitle.html", extraparams={'academy': aca})
+                                "academytitle.html", extraparams={'academy': aca.view()})
 
     def do_coursetitle(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -810,7 +808,7 @@ class Application:
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, storage.Storage(c.path,"title"),
-                            "coursetitle.html", extraparams={'academy': aca,
+                            "coursetitle.html", extraparams={'academy': aca.view(),
                                                               'course': c.view()})
 
     def do_coursetitlesave(self, rs, academy=None, course=None):
@@ -821,7 +819,7 @@ class Application:
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, storage.Storage(c.path,"title"),
-                                "coursetitle.html", extraparams={'academy': aca,
+                                "coursetitle.html", extraparams={'academy': aca.view(),
                                                                  'course': c.view()})
 
     def do_admin(self, rs):
@@ -886,7 +884,7 @@ class Application:
         assert isinstance(theversion, unicode)
         assert isinstance(thecontent, unicode)
         params= dict(
-            academy=academy.AcademyLite(theacademy),
+            academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
             content=thecontent, ## Note: must use the provided content, as it has to fit with the version
@@ -899,18 +897,18 @@ class Application:
         if group is None:
             group = rs.user.defaultGroup()
         params = dict(
-            academies=map(academy.AcademyLite, self.listAcademies()),
+            academies=[academy.view() for academy in self.listAcademies()],
             allgroups = self.listGroups(),
             group = group)
         return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
         return self.render("academy.html", rs,
-                           dict(academy=academy.AcademyLite(theacademy)))
+                           dict(academy=theacademy.view()))
 
     def render_deadblobs(self, rs, theacademy, thecourse, thepage):
         params = dict(
-            academy=academy.AcademyLite(theacademy),
+            academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
             blobs=[thecourse.viewblob(i) for i in thecourse.listdeadblobs()]
@@ -919,20 +917,20 @@ class Application:
 
     def render_deadpages(self, rs, theacademy, thecourse):
         params = dict(
-            academy=academy.AcademyLite(theacademy),
+            academy=theacademy.view(),
             course=thecourse.view())
         return self.render("dead.html", rs, params)
 
     def render_course(self, rs, theacademy, thecourse):
         params = dict(
-            academy=academy.AcademyLite(theacademy),
+            academy=theacademy.view(),
             course=thecourse.view())
         return self.render("course.html", rs, params)
 
     def render_addblob(self, rs, theacademy, thecourse, thepage, comment="",
                        label="", error=None):
         params = dict(
-            academy=academy.AcademyLite(theacademy),
+            academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
             comment=comment,
@@ -944,7 +942,7 @@ class Application:
     def render_showblob(self, rs, theacademy, thecourse, thepage, blobnr,
                         theblob, blobhash=None):
         params = dict(
-            academy=academy.AcademyLite(theacademy),
+            academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
             blob=blobnr,
@@ -955,7 +953,7 @@ class Application:
     def render_editblob(self, rs, theacademy, thecourse, thepage, blobnr,
                         theblob, ok=None, error=None):
         params = dict(
-            academy=academy.AcademyLite(theacademy),
+            academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
             blobnr=blobnr,
@@ -978,7 +976,7 @@ class Application:
         """
         assert isinstance(name, unicode)
         assert isinstance(title, unicode)
-        params = dict(academy=academy.AcademyLite(theacademy),
+        params = dict(academy=theacademy.view(),
                       name=name,
                       title=title,
                       ok=ok,
@@ -1007,7 +1005,7 @@ class Application:
 
     def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
         params = dict(
-            academy=academy.AcademyLite(theacademy),
+            academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
             content=thecourse.showpage(thepage),

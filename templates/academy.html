@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 {% block location%}
-{{ navbar([("academy", academy.gettitle())]) }}
+{{ navbar([("academy", academy.title)]) }}
 {% endblock %}
 {% block content %}
-{% set courses = academy.viewCourses() %}
-{% if courses %}
+{% if academy.courses %}
 <ol>
-	{% for course in courses %}
+	{% for course in academy.courses %}
 	    {% if user.allowedRead(academy, course) %}
 	    <li><a href="{{ buildurl("course", {'course': course}) }}">{{ course.title|e }}</a></li>
 	    {% else %}
