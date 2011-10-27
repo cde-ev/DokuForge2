@@ -108,6 +108,7 @@ class Academy(AcademyLite):
         if title == u"":
             return False
         storage.Storage(self.path,"title").store(title.encode("utf8"))
+        return True
 
     def setgroups(self, groups):
         """

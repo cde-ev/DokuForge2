@@ -185,7 +185,7 @@ class Course(CourseLite):
             return ""
         pagestore = Storage(self.path, "page%d" % page)
         return pagestore.asrcs()
-    
+
     def export(self):
         """
         @returns: a tar ball containing the full internal information about
@@ -193,7 +193,7 @@ class Course(CourseLite):
         @rtype: str
         """
         return check_output(["tar","cf","-",self.path])
-    
+
     def settitle(self,title):
         """
         Set the title of this course
@@ -204,6 +204,7 @@ class Course(CourseLite):
             return False
         s=Storage(self.path,"title")
         s.store(title.encode("utf8"))
+        return True
 
     def newpage(self,user=None):
         """
