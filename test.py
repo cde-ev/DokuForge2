@@ -315,5 +315,97 @@ class DokuforgeTests(unittest.TestCase):
         self.assertTrue("Die Akademieerstellung war nicht erfolgreich." in self.get_data())
         self.is_loggedin()
 
+    def testGroups(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(url_regex=re.compile("/groups/$")))
+        form = list(self.br.forms())[1]
+        form["content"] = """[cde]
+title = CdE-Akademien
+
+[spam]
+title = Wie der Name sagt
+"""
+        self.br.open(form.click(label="Speichern und Editieren"))
+        self.assertTrue("Aenderungen erfolgreich gespeichert." in self.get_data())
+        form = list(self.br.forms())[1]
+        form["content"] = """[cde]
+title = CdE-Akademien
+
+[spam
+title = Wie der Name sagt
+"""
+        self.br.open(form.click(label="Speichern und Editieren"))
+        self.assertTrue("Es ist ein Parser Error aufgetreten!" in self.get_data())
+        self.is_loggedin()
+
+    def testAdmin(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(url_regex=re.compile("/admin/$")))
+        form = list(self.br.forms())[1]
+        form["content"] = """[bob]
+name = bob
+status = ueberadmin
+password = secret
+permissions = df_superadmin True,df_admin True
+"""
+        self.br.open(form.click(label="Speichern und Editieren"))
+        self.assertTrue("Aenderungen erfolgreich gespeichert." in self.get_data())
+        form = list(self.br.forms())[1]
+        form["content"] = """[bob
+name = bob
+status = ueberadmin
+password = secret
+permissions = df_superadmin True,df_admin True
+"""
+        self.br.open(form.click(label="Speichern und Editieren"))
+        self.assertTrue("Es ist ein Parser Error aufgetreten!" in self.get_data())
+        self.is_loggedin()
+
+    def testStyleguide(self):
+        self.br.open(self.url)
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.assertTrue("Richtlinien für die Erstellung der Dokumentation" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/intro$")))
+        self.assertTrue(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge".encode("utf8") in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/hilfe$")))
+        self.assertTrue("Ein kurzer Leitfaden für die Benutzung von DokuForge" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/grundlagen$")))
+        self.assertTrue("Grundlagen von DokuForge" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/abbildungen$")))
+        self.assertTrue(u"Wie werden Abbildungen in DokuForge eingefügt?".encode("utf8") in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/mathe$")))
+        self.assertTrue("Wie werden Formeln gesetzt?" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/spezielles$")))
+        self.assertTrue(u"Sondersonderwünsche".encode("utf8") in self.get_data())
+        self.br.open(self.br.click_link(text="Login"))
+        self.do_login()
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.assertTrue("Richtlinien für die Erstellung der Dokumentation" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/intro$")))
+        self.assertTrue(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge".encode("utf8") in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/hilfe$")))
+        self.assertTrue("Ein kurzer Leitfaden für die Benutzung von DokuForge" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/grundlagen$")))
+        self.assertTrue("Grundlagen von DokuForge" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/abbildungen$")))
+        self.assertTrue(u"Wie werden Abbildungen in DokuForge eingefügt?".encode("utf8") in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/mathe$")))
+        self.assertTrue("Wie werden Formeln gesetzt?" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/style/spezielles$")))
+        self.assertTrue(u"Sondersonderwünsche".encode("utf8") in self.get_data())
+        self.is_loggedin()
+
 if __name__ == '__main__':
     unittest.main()
