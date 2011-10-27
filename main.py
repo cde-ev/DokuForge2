@@ -478,8 +478,7 @@ class Application:
         if aca.createCourse(name, title):
             return self.render_academy(rs, aca)
         else:
-            return self.render_createcoursequiz(rs, aca, name=name,
-                                                title=title, ok=False,
+            return self.render_createcoursequiz(rs, aca, ok=False,
                                                 error = CheckError(u"Die Kurserstellung war nicht erfolgreich.", u"Bitte die folgenden Angaben korrigieren."))
 
     def do_createacademyquiz(self, rs):
@@ -954,21 +953,14 @@ class Application:
         return self.render("editblob.html", rs, params)
 
 
-    def render_createcoursequiz(self, rs, theacademy, name=u'', title=u'',
-                                ok=None, error=None):
+    def render_createcoursequiz(self, rs, theacademy, ok=None, error=None):
         """
         @type rs: RequestState
         @type theacademy: Academy
-        @type name: unicode
-        @type title: unicode
         @type ok: None or Boolean
         @type error: None or CheckError
         """
-        assert isinstance(name, unicode)
-        assert isinstance(title, unicode)
         params = dict(academy=theacademy.view(),
-                      name=name,
-                      title=title,
                       ok=ok,
                       error=error)
         return self.render("createcoursequiz.html", rs, params)
