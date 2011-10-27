@@ -108,8 +108,7 @@ class RequestState:
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.mapadapter = mapadapter
-        self.endpoint = None # set later
-        self.endpointargs = None # set later
+        self.params = None # set later
 
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
@@ -248,14 +247,17 @@ class Application:
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/!delete",
                  methods=("POST",), endpoint="blobdelete"),
         ], converters=dict(identifier=IdentifierConverter))
-        self.allparams = ['academy', 'course', 'page', 'blob', 'group', 'topic']
 
     def buildurl(self, rs, name, kwargs):
         finalparams = {}
-        for key, value in rs.endpointargs.items():
+        params = rs.params
+        params.update(kwargs)
+        for key, value in rs.params.items():
             if self.routingmap.is_endpoint_expecting(name, key):
-                finalparams[key] = value
-        finalparams.update(kwargs)
+                if key == 'academy' or key == 'course':
+                    finalparams[key] = value.name
+                else:
+                    finalparams[key] = value
         return rs.mapadapter.build(name, finalparams)
 
     def getAcademy(self, name, user=None):
@@ -343,8 +345,6 @@ class Application:
         rs = RequestState(request, self.sessiondb, self.userdb, mapadapter)
         try:
             endpoint, args = mapadapter.match()
-            rs.endpoint = endpoint
-            rs.endpointargs = args
             return getattr(self, "do_%s" % endpoint)(rs, **args)
         except werkzeug.routing.HTTPException, e:
             return e
@@ -1046,6 +1046,7 @@ class Application:
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
         )
         params.update(extraparams)
+        rs.params = params
         template = self.jinjaenv.get_template(templatename)
         rs.response.data = template.render(params).encode("utf8")
         return rs.response

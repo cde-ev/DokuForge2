@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block location%}
-{{ navbar([("academy", {}, academy.gettitle()),
-           ("course", {}, course.gettitle()),
-	   ("page", {}, "Teil #" + page|string),
-	   ("blob", {}, "Bild #" + blobnr|string),
-	   ("editblob", {}, "Bild editieren")]) }}
+{{ navbar([("academy", academy.gettitle()),
+           ("course", course.gettitle()),
+	   ("page", "Teil #" + page|string),
+	   ("blob", "Bild #" + blobnr|string),
+	   ("editblob", "Bild editieren")]) }}
 {% endblock %}
 
 {% block content %}
