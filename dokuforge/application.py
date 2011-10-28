@@ -1187,7 +1187,7 @@ class Application:
         @type rs: RequestState
         @type topic: unicode
         """
-        params= dict(
+        params = dict(
             topic = topic,
             includepath = os.path.join("style", topic)
             )
@@ -1206,7 +1206,7 @@ class Application:
         """
         assert isinstance(theversion, unicode)
         assert isinstance(thecontent, unicode)
-        params= dict(
+        params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
@@ -1227,8 +1227,8 @@ class Application:
             group = rs.user.defaultGroup()
         params = dict(
             academies=[academy.view() for academy in self.listAcademies()],
-            allgroups = self.listGroups(),
-            group = group)
+            allgroups=self.listGroups(),
+            group=group)
         return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
@@ -1380,7 +1380,7 @@ class Application:
         assert isinstance(templatename, str)
         assert isinstance(theversion, unicode)
         assert isinstance(thecontent, unicode)
-        params= dict(
+        params = dict(
             ## Note: must use the provided content, as it has to fit with the
             ## version
             content=thecontent,

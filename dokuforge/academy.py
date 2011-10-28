@@ -65,7 +65,7 @@ class Academy(StorageDir):
         coursename = coursename.encode("utf8")
         if re.match('^[-a-zA-Z0-9]{1,200}$', coursename) is None:
             return None
-        finalpath = os.path.join(self.path,coursename)
+        finalpath = os.path.join(self.path, coursename)
         if not os.path.isdir(finalpath):
             return None
         return Course(finalpath)
