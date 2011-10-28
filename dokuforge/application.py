@@ -153,7 +153,7 @@ class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
         return werkzeug.utils.redirect(self.new_url, self.code)
 
 class IdentifierConverter(werkzeug.routing.BaseConverter):
-    regex = '[a-z][a-zA-Z0-9-]{0,199}'
+    regex = '[a-zA-Z0-9-]{1,200}'
 
 class Application:
     def __init__(self, userdb, groupstore, acapath, staticservepath,
@@ -310,9 +310,10 @@ class Application:
         """
         assert isinstance(name, unicode)
         name = name.encode("utf8")
-        if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
-            raise werkzeug.exceptions.NotFound()
-        if not os.path.isdir(os.path.join(self.acapath, name)):
+        try:
+            common.validateInternalName(name)
+            common.validateExistence(self.acapath, name)
+        except CheckError:
             raise werkzeug.exceptions.NotFound()
         aca = Academy(os.path.join(self.acapath, name))
         if user is not None and not user.allowedRead(aca):

@@ -63,12 +63,12 @@ class Academy(StorageDir):
         """
         assert isinstance(coursename, unicode)
         coursename = coursename.encode("utf8")
-        if re.match('^[-a-zA-Z0-9]{1,200}$', coursename) is None:
+        try:
+            common.validateInternalName(coursename)
+            common.validateExistence(self.path, coursename)
+        except CheckError:
             return None
-        finalpath = os.path.join(self.path, coursename)
-        if not os.path.isdir(finalpath):
-            return None
-        return Course(finalpath)
+        return Course(os.path.join(self.path, coursename))
 
     def setgroups(self, groups):
         """

@@ -159,3 +159,18 @@ def validateNonExistence(path, name):
     if os.path.exists(os.path.join(path, name)):
         raise CheckError(u"Interner Name bereits vergeben!",
                          u"Wähle einen anderen Namen.")
+
+def validateExistence(path, name):
+    """
+    check whether a name exsits. If not raise a CheckError.
+
+    @type name: str
+    @type path: str
+    @param name: name to check for existence
+    @param path: base path in which to check for the name
+    """
+    assert isinstance(name, str)
+    assert isinstance(path, str)
+    if not os.path.exists(os.path.join(path, name)):
+        raise CheckError(u"Interner Name existiert nicht!",
+                         u"Bitte den Namen korrigieren.")
