@@ -5,6 +5,8 @@ import operator
 
 from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
+import dokuforge.common as common
+from dokuforge.common import CheckError
 
 class Academy(StorageDir):
     """
@@ -91,11 +93,11 @@ class Academy(StorageDir):
         assert isinstance(name, unicode)
         assert isinstance(title, unicode)
         name = name.encode("utf8")
-        if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
-            return False
-        if title == u"":
-            return False
-        if os.path.exists(os.path.join(self.path, name)):
+        try:
+            common.validateInternalName(name)
+            common.validateNonExistence(self.path, name)
+            common.validateTitle(title)
+        except CheckError:
             return False
         Course(os.path.join(self.path, name)).settitle(title)
         return True

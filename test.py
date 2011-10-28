@@ -285,7 +285,7 @@ class DokuforgeTests(unittest.TestCase):
         form["name"] = "foo_bar"
         form["title"] = "next Testkurs"
         self.br.open(form.click(label=u"Kurs hinzufügen".encode("utf8")))
-        self.assertTrue("Die Kurserstellung war nicht erfolgreich." in self.get_data())
+        self.assertTrue("Interner Name nicht wohlgeformt!" in self.get_data())
         self.is_loggedin()
 
     def testCreateAcademy(self):
@@ -305,13 +305,13 @@ class DokuforgeTests(unittest.TestCase):
         form["title"] = "next Testakademie"
         form["groups"] = "cde"
         self.br.open(form.click(label="Akademie anlegen"))
-        self.assertTrue("Die Akademieerstellung war nicht erfolgreich." in self.get_data())
+        self.assertTrue("Interner Name nicht wohlgeformt!" in self.get_data())
         form = list(self.br.forms())[1]
         form["name"] = "foobar"
         form["title"] = "next Testakademie"
         form["groups"] = "cde spam"
         self.br.open(form.click(label="Akademie anlegen"))
-        self.assertTrue("Die Akademieerstellung war nicht erfolgreich." in self.get_data())
+        self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
         self.is_loggedin()
 
     def testGroups(self):

@@ -25,9 +25,8 @@ from werkzeug.wrappers import Request, Response
 
 from dokuforge.academy import Academy
 from dokuforge.storage import Storage
-
-import common
-from common import CheckError
+import dokuforge.common as common
+from dokuforge.common import CheckError
 
 sysrand = random.SystemRandom()
 
@@ -345,19 +344,14 @@ class Application:
         assert isinstance(title, unicode)
         assert all(isinstance(group, unicode) for group in groups)
         name = name.encode("utf8")
-        if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
-            return None
-        if title == u"":
+        try:
+            common.validateInternalName(name)
+            common.validateNonExistence(self.acapath, name)
+            common.validateTitle(title)
+            common.validateGroups(groups, self.listGroups())
+        except CheckError:
             return None
         path = os.path.join(self.acapath, name)
-        if os.path.exists(path):
-            return None
-        if len(groups) == 0:
-            return None
-        allgroups = self.listGroups()
-        for group in groups:
-            if not group in allgroups:
-                return None
         os.makedirs(path)
         aca = Academy(path)
         aca.settitle(title)
@@ -591,6 +585,13 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         name = rs.request.form["name"]
         title = rs.request.form["title"]
+        try:
+            common.validateInternalName(name.encode("utf8"))
+            common.validateNonExistence(aca.path, name.encode("utf8"))
+            common.validateTitle(title)
+        except CheckError as error:
+            return self.render_createcoursequiz(rs, aca, ok=False,
+                                                error = error)
         if aca.createCourse(name, title):
             return self.render_academy(rs, aca)
         else:
@@ -618,13 +619,19 @@ class Application:
         name = rs.request.form["name"]
         title = rs.request.form["title"]
         groups = rs.request.form["groups"].split()
+        try:
+            common.validateInternalName(name.encode("utf8"))
+            common.validateNonExistence(self.acapath, name.encode("utf8"))
+            common.validateTitle(title)
+            common.validateGroups(groups, self.listGroups())
+        except CheckError as error:
+            return self.render_createacademyquiz(rs, ok=False, error = error)
         if self.createAcademy(name, title, groups):
             return self.render_index(rs)
         else:
             error = CheckError(u"Die Akademieerstellung war nicht erfolgreich.",
                                u"Bitte die folgenden Angaben korrigieren.")
-            return self.render_createacademyquiz(rs, ok=False,
-                                                 error = error)
+            return self.render_createacademyquiz(rs, ok=False, error = error)
 
     def do_styleguide(self, rs):
         """
@@ -792,6 +799,8 @@ class Application:
 
         try:
             common.validateBlobLabel(newlabel)
+            common.validateBlobComment(newcomment)
+            common.validateBlobFilename(newname.encode("utf8"))
         except CheckError as error:
             return self.render_editblob(rs, aca, c, page, blob, ok=False,
                                         error=error)
@@ -963,16 +972,35 @@ class Application:
         # a FileStorage is sufficiently file-like for store
         usercontent = rs.request.files["content"]
 
+        ## This is a bit tedious since we don't want to drop the blob and
+        ## force the user to retransmit it.
+        error = None
+        filename = usercontent.filename.encode("utf8")
+        try:
+            common.validateBlobFilename(filename)
+        except CheckError as err:
+            filename = "einedatei.dat"
+            error = err
         try:
             common.validateBlobLabel(userlabel)
-        except CheckError as error:
+        except CheckError as err:
+            userlabel = u"somefig"
+            error = err
+        try:
+            common.validateBlobComment(usercomment)
+        except CheckError as err:
+            usercomment = u"Bildunterschrift"
+            error = err
+        if error is not None:
             blob = c.attachblob(page, usercontent, comment=usercomment,
-                                label=u"somefig", user=rs.user.name)
+                                label=userlabel, user=rs.user.name,
+                                filename=filename)
             return self.render_editblob(rs, aca, c, page, blob, ok=False,
                                        error=error)
-        c.attachblob(page, usercontent, comment=usercomment,
-                     label=userlabel, user=rs.user.name)
-        return self.render_show(rs, aca, c, page)
+        else:
+            c.attachblob(page, usercontent, comment=usercomment,
+                         label=userlabel, user=rs.user.name)
+            return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
@@ -1026,7 +1054,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, Storage(aca.path,"groups"),
                                 "academygroups.html",
-                                checkhook = lambda g: common.validateGroups(g, self.listGroups()),
+                                checkhook = lambda g: common.validateGroupstring(g, self.listGroups()),
                                 extraparams={'academy': aca.view()})
 
     def do_academytitle(self, rs, academy=None):
