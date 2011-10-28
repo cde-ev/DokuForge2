@@ -847,7 +847,7 @@ class Application:
         rs.response.content_type = "application/octet-stream"
         theblob = c.viewblob(blob)
         rs.response.data = theblob["data"]
-	rs.response.headers['Content-Disposition'] = \
+        rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=%s" % theblob["filename"]
         return rs.response
 
@@ -866,7 +866,8 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         rs.response.data = c.getrcs(page)
-	rs.response.headers['Content-Disposition'] = "attachment; filename=%d,v" % (page)
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=%d,v" % (page)
         return rs.response
 
     def do_raw(self, rs, academy=None, course=None):
@@ -883,7 +884,8 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         rs.response.data = c.export()
-	rs.response.headers['Content-Disposition'] = "attachment; filename=%s_%s.tar" % (aca.name, c.name)
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=%s_%s.tar" % (aca.name, c.name)
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
