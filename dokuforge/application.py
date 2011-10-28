@@ -26,6 +26,9 @@ from werkzeug.wrappers import Request, Response
 from dokuforge.academy import Academy
 from dokuforge.storage import Storage
 
+import common
+from common import CheckError
+
 sysrand = random.SystemRandom()
 
 def gensid(bits=64):
@@ -149,16 +152,6 @@ class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
 
     def get_response(self, environ):
         return werkzeug.utils.redirect(self.new_url, self.code)
-
-class CheckError(StandardError):
-    def __init__(self, msg, exp):
-        StandardError.__init__(self, msg)
-        assert isinstance(msg, unicode)
-        assert isinstance(exp, unicode)
-        self.message = msg
-        self.explanation = exp
-    def __str__(self):
-        return self.message
 
 class IdentifierConverter(werkzeug.routing.BaseConverter):
     regex = '[a-z][a-zA-Z0-9-]{0,199}'
@@ -971,11 +964,11 @@ class Application:
         # a FileStorage is sufficiently file-like for store
         usercontent = rs.request.files["content"]
 
-        if re.match('^[a-z0-9]{1,200}$', userlabel) is None:
+        try:
+            common.validateBlobLabel(userlabel)
+        except CheckError as error:
             blob = c.attachblob(page, usercontent, comment=usercomment,
                                 label=u"somefig", user=rs.user.name)
-            error = CheckError(u"K&uuml;rzel falsch formatiert!",
-                               u"Bitte korrigeren und speichern.")
             return self.render_editblob(rs, aca, c, page, blob, ok=False,
                                        error=error)
         c.attachblob(page, usercontent, comment=usercomment,
@@ -1022,25 +1015,6 @@ class Application:
                             "academygroups.html",
                             extraparams={'academy': aca.view()})
 
-    def validateGroups(self, groupstring):
-        """
-        check whether groupstring contains a valid set of groups. This means
-        it may not be empty and it may not contain non-existent groups. If a
-        check fails a CheckError is raised.
-
-        @type groupstring: unicode
-        @param groupstring: contains groups seperated by whitespace
-        """
-        assert isinstance(groupstring, unicode)
-        groups = groupstring.split()
-        if len(groups) == 0:
-            raise CheckError(u"Keine Gruppen gefunden!",
-                             u"Jede Akademie muss mindestens einer Gruppe angeh&ouml;ren. Bitte korrigieren und erneut versuchen.")
-        for g in groups:
-            if g not in self.listGroups():
-                raise CheckError(u"Nichtexistente Gruppe gefunden!",
-                                 u"Bitte korrigieren und erneut versuchen.")
-
     def do_academygroupssave(self, rs, academy=None):
         """
         @type rs: RequestState
@@ -1053,7 +1027,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, Storage(aca.path,"groups"),
                                 "academygroups.html",
-                                checkhook = self.validateGroups,
+                                checkhook = lambda g: common.validateGroups(g, self.listGroups()),
                                 extraparams={'academy': aca.view()})
 
     def do_academytitle(self, rs, academy=None):
@@ -1070,19 +1044,6 @@ class Application:
                             "academytitle.html",
                             extraparams={'academy': aca.view()})
 
-    def validateTitle(self, title):
-        """
-        check whether the title is valid, this means nonempty. If not raise
-        a CheckError exception.
-
-        @type title: unicode
-        @param title: title to check
-        """
-        assert isinstance(title, unicode)
-        if title == u"":
-            raise CheckError(u"Leerer Titel!",
-                             u"Der Titel darf nicht leer sein.")
-
     def do_academytitlesave(self, rs, academy=None):
         """
         @type rs: RequestState
@@ -1095,7 +1056,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, Storage(aca.path,"title"),
                                 "academytitle.html",
-                                checkhook = self.validateTitle,
+                                checkhook = common.validateTitle,
                                 extraparams = {'academy': aca.view()})
 
     def do_coursetitle(self, rs, academy=None, course=None):
@@ -1129,7 +1090,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, Storage(c.path,"title"),
                                 "coursetitle.html",
-                                checkhook = self.validateTitle,
+                                checkhook = common.validateTitle,
                                 extraparams={'academy': aca.view(),
                                              'course': c.view()})
 

@@ -8,6 +8,9 @@ from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
 
+import common
+from common import CheckError
+
 class Course(StorageDir):
     """
     Backend for manipulating the file structres related to a course
@@ -355,7 +358,9 @@ class Course(StorageDir):
         assert isinstance(comment, unicode)
         assert isinstance(label, unicode)
 
-        if re.match('^[a-z0-9]{1,200}$', label) is None:
+        try:
+            common.validateBlobLabel(label)
+        except CheckError:
             return None
 
         if user is not None:
