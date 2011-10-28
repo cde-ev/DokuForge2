@@ -268,11 +268,23 @@ class Application:
         return rs.mapadapter.build(endpoint, buildargs)
 
     def staticjoin(self, name, rs):
+        """
+        @type rs: RequestState
+        @type name: str
+        @param name: filename to serve statically
+        @returns: url for the file
+        """
         assert isinstance(name, str)
-        if name[0] == "/":
+        ## We have to differentiate whether we serve the static files from
+        ## the same domain as the request
+        ## in this case staticservepath is something like "/path/to/directory"
+        if self.staticservepath[0] == "/":
             return urlparse.urljoin(urllib.basejoin(rs.request.url_root,
                                                     self.staticservepath),
                                     name)
+        ## or from another domain
+        ## in this case staticservepath is something like
+        ## "http://static.dokuforge.de/files/"
         else:
             return urlparse.urljoin(self.staticservepath, name)
 
