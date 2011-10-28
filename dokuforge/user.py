@@ -105,11 +105,11 @@ class User:
             akademie_view_* is not enough.
         @rtype: bool
         """
-        # first check global priveleges
+        ## first check global priveleges
         if self.hasPermission(u"df_read") or self.isSuperAdmin():
             return True
-        # now we need to resolve aca
-        # a bit care has to be taken since we need the groups too
+        ## now we need to resolve aca
+        ## a bit care has to be taken since we need the groups too
         if isinstance(aca, LazyView):
             groups = aca["groups"]
             aca = aca["name"]
@@ -117,23 +117,23 @@ class User:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
             aca = aca.name
-        # second check group level privileges
+        ## second check group level privileges
         for g in groups:
             if self.hasPermission(u"gruppe_read_%s" % g):
                 return True
-        # third check the academy level priveleges
+        ## third check the academy level priveleges
         if self.hasPermission(u"akademie_read_%s" % aca):
             return True
         if course is None:
-            # we only want to read an academy entry
-            # we now have to check the akademie_view privelege
-            # but in recursive case this is not sufficient
+            ## we only want to read an academy entry
+            ## we now have to check the akademie_view privelege
+            ## but in recursive case this is not sufficient
             if recursive:
                 return False
-            # in non-recursive case we check akademie_view_*
+            ## in non-recursive case we check akademie_view_*
             return self.hasPermission(u"akademie_view_%s" % aca)
-        # at this point we ask for a read privelege of a specific course
-        # so we resolve course
+        ## at this point we ask for a read privelege of a specific course
+        ## so we resolve course
         elif isinstance(course, LazyView):
             course = course["name"]
         else:
@@ -147,11 +147,11 @@ class User:
         @type course: None or Course or LazyView
         @rtype: bool
         """
-        # first check global priveleges
+        ## first check global priveleges
         if self.hasPermission(u"df_write") or self.isSuperAdmin():
             return True
-        # now we need to resolve aca
-        # a bit care has to be taken since we need the groups too
+        ## now we need to resolve aca
+        ## a bit care has to be taken since we need the groups too
         if isinstance(aca, LazyView):
             groups = aca["groups"]
             aca = aca["name"]
@@ -159,18 +159,18 @@ class User:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
             aca = aca.name
-        # second check group level privileges
+        ## second check group level privileges
         for g in groups:
             if self.hasPermission(u"gruppe_write_%s" % g):
                 return True
-        # third check the academy level priveleges
+        ## third check the academy level priveleges
         if self.hasPermission(u"akademie_write_%s" % aca):
             return True
         if course is None:
-            # no write access to the academy
+            ## no write access to the academy
             return False
-        # at this point we ask for a write privelege of a specific course
-        # so we resolve course
+        ## at this point we ask for a write privelege of a specific course
+        ## so we resolve course
         elif isinstance(course, LazyView):
             course = course["name"]
         else:
@@ -184,14 +184,14 @@ class User:
         @rtype: bool
         """
         assert isinstance(aca, Academy) or isinstance(aca, LazyView)
-        # superadmin is allowed to do everything
+        ## superadmin is allowed to do everything
         if self.isSuperAdmin():
             return True
-        # we require the corresponding read privelege
-        # akademie_view_* shall not be enough, hence we demand recursive
+        ## we require the corresponding read privelege
+        ## akademie_view_* shall not be enough, hence we demand recursive
         if not self.allowedRead(aca, recursive = True):
             return False
-        # now we have to check the export privelege
+        ## now we have to check the export privelege
         return self.hasPermission(u"df_export")
 
     def mayCreate(self):
@@ -338,7 +338,7 @@ class UserDB:
         config = ConfigParser.SafeConfigParser()
         content = StringIO(self.storage.content())
         config.readfp(content)
-        # clear after we read the new config, better safe than sorry
+        ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():
             permissions = dict((perm.split(' ')[0].decode("utf8"),
