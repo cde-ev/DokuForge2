@@ -297,7 +297,7 @@ class Course(StorageDir):
 
         @param number: the internal page number
         @type number: int
-        @returns a pair of an opaque version string and the contents of this page
+        @returns: a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
         """
         page = self.getstorage("page%d" % number)
