@@ -893,6 +893,9 @@ class Application:
                                              'course': c.view()})
 
     def do_admin(self, rs):
+        """
+        @type rs: RequestState
+        """
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
@@ -900,6 +903,9 @@ class Application:
 
     def tryConfigParser(self, content):
         """
+        Try parsing the supplied content with ConfigParser. If this fails
+        raise a CheckError saying so.
+
         @type content: unicode
         """
         assert isinstance(content, unicode)
@@ -912,6 +918,9 @@ class Application:
                              u". Bitte korrigiere ihn und speichere erneut.")
 
     def do_adminsave(self, rs):
+        """
+        @type rs: RequestState
+        """
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
@@ -920,12 +929,18 @@ class Application:
                                 savehook = self.userdb.load)
 
     def do_groups(self, rs):
+        """
+        @type rs: RequestState
+        """
         self.check_login(rs)
         if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, self.groupstore, "groups.html")
 
     def do_groupssave(self, rs):
+        """
+        @type rs: RequestState
+        """
         self.check_login(rs)
         if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
@@ -933,9 +948,16 @@ class Application:
                                 checkhook = self.tryConfigParser)
 
     def render_start(self, rs):
+        """
+        @type rs: RequestState
+        """
         return self.render("start.html", rs)
 
     def render_styleguide(self, rs, topic):
+        """
+        @type rs: RequestState
+        @type topic: unicode
+        """
         params= dict(
             topic = topic,
             includepath = os.path.join(self.stylepath, topic)
@@ -951,6 +973,7 @@ class Application:
         @type thepage: int
         @type theversion: unicode
         @type thecontent: unicode
+        @type ok: None or bool
         """
         assert isinstance(theversion, unicode)
         assert isinstance(thecontent, unicode)
@@ -967,6 +990,10 @@ class Application:
 
 
     def render_index(self, rs, group = None):
+        """
+        @type rs: RequestState
+        @type group: None or unicode
+        """
         if group is None:
             group = rs.user.defaultGroup()
         params = dict(
@@ -976,10 +1003,20 @@ class Application:
         return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
+        """
+        @type rs: RequestState
+        @type theacademy: unicode
+        """
         return self.render("academy.html", rs,
                            dict(academy=theacademy.view()))
 
     def render_deadblobs(self, rs, theacademy, thecourse, thepage):
+        """
+        @type rs: RequestState
+        @type theacademy: unicode
+        @type thecourse: unicode
+        @type thepage: int
+        """
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
@@ -988,18 +1025,34 @@ class Application:
         return self.render("deadblobs.html", rs, params)
 
     def render_deadpages(self, rs, theacademy, thecourse):
+        """
+        @type rs: RequestState
+        @type theacademy: unicode
+        @type thecourse: unicode
+        """
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view())
         return self.render("dead.html", rs, params)
 
     def render_course(self, rs, theacademy, thecourse):
+        """
+        @type rs: RequestState
+        @type theacademy: unicode
+        @type thecourse: unicode
+        """
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view())
         return self.render("course.html", rs, params)
 
     def render_addblob(self, rs, theacademy, thecourse, thepage):
+        """
+        @type rs: RequestState
+        @type theacademy: unicode
+        @type thecourse: unicode
+        @type thepage: int
+        """
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
@@ -1008,6 +1061,14 @@ class Application:
 
     def render_showblob(self, rs, theacademy, thecourse, thepage, blob,
                         blobhash=None):
+        """
+        @type rs: RequestState
+        @type theacademy: unicode
+        @type thecourse: unicode
+        @type thepage: int
+        @type blob: int
+        @type blobhash: str
+        """
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
@@ -1018,6 +1079,15 @@ class Application:
 
     def render_editblob(self, rs, theacademy, thecourse, thepage, blob, ok=None,
                         error=None):
+        """
+        @type rs: RequestState
+        @type theacademy: unicode
+        @type thecourse: unicode
+        @type thepage: int
+        @type blob: int
+        @type ok: None or bool
+        @type error: None or CheckError
+        """
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
