@@ -89,7 +89,7 @@ class Course(StorageDir):
                 np = self.nextpage(havelock=gotlocknextpage)
                 linkedpages= self.listpages(havelock=gotlockindex)
                 return [x for x in range(np) if x not in linkedpages]
-            
+
     def listdeadblobs(self):
         """
         @returns: a list of the blobs not currently linked to the index
@@ -109,7 +109,7 @@ class Course(StorageDir):
                 return [n for n in range(nextblobindex) if n not in availableblobs]
 
 
-    def showpage(self,number):
+    def showpage(self, number):
         """
         Show the contents of a page
 
@@ -137,9 +137,9 @@ class Course(StorageDir):
                 this course
         @rtype: str
         """
-        return check_output(["tar","cf","-",self.path])
+        return check_output(["tar", "cf", "-", self.path])
 
-    def newpage(self,user=None):
+    def newpage(self, user=None):
         """
         create a new page in this course and return its internal number
         @type user: None or unicode
@@ -153,15 +153,16 @@ class Course(StorageDir):
         with index.lock as gotlockindex:
             with nextpagestore.lock as gotlocknextpage:
                 newnumber = self.nextpage(havelock=gotlocknextpage)
-                nextpagestore.store("%d" % (newnumber+1),havelock=gotlocknextpage,user=user)
+                nextpagestore.store("%d" % (newnumber+1),
+                                    havelock=gotlocknextpage, user=user)
                 indexcontents = index.content(havelock=gotlockindex)
                 if indexcontents == "\n":
                     indexcontents = ""
                 indexcontents += "%s\n" % newnumber
-                index.store(indexcontents,havelock=gotlockindex,user=user)
+                index.store(indexcontents, havelock=gotlockindex, user=user)
                 return newnumber
 
-    def delblob(self,number,user=None):
+    def delblob(self, number, user=None):
         """
         Delete a page
 
@@ -183,9 +184,9 @@ class Course(StorageDir):
                 newentries.extend([x for x in entries[1:] if int(x) != number])
                 newlines.append(" ".join(newentries))
             newindex="\n".join(newlines) + "\n"
-            indexstore.store(newindex,havelock=gotlock,user=user)
+            indexstore.store(newindex, havelock=gotlock, user=user)
 
-    def delpage(self,number,user=None):
+    def delpage(self, number, user=None):
         """
         Delete a page
 
@@ -205,9 +206,9 @@ class Course(StorageDir):
                 if int(line.split()[0])!=number:
                     newlines.append(line)
             newindex="\n".join(newlines) + "\n"
-            indexstore.store(newindex,havelock=gotlock,user=user)
+            indexstore.store(newindex, havelock=gotlock, user=user)
 
-    def swappages(self,position,user=None):
+    def swappages(self, position, user=None):
         """
         swap the page at the given current position with its predecessor
 
@@ -226,7 +227,7 @@ class Course(StorageDir):
                 lines[position-1]=lines[position]
                 lines[position]=tmp
             newindex="\n".join(lines) + "\n"
-            indexstore.store(newindex,havelock=gotlock,user=user)
+            indexstore.store(newindex, havelock=gotlock, user=user)
 
     def relink(self, page, user=None):
         """
@@ -255,7 +256,8 @@ class Course(StorageDir):
                     else:
                         lines.append("%d" % page)
                         newindex="\n".join(lines) + "\n"
-                        indexstore.store(newindex,havelock=gotlockindex,user=user)
+                        indexstore.store(newindex, havelock=gotlockindex,
+                                         user=user)
 
     def relinkblob(self, number, page, user=None):
         """
@@ -286,12 +288,12 @@ class Course(StorageDir):
                         else:
                             lines[i] += " %d" % number
             newindex="\n".join(lines) + "\n"
-            indexstore.store(newindex,havelock=gotlockindex,user=user)
-                        
+            indexstore.store(newindex, havelock=gotlockindex, user=user)
 
-    def editpage(self,number):
+
+    def editpage(self, number):
         """
-        Start editing a page; 
+        Start editing a page;
 
         @param number: the internal page number
         @type number: int
@@ -302,7 +304,7 @@ class Course(StorageDir):
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
-    def savepage(self,number,version, newcontent,user=None):
+    def savepage(self, number, version, newcontent, user=None):
         """
         Finish editing a page
 
@@ -315,9 +317,10 @@ class Course(StorageDir):
         @type newcontent: unicode
         @type user: unicode
 
-        @returns: a triple (ok,newversion,mergedcontent) where ok is a boolean indicating
-                  whether no confilct has occured and (newversion,mergedcontent) a pair
-                  for further editing that can be  handled as if obtained from editpage
+        @returns: a triple (ok, newversion, mergedcontent) where ok is a
+                  boolean indicating whether no confilct has occured and
+                  (newversion, mergedcontent) a pair for further editing that
+                  can be handled as if obtained from editpage
         @rtype: (unicode, unicode, unicode)
         """
         assert isinstance(version, unicode)
@@ -360,14 +363,15 @@ class Course(StorageDir):
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
                 newnumber = self.nextblob(havelock=gotlocknextblob)
-                nextblobstore.store("%d" % (newnumber+1),havelock=gotlocknextblob)
+                nextblobstore.store("%d" % (newnumber+1),
+                                    havelock=gotlocknextblob)
                 index = indexstore.content()
                 lines = index.splitlines()
                 for i in range(len(lines)):
                     if int(lines[i].split()[0])==number:
                         lines[i] += " %d" % newnumber
                         newindex="\n".join(lines) + "\n"
-                        indexstore.store(newindex,havelock=gotlockindex)
+                        indexstore.store(newindex, havelock=gotlockindex)
 
         blob = self.getstorage("blob%d" % newnumber)
         bloblabel = self.getstorage("blob%d.label" % newnumber)
@@ -379,7 +383,7 @@ class Course(StorageDir):
         blobname.store(data.filename.encode("utf8"), user=user)
         return newnumber
 
-    def listblobs(self,number):
+    def listblobs(self, number):
         """
         return a list of the blobs associated with the given page
 
