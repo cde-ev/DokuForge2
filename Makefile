@@ -10,7 +10,7 @@ setup:
 
 clean:
 	rm -rf html work df
-	rm -f *.pyc *~
+	rm -f *.pyc *~ dokuforge/*.pyc
 
 check: test
 

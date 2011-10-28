@@ -18,9 +18,7 @@ from urllib2 import BaseHandler
 from wsgiref.validate import validator
 
 import createexample
-from main import Application
-from storage import Storage
-from user import UserDB
+from dokuforge import buildapp
 
 theapplication = None
 
@@ -98,11 +96,7 @@ class DokuforgeTests(unittest.TestCase):
         shutil.rmtree("df", True)
         shutil.rmtree("work", True)
         createexample.main(size = 1)
-        userdbstore = Storage('work', 'userdb')
-        userdb = UserDB(userdbstore)
-        userdb.load()
-        groupstore = Storage('work', 'groupdb')
-        app = Application(userdb, groupstore, './df/', "./templates/", "./style/")
+        app = buildapp()
         theapplication = validator(app)
         self.br = WSGIBrowser()
 

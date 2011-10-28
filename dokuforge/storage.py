@@ -5,7 +5,8 @@ import shutil
 import time
 import subprocess
 import re
-from common import check_output
+
+from dokuforge.common import check_output
 
 def rlogv(filename):
     """

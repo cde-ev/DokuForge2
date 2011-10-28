@@ -3,8 +3,8 @@ import os
 import re
 import operator
 
-from course import Course
-from storagedir import StorageDir
+from dokuforge.course import Course
+from dokuforge.storagedir import StorageDir
 
 class Academy(StorageDir):
     """

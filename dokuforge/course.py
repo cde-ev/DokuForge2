@@ -1,11 +1,12 @@
 from __future__ import with_statement
 import os
 import re
-from common import check_output
+
 from werkzeug.datastructures import FileStorage
 
-import view
-from storagedir import StorageDir
+from dokuforge.common import check_output
+from dokuforge.storagedir import StorageDir
+from dokuforge.view import LazyView, liftdecodeutf8
 
 class Course(StorageDir):
     """
@@ -398,8 +399,8 @@ class Course(StorageDir):
         @returns: a mapping providing the keys: data(str), label(unicode),
                   comment(unicode), filename(unicode) and number(int)
         """
-        ldu = view.liftdecodeutf8
-        return view.LazyView(dict(
+        ldu = liftdecodeutf8
+        return LazyView(dict(
             data=self.getstorage("blob%d" % number).content,
             label=ldu(self.getstorage("blob%d.label" % number).content),
             comment=ldu(self.getstorage("blob%d.comment" % number).content),
