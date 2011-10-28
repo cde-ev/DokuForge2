@@ -29,24 +29,24 @@ def main(size=100):
     mystore = Storage('work', 'userdb')
     userdb = UserDB(mystore)
     if size > 10:
-        userdb.addUser(u"arthur", u"dokubeauftragter", u"mypass",
+        userdb.addUser(u"arthur", u"cde_dokubeauftragter", u"mypass",
                        dict([(u"akademie_read_pa2010", True),
                              (u"akademie_read_za2011", True),
-                             (u"akademie_read_za2011_course01", True)]))
-    userdb.addUser(u"bob", u"dokuteam", u"secret",
+                             (u"kurs_read_za2011_course01", True)]))
+    userdb.addUser(u"bob", u"cde_dokuteam", u"secret",
                    dict([(u"akademie_read_pa2010", True),
                          (u"akademie_write_pa2010", True),
                          (u"df_admin", True),
                          (u"df_superadmin", True),
                          (u"akademie_read_za2011-1", True),
-                         (u"akademie_read_za2011-1_course01", True),
-                         (u"akademie_write_za2011-1_course01", True),
-                         (u"akademie_read_za2011-1_course02", True),
+                         (u"kurs_read_za2011-1_course01", True),
+                         (u"kurs_write_za2011-1_course01", True),
+                         (u"kurs_read_za2011-1_course02", True),
                          (u"akademie_read_ya2011-1", True),
                          (u"akademie_write_ya2011-1", True),
-                         (u"akademie_read_ya2011-1_course01", True),
-                         (u"akademie_write_ya2011-1_course01", True),
-                         (u"akademie_read_ya2011-1_course02", True),
+                         (u"kurs_read_ya2011-1_course01", True),
+                         (u"kurs_write_ya2011-1_course01", True),
+                         (u"kurs_read_ya2011-1_course02", True),
                          (u"df_export", True),
                          (u"df_show", True)]))
     userdb.store()
