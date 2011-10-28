@@ -1,13 +1,12 @@
 
 import os
-import storage
-import course
 import re
 import operator
-from course import Course
-import view
 
-class Academy:
+from course import Course
+from storagedir import StorageDir
+
+class Academy(StorageDir):
     """
     Backend for manipulating the file structres related to a course
 
@@ -23,46 +22,7 @@ class Academy:
         @param obj: either a path or an Academy object
         @type obj: str or Academy
         """
-        if isinstance(obj, Academy):
-            self.path = obj.path
-        else:
-            assert isinstance(obj, str)
-            self.path = obj
-
-    def getstorage(self, filename):
-        """
-        @type filename: str
-        @param filename: passed to Storage as second param
-        @rtype: Storage
-        @returns: a Storage build from self.path and filename
-        """
-        assert isinstance(filename, str)
-        return storage.Storage(self.path, filename)
-
-    def getcontent(self, filename):
-        """
-        @type filename: str
-        @param filename: passed to Storage as second param
-        @rtype: str
-        @returns: the content of the Storage buil from self.path and filename
-        """
-        return self.getstorage(filename).content()
-
-    @property
-    def name(self):
-        """
-        internal name of academy
-        """
-        return os.path.basename(self.path)
-
-    def gettitle(self):
-        """
-        loads the current title from disk
-
-        @returns: the display name of this academy
-        @rtype: unicode
-        """
-        return self.getcontent("title").decode("utf8")
+        StorageDir.__init__(self, obj)
 
     def getgroups(self):
         """
@@ -83,7 +43,7 @@ class Academy:
         ret = (os.path.join(self.path, entry)
                for entry in os.listdir(self.path))
         ret = filter(os.path.isdir, ret)
-        ret = map(course.Course, ret)
+        ret = map(Course, ret)
         ret = list(ret)
         ret.sort(key=operator.attrgetter('name'))
         return ret
@@ -104,20 +64,6 @@ class Academy:
         if not os.path.isdir(finalpath):
             return None
         return Course(finalpath)
-
-
-    def settitle(self, title):
-        """
-        Set the title of this academy
-
-        @param title: display name of the academy
-        @type title: unicode
-        """
-        assert isinstance(title, unicode)
-        if title == u"":
-            return False
-        self.getstorage("title").store(title.encode("utf8"))
-        return True
 
     def setgroups(self, groups):
         """
@@ -148,17 +94,16 @@ class Academy:
             return False
         if os.path.exists(os.path.join(self.path, name)):
             return False
-        course.Course(os.path.join(self.path, name)).settitle(title)
+        Course(os.path.join(self.path, name)).settitle(title)
         return True
 
-    def view(self):
+    def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
         @returns: a mapping providing the keys: name(str), title(unicode),
             courses([Course.view()]), groups([unicode])
         """
-        return view.LazyView(dict(
-            name=lambda:self.name,
-            title=self.gettitle,
-            courses=self.viewCourses,
-            groups=self.getgroups))
+        functions = dict(courses=self.viewCourses,
+                         groups=self.getgroups)
+        functions.update(extrafunctions)
+        return StorageDir.view(self, functions)

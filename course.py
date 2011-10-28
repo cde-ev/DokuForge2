@@ -1,13 +1,13 @@
 from __future__ import with_statement
 import os
 import re
-from storage import Storage
 from common import check_output
 from werkzeug.datastructures import FileStorage
 
 import view
+from storagedir import StorageDir
 
-class Course:
+class Course(StorageDir):
     """
     Backend for manipulating the file structres related to a course
 
@@ -38,49 +38,11 @@ class Course:
         @param obj: either the path to a coures or a Course object
         @type obj: str or Course
         """
-        if isinstance(obj, Course):
-            self.path = obj.path
-        else:
-            assert isinstance(obj, str)
-            self.path = obj
+        StorageDir.__init__(self, obj)
         try:
             os.makedirs(self.path)
         except os.error:
             pass
-
-    def getstorage(self, filename):
-        """
-        @type filename: str
-        @param filename: passed to Storage as second param
-        @rtype: Storage
-        @returns: a Storage build from self.path and filename
-        """
-        assert isinstance(filename, str)
-        return Storage(self.path, filename)
-
-    def getcontent(self, filename, havelock=None):
-        """
-        @type filename: str
-        @param filename: passed to Storage as second param
-        @type havelock: None or LockDir
-        @rtype: str
-        @returns: the content of the Storage buil from self.path and filename
-        """
-        return self.getstorage(filename).content(havelock=havelock)
-
-    @property
-    def name(self):
-        """
-        @rtype: str
-        """
-        return os.path.basename(self.path)
-
-    def gettitle(self):
-        """
-        @returns: title of the course
-        @rtype: unicode
-        """
-        return self.getcontent("title").decode("utf8")
 
     def nextpage(self, havelock=None):
         """
@@ -170,17 +132,6 @@ class Course:
         @rtype: str
         """
         return check_output(["tar","cf","-",self.path])
-
-    def settitle(self,title):
-        """
-        Set the title of this course
-        @type title: unicode
-        """
-        assert isinstance(title, unicode)
-        if title == u"":
-            return False
-        self.getstorage("title").store(title.encode("utf8"))
-        return True
 
     def newpage(self,user=None):
         """
@@ -471,14 +422,14 @@ class Course:
         blobname.store(filename.encode("utf8"), user=user)
         return True
 
-    def view(self):
+    def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
         @returns: a mapping providing the keys: name(str), pages([int]),
                 deadpages([int]), title(unicode)
         """
-        return view.LazyView(dict(
-            name=lambda:self.name,
+        functions = dict(
             pages=self.listpages,
-            deadpages=self.listdeadpages,
-            title=self.gettitle))
+            deadpages=self.listdeadpages)
+        functions.update(extrafunctions)
+        return StorageDir.view(self, functions)
