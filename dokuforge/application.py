@@ -1070,6 +1070,19 @@ class Application:
                             "academytitle.html",
                             extraparams={'academy': aca.view()})
 
+    def validateTitle(self, title):
+        """
+        check whether the title is valid, this means nonempty. If not raise
+        a CheckError exception.
+
+        @type title: unicode
+        @param title: title to check
+        """
+        assert isinstance(title, unicode)
+        if title == u"":
+            raise CheckError(u"Leerer Titel!",
+                             u"Der Titel darf nicht leer sein.")
+
     def do_academytitlesave(self, rs, academy=None):
         """
         @type rs: RequestState
@@ -1082,7 +1095,8 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, Storage(aca.path,"title"),
                                 "academytitle.html",
-                                extraparams={'academy': aca.view()})
+                                checkhook = self.validateTitle,
+                                extraparams = {'academy': aca.view()})
 
     def do_coursetitle(self, rs, academy=None, course=None):
         """
@@ -1115,6 +1129,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, Storage(c.path,"title"),
                                 "coursetitle.html",
+                                checkhook = self.validateTitle,
                                 extraparams={'academy': aca.view(),
                                              'course': c.view()})
 
