@@ -151,7 +151,6 @@ class Application:
         self.templatepath = os.path.join(os.path.dirname(__file__), "templates")
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader(self.templatepath))
-        self.stylepath = os.path.join(self.templatepath, "style")
         self.groupstore = groupstore
         self.staticservepath = staticservepath
         rule = werkzeug.routing.Rule
@@ -623,7 +622,7 @@ class Application:
         assert isinstance(topic, unicode)
         topic = topic.encode("utf8")
         if not topic in os.listdir(os.path.join(self.templatepath,
-                                                self.stylepath)):
+                                                "style")):
             raise werkzeug.exceptions.NotFound()
         return self.render_styleguide(rs, topic)
 
@@ -1160,7 +1159,7 @@ class Application:
         """
         params= dict(
             topic = topic,
-            includepath = os.path.join(self.stylepath, topic)
+            includepath = os.path.join("style", topic)
             )
         return self.render("style.html", rs, params)
 
