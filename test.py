@@ -524,5 +524,18 @@ permissions = df_superadmin True,df_admin True
         self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
         self.is_loggedin()
 
+    def testAddBlobEmptyLabel(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = ""
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
+
 if __name__ == '__main__':
     unittest.main()
