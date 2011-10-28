@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# pylint: disable=E1102
+# Pylint thinks that no methods on DokuforgeTests.br (a WSGIBrowser instance)
+# are callable. This is clearly wrong and renders this message useless for this
+# file.
+
 from cStringIO import StringIO
 from httplib import HTTPMessage
 import mechanize
