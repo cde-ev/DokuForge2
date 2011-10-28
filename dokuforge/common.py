@@ -66,8 +66,8 @@ def validateGroups(groups, allgroups):
     it may not be empty and it may not contain non-existent groups. If a
     check fails a CheckError is raised.
 
-    @type groupstring: unicode
-    @param groupstring: contains groups seperated by whitespace
+    @type groups: [unicode]
+    @param groups: a list of groups to validate
     """
     assert all(isinstance(g, unicode) for g in groups)
     if len(groups) == 0:
