@@ -620,6 +620,7 @@ class Application:
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
         h = getmd5()
+        theblob = c.viewblob(blob)
         h.update(theblob["data"])
         blobhash = h.hexdigest()
         return self.render_showblob(rs, aca, c, page, blob, blobhash=blobhash)
