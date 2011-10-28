@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block location%}
-{{ navbar([("academy", academy.title),
-           ("course", course.title),
-	   ("page", "Teil #" ~ page),
-	   ("showdeadblobs", "Attic")])}}
+{{ navbar([("academy", {}, academy.title),
+           ("course", {}, course.title),
+	   ("page", {}, "Teil #" ~ page),
+	   ("showdeadblobs", {}, "Attic")])}}
 {% endblock %}
 {% block content %}
 {% if blobs %}

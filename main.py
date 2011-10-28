@@ -100,6 +100,11 @@ class SessionHandler:
             self.response.delete_cookie(self.cookie_name)
 
 class RequestState:
+    """
+    @type endpoint_args: {str: object}
+    @ivar endpoint_args: is a reference to the parameters obtained from
+        werkzeug's url matcher
+    """
     def __init__(self, request, sessiondb, userdb, mapadapter):
         self.request = request
         self.response = Response()
@@ -107,7 +112,7 @@ class RequestState:
         self.userdb = userdb
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.mapadapter = mapadapter
-        self.params = None # set later in Application.render
+        self.endpoint_args = None # set later in Application.render
 
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
@@ -248,23 +253,26 @@ class Application:
                  methods=("POST",), endpoint="blobdelete"),
         ], converters=dict(identifier=IdentifierConverter))
 
-    def buildurl(self, rs, name, kwargs):
-        finalparams = {}
-        ## the parameters were saved in Application.render
-        for key, value in rs.params.items():
-            if self.routingmap.is_endpoint_expecting(name, key):
-                if key in ("academy", "course"):
-                    finalparams[key] = value["name"]
-                else:
-                    finalparams[key] = value
-        ## we cannot do a simple update since there is a bit of magic as the
-        ## view objects need to be unpacked
-        for key, value in kwargs.items():
-            if key in ("academy", "course"):
-                finalparams[key] = value["name"]
-            else:
-                finalparams[key] = value
-        return rs.mapadapter.build(name, finalparams)
+    def buildurl(self, rs, endpoint, args):
+        """Looks up up the given endpoint in the routingmap and builds the
+        corresponding url with the passed args. Missing args are added if the
+        given endpoint requests them and they are present in the request uri as
+        parsed by werkzeug's routing and stored in rs.endpoint_args.
+
+        @type rs: RequestState
+        @type endpoint: str
+        @param endpoint: an endpoint from self.routingmap
+        @type args: {str: object}
+        @param args: a mapping from rule parameters to their values
+        @rtype: str
+        """
+        assert isinstance(endpoint, str)
+        buildargs = dict()
+        for key, value in rs.endpoint_args.items():
+            if self.routingmap.is_endpoint_expecting(endpoint, key):
+                buildargs[key] = value
+        buildargs.update(args)
+        return rs.mapadapter.build(endpoint, buildargs)
 
     def getAcademy(self, name, user=None):
         """
@@ -353,6 +361,7 @@ class Application:
         rs = RequestState(request, self.sessiondb, self.userdb, mapadapter)
         try:
             endpoint, args = mapadapter.match()
+            rs.endpoint_args = args
             return getattr(self, "do_%s" % endpoint)(rs, **args)
         except werkzeug.routing.HTTPException, e:
             return e
@@ -1029,7 +1038,6 @@ class Application:
         )
         params.update(extraparams)
         ## grab a copy of the parameters for url building
-        rs.params = params
         template = self.jinjaenv.get_template(templatename)
         rs.response.data = template.render(params).encode("utf8")
         return rs.response

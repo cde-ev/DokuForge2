@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block location%}
-{{ navbar([("styleguide", "Style-Guide",),
-           ("styleguidetopic", topic|capitalize)]) }}
+{{ navbar([("styleguide", {}, "Style-Guide",),
+           ("styleguidetopic", dict(topic=topic), topic|capitalize)]) }}
 {% endblock %}
 {% block content %}
 {% include includepath %}
