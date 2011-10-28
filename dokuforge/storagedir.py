@@ -1,7 +1,7 @@
 import os.path
 
-from storage import Storage
-from view import LazyView
+from dokuforge.storage import Storage
+from dokuforge.view import LazyView
 
 class StorageDir:
     """Backend for manipulating file structures within a directory. It brings

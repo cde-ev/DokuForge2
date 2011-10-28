@@ -1,37 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import jinja2
-import random
-import os
-import sqlite3
-import copy
-import re
-import sys
-import urllib
 import ConfigParser
+import copy
 from cStringIO import StringIO
-import werkzeug.utils
-from werkzeug.wrappers import Request, Response
+try:
+    from hashlib import md5 as getmd5
+except ImportError:
+    from md5 import new as getmd5
+import operator
+import os
+import random
+import re
+import sqlite3
+import urllib
+
+import jinja2
 import werkzeug.exceptions
 import werkzeug.routing
-from werkzeug.wsgi import SharedDataMiddleware
-import operator
-from wsgiref.simple_server import make_server
-from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
-from wsgitools.scgi.asynchronous import SCGIServer as AsynchronousSCGIServer
-from wsgitools.scgi.forkpool import SCGIServer as ForkpoolSCGIServer
-# import other parts of Dokuforge
-import academy
-import storage
-import user
+import werkzeug.utils
+from werkzeug.wrappers import Request, Response
 
-try:
-    import hashlib
-    getmd5 = hashlib.md5
-except ImportError:
-    import md5
-    getmd5 = md5.new
+from dokuforge.academy import Academy
+from dokuforge.storage import Storage
 
 sysrand = random.SystemRandom()
 
@@ -286,7 +277,7 @@ class Application:
             raise werkzeug.exceptions.NotFound()
         if not os.path.isdir(os.path.join(self.acapath, name)):
             raise werkzeug.exceptions.NotFound()
-        aca = academy.Academy(os.path.join(self.acapath, name))
+        aca = Academy(os.path.join(self.acapath, name))
         if user is not None and not user.allowedRead(aca):
             raise werkzeug.exceptions.Forbidden()
         return aca
@@ -330,7 +321,7 @@ class Application:
             if not group in allgroups:
                 return None
         os.makedirs(path)
-        aca = academy.Academy(path)
+        aca = Academy(path)
         aca.settitle(title)
         aca.setgroups(groups)
         return aca
@@ -764,7 +755,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, storage.Storage(aca.path,"groups"),
+        return self.do_file(rs, Storage(aca.path,"groups"),
                             "academygroups.html", extraparams={'academy': aca.view()})
 
     def validateGroups(self, groupstring):
@@ -787,7 +778,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, storage.Storage(aca.path,"groups"),
+        return self.do_filesave(rs, Storage(aca.path,"groups"),
                                 "academygroups.html",
                                 checkhook = self.validateGroups,
                                 extraparams={'academy': aca.view()})
@@ -798,7 +789,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, storage.Storage(aca.path,"title"),
+        return self.do_file(rs, Storage(aca.path,"title"),
                             "academytitle.html", extraparams={'academy': aca.view()})
 
     def do_academytitlesave(self, rs, academy=None):
@@ -807,7 +798,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, storage.Storage(aca.path,"title"),
+        return self.do_filesave(rs, Storage(aca.path,"title"),
                                 "academytitle.html", extraparams={'academy': aca.view()})
 
     def do_coursetitle(self, rs, academy=None, course=None):
@@ -817,7 +808,7 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, storage.Storage(c.path,"title"),
+        return self.do_file(rs, Storage(c.path,"title"),
                             "coursetitle.html", extraparams={'academy': aca.view(),
                                                               'course': c.view()})
 
@@ -828,7 +819,7 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, storage.Storage(c.path,"title"),
+        return self.do_filesave(rs, Storage(c.path,"title"),
                                 "coursetitle.html", extraparams={'academy': aca.view(),
                                                                  'course': c.view()})
 
@@ -1041,30 +1032,3 @@ class Application:
         template = self.jinjaenv.get_template(templatename)
         rs.response.data = template.render(params).encode("utf8")
         return rs.response
-
-def main():
-    userdbstore = storage.Storage('work', 'userdb')
-    userdb = user.UserDB(userdbstore)
-    userdb.load()
-    groupstore = storage.Storage('work', 'groupdb')
-    if sys.argv[1:2] == ["forkpool"]:
-        app = Application(userdb, groupstore, './df/', './templates/',
-                          './style/', sessiondbpath="./work/sessiondb.sqlite3")
-    else:
-        app = Application(userdb, groupstore, './df/', './templates/',
-                          './style/')
-    app = TracebackMiddleware(app)
-    app = SharedDataMiddleware(app, {"/static": "./static"})
-    if sys.argv[1:2] == ["simple"]:
-        make_server("localhost", 8800, app).serve_forever()
-    elif sys.argv[1:2] == ["forkpool"]:
-        server = ForkpoolSCGIServer(app, 4000)
-        server.enable_sighandler()
-        server.run()
-    else:
-        server = AsynchronousSCGIServer(app, 4000)
-        server.run()
-
-if __name__ == '__main__':
-    main()
-

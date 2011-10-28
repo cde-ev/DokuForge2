@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-from main import Application
-import storage
-import user
+
 from werkzeug.datastructures import FileStorage
+
+from dokuforge.application import Application
+from dokuforge.storage import Storage
+from dokuforge.user import UserDB
 
 def createaca(app, name, title, groups, courses):
     assert isinstance(title, unicode)
@@ -24,8 +26,8 @@ def main(size=100):
         os.mkdir("work")
     except OSError:
         pass
-    mystore = storage.Storage('work', 'userdb')
-    userdb = user.UserDB(mystore)
+    mystore = Storage('work', 'userdb')
+    userdb = UserDB(mystore)
     if size > 10:
         userdb.addUser(u"arthur", u"dokubeauftragter", u"mypass",
                        dict([(u"akademie_read_pa2010", True),
@@ -48,7 +50,7 @@ def main(size=100):
                          (u"df_export", True),
                          (u"df_show", True)]))
     userdb.store()
-    mygroupstore = storage.Storage('work', 'groupdb')
+    mygroupstore = Storage('work', 'groupdb')
     mygroupstore.store("""[cde]
 title = CdE-Akademien
 
@@ -62,8 +64,8 @@ title = Archiv aelterer CdE-Akademien
         os.mkdir("df")
     except OSError:
         pass
-    userdbstore = storage.Storage('work', 'userdb')
-    userdb = user.UserDB(userdbstore)
+    userdbstore = Storage('work', 'userdb')
+    userdb = UserDB(userdbstore)
     userdb.load()
     app = Application(userdb, mygroupstore, './df/', "./templates/", "./style/")
     if size > 50:
@@ -74,9 +76,9 @@ title = Archiv aelterer CdE-Akademien
         aca.getCourse(u'course01').savepage(0, version, u"""[Example Section]
         This is an example with some nice math: $e^{i\pi}+1=0$.
         """, u"init")
-        aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "academy.py", stream=file("./academy.py",mode="r")), u"Ein lustiges Bild", u"myx", user=u"init")
-        aca.getCourse(u'course01').attachblob(1, FileStorage(filename = "storage.py", stream=file("./storage.py", mode="r")), u"Ein anderes lustiges Bild", u"somey", user=u"init")
-        aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "course.py", stream=file("./course.py", mode="r")), u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
+        aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "academy.py", stream=file("./dokuforge/academy.py",mode="r")), u"Ein lustiges Bild", u"myx", user=u"init")
+        aca.getCourse(u'course01').attachblob(1, FileStorage(filename = "storage.py", stream=file("./dokuforge/storage.py", mode="r")), u"Ein anderes lustiges Bild", u"somey", user=u"init")
+        aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "course.py", stream=file("./dokuforge/course.py", mode="r")), u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
     if size > 25:
         aca = createaca(app, u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
                         [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),

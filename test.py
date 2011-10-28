@@ -18,9 +18,9 @@ from urllib2 import BaseHandler
 from wsgiref.validate import validator
 
 import createexample
-from main import Application
-from storage import Storage
-from user import UserDB
+from dokuforge.application import Application
+from dokuforge.storage import Storage
+from dokuforge.user import UserDB
 
 theapplication = None
 

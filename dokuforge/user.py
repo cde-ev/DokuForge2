@@ -4,10 +4,10 @@ from cStringIO import StringIO
 
 sysrand = random.SystemRandom()
 
-from common import strtobool
-from course import Course
-from academy import Academy
-from view import LazyView
+from dokuforge.common import strtobool
+from dokuforge.course import Course
+from dokuforge.academy import Academy
+from dokuforge.view import LazyView
 
 def randpasswordstring(n=6):
     """
