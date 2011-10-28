@@ -26,14 +26,15 @@ class StorageDir:
         assert isinstance(filename, str)
         return Storage(self.path, filename)
 
-    def getcontent(self, filename):
+    def getcontent(self, filename, havelock=None):
         """
         @type filename: str
         @param filename: passed to Storage as second param
+        @type havelock: None or LockDir
         @rtype: str
         @returns: the content of the Storage buil from self.path and filename
         """
-        return self.getstorage(filename).content()
+        return self.getstorage(filename).content(havelock)
 
     @property
     def name(self):
