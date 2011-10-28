@@ -34,6 +34,9 @@ class Academy(StorageDir):
         return self.getcontent("groups").decode("utf8").split()
 
     def viewCourses(self):
+        """
+        @returns: list of Course.view dicts for all courses of this academy
+        """
         return [course.view() for course in self.listCourses()]
 
     def listCourses(self):
