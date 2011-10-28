@@ -790,14 +790,13 @@ class Application:
         newcomment = rs.request.form["comment"]
         newname = rs.request.form["name"]
 
-        # we omit error handling here, since it seems unlikely, that two
-        # changes for one blob's metadata conflict
+        try:
+            common.validateBlobLabel(newlabel)
+        except CheckError as error:
+            return self.render_editblob(rs, aca, c, page, blob, ok=False,
+                                        error=error)
         c.modifyblob(blob, newlabel, newcomment, newname, rs.user.name)
-
-        issaveshow = "saveshow" in rs.request.form
-        if issaveshow:
-            return self.render_showblob(rs, aca, c, page, blob)
-        return self.render_editblob(rs, aca, c, page, blob)
+        return self.render_showblob(rs, aca, c, page, blob)
 
 
     def do_md5blob(self, rs, academy=None, course=None, page=None, blob=None):

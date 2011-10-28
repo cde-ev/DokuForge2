@@ -430,7 +430,9 @@ class Course(StorageDir):
         assert isinstance(comment, unicode)
         assert isinstance(filename, unicode)
 
-        if re.match('^[a-z0-9]{1,200}$', label) is None:
+        try:
+            common.validateBlobLabel(label)
+        except CheckError:
             return False
 
         bloblabel = self.getstorage("blob%d.label" % number)
