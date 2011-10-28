@@ -117,14 +117,14 @@ class Storage(object):
                 args.append("-w%s" % user)
             args.append(self.fullpath())
             subprocess.check_call(args)
-                
+
     def ensureexistence(self, havelock=None):
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
                 subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                        self.fullpath()])
                 file(self.fullpath(), mode="w").close()
-                subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit", 
+                subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit",
                                        self.fullpath()])
 
     def asrcs(self, havelock=None):
@@ -165,7 +165,7 @@ class Storage(object):
             status=self.status(havelock=gotlock)
             content=self.content(havelock=gotlock)
             return status, content
-            
+
     def endedit(self, version, newcontent, user=None, havelock=None):
         """
         Store new contents in a safe way.
@@ -181,19 +181,22 @@ class Storage(object):
         @param newcontent: the new content, produced by the user starting from
                            the content at the provided version
         @type user: None or str
-        @returns: a triple (ok,newversion,mergedcontent) where ok is boolen with value
-                  True if the save was sucessfull (if not, a merge has to be done manually),
-                  and (newversion,mergedcontent) is a state for further editing that can be
-                  used as if obtained from startedit
+        @returns: a triple (ok,newversion,mergedcontent) where ok is boolen
+            with value True if the save was sucessfull (if not, a merge has
+            to be done manually), and (newversion,mergedcontent) is a state
+            for further editing that can be used as if obtained from
+            startedit
 
-        NOTE: the newcontents are transformed to native line ending (assuming a Unix host).
-              Therefore endedit CANNOT be used to store binaries (however, rcsmerge won't suggest 
-              a sensible merged version for binaries anyway).
+        @note: the newcontents are transformed to native line ending
+            (assuming a Unix host).  Therefore endedit CANNOT be used to
+            store binaries (however, rcsmerge won't suggest a sensible
+            merged version for binaries anyway).
         """
         assert isinstance(version, str)
         assert isinstance(newcontent, str)
         assert user is None or isinstance(user, str)
-        newcontent="\n".join(newcontent.splitlines()) + "\n" # Transform text to Unix line ending 
+        ## Transform text to Unix line ending
+        newcontent="\n".join(newcontent.splitlines()) + "\n"
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             currentversion = self.status(havelock=gotlock)
@@ -217,7 +220,8 @@ class Storage(object):
             # 2.) merge in head
             os.chmod(self.fullpath(), 0600)
             subprocess.call(["rcsmerge", "-q", "-r%s" % version,
-                             self.fullpath()]) # Note: non-zero exit status is OK!
+                             self.fullpath()]) # Note: non-zero exit status is
+                                               # OK!
             objfile = file(self.fullpath(), mode="r")
             mergedcontent = objfile.read()
             objfile.close()

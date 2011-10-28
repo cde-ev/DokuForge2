@@ -8,7 +8,7 @@ from dokuforge.storagedir import StorageDir
 
 class Academy(StorageDir):
     """
-    Backend for manipulating the file structres related to a course
+    Backend for manipulating the file structres related to an academy
 
     It is characterised by the path of a directory. The directory should
     contain the following files. All directories within this directory are
