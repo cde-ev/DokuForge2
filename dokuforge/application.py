@@ -1005,7 +1005,7 @@ class Application:
     def render_academy(self, rs, theacademy):
         """
         @type rs: RequestState
-        @type theacademy: unicode
+        @type theacademy: Academy
         """
         return self.render("academy.html", rs,
                            dict(academy=theacademy.view()))
@@ -1013,8 +1013,8 @@ class Application:
     def render_deadblobs(self, rs, theacademy, thecourse, thepage):
         """
         @type rs: RequestState
-        @type theacademy: unicode
-        @type thecourse: unicode
+        @type theacademy: Academy
+        @type thecourse: Course
         @type thepage: int
         """
         params = dict(
@@ -1027,8 +1027,8 @@ class Application:
     def render_deadpages(self, rs, theacademy, thecourse):
         """
         @type rs: RequestState
-        @type theacademy: unicode
-        @type thecourse: unicode
+        @type theacademy: Academy
+        @type thecourse: Course
         """
         params = dict(
             academy=theacademy.view(),
@@ -1038,8 +1038,8 @@ class Application:
     def render_course(self, rs, theacademy, thecourse):
         """
         @type rs: RequestState
-        @type theacademy: unicode
-        @type thecourse: unicode
+        @type theacademy: Academy
+        @type thecourse: Course
         """
         params = dict(
             academy=theacademy.view(),
@@ -1049,8 +1049,8 @@ class Application:
     def render_addblob(self, rs, theacademy, thecourse, thepage):
         """
         @type rs: RequestState
-        @type theacademy: unicode
-        @type thecourse: unicode
+        @type theacademy: Academy
+        @type thecourse: Course
         @type thepage: int
         """
         params = dict(
@@ -1063,8 +1063,8 @@ class Application:
                         blobhash=None):
         """
         @type rs: RequestState
-        @type theacademy: unicode
-        @type thecourse: unicode
+        @type theacademy: Academy
+        @type thecourse: Course
         @type thepage: int
         @type blob: int
         @type blobhash: str
@@ -1081,8 +1081,8 @@ class Application:
                         error=None):
         """
         @type rs: RequestState
-        @type theacademy: unicode
-        @type thecourse: unicode
+        @type theacademy: Academy
+        @type thecourse: Course
         @type thepage: int
         @type blob: int
         @type ok: None or bool
@@ -1123,8 +1123,8 @@ class Application:
     def render_show(self, rs, theacademy, thecourse, thepage, saved=False):
         """
         @type rs: RequestState
-        @type theacademy: unicode
-        @type thecourse: unicode
+        @type theacademy: Academy
+        @type thecourse: Course
         @type thepage: int
         @type saved: bool
         """
