@@ -1,8 +1,10 @@
 from collections import Mapping
 
 class LazyView(Mapping):
-    """A lazy way to write the following expression.
-      dict((key, function()) for key, function in functions.items())
+    """A lazy way to write the following expression.::
+
+         dict((key, function()) for key, function in functions.items())
+
     In this case lazy means that the functions are only called when the values
     are actually requested and in addition the returned values are cached. An
     additional difference to normal dicts is that attemping to write to a

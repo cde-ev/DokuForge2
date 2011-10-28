@@ -181,7 +181,7 @@ class UserDB:
         @type name: unicode
         @type status: unicode
         @type password: unicode
-        @param permissins: dictionary of permissions
+        @param permissions: dictionary of permissions
         @type permissions: {unicode: bool}
         """
         assert isinstance(name, unicode)
@@ -225,7 +225,7 @@ class UserDB:
     def checkLogin(self, name, password):
         """
         @type name: unicode
-        @type passwordn: unicode
+        @type password: unicode
         @returns: True if name and password match an existing user, False otherwise
         """
         assert isinstance(name, unicode)

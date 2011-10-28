@@ -16,21 +16,26 @@ class Course(StorageDir):
     other things, the following files; with each rcs file, the associated file
     and locks as described in L{Storage} can be present as well.
 
-    title,v    The title of this course (as to be printed)
-
-    Index,v    List of internal page numbers, in order of appearence
-               Each line contains the internal page number, followed by a space,
-               optionally followed by internal blob-numbers associated with page.
-
-    pageN,v    The page with internal number N
-
-    blobN,v          The blob with the internal number N
-    blobN.label,v    The label for the blob with internal number N
-    blobN.comment,v  The comment for the blob with internal number N
-    blobN.filename,v The filename for the blob with internal number N
-
-    nextpage,v contains the number of the next available page
-    nextblob,v contains the number of the next available blob
+     - title,v --
+         The title of this course (as to be printed)
+     - Index,v --
+         List of internal page numbers, in order of appearence
+         Each line contains the internal page number, followed by a space,
+         optionally followed by internal blob-numbers associated with page.
+     - pageN,v --
+         The page with internal number N
+     - blobN,v --
+         The blob with the internal number N
+     - blobN.label,v --
+         The label for the blob with internal number N
+     - blobN.comment,v --
+         The comment for the blob with internal number N
+     - blobN.filename,v --
+         The filename for the blob with internal number N
+     - nextpage,v --
+         contains the number of the next available page
+     - nextblob,v --
+         contains the number of the next available blob
     """
     def __init__(self, obj):
         """
