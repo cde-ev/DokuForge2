@@ -359,6 +359,10 @@ class Application:
         return ret
 
     def listGroups(self):
+        """
+        @rtype: {unicode: unicode}
+        @returns: a dict of all groups with their titles as values
+        """
         try:
             config = ConfigParser.SafeConfigParser()
             config.readfp(StringIO(self.groupstore.content()))
@@ -375,6 +379,7 @@ class Application:
         rs = RequestState(request, self.sessiondb, self.userdb, mapadapter)
         try:
             endpoint, args = mapadapter.match()
+            ## grab a copy of the parameters for url building
             rs.endpoint_args = args
             return getattr(self, "do_%s" % endpoint)(rs, **args)
         except werkzeug.routing.HTTPException, e:
@@ -386,10 +391,15 @@ class Application:
 
     def do_file(self, rs, filestore, template, extraparams=dict()):
         """
+        Function to generically handle editing a single file.
+
         @type rs: RequestState
         @type filestore: Storage
         @type template: str
         @type extraparams: dict
+        @param filestore: the file which should be edited
+        @param template: the template with which to render the edit mask
+        @param extraparams: any further params the template needs
         """
         assert isinstance(template, str)
         version, content = filestore.startedit()
@@ -398,6 +408,24 @@ class Application:
 
     def do_filesave(self, rs, filestore, template, checkhook=None,
                     savehook=None, extraparams=dict()):
+        """
+        Function to generically handle saving a single file.
+
+        @type rs: RequestState
+        @type filestore: Storage
+        @type template: str
+        @type checkhook: None or callable
+        @type savehook: None or callable
+        @type extraparams: dict
+        @param filestore: the file which should be edited
+        @param template: the template with which to render the edit mask
+        @param checkhook: function to call before saving the content. The
+            function may raise a CheckError if an anomaly is encountered, the
+            error is then displayed, the content is not saved, but offered for
+            further edits.
+        @param savehook: function to call after saving the content.
+        @param extraparams: any further params the template needs
+        """
         userversion = rs.request.form["revisionstartedwith"]
         usercontent = rs.request.form["content"]
         if not checkhook is None:
@@ -414,9 +442,10 @@ class Application:
         if not savehook is None:
             savehook()
         if not ok:
+            error = CheckError(u"Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!",
+                               u"Bitte l&ouml;se den Konflikt auf und speichere danach erneut.")
             return self.render_file(rs, template, version, content, ok=False,
-                                    error = CheckError(u"Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!", u"Bitte l&ouml;se den Konflikt auf und speichere danach erneut."),
-                                    extraparams=extraparams)
+                                    error = error, extraparams=extraparams)
         return self.render_file(rs, template, version, content, ok=True,
                                 extraparams=extraparams)
 
@@ -503,8 +532,10 @@ class Application:
         if aca.createCourse(name, title):
             return self.render_academy(rs, aca)
         else:
+            error = CheckError(u"Die Kurserstellung war nicht erfolgreich.",
+                               u"Bitte die folgenden Angaben korrigieren.")
             return self.render_createcoursequiz(rs, aca, ok=False,
-                                                error = CheckError(u"Die Kurserstellung war nicht erfolgreich.", u"Bitte die folgenden Angaben korrigieren."))
+                                                error = error)
 
     def do_createacademyquiz(self, rs):
         self.check_login(rs)
@@ -522,8 +553,10 @@ class Application:
         if self.createAcademy(name, title, groups):
             return self.render_index(rs)
         else:
+            error = CheckError(u"Die Akademieerstellung war nicht erfolgreich.",
+                               u"Bitte die folgenden Angaben korrigieren.")
             return self.render_createacademyquiz(rs, ok=False,
-                                                 error = CheckError(u"Die Akademieerstellung war nicht erfolgreich.", u"Bitte die folgenden Angaben korrigieren."))
+                                                 error = error)
 
     def do_styleguide(self, rs):
         return self.do_styleguidetopic(rs, u"index")
@@ -556,8 +589,10 @@ class Application:
         c.delpage(page, user=rs.user.name)
         return self.render_course(rs, aca, c)
 
-    def do_blobdelete(self, rs, academy=None, course=None, page=None, blob=None):
-        assert academy is not None and course is not None and page is not None and blob is not None
+    def do_blobdelete(self, rs, academy=None, course=None, page=None,
+                      blob=None):
+        assert academy is not None and course is not None and \
+               page is not None and blob is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
@@ -597,7 +632,8 @@ class Application:
         return self.render_show(rs, aca, c, page)
 
     def do_showblob(self, rs, academy=None, course=None, page=None, blob=None):
-        assert academy is not None and course is not None and page is not None and blob is not None
+        assert academy is not None and course is not None and \
+               page is not None and blob is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
@@ -606,7 +642,8 @@ class Application:
         return self.render_showblob(rs, aca, c, page, blob)
 
     def do_editblob(self, rs, academy=None, course=None, page=None, blob=None):
-        assert academy is not None and course is not None and page is not None and blob is not None
+        assert academy is not None and course is not None and \
+               page is not None and blob is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
@@ -616,7 +653,8 @@ class Application:
 
 
     def do_saveblob(self, rs, academy=None, course=None, page=None, blob=None):
-        assert academy is not None and course is not None and page is not None and blob is not None
+        assert academy is not None and course is not None and \
+               page is not None and blob is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
@@ -638,7 +676,8 @@ class Application:
 
 
     def do_md5blob(self, rs, academy=None, course=None, page=None, blob=None):
-        assert academy is not None and course is not None and page is not None and blob is not None
+        assert academy is not None and course is not None and \
+               page is not None and blob is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
@@ -651,7 +690,8 @@ class Application:
         return self.render_showblob(rs, aca, c, page, blob, blobhash=blobhash)
 
     def do_downloadblob(self, rs, academy=None, course=None, page=None, blob=None):
-        assert academy is not None and course is not None and page is not None and blob is not None
+        assert academy is not None and course is not None and \
+               page is not None and blob is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
@@ -745,9 +785,10 @@ class Application:
         if re.match('^[a-z0-9]{1,200}$', userlabel) is None:
             blob = c.attachblob(page, usercontent, comment=usercomment,
                                 label=u"somefig", user=rs.user.name)
+            error = CheckError(u"K&uuml;rzel falsch formatiert!",
+                               u"Bitte korrigeren und speichern.")
             return self.render_editblob(rs, aca, c, page, blob, ok=False,
-                                       error=CheckError(u"K&uuml;rzel falsch formatiert!",
-                                                        u"Bitte korrigeren und speichern."))
+                                       error=error)
         c.attachblob(page, usercontent, comment=usercomment,
                      label=userlabel, user=rs.user.name)
         return self.render_show(rs, aca, c, page)
@@ -779,7 +820,8 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, Storage(aca.path,"groups"),
-                            "academygroups.html", extraparams={'academy': aca.view()})
+                            "academygroups.html",
+                            extraparams={'academy': aca.view()})
 
     def validateGroups(self, groupstring):
         """
@@ -813,7 +855,8 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, Storage(aca.path,"title"),
-                            "academytitle.html", extraparams={'academy': aca.view()})
+                            "academytitle.html",
+                            extraparams={'academy': aca.view()})
 
     def do_academytitlesave(self, rs, academy=None):
         assert academy is not None
@@ -822,7 +865,8 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, Storage(aca.path,"title"),
-                                "academytitle.html", extraparams={'academy': aca.view()})
+                                "academytitle.html",
+                                extraparams={'academy': aca.view()})
 
     def do_coursetitle(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -832,8 +876,9 @@ class Application:
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, Storage(c.path,"title"),
-                            "coursetitle.html", extraparams={'academy': aca.view(),
-                                                              'course': c.view()})
+                            "coursetitle.html",
+                            extraparams={'academy': aca.view(),
+                                         'course': c.view()})
 
     def do_coursetitlesave(self, rs, academy=None, course=None):
         assert academy is not None and course is not None
@@ -843,8 +888,9 @@ class Application:
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, Storage(c.path,"title"),
-                                "coursetitle.html", extraparams={'academy': aca.view(),
-                                                                 'course': c.view()})
+                                "coursetitle.html",
+                                extraparams={'academy': aca.view(),
+                                             'course': c.view()})
 
     def do_admin(self, rs):
         self.check_login(rs)
@@ -896,7 +942,8 @@ class Application:
             )
         return self.render("style.html", rs, params)
 
-    def render_edit(self, rs, theacademy, thecourse, thepage, theversion, thecontent, ok=None):
+    def render_edit(self, rs, theacademy, thecourse, thepage, theversion,
+                    thecontent, ok=None):
         """
         @type rs: RequestState
         @type theacademy: Academy
@@ -911,7 +958,9 @@ class Application:
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            content=thecontent, ## Note: must use the provided content, as it has to fit with the version
+            ## Note: must use the provided content, as it has to fit with the
+            ## version
+            content=thecontent,
             version=theversion,
             ok=ok)
         return self.render("edit.html", rs, params)
@@ -935,8 +984,7 @@ class Application:
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            blobs=[thecourse.viewblob(i) for i in thecourse.listdeadblobs()]
-)
+            blobs=[thecourse.viewblob(i) for i in thecourse.listdeadblobs()])
         return self.render("deadblobs.html", rs, params)
 
     def render_deadpages(self, rs, theacademy, thecourse):
@@ -976,8 +1024,7 @@ class Application:
             page=thepage,
             blob=thecourse.viewblob(blob),
             ok=ok,
-            error=error
-            )
+            error=error)
         return self.render("editblob.html", rs, params)
 
 
@@ -1003,15 +1050,21 @@ class Application:
                       error=error)
         return self.render("createacademyquiz.html", rs, params)
 
-    def render_show(self, rs, theacademy, thecourse,thepage, saved=False):
+    def render_show(self, rs, theacademy, thecourse, thepage, saved=False):
+        """
+        @type rs: RequestState
+        @type theacademy: unicode
+        @type thecourse: unicode
+        @type thepage: int
+        @type saved: bool
+        """
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
             content=thecourse.showpage(thepage),
             saved=saved,
-            blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)]
-            )
+            blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
         return self.render("show.html", rs, params)
 
     def render_file(self, rs, templatename, theversion, thecontent, ok=None,
@@ -1029,7 +1082,9 @@ class Application:
         assert isinstance(theversion, unicode)
         assert isinstance(thecontent, unicode)
         params= dict(
-            content=thecontent, ## Note: must use the provided content, as it has to fit with the version
+            ## Note: must use the provided content, as it has to fit with the
+            ## version
+            content=thecontent,
             version=theversion,
             ok=ok,
             error=error)
@@ -1049,10 +1104,8 @@ class Application:
             form=rs.request.form,
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail),
-            staticjoin = lambda name: self.staticjoin(name, rs)
-        )
+            staticjoin = lambda name: self.staticjoin(name, rs))
         params.update(extraparams)
-        ## grab a copy of the parameters for url building
         template = self.jinjaenv.get_template(templatename)
         rs.response.data = template.render(params).encode("utf8")
         return rs.response
