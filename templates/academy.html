@@ -5,25 +5,25 @@
 {% block content %}
 {% if academy.courses %}
 <ol>
-	{% for course in academy.courses %}
-	    {% if user.allowedRead(academy, course) %}
+	{%- for course in academy.courses -%}
+	    {%- if user.allowedRead(academy, course) %}
 	    <li><a href="{{ buildurl("course", dict(course=course.name)) }}">{{ course.title|e }}</a></li>
-	    {% else %}
+	    {%- else -%}
 	    <li>{{ course.title|e }}</li>
-	    {% endif %}
-	{% endfor %}
+	    {%- endif -%}
+	{%- endfor %}
 </ol>
-{% else %}
+{%- else -%}
 <em>Keine Kurse gefunden.</em>
-{% endif %}
-{% if user.mayExport(academy)%}
+{%- endif -%}
+{%- if user.mayExport(academy)%}
 {# 
 <a href="{{ buildurl("export") }}">Exportieren</a>
 #} FIXME: this should be an "Exportieren" button
-{% endif%}
-{% if user.allowedWrite(academy) %}
+{%- endif %}
+{%- if user.allowedWrite(academy) %}
 <a href="{{ buildurl("academytitle") }}">Titel bearbeiten</a>
 <a href="{{ buildurl("academygroups") }}">Gruppen bearbeiten</a>
 <a href="{{ buildurl("createcoursequiz") }}">Kurs hinzuf&uuml;gen</a>
-{% endif%}
+{%- endif -%}
 {% endblock %}

@@ -15,32 +15,32 @@ Teil #{{page}}
 <hr>
 
 
-{% if user.allowedWrite(academy, course) %}
+{%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit") }}">Editieren</a>
 {{ button(buildurl("delete"), "Löschen", dict()) }}
-{% endif %}
+{%- endif -%}
 <a href="{{ buildurl("rcs") }}">rcs</a>
 
 <hr>
-{% if blobs %}
+{%- if blobs %}
 Zugeordnete Bilder:
 <ul>
-{% for blob in blobs %}
+{%- for blob in blobs %}
 <li> 
   <a href="{{ buildurl("showblob", {'blob': blob.number}) }}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
-{% if user.allowedWrite(academy, course) %}
+{%- if user.allowedWrite(academy, course) %}
 {{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
-{% endif %}
+{%- endif -%}
 </li>
-{% endfor %}
+{%- endfor %}
 </ul>
-{% else %}
+{%- else -%}
 <em>Keine Bilder zu diesem Teil gefunden.</em>
-{% endif %}
+{%- endif -%}
 
-{% if user.allowedWrite(academy, course) %}
+{%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("addblob") }}">neues Bild hinzuf&uuml;gen</a>
 <a href="{{ buildurl("showdeadblobs") }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
-{% endif %}
+{%- endif -%}
 
 {% endblock %}

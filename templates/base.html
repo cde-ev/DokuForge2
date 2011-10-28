@@ -42,19 +42,19 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
    <div id="header">
    Dokuforge
    <a href="{{ buildurl("styleguide") }}">Style-Guide</a>
-   {% if user is not none %}
+   {%- if user is not none %}
      <p>Hallo {{ user.name }}!</p>
      <p>{{ button(buildurl("logout"), "Logout")}}
-	{% if user.isAdmin() %}
+	{%- if user.isAdmin() %}
 	<a href="{{ buildurl("admin") }}">Administration</a>
-	{% endif %}
-	{% if user.isSuperAdmin() %}
+	{%- endif -%}
+	{%- if user.isSuperAdmin() %}
 	<a href="{{ buildurl("groups") }}">Gruppenverwaltung</a>
-	{% endif %}
+	{%- endif -%}
      </p>
-   {% else %}
+   {%- else -%}
    <a href="{{ buildurl("start") }}">Login</a>
-   {% endif %}
+   {%- endif %}
    <p>{% block location %}{% endblock %}</p>
    </div>
 {% endblock %}
