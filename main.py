@@ -15,9 +15,9 @@ import werkzeug.utils
 from werkzeug.wrappers import Request, Response
 import werkzeug.exceptions
 import werkzeug.routing
+from werkzeug.wsgi import SharedDataMiddleware
 import operator
 from wsgiref.simple_server import make_server
-from wsgitools.applications import StaticFile
 from wsgitools.middlewares import TracebackMiddleware, SubdirMiddleware
 from wsgitools.scgi.asynchronous import SCGIServer as AsynchronousSCGIServer
 from wsgitools.scgi.forkpool import SCGIServer as ForkpoolSCGIServer
@@ -1046,9 +1046,7 @@ def main():
         app = Application(userdb, groupstore, './df/', './templates/',
                           './style/')
     app = TracebackMiddleware(app)
-    staticfiles = dict(("/static/" + f, StaticFile("./static/" + f)) for f in
-                       os.listdir("./static/"))
-    app = SubdirMiddleware(app, staticfiles)
+    app = SharedDataMiddleware(app, {"/static": "./static"})
     if sys.argv[1:2] == ["simple"]:
         make_server("localhost", 8800, app).serve_forever()
     elif sys.argv[1:2] == ["forkpool"]:
