@@ -869,7 +869,7 @@ class Application:
     def render_styleguide(self, rs, topic):
         params= dict(
             topic = topic,
-            includepath = self.stylepath + topic
+            includepath = os.path.join(self.stylepath, topic)
             )
         return self.render("style.html", rs, params)
 
