@@ -13,6 +13,7 @@ import os
 import random
 import re
 import sqlite3
+import time
 import urllib
 import urlparse
 
@@ -39,8 +40,10 @@ def gensid(bits=64):
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database."""
     create_table = "CREATE TABLE IF NOT EXISTS sessions " + \
-                   "(sid TEXT, user TEXT, UNIQUE(sid));"
+                   "(sid TEXT, user TEXT, updated INTEGER, UNIQUE(sid));"
     cookie_name = "sid"
+    hit_interval = 60
+    expire_after = 60 * 60 * 24 * 7 # a week
 
     def __init__(self, db, request, response):
         """
@@ -53,20 +56,28 @@ class SessionHandler:
         self.cur = db.cursor()
         self.response = response
         self.sid = request.cookies.get(self.cookie_name)
+        self.lastexpire = 0
 
     def get(self):
         """Find a user session.
         @rtype: unicode or None
         @returns: a username or None
         """
+        now = time.time()
+        self.expire(now)
+
         if self.sid is None:
             return None
-        self.cur.execute("SELECT user FROM sessions WHERE sid = ?;",
+        self.cur.execute("SELECT user, updated FROM sessions WHERE sid = ?;",
                          (self.sid.decode("utf8"),))
         results = self.cur.fetchall()
         if len(results) != 1:
             return None
         assert isinstance(results[0][0], unicode)
+        if results[0][1] + self.hit_interval < time.time():
+            self.cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
+                             (now, self.sid.decode("utf8")))
+            self.db.commit()
         return results[0][0]
 
     def set(self, username):
@@ -76,8 +87,8 @@ class SessionHandler:
         if self.sid is None:
             self.sid = gensid()
             self.response.set_cookie(self.cookie_name, self.sid)
-        self.cur.execute("INSERT OR REPLACE INTO sessions VALUES (?, ?);",
-                         (self.sid.decode("utf8"), username))
+        self.cur.execute("INSERT OR REPLACE INTO sessions VALUES (?, ?, ?);",
+                         (self.sid.decode("utf8"), username, time.time()))
         self.db.commit()
 
     def delete(self):
@@ -90,6 +101,20 @@ class SessionHandler:
                              (self.sid.decode("utf8"),))
             self.db.commit()
             self.response.delete_cookie(self.cookie_name)
+
+    def expire(self, now=None):
+        """Delete old cookies unless there was active expire call within the
+        last hit_interval seconds.
+        @type now: None or float
+        @param now: time.time() result if already present
+        """
+        if now is None:
+            now = time.time()
+        if self.lastexpire + self.hit_interval < now:
+            self.cur.execute("DELETE FROM sessions WHERE updated < ?;",
+                             (time.time() - self.expire_after,))
+            self.db.commit()
+            self.lastexpire = now
 
 class RequestState:
     """
