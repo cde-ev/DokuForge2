@@ -4,14 +4,14 @@
 {{ navbar([("academy", {}, academy.title),
            ("course", {}, course.title),
 	   ("page", {}, "Teil #" ~ page),
-	   ("showblob", {}, "Bild #" ~ blob.number),
-	   ("editblob", {}, "Bild editieren")]) }}
+	   ("showblob", dict(blob=blob.number), "Bild #" ~ blob.number),
+	   ("editblob", dict(blob=blob.number), "Bild editieren")]) }}
 {% endblock %}
 
 {% block content %}
 
 {{ threeway(ok, "Bitte Blob bearbeiten.", "Blob erfolgreich geÃ¤ndert.", error.message, error.explanation) }}
-<form action="{{ buildurl("editblob")|e }}" method="post" id="editblob">
+<form action="{{ buildurl("editblob", dict(blob=blob.number))|e }}" method="post" id="editblob">
   Bildunterschrift/Kommentar: <textarea name="comment">{{ blob.comment|e }}</textarea>
   K&uuml;rzel: <textarea name="label">{{ blob.label|e }}</textarea>
   Dateiname: <textarea name="name">{{ blob.filename|e }}</textarea>
