@@ -1267,7 +1267,7 @@ class Application:
         @type thecourse: Course
         @type thepage: int
         @type blob: int
-        @type blobhash: str
+        @type blobhash: None or str
         """
         params = dict(
             academy=theacademy.view(),
