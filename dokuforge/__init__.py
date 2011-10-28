@@ -6,7 +6,7 @@ from dokuforge.user import UserDB
 
 def buildapp(workdir="./work/", dfdir="./df/", templatedir="./templates/",
              styledir="./style/", sessiondbpath=":memory:",
-             staticdir="./static/"):
+             staticdir="./static/", staticservepath="/static"):
     """
     @param templatedir: path to the jinja2 templates used by dokuforge
     @param sessiondbpath: path to a sqlite3 database dedicated to storing
@@ -23,6 +23,6 @@ def buildapp(workdir="./work/", dfdir="./df/", templatedir="./templates/",
     userdb.load()
     groupstore = Storage(workdir, "groupdb")
     app = Application(userdb, groupstore, dfdir, templatedir, styledir,
-                      sessiondbpath)
-    app = SharedDataMiddleware(app, {"/static": staticdir})
+                      staticservepath, sessiondbpath)
+    app = SharedDataMiddleware(app, {staticservepath: staticdir})
     return app

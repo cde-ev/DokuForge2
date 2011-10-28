@@ -139,7 +139,7 @@ class IdentifierConverter(werkzeug.routing.BaseConverter):
 
 class Application:
     def __init__(self, userdb, groupstore, acapath, templatepath, stylepath,
-                 sessiondbpath=":memory:"):
+                 staticservepath, sessiondbpath=":memory:"):
         assert isinstance(acapath, str)
         assert isinstance(templatepath, str)
         assert isinstance(stylepath, str)
@@ -154,6 +154,7 @@ class Application:
         self.templatepath = templatepath
         self.stylepath = stylepath
         self.groupstore = groupstore
+        self.staticservepath = staticservepath
         rule = werkzeug.routing.Rule
         self.routingmap = werkzeug.routing.Map([
             rule("/", methods=("GET", "HEAD"), endpoint="start"),
@@ -264,6 +265,15 @@ class Application:
                 buildargs[key] = value
         buildargs.update(args)
         return rs.mapadapter.build(endpoint, buildargs)
+
+    def staticjoin(name, rs):
+        assert isinstance(name, str)
+        if name[0] == "/":
+            return urlparse.urljoin(urllib.basejoin(rs.request.url_root,
+                                                    self.staticservepath),
+                                    name)
+        else:
+            return urlparse.urljoin(self.staticservepath, name)
 
     def getAcademy(self, name, user=None):
         """
@@ -1025,7 +1035,8 @@ class Application:
             user = rs.user,
             form=rs.request.form,
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
-            basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail)
+            basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail),
+            staticjoin = lambda name: self.staticjoin(name, rs)
         )
         params.update(extraparams)
         ## grab a copy of the parameters for url building
