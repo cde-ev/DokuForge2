@@ -386,6 +386,9 @@ class Application:
             return e
 
     def check_login(self, rs):
+        """
+        @type rs: RequestState
+        """
         if rs.user is None:
             raise TemporaryRequestRedirect(rs.request.url_root)
 
@@ -450,11 +453,17 @@ class Application:
                                 extraparams=extraparams)
 
     def do_start(self, rs):
+        """
+        @type rs: RequestState
+        """
         if rs.user is None:
             return self.render_start(rs)
         return self.render_index(rs)
 
     def do_login(self, rs):
+        """
+        @type rs: RequestState
+        """
         # FIXME: return proper error pages
         rs.response.headers.content_type = "text/plain"
         try:
@@ -471,24 +480,43 @@ class Application:
         return self.render_index(rs)
 
     def do_logout(self, rs):
+        """
+        @type rs: RequestState
+        """
         rs.logout()
         return self.render_start(rs)
 
     def do_index(self, rs):
+        """
+        @type rs: RequestState
+        """
         self.check_login(rs)
         return self.render_index(rs, None)
 
     def do_groupindex(self, rs, group=None):
+        """
+        @type rs: RequestState
+        @type group: None or unicode
+        """
         self.check_login(rs)
         return self.render_index(rs, group)
 
     def do_academy(self, rs, academy = None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         return self.render_academy(rs, aca)
 
     def do_course(self, rs, academy = None, course = None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -496,6 +524,11 @@ class Application:
         return self.render_course(rs, aca, c)
 
     def do_showdeadpages(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -505,6 +538,12 @@ class Application:
         return self.render_deadpages(rs, aca, c)
 
     def do_showdeadblobs(self, rs, academy=None, course=None, page=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -514,6 +553,10 @@ class Application:
         return self.render_deadblobs(rs, aca, c, page)
 
     def do_createcoursequiz(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -522,6 +565,10 @@ class Application:
         return self.render_createcoursequiz(rs, aca)
 
     def do_createcourse(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -538,12 +585,18 @@ class Application:
                                                 error = error)
 
     def do_createacademyquiz(self, rs):
+        """
+        @type rs: RequestState
+        """
         self.check_login(rs)
         if not rs.user.mayCreate():
             return werkzeug.exceptions.Forbidden()
         return self.render_createacademyquiz(rs)
 
     def do_createacademy(self, rs):
+        """
+        @type rs: RequestState
+        """
         self.check_login(rs)
         if not rs.user.mayCreate():
             return werkzeug.exceptions.Forbidden()
@@ -559,9 +612,16 @@ class Application:
                                                  error = error)
 
     def do_styleguide(self, rs):
+        """
+        @type rs: RequestState
+        """
         return self.do_styleguidetopic(rs, u"index")
 
     def do_styleguidetopic(self, rs, topic=None):
+        """
+        @type rs: RequestState
+        @type topic: unicode
+        """
         assert isinstance(topic, unicode)
         topic = topic.encode("utf8")
         if not topic in os.listdir(os.path.join(self.templatepath,
@@ -570,6 +630,11 @@ class Application:
         return self.render_styleguide(rs, topic)
 
     def do_createpage(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -580,6 +645,12 @@ class Application:
         return self.render_course(rs, aca, c)
 
     def do_delete(self, rs, academy=None, course=None, page=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -591,6 +662,13 @@ class Application:
 
     def do_blobdelete(self, rs, academy=None, course=None, page=None,
                       blob=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        @type blob: int
+        """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -602,6 +680,11 @@ class Application:
         return self.render_show(rs, aca, c, page)
 
     def do_relink(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -617,6 +700,12 @@ class Application:
         return self.render_course(rs, aca, c)
 
     def do_relinkblob(self, rs, academy=None, course=None, page=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -632,6 +721,13 @@ class Application:
         return self.render_show(rs, aca, c, page)
 
     def do_showblob(self, rs, academy=None, course=None, page=None, blob=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        @type blob: int
+        """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -642,6 +738,13 @@ class Application:
         return self.render_showblob(rs, aca, c, page, blob)
 
     def do_editblob(self, rs, academy=None, course=None, page=None, blob=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        @type blob: int
+        """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -653,6 +756,13 @@ class Application:
 
 
     def do_saveblob(self, rs, academy=None, course=None, page=None, blob=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        @type blob: int
+        """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -676,6 +786,13 @@ class Application:
 
 
     def do_md5blob(self, rs, academy=None, course=None, page=None, blob=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        @type blob: int
+        """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -689,7 +806,15 @@ class Application:
         blobhash = h.hexdigest()
         return self.render_showblob(rs, aca, c, page, blob, blobhash=blobhash)
 
-    def do_downloadblob(self, rs, academy=None, course=None, page=None, blob=None):
+    def do_downloadblob(self, rs, academy=None, course=None, page=None,
+                        blob=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        @type blob: int
+        """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -705,6 +830,12 @@ class Application:
         return rs.response
 
     def do_rcs(self, rs, academy=None, course=None, page=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -717,6 +848,11 @@ class Application:
         return rs.response
 
     def do_raw(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -729,6 +865,11 @@ class Application:
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -744,6 +885,12 @@ class Application:
         return self.render_course(rs, aca, c)
 
     def do_page(self, rs, academy = None, course = None, page = None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -751,6 +898,12 @@ class Application:
         return self.render_show(rs, aca, c, page)
 
     def do_edit(self, rs, academy = None, course = None, page = None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -761,6 +914,12 @@ class Application:
         return self.render_edit(rs, aca, c, page, version, content)
 
     def do_addblob(self, rs, academy = None, course = None, page = None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -770,6 +929,12 @@ class Application:
         return self.render_addblob(rs, aca, c, page)
 
     def do_attachblob(self, rs, academy = None, course = None, page = None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -795,6 +960,12 @@ class Application:
 
     def do_save(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
@@ -814,6 +985,10 @@ class Application:
         return self.render_edit(rs, aca, c, page, version, content, ok=ok)
 
     def do_academygroups(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -825,7 +1000,12 @@ class Application:
 
     def validateGroups(self, groupstring):
         """
+        check whether groupstring contains a valid set of groups. This means
+        it may not be empty and it may not contain non-existent groups. If a
+        check fails a CheckError is raised.
+
         @type groupstring: unicode
+        @param groupstring: contains groups seperated by whitespace
         """
         assert isinstance(groupstring, unicode)
         groups = groupstring.split()
@@ -838,6 +1018,10 @@ class Application:
                                  u"Bitte korrigieren und erneut versuchen.")
 
     def do_academygroupssave(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -849,6 +1033,10 @@ class Application:
                                 extraparams={'academy': aca.view()})
 
     def do_academytitle(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -859,6 +1047,10 @@ class Application:
                             extraparams={'academy': aca.view()})
 
     def do_academytitlesave(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -869,6 +1061,11 @@ class Application:
                                 extraparams={'academy': aca.view()})
 
     def do_coursetitle(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -881,6 +1078,11 @@ class Application:
                                          'course': c.view()})
 
     def do_coursetitlesave(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
