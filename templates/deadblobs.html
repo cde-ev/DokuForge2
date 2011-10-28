@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block location%}
-{{ navbar([("academy", academy.gettitle()),
-           ("course", course.gettitle()),
+{{ navbar([("academy", academy.title),
+           ("course", course.title),
 	   ("page", "Teil #" + page|string),
 	   ("showdeadblobs", "Attic")])}}
 {% endblock %}
@@ -9,7 +9,7 @@
 {% if blobs %}
 <ul>
 	{% for blob in blobs %}
-	<li> #[{{ blob.number }}] ({{ blob.filename|e  }})
+	<li> #[{{ blob.number|string }}] ({{ blob.filename|e  }})
          {{ button(buildurl("relinkblob"), "wiederherstellen", dict(number=blob.number)) }}
 	</li>
 	{% endfor %}

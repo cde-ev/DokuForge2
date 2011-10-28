@@ -7,9 +7,9 @@
 {{ threeway(ok, "Bitte die folgenden Angaben ergaenzen.", "", error.message,
             error.explanation) }}
 <form action="{{buildurl("createacademy")}}" method="post" id="createacademy">
-	Interner Name: <input name="name" type="text" value="{{ name }}"><br>
-	Titel: <input name="title" type="text" value="{{ title }}"><br>
-	Gruppen: <input name="groups" type="text" value="{{ groups }}"><br>
+	Interner Name: <input name="name" type="text" value="{{ form.get("name", "")|e }}"><br>
+	Titel: <input name="title" type="text" value="{{ form.get("title", "")|e }}"><br>
+	Gruppen: <input name="groups" type="text" value="{{ form.get("groups", "")|e }}"><br>
 	<input type="submit" name="submit" value="Akademie anlegen">
 </form>
 <a href=" {{ buildurl("index") }}">Abbrechen</a>

@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 {% block location%}
-{{ navbar([("academy", academy.gettitle()),
-           ("course", course.gettitle())]) }}
+{{ navbar([("academy", academy.title),
+           ("course", course.title)]) }}
 {% endblock %}
 {% block content %}
-{% set pages = course.listpages() %}
-{% if pages %}
+{% if course.pages %}
 <ol>
-	{% for page in pages %}
+	{% for page in course.pages %}
 	<li><a href="{{ buildurl('page', {'page': page}) }}"> Teil #{{ page }}</a>
-		{% if pages.index(page) > 0 %}
+		{% if not loop.first %}
 		   {% if user.allowedWrite(academy, course) %}
 		      {{ button(buildurl("moveup"), "Hochrücken",
-	              	 dict(number=pages.index(page))) }}
+	              	 dict(number=loop.index0)) }}
 		   {% endif %}
 		{% endif %}
 	</li>

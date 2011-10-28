@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
 {% block location%}
-{{ navbar([("academy", academy.gettitle()),
-           ("course", course.gettitle()),
+{{ navbar([("academy", academy.title),
+           ("course", course.title),
 	   ("page", "Teil #" + page|string),
-	   ("showblob", "Bild #" + blob|string),
+	   ("showblob", "Bild #" + blob.number|string),
 	   ("editblob", "Bild editieren")]) }}
 {% endblock %}
 
 {% block content %}
 
 {{ threeway(ok, "Bitte Blob bearbeiten.", "Blob erfolgreich ge&auml;ndert.", error.message, error.explanation) }}
-<form action="{{buildurl("editblob")}}" method="post" id="editblob">
-  Bildunterschrift/Kommentar: <textarea name="comment">{{ theblob.comment|e }}</textarea>
-  K&uuml;rzel: <textarea name="label">{{ theblob.label|e }}</textarea>
-  Dateiname: <textarea name="name">{{ theblob.filename|e }}</textarea>
+<form action="{{ buildurl("editblob") }}" method="post" id="editblob">
+  Bildunterschrift/Kommentar: <textarea name="comment">{{ blob.comment|e }}</textarea>
+  K&uuml;rzel: <textarea name="label">{{ blob.label|e }}</textarea>
+  Dateiname: <textarea name="name">{{ blob.filename|e }}</textarea>
 	<input type="submit" name="saveshow" value="Speichern">
 </form>
 Das K&uuml;rzel darf nur Kleinbuchstaben und Ziffern enthalten.

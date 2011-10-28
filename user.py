@@ -5,8 +5,9 @@ from cStringIO import StringIO
 sysrand = random.SystemRandom()
 
 from common import strtobool
-from course import CourseLite
-from academy import AcademyLite
+from course import Course
+from academy import Academy
+from view import LazyView
 
 def randpasswordstring(n=6):
     """
@@ -60,46 +61,66 @@ class User:
 
     def allowedRead(self, aca, course = None):
         """
-        @type aca: AcademyLite
-        @type course: None or CourseLite
+        @type aca: Academy or LazyView
+        @type course: None or Course or LazyView
         @rtype: bool
         """
-        assert isinstance(aca, AcademyLite)
-        assert course is None or isinstance(course, CourseLite)
+        if isinstance(aca, LazyView):
+            aca = aca["name"]
+        else:
+            assert isinstance(aca, Academy)
+            aca = aca.name
+        if course is None:
+            pass
+        elif isinstance(course, LazyView):
+            course = course["name"]
+        else:
+            assert isinstance(course, Course)
+            course = course.name
         if self.hasPermission(u"df_read") or self.isSuperAdmin():
             return True
         for g in aca.getgroups():
             if self.hasPermission(u"df_read_" + g):
                 return True
         if course is None:
-            return self.hasPermission(u"akademie_read_%s" % aca.name)
+            return self.hasPermission(u"akademie_read_%s" % aca)
         else:
-            return self.hasPermission(u"akademie_read_%s_%s" % (aca.name, course.name))
+            return self.hasPermission(u"akademie_read_%s_%s" % (aca, course))
 
     def allowedWrite(self, aca, course = None):
         """
-        @type aca: AcademyLite
-        @type course: None or CourseLite
+        @type aca: Academy or LazyView
+        @type course: None or Course or LazyView
         @rtype: bool
         """
-        assert isinstance(aca, AcademyLite)
-        assert course is None or isinstance(course, CourseLite)
+        if isinstance(aca, LazyView):
+            aca = aca["name"]
+        else:
+            assert isinstance(aca, Academy)
+            aca = aca.name
+        if course is None:
+            pass
+        elif isinstance(course, LazyView):
+            course = course["name"]
+        else:
+            assert isinstance(course, Course)
+            course = course.name
         if self.hasPermission(u"df_write") or self.isSuperAdmin():
             return True
         for g in aca.getgroups():
             if self.hasPermission(u"df_write_" + g):
                 return True
         if course is None:
-            return self.hasPermission(u"akademie_write_%s" % aca.name)
+            return self.hasPermission(u"akademie_write_%s" % aca)
         else:
-            return self.hasPermission(u"akademie_write_%s_%s" % (aca.name, course.name))
+            return self.hasPermission(u"akademie_write_%s_%s" % (aca, course))
 
     def mayExport(self, aca):
         """
-        @type aca: AcademyLite
+        @type aca: Academy or LazyView
         @rtype: bool
         """
-        assert isinstance(aca, AcademyLite)
+        assert isinstance(aca, Academy) or isinstance(aca, LazyView)
         if self.isSuperAdmin():
             return True
         if not self.allowedRead(aca):

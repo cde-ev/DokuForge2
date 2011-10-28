@@ -4,25 +4,49 @@ import storage
 import course
 import re
 import operator
-from course import Course, CourseLite
+from course import Course
+import view
 
-class AcademyLite:
+class Academy:
     """
-    Backend for viewing the file structres related to an academy
+    Backend for manipulating the file structres related to a course
 
-    A detailed description can be found with the class Academy.
+    It is characterised by the path of a directory. The directory should
+    contain the following files. All directories within this directory are
+    assumed to contain a course.
+
+    title,v    The title of this display name of this academy
+    groups,v   The groups in which this academy is a member
     """
-
     def __init__(self, obj):
         """
         @param obj: either a path or an Academy object
-        @type obj: str or Academy object or AcademyLite object
+        @type obj: str or Academy
         """
-        if isinstance(obj, AcademyLite):
+        if isinstance(obj, Academy):
             self.path = obj.path
         else:
             assert isinstance(obj, str)
             self.path = obj
+
+    def getstorage(self, filename):
+        """
+        @type filename: str
+        @param filename: passed to Storage as second param
+        @rtype: Storage
+        @returns: a Storage build from self.path and filename
+        """
+        assert isinstance(filename, str)
+        return storage.Storage(self.path, filename)
+
+    def getcontent(self, filename):
+        """
+        @type filename: str
+        @param filename: passed to Storage as second param
+        @rtype: str
+        @returns: the content of the Storage buil from self.path and filename
+        """
+        return self.getstorage(filename).content()
 
     @property
     def name(self):
@@ -38,7 +62,7 @@ class AcademyLite:
         @returns: the display name of this academy
         @rtype: unicode
         """
-        return storage.Storage(self.path, "title").content().decode("utf8")
+        return self.getcontent("title").decode("utf8")
 
     def getgroups(self):
         """
@@ -47,27 +71,30 @@ class AcademyLite:
         @returns: the groups of which this academy is a member
         @rtype: [unicode]
         """
-        return storage.Storage(self.path, "groups").content().decode("utf8").split()
+        return self.getcontent("groups").decode("utf8").split()
 
-    def listCoursesLite(self):
+    def viewCourses(self):
+        return [course.view() for course in self.listCourses()]
+
+    def listCourses(self):
         """
-        @returns: list of CourseLite object; all courses of this academy
+        @returns: list of Course object; all courses of this academy
         """
         ret = (os.path.join(self.path, entry)
                for entry in os.listdir(self.path))
         ret = filter(os.path.isdir, ret)
-        ret = map(course.CourseLite, ret)
+        ret = map(course.Course, ret)
         ret = list(ret)
         ret.sort(key=operator.attrgetter('name'))
         return ret
 
-    def getCourseLite(self, coursename):
+    def getCourse(self, coursename):
         """
         find a course of this academy to a given name
 
         @param coursename: internal name of course
         @type coursename: unicode
-        @returns: CourseLite object for course with name coursename
+        @returns: Course object for course with name coursename
         """
         assert isinstance(coursename, unicode)
         coursename = coursename.encode("utf8")
@@ -76,26 +103,8 @@ class AcademyLite:
         finalpath = os.path.join(self.path,coursename)
         if not os.path.isdir(finalpath):
             return None
-        return CourseLite(finalpath)
+        return Course(finalpath)
 
-
-class Academy(AcademyLite):
-    """
-    Backend for manipulating the file structres related to a course
-
-    It is characterised by the path of a directory. The directory should
-    contain the following files. All directories within this directory are
-    assumed to contain a course.
-
-    title,v    The title of this display name of this academy
-    groups,v   The groups in which this academy is a member
-    """
-    def __init__(self, obj):
-        """
-        @param obj: either a path or an Academy object
-        @type obj: str or Academy object or AcademyLite object
-        """
-        AcademyLite.__init__(self, obj)
 
     def settitle(self, title):
         """
@@ -107,7 +116,7 @@ class Academy(AcademyLite):
         assert isinstance(title, unicode)
         if title == u"":
             return False
-        storage.Storage(self.path,"title").store(title.encode("utf8"))
+        self.getstorage("title").store(title.encode("utf8"))
         return True
 
     def setgroups(self, groups):
@@ -119,7 +128,7 @@ class Academy(AcademyLite):
         """
         assert all(isinstance(group, unicode) for group in groups)
         content = u" ".join(groups)
-        storage.Storage(self.path, "groups").store(content.encode("utf8"))
+        self.getstorage("groups").store(content.encode("utf8"))
 
     def createCourse(self, name, title):
         """
@@ -142,23 +151,14 @@ class Academy(AcademyLite):
         course.Course(os.path.join(self.path, name)).settitle(title)
         return True
 
-    def listCourses(self):
+    def view(self):
         """
-        @returns: list of Course object; all courses of this academy
+        @rtype: LazyView
+        @returns: a mapping providing the keys: name(str), title(unicode),
+            courses([Course.view()]), groups([unicode])
         """
-        return list(map(course.Course, self.listCoursesLite()))
-
-    def getCourse(self, coursename):
-        """
-        find a course of this academy to a given name
-
-        @param coursename: internal name of course
-        @type coursename: unicode
-        @returns: Course object for course with name coursename
-        """
-        assert isinstance(coursename, unicode)
-        litecourse = self.getCourseLite(coursename)
-        if litecourse is None:
-            return None
-        return Course(litecourse)
-
+        return view.LazyView(dict(
+            name=lambda:self.name,
+            title=self.gettitle,
+            courses=self.viewCourses,
+            groups=self.getgroups))

@@ -5,136 +5,9 @@ from storage import Storage
 from common import check_output
 from werkzeug.datastructures import FileStorage
 
-class MetaBlob:
-    def __init__(self, label, comment, filename, number):
-        self.label = label
-        self.comment = comment
-        self.filename = filename
-        self.number = number
+import view
 
-class Blob:
-    def __init__(self, data, label, comment, filename, number):
-        self.data = data
-        self.label = label
-        self.comment = comment
-        self.filename = filename
-        self.number = number
-
-class CourseLite:
-    """
-    Backend for viewing the file structres related to a course
-
-    A detailed description can be found with the class Course.
-    """
-    def __init__(self, obj):
-        """
-        constructor for CourseLite objects
-
-        @param obj: either the path to a coures or a Course object
-        @type obj: str or Course or CourseLite
-        """
-        if isinstance(obj, CourseLite):
-            self.path = obj.path
-        else:
-            assert isinstance(obj, str)
-            if not os.path.isdir(obj):
-                return None
-            self.path = obj
-
-    @property
-    def name(self):
-        """
-        @rtype: str
-        """
-        return os.path.basename(self.path)
-
-    def gettitle(self):
-        """
-        @returns: title of the course
-        @rtype: unicode
-        """
-        s=Storage(self.path,"title")
-        return s.content().decode("utf8")
-
-    def nextpage(self,havelock=False):
-        """
-        internal function: return the number of the next available page, but don't do anything
-        @rtype: int
-        """
-        s = Storage(self.path,"nextpage")
-        vs = s.content(havelock=havelock)
-        if vs=='':
-            vs='0'
-        return int(vs)
-
-    def nextblob(self,havelock=False):
-        """
-        internal function: return the number of the next available blob, but don't do anything
-
-        @returns: number of next available blob
-        @rtype: int
-        """
-        s = Storage(self.path,"nextblob")
-        vs = s.content(havelock=havelock)
-        if vs=='':
-            vs='0'
-        return int(vs)
-
-    def listpages(self,havelock=False):
-        """
-        @returns: a list of the available page numbers in correct order
-        @rtype: [int]
-        """
-        indexstore = Storage(self.path,"Index")
-        index = indexstore.content(havelock=havelock)
-        lines = index.splitlines()
-        return [int(line.split()[0]) for line in lines if line != ""]
-
-    def listdeadpages(self):
-        """
-        @returns: a list of the pages not currently linked in the index
-        @rtype: [int]
-        """
-        indexstore = Storage(self.path, "Index")
-        nextpage = Storage(self.path, "nextpage")
-        with indexstore.lock as gotlockindex:
-            with nextpage.lock as gotlocknextpage:
-                np = self.nextpage(havelock=gotlocknextpage)
-                linkedpages= self.listpages(havelock=gotlockindex)
-                return [x for x in range(np) if x not in linkedpages]
-            
-    def listdeadblobs(self):
-        """
-        @returns: a list of the blobs not currently linked to the index
-        @rtype: [int]
-        """
-        indexstore = Storage(self.path,"Index")
-        nextblob = Storage(self.path,"nextblob")
-        with indexstore.lock as gotlockindex:
-            index = indexstore.content(havelock=gotlockindex)
-            lines = index.splitlines()
-            availableblobs = []
-            for line in lines:
-                entries = line.split()
-                availableblobs.extend([int(x) for x in entries[1:]])
-            with nextblob.lock as gotlocknextblob:
-                nextblobindex = self.nextblob(havelock=gotlocknextblob)
-                return [n for n in range(nextblobindex) if n not in availableblobs]
-
-
-    def showpage(self,number):
-        """
-        Show the contents of a page
-
-        @type number: int
-        @param number: the internal number of that page
-        @rtype: unicode
-        """
-        page = Storage(self.path,"page%d" % number)
-        return page.content().decode("utf8")
-
-
-class Course(CourseLite):
+class Course:
     """
     Backend for manipulating the file structres related to a course
 
@@ -163,14 +36,120 @@ class Course(CourseLite):
         constructor for Course objects
 
         @param obj: either the path to a coures or a Course object
-        @type obj: str or Course or CourseLite
+        @type obj: str or Course
         """
-        if not isinstance(obj, CourseLite):
-            try:
-                os.makedirs(obj)
-            except os.error:
-                pass
-        CourseLite.__init__(self, obj)
+        if isinstance(obj, Course):
+            self.path = obj.path
+        else:
+            assert isinstance(obj, str)
+            self.path = obj
+        try:
+            os.makedirs(self.path)
+        except os.error:
+            pass
+
+    def getstorage(self, filename):
+        """
+        @type filename: str
+        @param filename: passed to Storage as second param
+        @rtype: Storage
+        @returns: a Storage build from self.path and filename
+        """
+        assert isinstance(filename, str)
+        return Storage(self.path, filename)
+
+    def getcontent(self, filename, havelock=None):
+        """
+        @type filename: str
+        @param filename: passed to Storage as second param
+        @type havelock: None or LockDir
+        @rtype: str
+        @returns: the content of the Storage buil from self.path and filename
+        """
+        return self.getstorage(filename).content(havelock=havelock)
+
+    @property
+    def name(self):
+        """
+        @rtype: str
+        """
+        return os.path.basename(self.path)
+
+    def gettitle(self):
+        """
+        @returns: title of the course
+        @rtype: unicode
+        """
+        return self.getcontent("title").decode("utf8")
+
+    def nextpage(self, havelock=None):
+        """
+        internal function: return the number of the next available page, but don't do anything
+        @type havelock: None or LockDir
+        @rtype: int
+        """
+        return int(self.getcontent("nextpage", havelock) or "0")
+
+    def nextblob(self, havelock=None):
+        """
+        internal function: return the number of the next available blob, but don't do anything
+
+        @type havelock: None or LockDir
+        @returns: number of next available blob
+        @rtype: int
+        """
+        return int(self.getcontent("nextblob", havelock) or "0")
+
+    def listpages(self, havelock=None):
+        """
+        @type havelock: None or LockDir
+        @returns: a list of the available page numbers in correct order
+        @rtype: [int]
+        """
+        lines = self.getcontent("Index", havelock).splitlines()
+        return [int(line.split()[0]) for line in lines if line != ""]
+
+    def listdeadpages(self):
+        """
+        @returns: a list of the pages not currently linked in the index
+        @rtype: [int]
+        """
+        indexstore = self.getstorage("Index")
+        nextpage = self.getstorage("nextpage")
+        with indexstore.lock as gotlockindex:
+            with nextpage.lock as gotlocknextpage:
+                np = self.nextpage(havelock=gotlocknextpage)
+                linkedpages= self.listpages(havelock=gotlockindex)
+                return [x for x in range(np) if x not in linkedpages]
+            
+    def listdeadblobs(self):
+        """
+        @returns: a list of the blobs not currently linked to the index
+        @rtype: [int]
+        """
+        indexstore = self.getstorage("Index")
+        nextblob = self.getstorage("nextblob")
+        with indexstore.lock as gotlockindex:
+            index = indexstore.content(havelock=gotlockindex)
+            lines = index.splitlines()
+            availableblobs = []
+            for line in lines:
+                entries = line.split()
+                availableblobs.extend([int(x) for x in entries[1:]])
+            with nextblob.lock as gotlocknextblob:
+                nextblobindex = self.nextblob(havelock=gotlocknextblob)
+                return [n for n in range(nextblobindex) if n not in availableblobs]
+
+
+    def showpage(self,number):
+        """
+        Show the contents of a page
+
+        @type number: int
+        @param number: the internal number of that page
+        @rtype: unicode
+        """
+        return self.getcontent("page%d" % number).decode("utf8")
 
     def getrcs(self, page):
         """
@@ -180,11 +159,9 @@ class Course(CourseLite):
         """
         if 0 > page:
             return ""
-        np = self.nextpage()
-        if page >= np:
+        if page >= self.nextpage():
             return ""
-        pagestore = Storage(self.path, "page%d" % page)
-        return pagestore.asrcs()
+        return self.getstorage("page%d" % page).asrcs()
 
     def export(self):
         """
@@ -202,8 +179,7 @@ class Course(CourseLite):
         assert isinstance(title, unicode)
         if title == u"":
             return False
-        s=Storage(self.path,"title")
-        s.store(title.encode("utf8"))
+        self.getstorage("title").store(title.encode("utf8"))
         return True
 
     def newpage(self,user=None):
@@ -215,8 +191,8 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        index = Storage(self.path,"Index")
-        nextpagestore = Storage(self.path,"nextpage")
+        index = self.getstorage("Index")
+        nextpagestore = self.getstorage("nextpage")
         with index.lock as gotlockindex:
             with nextpagestore.lock as gotlocknextpage:
                 newnumber = self.nextpage(havelock=gotlocknextpage)
@@ -239,7 +215,7 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path,"Index")
+        indexstore = self.getstorage("Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
@@ -263,7 +239,7 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path,"Index")
+        indexstore = self.getstorage("Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
@@ -284,7 +260,7 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path,"Index")
+        indexstore = self.getstorage("Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock=gotlock)
             lines = index.splitlines()
@@ -304,8 +280,8 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path, "Index")
-        nextpage = Storage(self.path, "nextpage")
+        indexstore = self.getstorage("Index")
+        nextpage = self.getstorage("nextpage")
         with indexstore.lock as gotlockindex:
             with nextpage.lock as gotlocknextpage:
                 np = self.nextpage(havelock=gotlocknextpage)
@@ -334,8 +310,8 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path, "Index")
-        nextblob = Storage(self.path, "nextblob")
+        indexstore = self.getstorage("Index")
+        nextblob = self.getstorage("nextblob")
         with indexstore.lock as gotlockindex:
             with nextblob.lock as gotlocknextblob:
                 nb = self.nextblob(havelock=gotlocknextblob)
@@ -365,7 +341,7 @@ class Course(CourseLite):
         @returns a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
         """
-        page = Storage(self.path,"page%d" % number)
+        page = self.getstorage("page%d" % number)
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -392,7 +368,7 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        page = Storage(self.path,"page%d" % number)
+        page = self.getstorage("page%d" % number)
         ok, version, mergedcontent = page.endedit(version.encode("utf8"),
                                                   newcontent.encode("utf8"), user=user)
         return (ok, version.decode("utf8"), mergedcontent.decode("utf8"))
@@ -421,8 +397,8 @@ class Course(CourseLite):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = Storage(self.path,"Index")
-        nextblobstore = Storage(self.path,"nextblob")
+        indexstore = self.getstorage("Index")
+        nextblobstore = self.getstorage("nextblob")
 
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
@@ -436,10 +412,10 @@ class Course(CourseLite):
                         newindex="\n".join(lines) + "\n"
                         indexstore.store(newindex,havelock=gotlockindex)
 
-        blob = Storage(self.path,"blob%d" % newnumber)
-        bloblabel = Storage(self.path,"blob%d.label" % newnumber)
-        blobcomment = Storage(self.path,"blob%d.comment" % newnumber)
-        blobname = Storage(self.path,"blob%d.filename" % newnumber)
+        blob = self.getstorage("blob%d" % newnumber)
+        bloblabel = self.getstorage("blob%d.label" % newnumber)
+        blobcomment = self.getstorage("blob%d.comment" % newnumber)
+        blobname = self.getstorage("blob%d.filename" % newnumber)
         blob.store(data, user=user)
         bloblabel.store(label.encode("utf8"), user=user)
         blobcomment.store(comment.encode("utf8"), user=user)
@@ -454,42 +430,30 @@ class Course(CourseLite):
         @type number: int
         @rtype: [int]
         """
-        indexstore = Storage(self.path,"Index")
-        index = indexstore.content()
-        lines = index.splitlines()
-        for line in lines:
+        for line in self.getcontent("Index").splitlines():
             entries=line.split()
             if int(entries[0]) == number:
                 entries.pop(0)
                 return [int(x) for x in entries]
         return []
 
-    def getblob(self, number):
+    def viewblob(self, number):
         """
         return the corresponding blob
 
         @param number: the internal number of the blob
         @type number: int
-        @rtype: Blob
+        @rtype: LazyView
+        @returns: a mapping providing the keys: data(str), label(unicode),
+                  comment(unicode), filename(unicode) and number(int)
         """
-        return Blob(Storage(self.path,"blob%d" % number).content(),
-                    Storage(self.path,"blob%d.label" % number).content().decode("utf8"),
-                    Storage(self.path,"blob%d.comment" % number).content().decode("utf8"),
-                    Storage(self.path,"blob%d.filename" % number).content().decode("utf8"),
-                    number)
-
-    def getmetablob(self, number):
-        """
-        return the corresponding blob
-
-        @param number: the internal number of the blob
-        @type number: int
-        @rtype: Blob
-        """
-        return MetaBlob(Storage(self.path,"blob%d.label" % number).content().decode("utf8"),
-                        Storage(self.path,"blob%d.comment" % number).content().decode("utf8"),
-                        Storage(self.path,"blob%d.filename" % number).content().decode("utf8"),
-                        number)
+        ldu = view.liftdecodeutf8
+        return view.LazyView(dict(
+            data=self.getstorage("blob%d" % number).content,
+            label=ldu(self.getstorage("blob%d.label" % number).content),
+            comment=ldu(self.getstorage("blob%d.comment" % number).content),
+            filename=ldu(self.getstorage("blob%d.filename" % number).content),
+            number=lambda:number))
 
     def modifyblob(self, number, label, comment, filename, user):
         assert isinstance(label, unicode)
@@ -499,10 +463,22 @@ class Course(CourseLite):
         if re.match('^[a-z0-9]{1,200}$', label) is None:
             return False
 
-        bloblabel = Storage(self.path,"blob%d.label" % number)
-        blobcomment = Storage(self.path,"blob%d.comment" % number)
-        blobname = Storage(self.path,"blob%d.filename" % number)
+        bloblabel = self.getstorage("blob%d.label" % number)
+        blobcomment = self.getstorage("blob%d.comment" % number)
+        blobname = self.getstorage("blob%d.filename" % number)
         bloblabel.store(label.encode("utf8"), user=user)
         blobcomment.store(comment.encode("utf8"), user=user)
         blobname.store(filename.encode("utf8"), user=user)
         return True
+
+    def view(self):
+        """
+        @rtype: LazyView
+        @returns: a mapping providing the keys: name(str), pages([int]),
+                deadpages([int]), title(unicode)
+        """
+        return view.LazyView(dict(
+            name=lambda:self.name,
+            pages=self.listpages,
+            deadpages=self.listdeadpages,
+            title=self.gettitle))

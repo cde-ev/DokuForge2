@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
 {% block location%}
-{{ navbar([("academy", academy.gettitle()),
-           ("course", course.gettitle()),
+{{ navbar([("academy", academy.title),
+           ("course", course.title),
 	   ("page", "Teil #" + page|string),
-	   ("showblob", "Bild #" + blob|string)]) }}
+	   ("showblob", "Bild #" + blob.number|string)]) }}
 {% endblock %}
 
 {% block content %}
 
-<p>Bildunterschrift/Kommentar: {{ theblob.comment|e }}</p>
-<p>K&uuml;rzel: {{ theblob.label|e }}</p>
-<p>Dateiname: {{ theblob.filename|e }}</p>
+<p>Bildunterschrift/Kommentar: {{ blob.comment|e }}</p>
+<p>K&uuml;rzel: {{ blob.label|e }}</p>
+<p>Dateiname: {{ blob.filename|e }}</p>
 
 {% if user.allowedWrite(academy, course) %}
 <a href={{ buildurl("editblob") }}>Editieren</a>
