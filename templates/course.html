@@ -4,31 +4,31 @@
            ("course", {}, course.title)]) }}
 {% endblock %}
 {% block content %}
-{% if course.pages %}
+{%- if course.pages %}
 <ol>
-	{% for page in course.pages %}
+	{%- for page in course.pages %}
 	<li><a href="{{ buildurl('page', {'page': page})|e }}"> Teil #{{ page|string }}</a>
-		{% if not loop.first %}
-		   {% if user.allowedWrite(academy, course) %}
+		{%- if not loop.first -%}
+		   {%- if user.allowedWrite(academy, course) %}
 		      {{ button(buildurl("moveup"), "Hochrücken",
 	              	 dict(number=loop.index0)) }}
-		   {% endif %}
-		{% endif %}
+		   {%- endif -%}
+		{%- endif -%}
 	</li>
-	{% endfor %}
+	{%- endfor %}
 </ol>
-{% else %}
+{%- else -%}
 <em>Keine Teile gefunden gefunden.</em>
-{% endif %}
-{% if user.allowedWrite(academy, course) %}
+{%- endif -%}
+{%- if user.allowedWrite(academy, course) %}
 {{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
 <a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>
-{% endif %}
-{% if user.mayExport(academy) %}
+{%- endif -%}
+{%- if user.mayExport(academy) %}
 <a href="{{ buildurl("raw")|e }}">Roh-Export</a>
-{% endif %}
-{% if user.allowedWrite(academy) and user.allowedWrite(academy, course) %}
+{%- endif -%}
+{%- if user.allowedWrite(academy) and user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("coursetitle")|e }}">Titel bearbeiten</a>
 </a>
-{% endif %}
+{%- endif -%}
 {% endblock %}

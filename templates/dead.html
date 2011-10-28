@@ -5,15 +5,15 @@
 	   ("showdeadpages", {}, "Attic")])}}
 {% endblock %}
 {% block content %}
-{% if course.deadpages %}
+{%- if course.deadpages %}
 <ul>
-	{% for page in course.deadpages %}
+	{%- for page in course.deadpages %}
 	<li> #{{ page|string }}
          {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
 	</li>
-	{% endfor %}
+	{%- endfor %}
 </ul>
-{% else %}
+{%- else -%}
 <em>Keine gel&ouml;schten Teile gefunden.</em>
-{% endif %}
+{%- endif -%}
 {% endblock %}

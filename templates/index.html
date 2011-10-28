@@ -4,25 +4,25 @@
 {% endblock %}
 {% block content %}
 <ul>
-{% for academy in academies %}
-  {% if group in academy.groups %}
-    {% if user.allowedRead(academy) %}
+{%- for academy in academies -%}
+  {%- if group in academy.groups -%}
+    {%- if user.allowedRead(academy) %}
     <li><a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a></li>
-    {% else %}
+    {%- else -%}
     <li>{{ academy.title|e }}</li>
-    {% endif %}
-  {% endif %}
-{% else %}
+    {%- endif -%}
+  {%- endif -%}
+{%- else -%}
 <li><em>Keine Akademien gefunden.</em></li>
-{% endfor %}
+{%- endfor -%}
 </ul>
 <hr>
 <ul>
-{% for onegroup in allgroups %}
-{% if user.allowedList(onegroup) %}
+{%- for onegroup in allgroups -%}
+{%- if user.allowedList(onegroup) -%}
     <li><a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ allgroups[onegroup]|e }}</a></li>
-{% endif %}
-{% endfor %}
+{%- endif -%}
+{%- endfor -%}
 </ul>
 {% if user.mayCreate() %}
 <a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
