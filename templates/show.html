@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-Teil #{{page}}
+Teil #{{ page|string }}
 <hr>
 <pre>
 {{ content|e }}
@@ -16,10 +16,10 @@ Teil #{{page}}
 
 
 {% if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("edit") }}">Editieren</a>
+<a href="{{ buildurl("edit")|e }}">Editieren</a>
 {{ button(buildurl("delete"), "Löschen", dict()) }}
 {% endif %}
-<a href="{{ buildurl("rcs") }}">rcs</a>
+<a href="{{ buildurl("rcs")|e }}">rcs</a>
 
 <hr>
 {% if blobs %}
@@ -27,7 +27,7 @@ Zugeordnete Bilder:
 <ul>
 {% for blob in blobs %}
 <li> 
-  <a href="{{ buildurl("showblob", {'blob': blob.number}) }}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
+  <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e  }})</a>
 {% if user.allowedWrite(academy, course) %}
 {{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
 {% endif %}
@@ -39,8 +39,8 @@ Zugeordnete Bilder:
 {% endif %}
 
 {% if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("addblob") }}">neues Bild hinzuf&uuml;gen</a>
-<a href="{{ buildurl("showdeadblobs") }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
+<a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
 {% endif %}
 
 {% endblock %}

@@ -10,8 +10,8 @@
 
 {% block content %}
 
-{{ threeway(ok, "Bitte Blob bearbeiten.", "Blob erfolgreich ge&auml;ndert.", error.message, error.explanation) }}
-<form action="{{ buildurl("editblob") }}" method="post" id="editblob">
+{{ threeway(ok, "Bitte Blob bearbeiten.", "Blob erfolgreich geÃ¤ndert.", error.message, error.explanation) }}
+<form action="{{ buildurl("editblob")|e }}" method="post" id="editblob">
   Bildunterschrift/Kommentar: <textarea name="comment">{{ blob.comment|e }}</textarea>
   K&uuml;rzel: <textarea name="label">{{ blob.label|e }}</textarea>
   Dateiname: <textarea name="name">{{ blob.filename|e }}</textarea>

@@ -5,14 +5,14 @@
 {% block content %}
 
 {{ threeway(ok,
-            "Bitte Text eingeben und mit &quot;Speichern&quot; beenden.",
+            'Bitte Text eingeben und mit "Speichern" beenden.',
             "Aenderungen erfolgreich gespeichert.",
             error.message, error.explanation) }}
-<form action="{{ buildurl("adminsave") }}" method="post" id="save">
+<form action="{{ buildurl("adminsave")|e }}" method="post" id="save">
 	<textarea name="content">{{ content|e }}</textarea>
-	<input type="hidden" name="revisionstartedwith" value="{{version}}"> 
+	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ buildurl("admin") }}">Abbrechen</a>
+<a href="{{ buildurl("admin")|e }}">Abbrechen</a>
 {% endblock %}

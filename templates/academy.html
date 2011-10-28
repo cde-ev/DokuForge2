@@ -7,7 +7,7 @@
 <ol>
 	{% for course in academy.courses %}
 	    {% if user.allowedRead(academy, course) %}
-	    <li><a href="{{ buildurl("course", dict(course=course.name)) }}">{{ course.title|e }}</a></li>
+	    <li><a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a></li>
 	    {% else %}
 	    <li>{{ course.title|e }}</li>
 	    {% endif %}
@@ -18,12 +18,12 @@
 {% endif %}
 {% if user.mayExport(academy)%}
 {# 
-<a href="{{ buildurl("export") }}">Exportieren</a>
+<a href="{{ buildurl("export")|e }}">Exportieren</a>
 #} FIXME: this should be an "Exportieren" button
 {% endif%}
 {% if user.allowedWrite(academy) %}
-<a href="{{ buildurl("academytitle") }}">Titel bearbeiten</a>
-<a href="{{ buildurl("academygroups") }}">Gruppen bearbeiten</a>
-<a href="{{ buildurl("createcoursequiz") }}">Kurs hinzuf&uuml;gen</a>
+<a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a>
+<a href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a>
+<a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
 {% endif%}
 {% endblock %}

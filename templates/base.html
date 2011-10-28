@@ -1,5 +1,5 @@
 {% macro button(action, label, params={}) -%}
-<form action="{{ basejoin(action)|e }}" method="post">
+<form action="{{ action|e }}" method="post">
 	{%- for key, value in params.items() -%}
 	<input type="hidden" name="{{ key|e }}" value="{{ value|e }}">
 	{%- endfor -%}
@@ -13,19 +13,19 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 {%- if url == '' -%}
 {# comment to protect space #} &gt; {{ title|e}}
 {%- else -%}
-{# comment to protect space #} &gt; <a href="{{ buildurl(point, args) }}">{{ title|e }}</a>
+{# comment to protect space #} &gt; <a href="{{ buildurl(point, args)|e }}">{{ title|e }}</a>
 {%- endif -%}
 {%- endfor -%}
 {%- endmacro -%}
 
 {%- macro threeway(ok, default, success, errormessage, errorexplanation) -%}
 {% if ok is none %}
-{{ default }}
+{{ default|e }}
 {% elif ok %}
-{{ success }}
+{{ success|e }}
 {% else %}
-<span class=important>{{ errormessage }}</span><br>
-{{ errorexplanation }}
+<span class=important>{{ errormessage|e }}</span><br>
+{{ errorexplanation|e }}
 {% endif %}
 {%- endmacro -%}
 
@@ -33,27 +33,27 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 <html lang="de">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="{{ basejoin("static/style.css") }}" media="all">
-	<link rel="stylesheet" type="text/css" href="{{ basejoin("static/print.css") }}" media="print">
+	<link rel="stylesheet" type="text/css" href="{{ basejoin("static/style.css")|e }}" media="all">
+	<link rel="stylesheet" type="text/css" href="{{ basejoin("static/print.css")|e }}" media="print">
 	<title>Dokuforge2</title>
 </head>
 <body>
 {% block header %}
    <div id="header">
    Dokuforge
-   <a href="{{ buildurl("styleguide") }}">Style-Guide</a>
+   <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
    {% if user is not none %}
-     <p>Hallo {{ user.name }}!</p>
-     <p>{{ button(buildurl("logout"), "Logout")}}
+     <p>Hallo {{ user.name|e }}!</p>
+     <p>{{ button(buildurl("logout"), "Logout") }}
 	{% if user.isAdmin() %}
-	<a href="{{ buildurl("admin") }}">Administration</a>
+	<a href="{{ buildurl("admin")|e }}">Administration</a>
 	{% endif %}
 	{% if user.isSuperAdmin() %}
-	<a href="{{ buildurl("groups") }}">Gruppenverwaltung</a>
+	<a href="{{ buildurl("groups")|e }}">Gruppenverwaltung</a>
 	{% endif %}
      </p>
    {% else %}
-   <a href="{{ buildurl("start") }}">Login</a>
+   <a href="{{ buildurl("start")|e }}">Login</a>
    {% endif %}
    <p>{% block location %}{% endblock %}</p>
    </div>

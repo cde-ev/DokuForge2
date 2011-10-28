@@ -3,7 +3,7 @@
 {{ navbar() }}
 {% endblock %}
 {% block content %}
-<form action="{{buildurl("login")}}" method="post" id="login">
+<form action="{{ buildurl("login")|e }}" method="post" id="login">
   <p>Nutzername: <input name="username" type="text"></p>
   <p>Passwort: <input name="password" type="password"></p>
   <p><input name="submit" value="Login" type="submit"></p>

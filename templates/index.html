@@ -7,7 +7,7 @@
 {% for academy in academies %}
   {% if group in academy.groups %}
     {% if user.allowedRead(academy) %}
-    <li><a href="{{ buildurl("academy", dict(academy=academy.name)) }}">{{ academy.title|e }}</a></li>
+    <li><a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a></li>
     {% else %}
     <li>{{ academy.title|e }}</li>
     {% endif %}
@@ -20,11 +20,11 @@
 <ul>
 {% for onegroup in allgroups %}
 {% if user.allowedList(onegroup) %}
-    <li><a href="{{ buildurl("groupindex", {'group': onegroup}) }}">{{ allgroups[onegroup]|e }}</a></li>
+    <li><a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ allgroups[onegroup]|e }}</a></li>
 {% endif %}
 {% endfor %}
 </ul>
 {% if user.mayCreate() %}
-<a href="{{ buildurl("createacademy") }}">Neue Akademie anlegen</a>
+<a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
 {% endif%}
 {% endblock %}

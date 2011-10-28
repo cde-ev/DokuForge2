@@ -5,12 +5,12 @@
 {% endblock %}
 {% block content %}
 
-{{ threeway(ok, "Bitte die folgenden Angaben ergaenzen.", "", error.message,
+{{ threeway(ok, "Bitte die folgenden Angaben ergänzen.", "", error.message,
             error.explanation) }}
-<form action="{{ buildurl("createcourse") }}" method="post" id="createcourse">
+<form action="{{ buildurl("createcourse")|e }}" method="post" id="createcourse">
 	Interner Name: <input name="name" type="text" value="{{ form.get("name", "")|e }}"><br>
 	Titel: <input name="title" type="text" value="{{ form.get("title", "")|e }}"><br>
 	<input type="submit" name="submit" value="Kurs hinzuf&uuml;gen">
 </form>
-<a href="{{ buildurl("academy") }}">Abbrechen</a>
+<a href="{{ buildurl("academy")|e }}">Abbrechen</a>
 {% endblock %}

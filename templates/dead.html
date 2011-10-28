@@ -8,7 +8,7 @@
 {% if course.deadpages %}
 <ul>
 	{% for page in course.deadpages %}
-	<li> #{{ page }}
+	<li> #{{ page|string }}
          {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
 	</li>
 	{% endfor %}

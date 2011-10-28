@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<form action="{{ buildurl("attachblob") }}" method="post" enctype="multipart/form-data">
+<form action="{{ buildurl("attachblob")|e }}" method="post" enctype="multipart/form-data">
   Bildunterschrift/Kommentar: <textarea name="comment"></textarea>
   K&uuml;rzel: <textarea name="label"></textarea>
 	<input type="file" name="content">
