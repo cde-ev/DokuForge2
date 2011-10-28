@@ -14,6 +14,7 @@ import random
 import re
 import sqlite3
 import urllib
+import urlparse
 
 import jinja2
 import werkzeug.exceptions
@@ -266,7 +267,7 @@ class Application:
         buildargs.update(args)
         return rs.mapadapter.build(endpoint, buildargs)
 
-    def staticjoin(name, rs):
+    def staticjoin(self, name, rs):
         assert isinstance(name, str)
         if name[0] == "/":
             return urlparse.urljoin(urllib.basejoin(rs.request.url_root,
