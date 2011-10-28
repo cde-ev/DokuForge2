@@ -16,10 +16,10 @@ def rlogv(filename):
     @type filename: str
     """
     assert isinstance(filename, str)
-    f = file(filename, mode="r")
+    f = file(filename, mode = "r")
     content = f.read()
     f.close()
-    m = re.match(r'^\s*head\s*([0-9.]+)\s*;',content)
+    m = re.match(r'^\s*head\s*([0-9.]+)\s*;', content)
     if m:
         return m.groups()[0]
     else:
@@ -54,7 +54,7 @@ class LockDir:
                 self.lockcount = 1
                 return self
             except OSError, e:
-                if e.errno==errno.EEXIST:
+                if e.errno == errno.EEXIST:
                     time.sleep(0.2) # evertthing OK, someone else has the lock
                 else:
                     raise # something else went wrong
@@ -66,7 +66,7 @@ class LockDir:
 
 
 class Storage(object):
-    def __init__(self,path,filename):
+    def __init__(self, path, filename):
         """
         A simple storage unit is described by a directory and the basename
         of a file in this direcotry. With the filename is also associated
@@ -77,8 +77,8 @@ class Storage(object):
         """
         assert isinstance(path, str)
         assert isinstance(filename, str)
-        self.path=path
-        self.filename=filename
+        self.path = path
+        self.filename = filename
 
     def fullpath(self, formatstr="%s"):
         """Join self.path with formatstr % self.filename.
@@ -107,12 +107,12 @@ class Storage(object):
             content = StringIO(content)
 
         with havelock or self.lock as gotlock:
-            self.ensureexistence(havelock=gotlock)
+            self.ensureexistence(havelock = gotlock)
             subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()])
-            objfile = file(self.fullpath(), mode="w")
+            objfile = file(self.fullpath(), mode = "w")
             shutil.copyfileobj(content, objfile)
             objfile.close()
-            args = ["ci","-q","-f","-m%s" % message]
+            args = ["ci", "-q", "-f", "-m%s" % message]
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())
@@ -123,14 +123,15 @@ class Storage(object):
             with havelock or self.lock:
                 subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                        self.fullpath()])
-                file(self.fullpath(), mode="w").close()
-                subprocess.check_call(["ci","-q","-f","-minitial, implicit, empty commit",
+                file(self.fullpath(), mode = "w").close()
+                subprocess.check_call(["ci", "-q", "-f",
+                                       "-minitial, implicit, empty commit",
                                        self.fullpath()])
 
     def asrcs(self, havelock=None):
         with havelock or self.lock:
             self.ensureexistence()
-            f = file(self.fullpath("%s,v"), mode="r")
+            f = file(self.fullpath("%s,v"), mode = "r")
             content = f.read()
             f.close()
             return content
@@ -139,14 +140,14 @@ class Storage(object):
         """
         @rtype: str
         """
-        self.ensureexistence(havelock=havelock)
+        self.ensureexistence(havelock = havelock)
         result = rlogv(self.fullpath("%s,v"))
         if result is None:
             result = rlogv(self.fullpath("RCS/%s,v"))
         return result
 
     def content(self, havelock=None):
-        self.ensureexistence(havelock=havelock)
+        self.ensureexistence(havelock = havelock)
         return check_output(["co", "-q", "-p", "-kb", self.fullpath()])
 
     def startedit(self, havelock=None):
@@ -161,9 +162,9 @@ class Storage(object):
         @rtype: (str, str)
         """
         with havelock or self.lock as gotlock:
-            self.ensureexistence(havelock=gotlock)
-            status=self.status(havelock=gotlock)
-            content=self.content(havelock=gotlock)
+            self.ensureexistence(havelock = gotlock)
+            status = self.status(havelock = gotlock)
+            content = self.content(havelock = gotlock)
             return status, content
 
     def endedit(self, version, newcontent, user=None, havelock=None):
@@ -181,9 +182,9 @@ class Storage(object):
         @param newcontent: the new content, produced by the user starting from
                            the content at the provided version
         @type user: None or str
-        @returns: a triple (ok,newversion,mergedcontent) where ok is boolen
+        @returns: a triple (ok, newversion, mergedcontent) where ok is boolen
             with value True if the save was sucessfull (if not, a merge has
-            to be done manually), and (newversion,mergedcontent) is a state
+            to be done manually), and (newversion, mergedcontent) is a state
             for further editing that can be used as if obtained from
             startedit
 
@@ -196,22 +197,22 @@ class Storage(object):
         assert isinstance(newcontent, str)
         assert user is None or isinstance(user, str)
         ## Transform text to Unix line ending
-        newcontent="\n".join(newcontent.splitlines()) + "\n"
+        newcontent = "\n".join(newcontent.splitlines()) + "\n"
         with havelock or self.lock as gotlock:
-            self.ensureexistence(havelock=gotlock)
-            currentversion = self.status(havelock=gotlock)
+            self.ensureexistence(havelock = gotlock)
+            currentversion = self.status(havelock = gotlock)
             if currentversion == version:
-                self.store(newcontent, user=user, havelock=gotlock)
-                newversion = self.status(havelock=gotlock)
-                return True,newversion,newcontent
+                self.store(newcontent, user = user, havelock = gotlock)
+                newversion = self.status(havelock = gotlock)
+                return True, newversion, newcontent
             ## conflict
             # 1.) store in a branch
             subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
                                    self.fullpath()])
-            objfile = file(self.fullpath(), mode="w")
+            objfile = file(self.fullpath(), mode = "w")
             objfile.write(newcontent)
             objfile.close()
-            args=["ci","-f","-q","-u"]
+            args = ["ci", "-f", "-q", "-u"]
             args.append("-mstoring original edit conflicting with %s in a branch" % currentversion)
             if user is not None:
                 args.append("-w%s" % user)
@@ -222,9 +223,9 @@ class Storage(object):
             subprocess.call(["rcsmerge", "-q", "-r%s" % version,
                              self.fullpath()]) # Note: non-zero exit status is
                                                # OK!
-            objfile = file(self.fullpath(), mode="r")
+            objfile = file(self.fullpath(), mode = "r")
             mergedcontent = objfile.read()
             objfile.close()
             os.unlink(self.fullpath())
             # 3) return new state
-            return False,currentversion,mergedcontent
+            return False, currentversion, mergedcontent
