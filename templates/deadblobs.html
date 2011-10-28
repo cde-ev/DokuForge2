@@ -2,7 +2,7 @@
 {% block location%}
 {{ navbar([("academy", academy.title),
            ("course", course.title),
-	   ("page", "Teil #" + page|string),
+	   ("page", "Teil #" ~ page),
 	   ("showdeadblobs", "Attic")])}}
 {% endblock %}
 {% block content %}

@@ -3,8 +3,8 @@
 {% block location%}
 {{ navbar([("academy", academy.title),
            ("course", course.title),
-	   ("page", "Teil #" + page|string),
-	   ("showblob", "Bild #" + blob.number|string)]) }}
+	   ("page", "Teil #" ~ page),
+	   ("showblob", "Bild #" ~ blob.number)]) }}
 {% endblock %}
 
 {% block content %}
