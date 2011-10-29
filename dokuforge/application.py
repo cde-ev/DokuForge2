@@ -153,7 +153,7 @@ class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
         return werkzeug.utils.redirect(self.new_url, self.code)
 
 class IdentifierConverter(werkzeug.routing.BaseConverter):
-    regex = '^[a-zA-Z][-a-zA-Z0-9]{0,199}$'
+    regex = '[a-zA-Z][-a-zA-Z0-9]{0,199}'
 
 class Application:
     def __init__(self, userdb, groupstore, acapath, staticservepath,
