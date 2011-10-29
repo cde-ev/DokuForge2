@@ -36,9 +36,9 @@ Daneben gibt es noch ein paar Details, hauptsaechlich fuer Interessierte.
 * Einsehen alter Versionen ist jetzt etwas, was jeder kann, der die
   Seite ueberhaupt lesen kann. Entsprechend koennen wir auch souveraen
   auf entsprechende "Hilfe, ich hab versehentlich einen ganz wichtigen
-  Absatz geloescht" mails reagieren. Im Augenblick ist das noch
-  rudimentaer, durch herunterladen einer rcs(1) Datei; aber ein
-  Schritt nach vorne ist es trotzdem, da es im Dokuteam vermutlich
+  Absatz geloescht" mails reagieren. Im Augenblick ist das noch rudimentaer,
+  durch herunterladen einer rcs(1) Datei; aber ein Schritt nach vorne ist
+  es trotzdem, da es im Dokuteam (und unter den Dokubeauftragen) vermutlich
   mehr Menschen gibt, die mit rcs umgehen koennen, als es aktive
   Dokuteammitglieder mit Zugriff auf den Server gibt ...
 
