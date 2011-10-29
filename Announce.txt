@@ -42,7 +42,7 @@ Daneben gibt es noch ein paar Details, hauptsaechlich fuer Interessierte.
   mehr Menschen gibt, die mit rcs umgehen koennen, als es aktive
   Dokuteammitglieder mit Zugriff auf den Server gibt ...
 
-Leider hat das neue Dokuforge momentan noch ein Baustellen. Auf der
+Leider hat das neue Dokuforge momentan noch ein paar Baustellen. Auf der
 Todo-Liste stehen zurzeit unter anderem die folgenden Sachen.
 
 * Ein neuer Exporter. Mit all den Verbesserungen, die wir im Laufe der Zeit
