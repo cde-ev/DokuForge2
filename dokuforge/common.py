@@ -140,9 +140,9 @@ def validateInternalName(name):
     @param name: name to check
     """
     assert isinstance(name, str)
-    if re.match('^[-a-zA-Z0-9]{1,200}$', name) is None:
+    if re.match('^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
         raise CheckError(u"Interner Name nicht wohlgeformt!",
-                         u"Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten und auch nicht leer sein.")
+                         u"Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten und muss mit einem Buchstaben beginnen.")
 
 def validateNonExistence(path, name):
     """
