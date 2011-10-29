@@ -1,4 +1,15 @@
-#header { background-color: #aaaaff; }
-#footer { background-color: #aaaaff; }
-.important { color: red; font-size: larger; font-weight: blod; }
-body { background-color: #aaaaff; }
+#header { background-color: #9999ff;
+          padding: 1ex;
+	  margin: }
+#footer { background-color: #9999ff;
+	  padding: 1ex;
+	  right: 0px;
+	  left: 0px;
+	  bottom: 0px;
+	  }
+#content { background-color: #ccccff;
+	   padding: 1ex; }
+.important { color: red; font-size: larger; font-weight: bold; }
+body { background-color: #9999ff;
+       margin: 0px;
+       position: relative;}
