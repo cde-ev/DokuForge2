@@ -37,12 +37,12 @@ class LockDir:
     def __enter__(self):
         """
         Obtain a lock for this object. This is usually done internaly
-        by more productive funcitons. Manual intervention is only necessary,
+        by more productive functions. Manual intervention is only necessary,
         if several locks have to be obtained before an operation can be carried
         out. Note that locks have to be obtained in lexicographic order by native
         byte order (in particular captital letter before lower case letters).
 
-        Acquiring a this object multiple times will succeed, but you have to
+        Acquiring this object multiple times will succeed, but you have to
         release it multiple times, too.
         """
         if self.lockcount != 0:
@@ -154,7 +154,7 @@ class Storage(object):
         """
         start editing a file (optimistic synchronisation)
 
-        At dokuforge 2 we try optimistic synchronisation, i.e., we log (noch lock)
+        At dokuforge 2 we try optimistic synchronisation, i.e., we log (not lock)
         the version at which a user started editing and at the end just verify if
         that version is still the head revision.
 
