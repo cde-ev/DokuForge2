@@ -38,25 +38,33 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 	<title>Dokuforge2</title>
 </head>
 <body>
+<div id="page">
 {% block header %}
-   <div id="header">
-   Dokuforge
-   <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
+ <div id="header">
+   <h1 id="dokuforgetitle">Dokuforge</h1>
+   <div id="userinformation">
    {%- if user is not none %}
      <p>Hallo {{ user.name|e }}!</p>
-     <p>{{ button(buildurl("logout"), "Logout") }}
+     {{ button(buildurl("logout"), "Logout") }}
+   {%- else -%}
+   <a href="{{ buildurl("start")|e }}">Login</a>
+   {%- endif %}
+   </div>
+   <div id="headerlinks">
+   <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
+   {%- if user is not none %}
 	{%- if user.isAdmin() %}
 	<a href="{{ buildurl("admin")|e }}">Administration</a>
 	{%- endif -%}
 	{%- if user.isSuperAdmin() %}
 	<a href="{{ buildurl("groups")|e }}">Gruppenverwaltung</a>
 	{%- endif -%}
-     </p>
-   {%- else -%}
-   <a href="{{ buildurl("start")|e }}">Login</a>
    {%- endif %}
-   <p>{% block location %}{% endblock %}</p>
    </div>
+   <div id="location">
+   {% block location %}{% endblock %}
+   </div>
+ </div>
 {% endblock %}
 <div id="content">
 {% block content %}
@@ -69,6 +77,7 @@ Dies sollte nicht sichtbar sein.
    	DokuForge – Ein Projekt des CdE e.V
    </div>
 {% endblock %}
+</div>
 </body>
 </html>
 {# vim:syntax=jinja
