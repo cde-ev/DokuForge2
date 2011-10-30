@@ -10,9 +10,9 @@
 {% block content %}
 <form action="{{ buildurl("attachblob")|e }}" method="post" enctype="multipart/form-data">
 Bildunterschrift/Kommentar:         <textarea disabled="disabled">{{form.get("comment", "")|e}}</textarea>
-        <input type="hidden" name="comment" value="{{form.get("comment", "")}}">
+        <input type="hidden" name="comment" value="{{form.get("comment", "")|e}}">
 K&uuml;rzel:	<textarea disabled="disabled">{{form.get("label", "")|e}}</textarea>
-        <input type="hidden" name="label" value="{{form.get("label", "")}}">
+        <input type="hidden" name="label" value="{{form.get("label", "")|e}}">
 	<input type="file" name="content">
 	<input type="submit" value="Bild hochladen">
 </form>
