@@ -295,6 +295,9 @@ class Application:
 
     def getAcademy(self, name, user=None):
         """
+        look up an academy for a given name. If none is found raise a
+        werkzeug.exceptions.NotFound.
+
         @type name: unicode
         @type user: None or User
         @rtype: Academy
@@ -306,7 +309,7 @@ class Application:
             common.validateExistence(self.acapath, name)
         except CheckError:
             raise werkzeug.exceptions.NotFound()
-        aca = Academy(os.path.join(self.acapath, name))
+        aca = Academy(os.path.join(self.acapath, name), self.listGroups)
         if user is not None and not user.allowedRead(aca):
             raise werkzeug.exceptions.Forbidden()
         return aca
@@ -328,6 +331,8 @@ class Application:
 
     def createAcademy(self, name, title, groups):
         """
+        create an academy. If the user data is malformed raise a CheckError.
+
         @type name: unicode
         @type title: unicode
         @rtype: None or Academy
@@ -336,16 +341,13 @@ class Application:
         assert isinstance(title, unicode)
         assert all(isinstance(group, unicode) for group in groups)
         name = name.encode("utf8")
-        try:
-            common.validateInternalName(name)
-            common.validateNonExistence(self.acapath, name)
-            common.validateTitle(title)
-            common.validateGroups(groups, self.listGroups())
-        except CheckError:
-            return None
+        common.validateInternalName(name)
+        common.validateNonExistence(self.acapath, name)
+        common.validateTitle(title)
+        common.validateGroups(groups, self.listGroups())
         path = os.path.join(self.acapath, name)
         os.makedirs(path)
-        aca = Academy(path)
+        aca = Academy(path, self.listGroups)
         aca.settitle(title)
         aca.setgroups(groups)
         return aca
@@ -452,6 +454,47 @@ class Application:
                                     error = error, extraparams=extraparams)
         return self.render_file(rs, template, version, content, ok=True,
                                 extraparams=extraparams)
+
+    def do_property(self, rs, getter, template, extraparams=dict()):
+        """
+        Function to generically handle editing a single property. The showy
+        part.
+
+        @type rs: RequestState
+        @type getter: callale
+        @type template: str
+        @type extraparams: dict
+        @param filestore: getter function for the property to edit
+        @param template: the template with which to render the edit mask
+        @param extraparams: any further params the template needs
+        """
+        assert isinstance(template, str)
+        content = getter()
+        return self.render_property(rs, template, content.decode("utf8"),
+                                    extraparams=extraparams)
+
+    def do_propertysave(self, rs, setter, template, extraparams=dict()):
+        """
+        Function to generically handle editing a single property. The worker
+        part.
+
+        @type rs: RequestState
+        @type setter: callable
+        @type template: str
+        @type extraparams: dict
+        @param setter: setter function for the property to edit
+        @param template: the template with which to render the edit mask
+        @param extraparams: any further params the template needs
+        """
+        usercontent = rs.request.form["content"]
+        try:
+            setter(usercontent)
+        except CheckError as err:
+            return self.render_property(rs, template, usercontent,
+                                        ok=False, error = err,
+                                        extraparams=extraparams)
+        return self.render_property(rs, template, usercontent, ok=True,
+                                    extraparams=extraparams)
 
     def do_start(self, rs):
         """
@@ -578,19 +621,11 @@ class Application:
         name = rs.request.form["name"]
         title = rs.request.form["title"]
         try:
-            common.validateInternalName(name.encode("utf8"))
-            common.validateNonExistence(aca.path, name.encode("utf8"))
-            common.validateTitle(title)
+            aca.createCourse(name, title)
         except CheckError as error:
             return self.render_createcoursequiz(rs, aca, ok=False,
                                                 error = error)
-        if aca.createCourse(name, title):
-            return self.render_academy(rs, aca)
-        else:
-            error = CheckError(u"Die Kurserstellung war nicht erfolgreich.",
-                               u"Bitte die folgenden Angaben korrigieren.")
-            return self.render_createcoursequiz(rs, aca, ok=False,
-                                                error = error)
+        return self.render_academy(rs, aca)
 
     def do_createacademyquiz(self, rs):
         """
@@ -612,18 +647,10 @@ class Application:
         title = rs.request.form["title"]
         groups = rs.request.form["groups"].split()
         try:
-            common.validateInternalName(name.encode("utf8"))
-            common.validateNonExistence(self.acapath, name.encode("utf8"))
-            common.validateTitle(title)
-            common.validateGroups(groups, self.listGroups())
+            self.createAcademy(name, title, groups)
         except CheckError as error:
             return self.render_createacademyquiz(rs, ok=False, error = error)
-        if self.createAcademy(name, title, groups):
-            return self.render_index(rs)
-        else:
-            error = CheckError(u"Die Akademieerstellung war nicht erfolgreich.",
-                               u"Bitte die folgenden Angaben korrigieren.")
-            return self.render_createacademyquiz(rs, ok=False, error = error)
+        return self.render_index(rs)
 
     def do_styleguide(self, rs):
         """
@@ -790,13 +817,10 @@ class Application:
         newname = rs.request.form["name"]
 
         try:
-            common.validateBlobLabel(newlabel)
-            common.validateBlobComment(newcomment)
-            common.validateBlobFilename(newname.encode("utf8"))
+            c.modifyblob(blob, newlabel, newcomment, newname, rs.user.name)
         except CheckError as error:
             return self.render_editblob(rs, aca, c, page, blob, ok=False,
                                         error=error)
-        c.modifyblob(blob, newlabel, newcomment, newname, rs.user.name)
         return self.render_showblob(rs, aca, c, page, blob)
 
 
@@ -1059,9 +1083,9 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, Storage(aca.path,"title"),
-                            "academytitle.html",
-                            extraparams={'academy': aca.view()})
+        return self.do_property(rs, aca.gettitle,
+                                "academytitle.html",
+                                extraparams={'academy': aca.view()})
 
     def do_academytitlesave(self, rs, academy=None):
         """
@@ -1073,10 +1097,9 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, Storage(aca.path,"title"),
-                                "academytitle.html",
-                                checkhook = common.validateTitle,
-                                extraparams = {'academy': aca.view()})
+        return self.do_propertysave(rs, aca.settitle,
+                                    "academytitle.html",
+                                    extraparams = {'academy': aca.view()})
 
     def do_coursetitle(self, rs, academy=None, course=None):
         """
@@ -1377,6 +1400,25 @@ class Application:
             ## version
             content=thecontent,
             version=theversion,
+            ok=ok,
+            error=error)
+        params.update(extraparams)
+        return self.render(templatename, rs, params)
+
+    def render_property(self, rs, templatename, thecontent, ok=None,
+                        error=None, extraparams=dict()):
+        """
+        @type rs: RequestState
+        @type templatename: str
+        @type thecontent: unicode
+        @type ok: None or Booleon
+        @type error: None or CheckError
+        @type extraparams: dict
+        """
+        assert isinstance(templatename, str)
+        assert isinstance(thecontent, unicode)
+        params = dict(
+            content=thecontent,
             ok=ok,
             error=error)
         params.update(extraparams)

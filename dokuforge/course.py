@@ -437,17 +437,18 @@ class Course(StorageDir):
             number = lambda:number))
 
     def modifyblob(self, number, label, comment, filename, user):
+        """
+        modify the blob given by number with the data in the other parameters.
+        If the input data is malformed raise a checkError.
+        """
         assert isinstance(label, unicode)
         assert isinstance(comment, unicode)
         assert isinstance(filename, unicode)
 
         filename = filename.encode("utf8")
-        try:
-            common.validateBlobLabel(label)
-            common.validateBlobComment(comment)
-            common.validateBlobFilename(filename)
-        except CheckError:
-            return False
+        common.validateBlobLabel(label)
+        common.validateBlobComment(comment)
+        common.validateBlobFilename(filename)
 
         bloblabel = self.getstorage("blob%d.label" % number)
         blobcomment = self.getstorage("blob%d.comment" % number)
@@ -455,7 +456,6 @@ class Course(StorageDir):
         bloblabel.store(label.encode("utf8"), user = user)
         blobcomment.store(comment.encode("utf8"), user = user)
         blobname.store(filename.encode("utf8"), user = user)
-        return True
 
     def view(self, extrafunctions=dict()):
         """

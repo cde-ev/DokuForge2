@@ -18,12 +18,13 @@ class Academy(StorageDir):
     title,v    The title of this display name of this academy
     groups,v   The groups in which this academy is a member
     """
-    def __init__(self, obj):
+    def __init__(self, obj, listAllGroups):
         """
         @param obj: either a path or an Academy object
         @type obj: str or Academy
         """
         StorageDir.__init__(self, obj)
+        self.listAllGroups = listAllGroups
 
     def getgroups(self):
         """
@@ -54,7 +55,8 @@ class Academy(StorageDir):
 
     def getCourse(self, coursename):
         """
-        find a course of this academy to a given name
+        find a course of this academy to a given name. If none is found
+        raise a werkzeug.exceptions.NotFound.
 
         @param coursename: internal name of course
         @type coursename: unicode
@@ -66,23 +68,26 @@ class Academy(StorageDir):
             common.validateInternalName(coursename)
             common.validateExistence(self.path, coursename)
         except CheckError:
-            return None
+            raise werkzeug.exceptions.NotFound()
         return Course(os.path.join(self.path, coursename))
 
     def setgroups(self, groups):
         """
-        Set the groups of this academy to determine when to display it
+        Set the groups of this academy to determine when to display it. If
+        the input is malformed raise a CheckError.
 
         @param groups: groups to set
         @type groups: list of unicode
         """
         assert all(isinstance(group, unicode) for group in groups)
+        common.validateGroups(groups, self.listAllGroups())
         content = u" ".join(groups)
         self.getstorage("groups").store(content.encode("utf8"))
 
     def createCourse(self, name, title):
         """
-        create a new course
+        create a new course. If the user input is malformed raise a check
+        error.
 
         @param name: internal name of the course
         @param title: displayed name of the course
@@ -92,14 +97,10 @@ class Academy(StorageDir):
         assert isinstance(name, unicode)
         assert isinstance(title, unicode)
         name = name.encode("utf8")
-        try:
-            common.validateInternalName(name)
-            common.validateNonExistence(self.path, name)
-            common.validateTitle(title)
-        except CheckError:
-            return False
+        common.validateInternalName(name)
+        common.validateNonExistence(self.path, name)
+        common.validateTitle(title)
         Course(os.path.join(self.path, name)).settitle(title)
-        return True
 
     def view(self, extrafunctions=dict()):
         """
