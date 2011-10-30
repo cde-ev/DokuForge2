@@ -422,6 +422,8 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
         self.assertTrue("Zugeordnete Bilder" in self.get_data())
@@ -438,6 +440,8 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
@@ -455,6 +459,8 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
@@ -472,6 +478,8 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
@@ -496,6 +504,8 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
         self.assertTrue("Zugeordnete Bilder" in self.get_data())
@@ -516,6 +526,8 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
         form = list(self.br.forms())[2]
@@ -540,8 +552,10 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = ""
-        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
-        self.br.open(form.click(label="Bild hochladen"))
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
+        self.assertTrue(u"Kürzel nicht wohlgeformt!".encode("utf8") in self.get_data())
+        self.is_loggedin()
 
 if __name__ == '__main__':
     unittest.main()
