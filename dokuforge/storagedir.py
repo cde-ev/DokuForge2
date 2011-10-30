@@ -2,6 +2,7 @@ import os.path
 
 from dokuforge.storage import Storage
 from dokuforge.view import LazyView
+import dokuforge.common as common
 
 class StorageDir:
     """Backend for manipulating file structures within a directory. It brings
@@ -60,7 +61,9 @@ class StorageDir:
         @returns: True when successful
         """
         assert isinstance(title, unicode)
-        if title == u"":
+        try:
+            common.validateTitle(title)
+        except CheckError:
             return False
         self.getstorage("title").store(title.encode("utf8"))
         return True

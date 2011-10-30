@@ -147,7 +147,7 @@ def validateInternalName(name):
 def validateNonExistence(path, name):
     """
     check whether a name is already in use as internal representation, if so
-    raise a CheckError.
+    raise a CheckError. This also checks for additional rcs file extensions.
 
     @type name: str
     @type path: str
@@ -156,7 +156,8 @@ def validateNonExistence(path, name):
     """
     assert isinstance(name, str)
     assert isinstance(path, str)
-    if os.path.exists(os.path.join(path, name)):
+    if os.path.exists(os.path.join(path, name)) or \
+           os.path.exists(os.path.join(path, name + ",v")):
         raise CheckError(u"Interner Name bereits vergeben!",
                          u"Wähle einen anderen Namen.")
 
