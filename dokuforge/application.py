@@ -244,6 +244,8 @@ class Application:
                  methods=("POST",), endpoint="relinkblob"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!addblob",
                  methods=("GET", "HEAD"), endpoint="addblob"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!uploadblob",
+                 methods=("POST",), endpoint="uploadblob"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!attachblob",
                  methods=("POST",), endpoint="attachblob"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/",
@@ -969,6 +971,31 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_addblob(rs, aca, c, page)
 
+    def do_uploadblob(self, rs, academy = None, course = None, page = None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+
+        usercomment = rs.request.form["comment"]
+        userlabel = rs.request.form["label"]
+
+        try:
+            common.validateBlobLabel(userlabel)
+            common.validateBlobComment(usercomment)
+        except CheckError as error:
+            return self.render_addblob(rs, aca, c, page,  ok=False,
+                                       error=error)
+        return self.render_uploadblob(rs, aca, c, page)
+
     def do_attachblob(self, rs, academy = None, course = None, page = None):
         """
         @type rs: RequestState
@@ -1288,7 +1315,8 @@ class Application:
             course=thecourse.view())
         return self.render("course.html", rs, params)
 
-    def render_addblob(self, rs, theacademy, thecourse, thepage):
+    def render_addblob(self, rs, theacademy, thecourse, thepage, ok=None,
+                       error=None):
         """
         @type rs: RequestState
         @type theacademy: Academy
@@ -1298,8 +1326,26 @@ class Application:
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
-            page=thepage)
+            page=thepage,
+            ok=ok,
+            error=error)
         return self.render("addblob.html", rs, params)
+
+
+    def render_uploadblob(self, rs, theacademy, thecourse, thepage):
+        """
+        @type rs: RequestState
+        @type theacademy: Academy
+        @type thecourse: Course
+        @type thepage: int
+        @type label: unicode
+        @type comment: unicode
+        """
+        params = dict(
+            academy=theacademy.view(),
+            course=thecourse.view(),
+            page=thepage)
+        return self.render("uploadblob.html", rs, params)
 
     def render_showblob(self, rs, theacademy, thecourse, thepage, blob,
                         blobhash=None):
