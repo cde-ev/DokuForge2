@@ -11,6 +11,6 @@ def buildapp(pathconfig=PathConfig()):
     """
     app = Application(pathconfig)
     app = SharedDataMiddleware(
-        app, {pathconfig.staticservepath:
+        app, {"/%s" % pathconfig.staticservepath:
               os.path.join(os.path.dirname(__file__), "static")})
     return app

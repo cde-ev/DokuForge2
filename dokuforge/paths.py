@@ -10,7 +10,7 @@ rootdir = .
 dfdir = %(rootdir)s/df
 workdir = %(rootdir)s/work
 sessiondbpath = :memory:
-staticservepath = /static/
+staticservepath = static/
 """
 
 class PathConfig(object):
