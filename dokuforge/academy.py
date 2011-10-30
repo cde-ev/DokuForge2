@@ -1,6 +1,5 @@
 
 import os
-import re
 import operator
 
 from dokuforge.course import Course

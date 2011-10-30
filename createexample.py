@@ -7,8 +7,6 @@ from werkzeug.datastructures import FileStorage
 
 from dokuforge.application import Application
 from dokuforge.paths import PathConfig
-from dokuforge.storage import Storage
-from dokuforge.user import UserDB
 
 def createaca(app, name, title, groups, courses):
     assert isinstance(title, unicode)

@@ -63,7 +63,7 @@ class StorageDir:
         assert isinstance(title, unicode)
         try:
             common.validateTitle(title)
-        except CheckError:
+        except common.CheckError:
             return False
         self.getstorage("title").store(title.encode("utf8"))
         return True
