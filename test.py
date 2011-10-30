@@ -19,6 +19,7 @@ from wsgiref.validate import validator
 
 import createexample
 from dokuforge import buildapp
+from dokuforge.paths import PathConfig
 
 theapplication = None
 
@@ -91,12 +92,13 @@ teststrings = [
 
 class DokuforgeTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
+    pathconfig = PathConfig()
     def setUp(self):
         global theapplication
-        shutil.rmtree("df", True)
-        shutil.rmtree("work", True)
+        shutil.rmtree(self.pathconfig.dfdir, True)
+        shutil.rmtree(self.pathconfig.workdir, True)
         createexample.main(size = 1)
-        app = buildapp()
+        app = buildapp(self.pathconfig)
         theapplication = validator(app)
         self.br = WSGIBrowser()
 

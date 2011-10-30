@@ -156,20 +156,21 @@ class IdentifierConverter(werkzeug.routing.BaseConverter):
     regex = '[a-zA-Z][-a-zA-Z0-9]{0,199}'
 
 class Application:
-    def __init__(self, userdb, groupstore, acapath, staticservepath,
-                 sessiondbpath=":memory:"):
-        assert isinstance(acapath, str)
-        self.sessiondb = sqlite3.connect(sessiondbpath)
+    def __init__(self, pathconfig):
+        """
+        @type pathconfig: PathConfig
+        """
+        self.sessiondb = sqlite3.connect(pathconfig.sessiondbpath)
         cur = self.sessiondb.cursor()
         cur.execute(SessionHandler.create_table)
         self.sessiondb.commit()
-        self.userdb = userdb
-        self.acapath = acapath
+        self.userdb = pathconfig.loaduserdb()
+        self.acapath = pathconfig.dfdir
         self.templatepath = os.path.join(os.path.dirname(__file__), "templates")
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader(self.templatepath))
-        self.groupstore = groupstore
-        self.staticservepath = staticservepath
+        self.groupstore = pathconfig.groupstore
+        self.staticservepath = pathconfig.staticservepath
         rule = werkzeug.routing.Rule
         self.routingmap = werkzeug.routing.Map([
             rule("/", methods=("GET", "HEAD"), endpoint="start"),

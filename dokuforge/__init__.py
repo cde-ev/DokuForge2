@@ -3,22 +3,14 @@ import os.path
 from werkzeug.wsgi import SharedDataMiddleware
 
 from dokuforge.application import Application
-from dokuforge.storage import Storage
-from dokuforge.user import UserDB
+from dokuforge.paths import PathConfig
 
-def buildapp(workdir="./work/", dfdir="./df/", sessiondbpath=":memory:",
-             staticservepath="/static/"):
+def buildapp(pathconfig=PathConfig()):
     """
-    @param sessiondbpath: path to a sqlite3 database dedicated to storing
-        session cookies. Unless a forking server is used ":memory:" is fine.
-    @param workdir: path to directory containing configuration files
-    @param dfdir: path to directory storing all the documentation projects.
-        Each directory within this directory represents one academy.
+    @type pathconfig: PathConfig
     """
-    userdb = UserDB(Storage(workdir, "userdb"))
-    userdb.load()
-    groupstore = Storage(workdir, "groupdb")
-    app = Application(userdb, groupstore, dfdir, staticservepath, sessiondbpath)
-    app = SharedDataMiddleware(app,
-        {staticservepath: os.path.join(os.path.dirname(__file__), "static")})
+    app = Application(pathconfig)
+    app = SharedDataMiddleware(
+        app, {pathconfig.staticservepath:
+              os.path.join(os.path.dirname(__file__), "static")})
     return app

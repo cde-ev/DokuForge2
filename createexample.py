@@ -6,6 +6,7 @@ import os
 from werkzeug.datastructures import FileStorage
 
 from dokuforge.application import Application
+from dokuforge.paths import PathConfig
 from dokuforge.storage import Storage
 from dokuforge.user import UserDB
 
@@ -22,12 +23,12 @@ def main(size=100):
     """
     @param size: regulate size of example from 0 for empty to 100 for complete
     """
+    pc = PathConfig()
     try:
-        os.mkdir("work")
+        os.mkdir(pc.workdir)
     except OSError:
         pass
-    mystore = Storage('work', 'userdb')
-    userdb = UserDB(mystore)
+    userdb = pc.userdb
     if size > 10:
         userdb.addUser(u"arthur", u"cde_dokubeauftragter", u"mypass",
                        dict([(u"akademie_read_pa2010", True),
@@ -50,7 +51,7 @@ def main(size=100):
                          (u"df_export", True),
                          (u"df_show", True)]))
     userdb.store()
-    mygroupstore = Storage('work', 'groupdb')
+    mygroupstore = pc.groupstore
     mygroupstore.store("""[cde]
 title = CdE-Akademien
 
@@ -61,13 +62,11 @@ title = QED-Akademien
 title = Archiv aelterer CdE-Akademien
 """)
     try:
-        os.mkdir("df")
+        os.mkdir(pc.dfdir)
     except OSError:
         pass
-    userdbstore = Storage('work', 'userdb')
-    userdb = UserDB(userdbstore)
-    userdb.load()
-    app = Application(userdb, mygroupstore, './df/', "/static/")
+    userdb = pc.loaduserdb()
+    app = Application(pc)
     if size > 50:
         aca = createaca(app, u"za2011-1", u"Beste Akademie ever", [u"cde"],
                         [(u'course01',u"Internethumor und seine Schuld am Weltuntergang", 3),

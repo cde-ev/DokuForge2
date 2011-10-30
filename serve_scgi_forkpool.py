@@ -7,9 +7,12 @@ worker model.
 from wsgitools.scgi.forkpool import SCGIServer
 
 from dokuforge import buildapp
+from dokuforge.paths import PathConfig
 
 def main():
-    app = buildapp(sessiondbpath="./work/sessiondb.sqlite3")
+    pc = PathConfig()
+    pc.sessiondbpath = "%(workdir)s/sessiondb.sqlite3"
+    app = buildapp(pc)
     SCGIServer(app, 4000).enable_sighandler().run()
 
 if __name__ == '__main__':
