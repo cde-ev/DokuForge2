@@ -12,6 +12,7 @@ import mechanize
 import re
 import shutil
 import sys
+import tempfile
 import unittest
 from urllib import addinfourl
 from urllib2 import BaseHandler
@@ -92,15 +93,18 @@ teststrings = [
 
 class DokuforgeTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
-    pathconfig = PathConfig()
     def setUp(self):
         global theapplication
-        shutil.rmtree(self.pathconfig.dfdir, True)
-        shutil.rmtree(self.pathconfig.workdir, True)
-        createexample.main(size = 1)
+        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
+        self.pathconfig = PathConfig()
+        self.pathconfig.rootdir = self.tmpdir
+        createexample.main(size=1, pc=self.pathconfig)
         app = buildapp(self.pathconfig)
         theapplication = validator(app)
         self.br = WSGIBrowser()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, True)
 
     def get_data(self):
         return self.br.response().get_data()

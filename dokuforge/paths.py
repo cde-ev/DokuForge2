@@ -28,6 +28,10 @@ class PathConfig(object):
     def rootdir(self):
         return self.cp.get(self.section, "rootdir")
 
+    @rootdir.setter
+    def rootdir(self, value):
+        return self.cp.set(self.section, "rootdir", value)
+
     @property
     def dfdir(self):
         """path to directory storing all the documentation projects.

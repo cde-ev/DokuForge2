@@ -19,11 +19,11 @@ def createaca(app, name, title, groups, courses):
             aca.getCourse(c[0]).newpage()
     return aca
 
-def main(size=100):
+def main(size=100, pc=PathConfig()):
     """
     @param size: regulate size of example from 0 for empty to 100 for complete
+    @type pc: PathConfig
     """
-    pc = PathConfig()
     try:
         os.mkdir(pc.workdir)
     except OSError:
