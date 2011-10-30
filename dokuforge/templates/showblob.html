@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-
+{% block subheading %}
+{{ academy.title|e }}
+{% endblock %}
 {% block location%}
 {{ navbar([("academy", {}, academy.title),
            ("course", {}, course.title),
 	   ("page", {}, "Teil #" ~ page),
 	   ("showblob", {}, "Bild #" ~ blob.number)]) }}
 {% endblock %}
-
 {% block content %}
-
 <p>Bildunterschrift/Kommentar: {{ blob.comment|e }}</p>
 <p>K&uuml;rzel: {{ blob.label|e }}</p>
 <p>Dateiname: {{ blob.filename|e }}</p>
@@ -24,6 +24,4 @@ MD5 Summe des Bildes ist {{ blobhash|e }}.
 {% else %}
 <a href={{ buildurl("md5blob")|e }}>MD5-Summe berechnen</a>
 {% endif %}
-
-
 {% endblock %}

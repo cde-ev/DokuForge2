@@ -1,5 +1,5 @@
 {% macro button(action, label, params={}) -%}
-<form action="{{ action|e }}" method="post">
+<form action="{{ action|e }}" method="post" class="button">
 	{%- for key, value in params.items() -%}
 	<input type="hidden" name="{{ key|e }}" value="{{ value|e }}">
 	{%- endfor -%}
@@ -39,19 +39,18 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 </head>
 <body>
 <div id="page">
-{% block header %}
+{%- block header %}
  <div id="header">
    <h1 id="dokuforgetitle">Dokuforge</h1>
    <div id="userinformation">
    {%- if user is not none %}
-     <p>Hallo {{ user.name|e }}!</p>
-     {{ button(buildurl("logout"), "Logout") }}
+       Hallo {{ user.name|e }}!
+       {{ button(buildurl("logout"), "Logout") }}
    {%- else -%}
    <a href="{{ buildurl("start")|e }}">Login</a>
    {%- endif %}
    </div>
    <div id="headerlinks">
-   <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
    {%- if user is not none %}
 	{%- if user.isAdmin() %}
 	<a href="{{ buildurl("admin")|e }}">Administration</a>
@@ -60,23 +59,27 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 	<a href="{{ buildurl("groups")|e }}">Gruppenverwaltung</a>
 	{%- endif -%}
    {%- endif %}
+   <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
+   </div>
+   <div id="subheading">
+   {%- block subheading %}Startseite{% endblock -%}
    </div>
    <div id="location">
-   {% block location %}{% endblock %}
+   {%- block location %}{% endblock -%}
    </div>
  </div>
-{% endblock %}
+{% endblock -%}
 <div id="content">
-{% block content %}
+{%- block content %}
 Dies sollte nicht sichtbar sein.
 {% endblock %}
 </div>
-{% block footer %}
+{%- block footer %}
    <div id="footer">
-   	Kontakt: team (at) dokuforge. </p>
-   	DokuForge – Ein Projekt des CdE e.V
+   	Kontakt: team (at) dokuforge.de<br><br>
+   	Dokuforge – Ein Projekt des CdE e.V.
    </div>
-{% endblock %}
+{% endblock -%}
 </div>
 </body>
 </html>

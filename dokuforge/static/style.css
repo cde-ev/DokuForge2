@@ -2,10 +2,13 @@
     background-color: #9999ff;
     padding: 1ex;
     margin: 0px;
+    position: relative;
+    min-height: 16ex;
 }
 #footer {
     background-color: #9999ff;
     padding: 1ex;
+    text-align: right;
 }
 #content {
     background-color: #ccccff;
@@ -19,8 +22,19 @@
     width: 100%;
 }
 #userinformation {
+    float: right;
 }
 #headerlinks {
+    float: right;
+    clear: both;
+}
+#subheading {
+    font-size: x-large;
+    font-weight: bold;
+}
+#location {
+    position: absolute;
+    bottom: 1ex;
 }
 .important {
     color: red;
@@ -30,4 +44,7 @@
 body {
     background-color: #9999ff;
     margin: 0px;
+}
+.button {
+    display: inline;
 }

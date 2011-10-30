@@ -1,12 +1,13 @@
 {% extends "base.html" %}
-
+{% block subheading %}
+{{ academy.title|e }}
+{% endblock %}
 {% block location%}
 {{ navbar([("academy", {}, academy.title),
            ("course", {}, course.title),
 	   ("page", {}, "Teil #" ~ page),
 	   ("uploadblob", {}, "Bild hochladen")]) }}
 {% endblock %}
-
 {% block content %}
 <form action="{{ buildurl("attachblob")|e }}" method="post" enctype="multipart/form-data">
 Bildunterschrift/Kommentar:         <textarea disabled="disabled">{{form.get("comment", "")|e}}</textarea>
