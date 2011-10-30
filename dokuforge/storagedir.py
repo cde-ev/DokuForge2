@@ -53,13 +53,13 @@ class StorageDir:
 
     def settitle(self, title):
         """
-        Updates the "title" Storage. If the user input is malformed raise a
-        CheckError.
+        Updates the "title" Storage.
 
         @param title: display name of the academy
         @type title: unicode
         @rtype: bool
         @returns: True when successful
+        @raises CheckError: if the user input is malformed.
         """
         assert isinstance(title, unicode)
         common.validateTitle(title)

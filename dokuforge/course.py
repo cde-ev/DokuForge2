@@ -351,23 +351,24 @@ class Course(StorageDir):
         @type number: int
         @type data: str or file-like
         @type label: unicode
-        @Type comment: unicode
+        @type comment: unicode
         @type user: unicode or None
         @type filename: None or str
+        @rtype: None or int
+        @returns: None on failure or the created blob number
         """
         assert isinstance(data, FileStorage)
         assert isinstance(comment, unicode)
         assert isinstance(label, unicode)
         if filename is not None:
             assert isinstance(filename, str)
+        else:
+            filename = data.filename.encode("utf8")
 
         try:
             common.validateBlobLabel(label)
             common.validateBlobComment(comment)
-            if filename is None:
-                common.validateBlobFilename(data.filename.encode("utf8"))
-            else:
-                common.validateBlobFilename(filename)
+            common.validateBlobFilename(filename)
         except CheckError:
             return None
 
@@ -397,10 +398,7 @@ class Course(StorageDir):
         blob.store(data, user = user)
         bloblabel.store(label.encode("utf8"), user = user)
         blobcomment.store(comment.encode("utf8"), user = user)
-        if filename is None:
-            blobname.store(data.filename.encode("utf8"), user = user)
-        else:
-            blobname.store(filename, user = user)
+        blobname.store(filename, user=user)
         return newnumber
 
     def listblobs(self, number):
@@ -439,7 +437,7 @@ class Course(StorageDir):
     def modifyblob(self, number, label, comment, filename, user):
         """
         modify the blob given by number with the data in the other parameters.
-        If the input data is malformed raise a checkError.
+        @raises CheckError: if the input data is malformed
         """
         assert isinstance(label, unicode)
         assert isinstance(comment, unicode)

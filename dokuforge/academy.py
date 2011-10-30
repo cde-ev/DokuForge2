@@ -70,6 +70,7 @@ class Academy(StorageDir):
         @param coursename: internal name of course
         @type coursename: unicode
         @returns: Course object for course with name coursename
+        @raises werkzeug.exceptions.NotFound: if the course does not exist
         """
         assert isinstance(coursename, unicode)
         coursename = coursename.encode("utf8")
@@ -104,6 +105,7 @@ class Academy(StorageDir):
         @param title: displayed name of the course
         @type name: str (restricted char-set)
         @type title: unicode
+        @raises CheckError:
         """
         assert isinstance(name, unicode)
         assert isinstance(title, unicode)

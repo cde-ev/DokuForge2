@@ -55,6 +55,7 @@ def validateGroupstring(groupstring, allgroups):
 
     @type groupstring: unicode
     @param groupstring: contains groups seperated by whitespace
+    @raises CheckError:
     """
     assert isinstance(groupstring, unicode)
     validateGroups(groupstring.split(), allgroups)
@@ -68,6 +69,7 @@ def validateGroups(groups, allgroups):
 
     @type groups: [unicode]
     @param groups: a list of groups to validate
+    @raises CheckError:
     """
     assert all(isinstance(g, unicode) for g in groups)
     if len(groups) == 0:
@@ -85,6 +87,7 @@ def validateTitle(title):
 
     @type title: unicode
     @param title: title to check
+    @raises CheckError:
     """
     assert isinstance(title, unicode)
     if title == u"":
@@ -98,6 +101,7 @@ def validateBlobLabel(label):
 
     @type label: unicode
     @param label: label to check
+    @raises CheckError:
     """
     assert isinstance(label, unicode)
     if re.match('^[a-z0-9]{1,200}$', label) is None:
@@ -111,6 +115,7 @@ def validateBlobComment(comment):
 
     @type comment: unicode
     @param comment: comment to check
+    @raises CheckError:
     """
     assert isinstance(comment, unicode)
     if comment == u"":
@@ -124,6 +129,7 @@ def validateBlobFilename(filename):
 
     @type filename: str
     @param filename: filename to check
+    @raises CheckError:
     """
     assert isinstance(filename, str)
     if re.match('^[-a-zA-Z0-9_.]{1,200}$', filename) is None:
@@ -138,6 +144,7 @@ def validateInternalName(name):
 
     @type name: str
     @param name: name to check
+    @raises CheckError:
     """
     assert isinstance(name, str)
     if re.match('^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
@@ -153,6 +160,7 @@ def validateNonExistence(path, name):
     @type path: str
     @param name: name to check for existence
     @param path: base path in which to check for the name
+    @raises CheckError:
     """
     assert isinstance(name, str)
     assert isinstance(path, str)
@@ -169,6 +177,7 @@ def validateExistence(path, name):
     @type path: str
     @param name: name to check for existence
     @param path: base path in which to check for the name
+    @raises CheckError:
     """
     assert isinstance(name, str)
     assert isinstance(path, str)

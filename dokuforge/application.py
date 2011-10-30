@@ -301,6 +301,7 @@ class Application:
         @type name: unicode
         @type user: None or User
         @rtype: Academy
+        @raises werkzeug.exceptions.HTTPException:
         """
         assert isinstance(name, unicode)
         name = name.encode("utf8")
@@ -320,6 +321,7 @@ class Application:
         @type coursename: unicode
         @type user: None or User
         @rtype: Course
+        @raises werkzeug.exceptions.HTTPException:
         """
         assert isinstance(coursename, unicode)
         c = aca.getCourse(coursename) # checks name
@@ -336,6 +338,7 @@ class Application:
         @type name: unicode
         @type title: unicode
         @rtype: None or Academy
+        @raises CheckError:
         """
         assert isinstance(name, unicode)
         assert isinstance(title, unicode)
@@ -391,6 +394,7 @@ class Application:
     def check_login(self, rs):
         """
         @type rs: RequestState
+        @raises TemporaryRequestRedirect: unless the user is logged in
         """
         if rs.user is None:
             raise TemporaryRequestRedirect(rs.request.url_root)
@@ -618,8 +622,8 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        name = rs.request.form["name"]
-        title = rs.request.form["title"]
+        name = rs.request.form["name"] # FIXME: raises KeyError
+        title = rs.request.form["title"] # FIXME: raises KeyError
         try:
             aca.createCourse(name, title)
         except CheckError as error:
@@ -643,9 +647,9 @@ class Application:
         self.check_login(rs)
         if not rs.user.mayCreate():
             return werkzeug.exceptions.Forbidden()
-        name = rs.request.form["name"]
-        title = rs.request.form["title"]
-        groups = rs.request.form["groups"].split()
+        name = rs.request.form["name"] # FIXME: raises KeyError
+        title = rs.request.form["title"] # FIXME: raises KeyError
+        groups = rs.request.form["groups"].split() # FIXME: raises KeyError
         try:
             self.createAcademy(name, title, groups)
         except CheckError as error:
@@ -732,7 +736,7 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        numberstr = rs.request.form["number"]
+        numberstr = rs.request.form["number"] # FIXME: raises KeyError
         try:
             number = int(numberstr)
         except ValueError:
@@ -753,7 +757,7 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        numberstr = rs.request.form["number"]
+        numberstr = rs.request.form["number"] # FIXME: raises KeyError
         try:
             number = int(numberstr)
         except ValueError:
@@ -812,9 +816,9 @@ class Application:
         if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
-        newlabel = rs.request.form["label"]
-        newcomment = rs.request.form["comment"]
-        newname = rs.request.form["name"]
+        newlabel = rs.request.form["label"] # FIXME: raises KeyError
+        newcomment = rs.request.form["comment"] # FIXME: raises KeyError
+        newname = rs.request.form["name"] # FIXME: raises KeyError
 
         try:
             c.modifyblob(blob, newlabel, newcomment, newname, rs.user.name)
@@ -917,7 +921,7 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        numberstr = rs.request.form["number"]
+        numberstr = rs.request.form["number"] # FIXME: raises KeyError
         try:
             number = int(numberstr)
         except ValueError:
@@ -983,10 +987,10 @@ class Application:
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
-        usercomment = rs.request.form["comment"]
-        userlabel = rs.request.form["label"]
+        usercomment = rs.request.form["comment"] # FIXME: raises KeyError
+        userlabel = rs.request.form["label"] # FIXME: raises KeyError
         # a FileStorage is sufficiently file-like for store
-        usercontent = rs.request.files["content"]
+        usercontent = rs.request.files["content"] # FIXME: raises KeyError
 
         ## This is a bit tedious since we don't want to drop the blob and
         ## force the user to retransmit it.
@@ -1010,7 +1014,7 @@ class Application:
         if error is not None:
             blob = c.attachblob(page, usercontent, comment=usercomment,
                                 label=userlabel, user=rs.user.name,
-                                filename=filename)
+                                filename=filename) # FIXME: returns None
             return self.render_editblob(rs, aca, c, page, blob, ok=False,
                                        error=error)
         else:
@@ -1032,8 +1036,8 @@ class Application:
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
-        userversion = rs.request.form["revisionstartedwith"]
-        usercontent = rs.request.form["content"]
+        userversion = rs.request.form["revisionstartedwith"] # FIXME: raises KeyError
+        usercontent = rs.request.form["content"] # FIXME: raises KeyError
 
         ok, version, content = c.savepage(page, userversion, usercontent,
                                           user=rs.user.name)
