@@ -1017,33 +1017,20 @@ class Application:
 
         ## This is a bit tedious since we don't want to drop the blob and
         ## force the user to retransmit it.
-        error = None
-        filename = usercontent.filename.encode("utf8")
         try:
-            common.validateBlobFilename(filename)
-        except CheckError as err:
-            filename = "einedatei.dat"
-            error = err
-        try:
-            common.validateBlobLabel(userlabel)
-        except CheckError as err:
-            userlabel = u"somefig"
-            error = err
-        try:
-            common.validateBlobComment(usercomment)
-        except CheckError as err:
-            usercomment = u"Bildunterschrift"
-            error = err
-        if error is not None:
-            blob = c.attachblob(page, usercontent, comment=usercomment,
-                                label=userlabel, user=rs.user.name,
-                                filename=filename)
-            return self.render_editblob(rs, aca, c, page, blob, ok=False,
-                                       error=error)
-        else:
             c.attachblob(page, usercontent, comment=usercomment,
                          label=userlabel, user=rs.user.name)
-            return self.render_show(rs, aca, c, page)
+        except CheckError as error:
+            usercontent.filename = u"einedatei.dat"
+            if error.message == u"Dateiname nicht wohlgeformt!":
+                blob = c.attachblob(page, usercontent, comment=usercomment,
+                                label=userlabel, user=rs.user.name)
+            else:
+                blob = c.attachblob(page, usercontent, comment=u"Bildunterschrift",
+                                    label=u"somefig", user=rs.user.name)
+            return self.render_editblob(rs, aca, c, page, blob, ok=False,
+                                       error=error)
+        return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
