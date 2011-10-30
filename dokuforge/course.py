@@ -336,7 +336,7 @@ class Course(StorageDir):
         return (ok, version.decode("utf8"), mergedcontent.decode("utf8"))
 
     def attachblob(self, number, data, comment="unknown blob", label="fig",
-                   user=None, filename=None):
+                   user=None):
         """
         Attach a blob to a page
 
@@ -346,31 +346,20 @@ class Course(StorageDir):
         @param label: a short label for the blob (only small letters and
             digits allowed)
         @param user: the df-login name of the user to carried out the edit
-        @param filename: optional filename argument. Normally the filename
-            is fetched as attribute of data, but sometimes this is not possible.
         @type number: int
         @type data: str or file-like
         @type label: unicode
         @type comment: unicode
         @type user: unicode or None
-        @type filename: None or str
-        @rtype: None or int
         @returns: None on failure or the created blob number
         """
         assert isinstance(data, FileStorage)
         assert isinstance(comment, unicode)
         assert isinstance(label, unicode)
-        if filename is not None:
-            assert isinstance(filename, str)
-        else:
-            filename = data.filename.encode("utf8")
 
-        try:
-            common.validateBlobLabel(label)
-            common.validateBlobComment(comment)
-            common.validateBlobFilename(filename)
-        except CheckError:
-            return None
+        common.validateBlobLabel(label)
+        common.validateBlobComment(comment)
+        common.validateBlobFilename(data.filename.encode("utf8"))
 
         if user is not None:
             assert isinstance(user, unicode)
@@ -398,7 +387,7 @@ class Course(StorageDir):
         blob.store(data, user = user)
         bloblabel.store(label.encode("utf8"), user = user)
         blobcomment.store(comment.encode("utf8"), user = user)
-        blobname.store(filename, user=user)
+        blobname.store(data.filename.encode("utf8"), user = user)
         return newnumber
 
     def listblobs(self, number):
