@@ -28,12 +28,21 @@ class Academy(StorageDir):
 
     def getgroups(self):
         """
-        loads the current groups from disk
+        loads the current groups from disk, list version.
 
         @returns: the groups of which this academy is a member
         @rtype: [unicode]
         """
         return self.getcontent("groups").decode("utf8").split()
+
+    def getgroupsstring(self):
+        """
+        loads the current groups from disk, string version.
+
+        @returns: the groups of which this academy is a member
+        @rtype: unicode
+        """
+        return self.getcontent("groups").decode("utf8")
 
     def viewCourses(self):
         """
@@ -79,6 +88,8 @@ class Academy(StorageDir):
         @param groups: groups to set
         @type groups: list of unicode
         """
+        if isinstance(groups, unicode):
+            groups = groups.split()
         assert all(isinstance(group, unicode) for group in groups)
         common.validateGroups(groups, self.listAllGroups())
         content = u" ".join(groups)

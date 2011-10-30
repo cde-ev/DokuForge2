@@ -1054,9 +1054,9 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, Storage(aca.path,"groups"),
-                            "academygroups.html",
-                            extraparams={'academy': aca.view()})
+        return self.do_property(rs, aca.getgroupsstring,
+                                "academygroups.html",
+                                extraparams={'academy': aca.view()})
 
     def do_academygroupssave(self, rs, academy=None):
         """
@@ -1068,10 +1068,9 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, Storage(aca.path,"groups"),
-                                "academygroups.html",
-                                checkhook = lambda g: common.validateGroupstring(g, self.listGroups()),
-                                extraparams={'academy': aca.view()})
+        return self.do_propertysave(rs, aca.setgroups,
+                                    "academygroups.html",
+                                    extraparams={'academy': aca.view()})
 
     def do_academytitle(self, rs, academy=None):
         """
@@ -1113,10 +1112,10 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, Storage(c.path,"title"),
-                            "coursetitle.html",
-                            extraparams={'academy': aca.view(),
-                                         'course': c.view()})
+        return self.do_property(rs, c.gettitle,
+                                "coursetitle.html",
+                                extraparams={'academy': aca.view(),
+                                             'course': c.view()})
 
     def do_coursetitlesave(self, rs, academy=None, course=None):
         """
@@ -1130,11 +1129,10 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        return self.do_filesave(rs, Storage(c.path,"title"),
-                                "coursetitle.html",
-                                checkhook = common.validateTitle,
-                                extraparams={'academy': aca.view(),
-                                             'course': c.view()})
+        return self.do_propertysave(rs, c.settitle,
+                                    "coursetitle.html",
+                                    extraparams={'academy': aca.view(),
+                                                 'course': c.view()})
 
     def do_admin(self, rs):
         """

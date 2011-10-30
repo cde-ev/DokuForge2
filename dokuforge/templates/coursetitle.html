@@ -11,7 +11,6 @@
             error.explanation) }}
 <form action="{{ buildurl("coursetitlesave")|e }}" method="post" id="save">
 	<textarea name="content">{{ content|e }}</textarea>
-	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
