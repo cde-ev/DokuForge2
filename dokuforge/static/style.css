@@ -19,7 +19,7 @@
 }
 #dokuforgetitle {
     text-align: center;
-    width: 100%;
+    margin-bottom: 0.5ex;
 }
 #userinformation {
     float: right;
@@ -36,6 +36,7 @@
 #location {
     position: absolute;
     bottom: 1ex;
+    margin-right: 45ex;
 }
 .important {
     color: red;
