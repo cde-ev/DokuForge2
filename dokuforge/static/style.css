@@ -3,7 +3,7 @@
     padding: 1ex;
     margin: 0px;
     position: relative;
-    min-height: 16ex;
+    min-height: 14.5ex;
 }
 #footer {
     background-color: #9999ff;
@@ -15,10 +15,10 @@
     padding: 1ex;
 }
 #page {
-    height: 100%;
 }
 #dokuforgetitle {
     text-align: center;
+    margin-top: 0.5ex;
     margin-bottom: 0.5ex;
 }
 #userinformation {
