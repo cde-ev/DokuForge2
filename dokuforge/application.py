@@ -23,7 +23,6 @@ import werkzeug.utils
 from werkzeug.wrappers import Request, Response
 
 from dokuforge.academy import Academy
-from dokuforge.storage import Storage
 import dokuforge.common as common
 from dokuforge.common import CheckError
 

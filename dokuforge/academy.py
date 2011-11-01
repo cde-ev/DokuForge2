@@ -2,6 +2,8 @@
 import os
 import operator
 
+import werkzeug.exceptions
+
 from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common

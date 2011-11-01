@@ -7,7 +7,6 @@ from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
 import dokuforge.common as common
-from dokuforge.common import CheckError
 
 class Course(StorageDir):
     """
