@@ -44,13 +44,19 @@ class DokuforgeToHtmlParser:
     def cleanup(self):
         while not self.look() == "normal":
             currentstate = self.look()
-            if currentstate == "heading":
+            if currentstate == "start":
+                self.pop()
+                self.append("normal")
+            elif currentstate == "heading":
                 self.pop()
                 self.put('</h2>\n')
             elif currentstate == "subheading":
                 self.pop()
                 self.put('</h3>\n')
             elif currentstate == "authorsnext":
+                self.pop()
+                self.put('\n\n')
+            elif currentstate == "headingnext":
                 self.pop()
                 self.put('\n\n')
             elif currentstate == "listnext":
@@ -86,9 +92,14 @@ class DokuforgeToHtmlParser:
                 self.put('\n')
             elif currentstate == "seennewpar":
                 self.pop()
-                self.put('\n\n')
+                self.put('\n')
             else:
                 pass
+    def fortune(self, token):
+        if token == '[':
+            self.append("headingnext")
+        if token == '-':
+            self.append("listnext")
 
     def parse(self):
         while True:
@@ -101,11 +112,11 @@ class DokuforgeToHtmlParser:
             ## retrieve current state
             currentstate = self.look()
             if self.debug:
+                print self
                 try:
                     print "Token:", token
                 except UnicodeEncodeError:
                     print "Token: <???> unicode token"
-                print self
             ## process the token
             ## first handle ednotes
             if currentstate == "ednote":
@@ -148,7 +159,7 @@ class DokuforgeToHtmlParser:
                     self.append("seennewline")
                 continue
             ### now we have a non-whitespace token so we clean up the self
-            if currentstate == "normal" or currentstate == "paragraph":
+            if currentstate == "paragraph":
                 ## minor optimization, but I feel it is worth it
                 ## to shortcircuit this selfment
                 pass
@@ -158,42 +169,42 @@ class DokuforgeToHtmlParser:
             elif currentstate == "seennewline":
                 self.pop()
                 self.put('\n')
-                if token == '-':
-                    self.append("listnext")
+                self.fortune(token)
             elif currentstate == "seennewpar":
                 self.pop()
                 self.cleanup()
                 self.put('\n')
-                if token == '-':
-                    self.append("listnext")
+                self.fortune(token)
             elif currentstate == "start":
                 self.pop()
                 self.append("normal")
+                self.fortune(token)
 
             ### if a new paragraph is beginning
-            if currentstate == "normal":
-                if token not in '[':
-                    self.put('<p>')
-                    self.append("paragraph")
-                    if token == '*':
-                        self.append("keywordnext")
+            if self.look() == "normal":
+                self.put('<p>')
+                self.append("paragraph")
+                if token == '*':
+                    self.append("keywordnext")
+
+            ## update current state, since it could be modified by the white
+            ## space handling
+            currentstate = self.look()
 
             ### now we handle all printable tokens
             if token == '[':
-                if self.looktoken() == '[':
-                    # FIXME insert cleanup to always enable starting
-                    if currentstate == "normal":
+                if currentstate == "headingnext":
+                    self.pop()
+                    self.cleanup()
+                    if self.looktoken() == '[':
                         self.nexttoken()
                         self.put('<h3>')
                         self.append("subheading")
                     else:
-                        self.put(token)
-                else:
-                    if currentstate == "normal":
                         self.put('<h2>')
                         self.append("heading")
-                    else:
-                        self.put(token)
+                else:
+                    self.put(token)
             elif token == ']':
                 if currentstate == "heading":
                     self.pop()
