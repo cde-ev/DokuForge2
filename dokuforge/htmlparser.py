@@ -1,6 +1,19 @@
 # -*- coding: utf-8 -*-
 
 class DokuforgeToHtmlParser:
+    """
+    Parser for converting Dokuforge Syntax into viewable html.
+
+    It works by scanning the text one token at a time (with a bit of
+    lookahead) and remembering all context in a stack, so the meaning of
+    tokens change as the context changes.
+
+    @ivar stack: contains the current context
+    @ivar pos: current position in the input string
+    @ivar input: the input string
+    @ivar output: the output string
+    @ivar debug: toggles debug output
+    """
     def __init__(self, string, debug = False):
         assert isinstance(string, unicode)
         self.stack = [ "start" ]
@@ -10,20 +23,55 @@ class DokuforgeToHtmlParser:
         self.debug = debug
 
     def lookstate(self):
+        """
+        @rtype: str
+        @returns: topmost state in the context
+        """
         return self.stack[len(self.stack)-1]
     def popstate(self):
+        """
+        remove a state from the context
+
+        @rtype: str
+        @returns: the removed state
+        """
         return self.stack.pop()
     def pushstate(self, value):
+        """
+        put a new state an top of the context
+        """
         return self.stack.append(value)
     def poptoken(self):
+        """
+        get a new token from the input string and advance the position in
+        the input string.
+
+        @rtype: char
+        @returns: the char at the current position
+        @raises: IndexError
+        """
         self.pos +=1
         return self.input[self.pos-1]
     def looktoken(self):
+        """
+        view the next token from the input string without side effects. If
+        no token is available return an empty string.
+
+        @rtype: char
+        @returns: the next char
+        """
         try:
             return self.input[self.pos]
         except IndexError:
             return ''
     def lookprintabletoken(self):
+        """
+        view the next non-whitespace token from the input string without
+        side effects. If no token is available return an empty string.
+
+        @rtype: char
+        @returns: the next char
+        """
         try:
             tmp = 0
             while self.input[self.pos + tmp] in ' \t\n':
@@ -33,15 +81,31 @@ class DokuforgeToHtmlParser:
             return ''
 
     def put(self, s):
+        """
+        append s to the output string
+
+        @type s: unicode
+        @value s: string to append
+        """
         self.output += s
 
     def result(self):
+        """
+        @rtype: unicode
+        @returns: result string
+        """
         return self.output
 
     def __str__(self):
+        """
+        return representation of the current context
+        """
         return str(self.stack)
 
     def cleanup(self):
+        """
+        close all open states
+        """
         while not self.lookstate() == "normal":
             currentstate = self.lookstate()
             if currentstate == "start":
@@ -97,12 +161,20 @@ class DokuforgeToHtmlParser:
                 pass
 
     def predictnextstructure(self, token):
+        """
+        After a newline some future tokens have a special meaning. This
+        function is to be called after every newline and marks these tokens
+        as active.
+        """
         if token == '[':
             self.pushstate("headingnext")
         if token == '-':
             self.pushstate("listnext")
 
     def parse(self):
+        """
+        The actual parser.
+        """
         while True:
             ## retrieve token
             try:
@@ -112,6 +184,9 @@ class DokuforgeToHtmlParser:
                 break
             ## retrieve current state
             currentstate = self.lookstate()
+            ## print some nice stuff if in debug mode
+            ## actually useful, I quite missed something like this in the
+            ## big cannons I tried before
             if self.debug:
                 print self
                 try:
@@ -120,6 +195,7 @@ class DokuforgeToHtmlParser:
                     print "Token: <???> unicode token"
             ## process the token
             ## first handle ednotes
+            ## here everything is copied verbatim
             if currentstate == "ednote":
                 if token == '{':
                     self.pushstate("ednote")
@@ -130,6 +206,15 @@ class DokuforgeToHtmlParser:
                         self.put('}')
                     else:
                         self.put('</pre>\n')
+                ## but we still need to escape
+                elif token == '<':
+                    self.put("&lt;")
+                elif token == '>':
+                    self.put("&gt;")
+                elif token == '&':
+                    self.put("&amp;")
+                elif token == '"':
+                    self.put("&quot;")
                 else:
                     self.put(token)
                 continue
@@ -139,10 +224,13 @@ class DokuforgeToHtmlParser:
                 self.put('<pre>')
                 continue
             ## now handle everything else
-            ### first handle whitespace
+            ## second handle whitespace
+            ## we contract whitespace as far as sensible
             if token == ' ' or token == '\t':
-                if currentstate == "start" or currentstate == "seenwhitespace" or \
-                       currentstate == "seennewline" or currentstate == "seennewpar":
+                if currentstate == "start" or \
+                       currentstate == "seenwhitespace" or \
+                       currentstate == "seennewline" or \
+                       currentstate == "seennewpar":
                     pass
                 else:
                     self.pushstate("seenwhitespace")
@@ -159,7 +247,10 @@ class DokuforgeToHtmlParser:
                 else:
                     self.pushstate("seennewline")
                 continue
-            ### now we have a non-whitespace token so we clean up the self
+
+            ## now we have a non-whitespace token so we clean up the state
+            ## i.e. remove whitespace from the context
+            ## a double newline ends all environments (except ednotes)
             if currentstate == "paragraph":
                 ## minor optimization, but I feel it is worth it
                 ## to shortcircuit this selfment
@@ -170,18 +261,21 @@ class DokuforgeToHtmlParser:
             elif currentstate == "seennewline":
                 self.popstate()
                 self.put('\n')
+                ## activate special tokens
                 self.predictnextstructure(token)
             elif currentstate == "seennewpar":
                 self.popstate()
                 self.cleanup()
                 self.put('\n')
+                ## activate special tokens
                 self.predictnextstructure(token)
             elif currentstate == "start":
                 self.popstate()
                 self.pushstate("normal")
+                ## activate special tokens
                 self.predictnextstructure(token)
 
-            ### if a new paragraph is beginning
+            ### if a new paragraph is beginning insert it into the context
             if self.lookstate() == "normal":
                 self.put('<p>')
                 self.pushstate("paragraph")
@@ -192,7 +286,9 @@ class DokuforgeToHtmlParser:
             ## space handling
             currentstate = self.lookstate()
 
-            ### now we handle all printable tokens
+            ## now we handle all printable tokens
+            ### [heading] and [[subheading]]
+            ### with optional (authors) following
             if token == '[':
                 if currentstate == "headingnext":
                     self.popstate()
@@ -218,11 +314,13 @@ class DokuforgeToHtmlParser:
                         self.popstate()
                         self.put('</h3>')
                         if self.lookprintabletoken() == '(':
+                            ## activate paren
                             self.pushstate("authorsnext")
                     else:
                         self.put(token)
                 else:
                     self.put(token)
+            ### (authors) only available after [heading] and [[subheading]]
             elif token == '(':
                 if currentstate == "authorsnext":
                     self.popstate()
@@ -236,6 +334,7 @@ class DokuforgeToHtmlParser:
                     self.put('</i>')
                 else:
                     self.put(token)
+            ### emphasis
             elif token == '_':
                 if currentstate == "emphasis":
                     self.popstate()
@@ -243,6 +342,7 @@ class DokuforgeToHtmlParser:
                 else:
                     self.pushstate("emphasis")
                     self.put('<i>')
+            ### keywords
             elif token == '*':
                 if currentstate == "keywordnext":
                     self.popstate()
@@ -253,6 +353,7 @@ class DokuforgeToHtmlParser:
                     self.put('</b>')
                 else:
                     self.put(token)
+            ### lists only available at the beginning of lines
             elif token == '-':
                 if currentstate == "listnext":
                     self.popstate()
@@ -264,6 +365,7 @@ class DokuforgeToHtmlParser:
                         self.pushstate("list")
                 else:
                     self.put(token)
+            ### we need to escape html special chars
             elif token == '<':
                 self.put("&lt;")
             elif token == '>':
@@ -272,6 +374,7 @@ class DokuforgeToHtmlParser:
                 self.put("&amp;")
             elif token == '"':
                 self.put("&quot;")
+            ### the default case for all the non-special tokens
             else:
                 self.put(token)
         return self.output
