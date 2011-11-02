@@ -9,13 +9,13 @@ class DokuforgeToHtmlParser:
         self.output = ''
         self.debug = debug
 
-    def look(self):
+    def lookstate(self):
         return self.stack[len(self.stack)-1]
-    def pop(self):
+    def popstate(self):
         return self.stack.pop()
-    def append(self, value):
+    def pushstate(self, value):
         return self.stack.append(value)
-    def nexttoken(self):
+    def poptoken(self):
         self.pos +=1
         return self.input[self.pos-1]
     def looktoken(self):
@@ -42,75 +42,76 @@ class DokuforgeToHtmlParser:
         return str(self.stack)
 
     def cleanup(self):
-        while not self.look() == "normal":
-            currentstate = self.look()
+        while not self.lookstate() == "normal":
+            currentstate = self.lookstate()
             if currentstate == "start":
-                self.pop()
-                self.append("normal")
+                self.popstate()
+                self.pushstate("normal")
             elif currentstate == "heading":
-                self.pop()
+                self.popstate()
                 self.put('</h2>\n')
             elif currentstate == "subheading":
-                self.pop()
+                self.popstate()
                 self.put('</h3>\n')
             elif currentstate == "authorsnext":
-                self.pop()
+                self.popstate()
                 self.put('\n\n')
             elif currentstate == "headingnext":
-                self.pop()
+                self.popstate()
                 self.put('\n\n')
             elif currentstate == "listnext":
-                self.pop()
+                self.popstate()
                 self.put('\n\n')
             elif currentstate == "authors":
-                self.pop()
+                self.popstate()
                 self.put('</i>\n')
             elif currentstate == "list":
-                self.pop()
+                self.popstate()
                 self.put('</li>\n</ul>\n')
             elif currentstate == "paragraph":
-                self.pop()
+                self.popstate()
                 self.put('</p>\n')
             elif currentstate == "emphasis":
-                self.pop()
+                self.popstate()
                 self.put('</i>')
             elif currentstate == "keywordnext":
-                self.pop()
+                self.popstate()
                 self.put('\n\n')
             elif currentstate == "keyword":
-                self.pop()
+                self.popstate()
                 self.put('</b>\n')
             elif currentstate == "ednote":
-                self.pop()
-                if not self.look() == "ednote":
+                self.popstate()
+                if not self.lookstate() == "ednote":
                     self.put('</pre>')
             elif currentstate == "seenwhitespace":
-                self.pop()
+                self.popstate()
                 self.put(' ')
             elif currentstate == "seennewline":
-                self.pop()
+                self.popstate()
                 self.put('\n')
             elif currentstate == "seennewpar":
-                self.pop()
+                self.popstate()
                 self.put('\n')
             else:
                 pass
-    def fortune(self, token):
+
+    def predictnextstructure(self, token):
         if token == '[':
-            self.append("headingnext")
+            self.pushstate("headingnext")
         if token == '-':
-            self.append("listnext")
+            self.pushstate("listnext")
 
     def parse(self):
         while True:
             ## retrieve token
             try:
-                token = self.nexttoken()
+                token = self.poptoken()
             except IndexError:
                 self.cleanup()
                 break
             ## retrieve current state
-            currentstate = self.look()
+            currentstate = self.lookstate()
             if self.debug:
                 print self
                 try:
@@ -121,11 +122,11 @@ class DokuforgeToHtmlParser:
             ## first handle ednotes
             if currentstate == "ednote":
                 if token == '{':
-                    self.append("ednote")
+                    self.pushstate("ednote")
                     self.put('{')
                 elif token == '}':
-                    self.pop()
-                    if self.look() == "ednote":
+                    self.popstate()
+                    if self.lookstate() == "ednote":
                         self.put('}')
                     else:
                         self.put('</pre>\n')
@@ -134,7 +135,7 @@ class DokuforgeToHtmlParser:
                 continue
             elif token == '{':
                 self.cleanup()
-                self.append("ednote")
+                self.pushstate("ednote")
                 self.put('<pre>')
                 continue
             ## now handle everything else
@@ -144,19 +145,19 @@ class DokuforgeToHtmlParser:
                        currentstate == "seennewline" or currentstate == "seennewpar":
                     pass
                 else:
-                    self.append("seenwhitespace")
+                    self.pushstate("seenwhitespace")
                 continue
             elif token == '\n':
                 if currentstate == "start" or currentstate == "seennewpar":
                     pass
                 elif currentstate == "seenwhitespace":
-                    self.pop()
-                    self.append("seennewline")
+                    self.popstate()
+                    self.pushstate("seennewline")
                 elif currentstate == "seennewline":
-                    self.pop()
-                    self.append("seennewpar")
+                    self.popstate()
+                    self.pushstate("seennewpar")
                 else:
-                    self.append("seennewline")
+                    self.pushstate("seennewline")
                 continue
             ### now we have a non-whitespace token so we clean up the self
             if currentstate == "paragraph":
@@ -164,103 +165,103 @@ class DokuforgeToHtmlParser:
                 ## to shortcircuit this selfment
                 pass
             elif currentstate == "seenwhitespace":
-                self.pop()
+                self.popstate()
                 self.put(' ')
             elif currentstate == "seennewline":
-                self.pop()
+                self.popstate()
                 self.put('\n')
-                self.fortune(token)
+                self.predictnextstructure(token)
             elif currentstate == "seennewpar":
-                self.pop()
+                self.popstate()
                 self.cleanup()
                 self.put('\n')
-                self.fortune(token)
+                self.predictnextstructure(token)
             elif currentstate == "start":
-                self.pop()
-                self.append("normal")
-                self.fortune(token)
+                self.popstate()
+                self.pushstate("normal")
+                self.predictnextstructure(token)
 
             ### if a new paragraph is beginning
-            if self.look() == "normal":
+            if self.lookstate() == "normal":
                 self.put('<p>')
-                self.append("paragraph")
+                self.pushstate("paragraph")
                 if token == '*':
-                    self.append("keywordnext")
+                    self.pushstate("keywordnext")
 
             ## update current state, since it could be modified by the white
             ## space handling
-            currentstate = self.look()
+            currentstate = self.lookstate()
 
             ### now we handle all printable tokens
             if token == '[':
                 if currentstate == "headingnext":
-                    self.pop()
+                    self.popstate()
                     self.cleanup()
                     if self.looktoken() == '[':
-                        self.nexttoken()
+                        self.poptoken()
                         self.put('<h3>')
-                        self.append("subheading")
+                        self.pushstate("subheading")
                     else:
                         self.put('<h2>')
-                        self.append("heading")
+                        self.pushstate("heading")
                 else:
                     self.put(token)
             elif token == ']':
                 if currentstate == "heading":
-                    self.pop()
+                    self.popstate()
                     self.put('</h2>\n')
                     if self.lookprintabletoken() == '(':
-                        self.append("authorsnext")
+                        self.pushstate("authorsnext")
                 elif currentstate == "subheading":
                     if self.looktoken() == ']':
-                        self.nexttoken()
-                        self.pop()
+                        self.poptoken()
+                        self.popstate()
                         self.put('</h3>\n')
                         if self.lookprintabletoken() == '(':
-                            self.append("authorsnext")
+                            self.pushstate("authorsnext")
                     else:
                         self.put(token)
                 else:
                     self.put(token)
             elif token == '(':
                 if currentstate == "authorsnext":
-                    self.pop()
+                    self.popstate()
                     self.put('<i>')
-                    self.append("authors")
+                    self.pushstate("authors")
                 else:
                     self.put(token)
             elif token == ')':
                 if currentstate == "authors":
-                    self.pop()
+                    self.popstate()
                     self.put('</i>\n')
                 else:
                     self.put(token)
             elif token == '_':
                 if currentstate == "emphasis":
-                    self.pop()
+                    self.popstate()
                     self.put('</i>')
                 else:
-                    self.append("emphasis")
+                    self.pushstate("emphasis")
                     self.put('<i>')
             elif token == '*':
                 if currentstate == "keywordnext":
-                    self.pop()
+                    self.popstate()
                     self.put('<b>')
-                    self.append("keyword")
+                    self.pushstate("keyword")
                 elif currentstate == "keyword":
-                    self.pop()
+                    self.popstate()
                     self.put('</b>')
                 else:
                     self.put(token)
             elif token == '-':
                 if currentstate == "listnext":
-                    self.pop()
-                    if self.look() == "list":
+                    self.popstate()
+                    if self.lookstate() == "list":
                         self.put('</li>\n<li>')
                     else:
                         self.cleanup()
                         self.put('<ul>\n<li>')
-                        self.append("list")
+                        self.pushstate("list")
                 else:
                     self.put(token)
             elif token == '<':
