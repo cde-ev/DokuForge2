@@ -50,3 +50,9 @@ body {
 .button {
     display: inline;
 }
+.dokucontent {
+    margin-left: 1em;
+    margin-right: 1em;
+    padding: 1ex;
+    background-color: #ddddff;
+}
