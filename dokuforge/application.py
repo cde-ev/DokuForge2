@@ -26,6 +26,7 @@ from dokuforge.academy import Academy
 from dokuforge.storage import Storage
 import dokuforge.common as common
 from dokuforge.common import CheckError
+from dokuforge.htmlparser import DokuforgeToHtmlParser
 
 sysrand = random.SystemRandom()
 
@@ -1407,11 +1408,12 @@ class Application:
         @type thepage: int
         @type saved: bool
         """
+        parser = DokuforgeToHtmlParser(thecourse.showpage(thepage))
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            content=thecourse.showpage(thepage),
+            content=parser.parse(),
             saved=saved,
             blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
         return self.render("show.html", rs, params)

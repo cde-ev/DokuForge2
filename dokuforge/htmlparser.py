@@ -273,4 +273,5 @@ class DokuforgeToHtmlParser:
                 self.put("&quot;")
             else:
                 self.put(token)
+        return self.output
 

@@ -71,5 +71,4 @@ manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 
 """, debug = True)
 
-parser.parse()
-print parser.result().encode("utf8")
+print parser.parse().encode("utf8")
