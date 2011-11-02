@@ -56,3 +56,7 @@ body {
     padding: .5ex 2ex .5ex 2ex;
     background-color: #ddddff;
 }
+
+.dokucontent pre {
+    background-color: #aaddff;
+}
