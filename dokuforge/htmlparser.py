@@ -209,14 +209,14 @@ class DokuforgeToHtmlParser:
             elif token == ']':
                 if currentstate == "heading":
                     self.popstate()
-                    self.put('</h2>\n')
+                    self.put('</h2>')
                     if self.lookprintabletoken() == '(':
                         self.pushstate("authorsnext")
                 elif currentstate == "subheading":
                     if self.looktoken() == ']':
                         self.poptoken()
                         self.popstate()
-                        self.put('</h3>\n')
+                        self.put('</h3>')
                         if self.lookprintabletoken() == '(':
                             self.pushstate("authorsnext")
                     else:
@@ -233,7 +233,7 @@ class DokuforgeToHtmlParser:
             elif token == ')':
                 if currentstate == "authors":
                     self.popstate()
-                    self.put('</i>\n')
+                    self.put('</i>')
                 else:
                     self.put(token)
             elif token == '_':
