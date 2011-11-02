@@ -96,7 +96,7 @@ class DokuforgeToHtmlParser:
             try:
                 token = self.nexttoken()
             except IndexError:
-                cleanup(self)
+                self.cleanup()
                 break
             ## retrieve current state
             currentstate = self.look()
@@ -122,7 +122,7 @@ class DokuforgeToHtmlParser:
                     self.put(token)
                 continue
             elif token == '{':
-                cleanup(self)
+                self.cleanup()
                 self.append("ednote")
                 self.put('<pre>')
                 continue
@@ -162,7 +162,7 @@ class DokuforgeToHtmlParser:
                     self.append("listnext")
             elif currentstate == "seennewpar":
                 self.pop()
-                cleanup(self)
+                self.cleanup()
                 self.put('\n')
                 if token == '-':
                     self.append("listnext")

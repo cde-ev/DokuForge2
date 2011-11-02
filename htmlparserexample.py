@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import dokuforge.htmlparser
+from dokuforge.htmlparser import DokuforgeToHtmlParser
 
 parser = DokuforgeToHtmlParser(u"""
 
@@ -71,4 +71,5 @@ manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 
 """, debug = True)
 
-print state.result().encode("utf8")
+parser.parse()
+print parser.result().encode("utf8")
