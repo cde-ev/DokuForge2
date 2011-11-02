@@ -53,6 +53,6 @@ body {
 .dokucontent {
     margin-left: 1em;
     margin-right: 1em;
-    padding: 1ex;
+    padding: .5ex 2ex .5ex 2ex;
     background-color: #ddddff;
 }
