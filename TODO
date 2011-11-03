@@ -5,13 +5,11 @@
 * exporter
 
 == not so important ==
-* markup parser and fancy display
-* nice design
+* nicer design
 * upgraded navigation (back-buttons, all sort of cross-links)
 * page estimates
 * nicer admin interface
 * display captions during page listing
-* math display
 * tweaked print.css
 * webaccess to rcs history
 * trail export (to view the current length)
