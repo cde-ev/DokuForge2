@@ -173,7 +173,7 @@ class DokuforgeToHtmlParser:
                 self.popstate()
                 if not self.lookstate() == "ednote":
                     self.put('</pre>')
-            elif currentstate == "inlinmath":
+            elif currentstate == "inlinemath":
                 self.popstate()
                 self.put('$')
             elif currentstate == "displaymath":
