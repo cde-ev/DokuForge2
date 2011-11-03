@@ -28,6 +28,7 @@ class DokuforgeToHtmlParser:
         @returns: topmost state in the context
         """
         return self.stack[len(self.stack)-1]
+
     def popstate(self):
         """
         remove a state from the context
@@ -36,11 +37,13 @@ class DokuforgeToHtmlParser:
         @returns: the removed state
         """
         return self.stack.pop()
+
     def pushstate(self, value):
         """
         put a new state an top of the context
         """
         return self.stack.append(value)
+
     def poptoken(self):
         """
         get a new token from the input string and advance the position in
@@ -52,6 +55,7 @@ class DokuforgeToHtmlParser:
         """
         self.pos +=1
         return self.input[self.pos-1]
+
     def looktoken(self):
         """
         view the next token from the input string without side effects. If
@@ -64,6 +68,7 @@ class DokuforgeToHtmlParser:
             return self.input[self.pos]
         except IndexError:
             return ''
+
     def lookprintabletoken(self):
         """
         view the next non-whitespace token from the input string without
@@ -322,7 +327,7 @@ class DokuforgeToHtmlParser:
             currentstate = self.lookstate()
 
             ## fifth now we handle all printable tokens
-            ### ednotes
+            ### ednotes as { note to self }
             if token == '{':
                 self.cleanup()
                 self.pushstate("ednote")
@@ -383,7 +388,7 @@ class DokuforgeToHtmlParser:
                     self.put('</i>')
                 else:
                     self.put(token)
-            ### emphasis
+            ### _emphasis_
             elif token == '_':
                 if currentstate == "emphasis":
                     self.popstate()
@@ -391,7 +396,7 @@ class DokuforgeToHtmlParser:
                 else:
                     self.pushstate("emphasis")
                     self.put('<i>')
-            ### keywords
+            ### *keywords* only avalailable at the beginnig of paragraphs
             elif token == '*':
                 if currentstate == "keywordnext":
                     self.popstate()
@@ -403,6 +408,9 @@ class DokuforgeToHtmlParser:
                 else:
                     self.put(token)
             ### lists only available at the beginning of lines
+            ### - items
+            ### - like
+            ### - this
             elif token == '-':
                 if currentstate == "listnext":
                     self.popstate()
