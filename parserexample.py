@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from dokuforge.htmlparser import DokuforgeToHtmlParser
+from dokuforge.exportparser import DokuforgeToTeXParser
 
-parser = DokuforgeToHtmlParser(u"""
+teststring = u"""
 
   [Eine Ueberschrift]
 (Autor, Korrektor und Chef)
@@ -71,6 +72,12 @@ manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
   mit einer Leerzeile und { nested braces }. }
 
 
-""", debug = True)
+"""
+
+parser = DokuforgeToHtmlParser(teststring, debug = True)
 
 print parser.parse().encode("utf8")
+
+exporter = DokuforgeToTeXParser(teststring, debug = True)
+
+print exporter.parse().encode("utf8")
