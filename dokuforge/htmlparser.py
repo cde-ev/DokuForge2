@@ -89,6 +89,26 @@ class DokuforgeToHtmlParser:
         """
         self.output += s
 
+    def putescaped(self, s):
+        """
+        append s to the output string escaping html special characters
+
+        @type s: unicode
+        @value s: string to append
+        """
+        for i in range(len(s)):
+            token = s[i]
+            if token == '<':
+                self.put("&lt;")
+            elif token == '>':
+                self.put("&gt;")
+            elif token == '&':
+                self.put("&amp;")
+            elif token == '"':
+                self.put("&quot;")
+            else:
+                self.put(token)
+
     def result(self):
         """
         @rtype: unicode
@@ -148,6 +168,12 @@ class DokuforgeToHtmlParser:
                 self.popstate()
                 if not self.lookstate() == "ednote":
                     self.put('</pre>')
+            elif currentstate == "inlinmath":
+                self.popstate()
+                self.put('$')
+            elif currentstate == "displaymath":
+                self.popstate()
+                self.put('$$\n')
             elif currentstate == "seenwhitespace":
                 self.popstate()
                 self.put(' ')
@@ -194,6 +220,28 @@ class DokuforgeToHtmlParser:
                 except UnicodeEncodeError:
                     print "Token: <???> unicode token"
             ## process the token
+
+            ## zero handle math
+            ## this even beats ednotes since math needs curly braces
+            if currentstate == "inlinemath" or currentstate == "displaymath":
+                ## math special token $
+                if token == '$':
+                    if currentstate == "inlinemath":
+                        self.popstate()
+                        self.put(token)
+                    else:
+                        # displaymath
+                        self.popstate()
+                        if self.looktoken() == '$':
+                            self.poptoken()
+                            self.put('$$')
+                        else:
+                            self.put('$$')
+                ## but we still need to escape
+                else:
+                    self.putescaped(token)
+                continue
+
             ## first handle ednotes
             ## here everything is copied verbatim
             if currentstate == "ednote":
@@ -206,23 +254,10 @@ class DokuforgeToHtmlParser:
                         self.put('}')
                     else:
                         self.put('</pre>\n')
-                ## but we still need to escape
-                elif token == '<':
-                    self.put("&lt;")
-                elif token == '>':
-                    self.put("&gt;")
-                elif token == '&':
-                    self.put("&amp;")
-                elif token == '"':
-                    self.put("&quot;")
                 else:
-                    self.put(token)
+                    self.putescaped(token)
                 continue
-            elif token == '{':
-                self.cleanup()
-                self.pushstate("ednote")
-                self.put('<pre>')
-                continue
+
             ## now handle everything else
             ## second handle whitespace
             ## we contract whitespace as far as sensible
@@ -275,7 +310,7 @@ class DokuforgeToHtmlParser:
                 ## activate special tokens
                 self.predictnextstructure(token)
 
-            ### if a new paragraph is beginning insert it into the context
+            ## if a new paragraph is beginning insert it into the context
             if self.lookstate() == "normal":
                 self.put('<p>')
                 self.pushstate("paragraph")
@@ -287,9 +322,23 @@ class DokuforgeToHtmlParser:
             currentstate = self.lookstate()
 
             ## now we handle all printable tokens
+            ### ednotes
+            if token == '{':
+                self.cleanup()
+                self.pushstate("ednote")
+                self.put('<pre>')
+            ### math in the forms $inline$ and $$display$$
+            elif token == '$':
+                if self.looktoken() == '$':
+                    self.poptoken()
+                    self.pushstate("displaymath")
+                    self.put('$$')
+                else:
+                    self.pushstate("inlinemath")
+                    self.put(token)
             ### [heading] and [[subheading]]
             ### with optional (authors) following
-            if token == '[':
+            elif token == '[':
                 if currentstate == "headingnext":
                     self.popstate()
                     self.cleanup()
@@ -365,17 +414,9 @@ class DokuforgeToHtmlParser:
                         self.pushstate("list")
                 else:
                     self.put(token)
-            ### we need to escape html special chars
-            elif token == '<':
-                self.put("&lt;")
-            elif token == '>':
-                self.put("&gt;")
-            elif token == '&':
-                self.put("&amp;")
-            elif token == '"':
-                self.put("&quot;")
             ### the default case for all the non-special tokens
+            ### but escaping the html special tokens
             else:
-                self.put(token)
+                self.putescaped(token)
         return self.output
 

@@ -1,4 +1,13 @@
 {% extends "base.html" %}
+{% block mathjax %}
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']]}});
+  MathJax.Hub.Config({tex2jax: {displayMath: [['$$','$$']]}});
+</script>
+<script type="text/javascript"
+  src="{{staticjoin("mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML")}}">
+</script>
+{% endblock %}
 {% block subheading %}
 {{ academy.title|e }}
 {% endblock %}
@@ -28,7 +37,7 @@ Teil #{{ page|string }}
 Zugeordnete Bilder:
 <ul>
 {%- for blob in blobs %}
-<li> 
+<li>
   <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e }})</a>
 {%- if user.allowedWrite(academy, course) %}
 {{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
