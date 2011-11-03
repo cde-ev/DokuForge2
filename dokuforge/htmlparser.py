@@ -221,27 +221,6 @@ class DokuforgeToHtmlParser:
                     print "Token: <???> unicode token"
             ## process the token
 
-            ## zero handle math
-            ## this even beats ednotes since math needs curly braces
-            if currentstate == "inlinemath" or currentstate == "displaymath":
-                ## math special token $
-                if token == '$':
-                    if currentstate == "inlinemath":
-                        self.popstate()
-                        self.put(token)
-                    else:
-                        # displaymath
-                        self.popstate()
-                        if self.looktoken() == '$':
-                            self.poptoken()
-                            self.put('$$')
-                        else:
-                            self.put('$$')
-                ## but we still need to escape
-                else:
-                    self.putescaped(token)
-                continue
-
             ## first handle ednotes
             ## here everything is copied verbatim
             if currentstate == "ednote":
@@ -258,7 +237,6 @@ class DokuforgeToHtmlParser:
                     self.putescaped(token)
                 continue
 
-            ## now handle everything else
             ## second handle whitespace
             ## we contract whitespace as far as sensible
             if token == ' ' or token == '\t':
@@ -310,18 +288,40 @@ class DokuforgeToHtmlParser:
                 ## activate special tokens
                 self.predictnextstructure(token)
 
-            ## if a new paragraph is beginning insert it into the context
+            ## third handle math
+            ## this deactivates all other special characters
+            ## even ednotes since math needs curly braces
+            if self.lookstate() == "inlinemath" or \
+                   self.lookstate() == "displaymath":
+                ## math special token $
+                if token == '$':
+                    if currentstate == "inlinemath":
+                        self.popstate()
+                        self.put(token)
+                    else:
+                        # displaymath
+                        self.popstate()
+                        if self.looktoken() == '$':
+                            self.poptoken()
+                            self.put('$$')
+                        else:
+                            self.put('$$')
+                ## but we still need to escape
+                else:
+                    self.putescaped(token)
+                continue
+
+            ## fourth if a new paragraph is beginning insert it into the context
             if self.lookstate() == "normal":
                 self.put('<p>')
                 self.pushstate("paragraph")
                 if token == '*':
                     self.pushstate("keywordnext")
 
-            ## update current state, since it could be modified by the white
-            ## space handling
+            ## update current state, since it could be modified
             currentstate = self.lookstate()
 
-            ## now we handle all printable tokens
+            ## fifth now we handle all printable tokens
             ### ednotes
             if token == '{':
                 self.cleanup()
@@ -418,5 +418,6 @@ class DokuforgeToHtmlParser:
             ### but escaping the html special tokens
             else:
                 self.putescaped(token)
-        return self.output
 
+        ## finally return the result
+        return self.output
