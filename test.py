@@ -88,7 +88,7 @@ teststrings = [
     (u"simple string", u"simple string"),
     (u"some chars <>/& here", u"some chars &lt;&gt;/&amp; here"),
     (u"exotic äöüß 囲碁 chars", u"exotic äöüß 囲碁 chars"),
-    (u"some ' " + u' " quotes', u"some &#39;  &#34; quotes")
+    (u"some ' " + u'" quotes', u"some &#39; &#34; quotes")
     ]
 
 class DokuforgeTests(unittest.TestCase):

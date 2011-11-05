@@ -110,7 +110,9 @@ class DokuforgeToHtmlParser:
             elif token == '&':
                 self.put("&amp;")
             elif token == '"':
-                self.put("&quot;")
+                self.put("&#34;")
+            elif token == "'":
+                self.put("&#39;")
             else:
                 self.put(token)
 
