@@ -157,11 +157,18 @@ Formatierung nicht dazu benutzt wird, beliebigen Text fett zu setzen.
 	<td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td> <!--- FIMXE: echte DokuForge-Vorschau nimmt schwarze Punkte&nbsp;... -->
-        - erster Punkt<br>- zweiter Punkt<br>- noch ein .<br>- viele Punkte:&nbsp;...<br>
+	<td>
+        - erster Punkt<br>
+	- zweiter Punkt<br>
+	- noch ein .<br>
+	- viele Punkte:&nbsp;...<br>
         </td>
 	<td>
-        <ul><li>erster Punkt</li><li>zweiter Punkt</li><li>noch ein .</li><li>viele Punkte:&nbsp;...</li></ul>
+        <ul>
+	<li type="disc">erster Punkt</li>
+	<li type="disc">zweiter Punkt</li>
+	<li type="disc">noch ein .</li>
+	<li type="disc">viele Punkte:&nbsp;...</li></ul>
         </td>
 </tr>
 </table>
