@@ -24,7 +24,7 @@ Einfügen von Leerzeichen an den richtigen Stellen nach ascii-art, wobei
 deutlich werden sollte, was wie zusammengehört.</p>
 <p>Oder ihr setzt, wenn ihr euch hier schon etwas auskennt, in so einer
 ascii-art Tabelle noch ein paar &bdquo;&amp;&ldquo; und &bdquo;\\&ldquo; an den
-richtigen Stellen, ein &bdquo;\begin{tabular}&ldquo; und ein
+richtigen Stellen, ein &bdquo;\<!--mathjax grabs \begin{tabular} -->begin{tabular}&ldquo; und ein
 &bdquo;\toprule&ldquo; oben drüber und ein &bdquo;\bottomrule&ldquo; sowie ein
 &bdquo;\end{tabular}&ldquo; unten drunter. Bei Bedarf noch ein
 &bdquo;\midrule&ldquo; zwischendrin (wir verwenden <em>booktabs.sty</em>).</p>
