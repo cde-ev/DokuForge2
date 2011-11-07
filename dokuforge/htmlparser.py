@@ -140,10 +140,10 @@ class DokuforgeToHtmlParser:
                 self.pushstate("normal")
             elif currentstate == "heading":
                 self.popstate()
-                self.put('</h2>\n')
+                self.put('</h3>\n')
             elif currentstate == "subheading":
                 self.popstate()
-                self.put('</h3>\n')
+                self.put('</h4>\n')
             elif currentstate == "authorsnext":
                 self.popstate()
                 self.put('\n\n')
@@ -351,24 +351,24 @@ class DokuforgeToHtmlParser:
                     self.cleanup()
                     if self.looktoken() == '[':
                         self.poptoken()
-                        self.put('<h3>')
+                        self.put('<h4>')
                         self.pushstate("subheading")
                     else:
-                        self.put('<h2>')
+                        self.put('<h3>')
                         self.pushstate("heading")
                 else:
                     self.put(token)
             elif token == ']':
                 if currentstate == "heading":
                     self.popstate()
-                    self.put('</h2>')
+                    self.put('</h3>')
                     if self.lookprintabletoken() == '(':
                         self.pushstate("authorsnext")
                 elif currentstate == "subheading":
                     if self.looktoken() == ']':
                         self.poptoken()
                         self.popstate()
-                        self.put('</h3>')
+                        self.put('</h4>')
                         if self.lookprintabletoken() == '(':
                             ## activate paren
                             self.pushstate("authorsnext")
