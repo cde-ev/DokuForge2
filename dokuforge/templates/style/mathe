@@ -1,6 +1,5 @@
     <div class="body">
               <h2>Wie werden Formeln gesetzt?</h2>
-            
 
 
 
@@ -49,10 +48,14 @@ die abgesetzt werden:</p>
 	abgesetzten Formel vermitteln.</p>
 	</td>
 	<td valign="top">
-<p>Solange nur <img src="http://www.dokuforge.de/static/style_mathe-01.png" alt="[tex]">&nbsp; sein soll,
-kann man das im Text schreiben. Die Erkenntnis, dass</p>
-<p align="center"><img src="http://www.dokuforge.de/static/style_mathe-02.png" alt="[tex]"></p>
-<p>ist, kann man dagegen besser in einer abgesetzten Formel vermitteln.</p>
+	<p>Solange nur \(l = c\tau\) sein soll, kann man das im Text schreiben.
+	Die Erkenntnis, dass<br>
+	\[
+	\int\limits_0^{\frac{\pi}{2}} \sin^2(x) +
+	\cos^2(x) \, dx = \frac{\pi}{2}
+	\]
+	ist, kann man dagegen besser in einer
+	abgesetzten Formel vermitteln.</p>
 	</td>
 </tr>
 </table>
@@ -71,11 +74,10 @@ DokuForge-Mathemodus vorgestellt.</p>
 </tr>
 <tr>
         <td valign="top">
-<p>Mengenzeichen: $\C, \H, \N, \Q, \R, \Z$. Bitte _nicht_ $\mathbb{R}$ verwenden.</p>
+	<p>Mengenzeichen: Bitte $\mathbb{R}$, $\mathbb{C}$, usw. verwenden.</p>
 	</td>
 	<td valign="top">
-<p>Mengenzeichen: <img src="http://www.dokuforge.de/static/style_mathe-03.png" alt="[tex]">.
-Bitte <i>nicht</i> <img src="http://www.dokuforge.de/static/style_mathe-04.png" alt="[tex]"> verwenden.</p>
+	<p>Mengenzeichen: Bitte \(\mathbb{R}\), \(\mathbb{C}\), usw. verwenden.</p>
 	</td>
 </tr>
 </table>
@@ -84,9 +86,7 @@ Bitte <i>nicht</i> <img src="http://www.dokuforge.de/static/style_mathe-04.png" 
 
 <h3><a name="align">Ausrichtung mehrzeiliger Formeln</a></h3>
 
-<p>In abgesetzten Formeln ist es auch möglich, mehrere Zeilen zu setzen.  Durch
-\\ wird eine neue Zeile erzeugt; die einzelnen Zeilen werden linksbündig
-ausgerichtet:</p>
+<p>In abgesetzten Formeln ist es auch möglich, Umgebungen für mehrzeilige Mathematik zu nutzen. In einfachen Fällen ist die gather-Umgebung hilfreich. Dabei erzeugt man mit &bdquo;\\&ldquo; jeweils eine neue Zeile.</p>
 
 <table  width="80%">
 <tr>
@@ -95,21 +95,26 @@ ausgerichtet:</p>
 </tr>
 <tr>
         <td valign="middle">
-$$<br>
+$$\<!-- mathjax automatically grabs \begin{gather} -->begin{gather}<br>
   (a + b)^2 = a^2 + 2ab + b^2 \\<br>
   (a - b)^2 = a^2 - 2ab + b^2 \\<br>
-  (a + b)(a - b) = a^2 + ab - ab + b^2<br>
-$$<br>
+  (a + b)(a - b)= a^2 + ab - ab + b^2<br>
+\end{gather}$$<br>
 	</td>
 	<td valign="middle">
-	<img src="http://www.dokuforge.de/static/style_mathe-a1.png" alt="[tex]">
+\[\begin{gather}
+  (a + b)^2 = a^2 + 2ab + b^2 \\
+  (a - b)^2 = a^2 - 2ab + b^2 \\
+  (a + b)(a - b) = a^2 + ab - ab + b^2
+\end{gather}\]
 	</td>
 </tr>
 </table>
 
 <p>Sollen die Gleichheitszeichen aneinander ausgerichtet werden, so ist
+die align-Umgebung das Mittel der Wahl. Dabei muss
 vor jedes dieser Gleichheitszeichen <i>ein</i> kaufmännisches
-&bdquo;Und&ldquo; zu setzen:</p>
+&bdquo;Und&ldquo; gesetzt werden.</p>
 
 <table  width="80%">
 <tr>
@@ -118,43 +123,24 @@ vor jedes dieser Gleichheitszeichen <i>ein</i> kaufmännisches
 </tr>
 <tr>
         <td valign="middle">
-$$<br>
-  (a + b)^2      &= a^2 + 2ab + b^2 \\<br>
-  (a - b)^2      &= a^2 - 2ab + b^2 \\<br>
-  (a + b)(a - b) &= a^2 + ab - ab + b^2<br>
-$$<br>
+$$\<!-- mathjax automatically grabs \begin{align} -->begin{align}<br>
+  (a + b)^2      &amp;= a^2 + 2ab + b^2 \\<br>
+  (a - b)^2      &amp;= a^2 - 2ab + b^2 \\<br>
+  (a + b)(a - b) &amp;= a^2 + ab - ab + b^2<br>
+\end{align}$$<br>
         </td>
         <td valign="middle">
-	<img src="http://www.dokuforge.de/static/style_mathe-a2.png" alt="[tex]">
-        </td>
-</tr>
-</table>
-
-<p>Bei sehr langen Gleichungen kann es angemessen sein, das kaufmännische
-&bdquo;Und&ldquo; in der ersten Zeile wegzulassen. Das Beispiel zeigt auch,
-dass \\ eine neue Zeile beginnt, nicht der Zeilenumbruch im Editierfenster:</p>
-
-<table  width="80%">
-<tr>
-        <td width="40%">Eingabe:</td>
-        <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-        <td valign="middle">
-$$<br>
-  (x - a)(x - b)(x - c)(x - d)(x - f)<br> \cdots (x - z) \\<br>
-    &= (x - a) (x - b) (x - c) \cdots <br>
-    (x - x) \cdots (x - z) = 0<br>
-$$<br>
-        </td>
-        <td valign="middle">
-	<img src="http://www.dokuforge.de/static/style_mathe-a3.png" alt="[tex]">
+\[\begin{align}
+  (a + b)^2      &amp;= a^2 + 2ab + b^2 \\
+  (a - b)^2      &amp;= a^2 - 2ab + b^2 \\
+  (a + b)(a - b) &amp;= a^2 + ab - ab + b^2
+\end{align}\]
         </td>
 </tr>
 </table>
 
 <p>Jede Zeile (und damit natürlich auch eine
-alleinstehende Gleichung) kann mit Hilfe von \label{...} 
+alleinstehende Gleichung) kann mit Hilfe von \label{...}
 am Ende der Zeile mit einem &bdquo;Label&ldquo; versehen werden:</p>
 
 <table  width="80%">
@@ -164,96 +150,26 @@ am Ende der Zeile mit einem &bdquo;Label&ldquo; versehen werden:</p>
 </tr>
 <tr>
         <td valign="middle">
-$$<br>
+$$\<!-- mathjax automatically grabs \begin{align} -->begin{align}<br>
  \int_0^1 3x^2 + 2x \, dx<br>
      &= \left. x^3 + x^2 \right|_0^1                    \\<br>
      &= 1 + 1                        \label{oneplusone} \\<br>
      &= 2                            \label{equals}<br>
-$$<br>
+\end{align}$$<br>
         </td>
         <td valign="middle">
-	<img src="http://www.dokuforge.de/static/style_mathe-a4.png" alt="[tex]">
+\[\begin{align}
+ \int_0^1 3x^2 + 2x \, dx
+     &= \left. x^3 + x^2 \right|_0^1                    \\
+     &= 1 + 1                        \label{oneplusone} \\
+     &= 2                            \label{equals}
+\end{align}\]
         </td>
 </tr>
 </table>
 
 <p>Auf dieses &bdquo;Label&ldquo; kann man später im Text verweisen:
 Wie man in Gleichung EQ:equals sieht, ist ...</p>
-
-<p>Folgende Äquivalenzrelationen werden erkannt und herausgestellt.
-Dabei ist wichtig, dass die Relation ganz am Zeilenanfang steht.</p>
-
-<table  width="80%">
-<tr>
-        <td width="40%">Eingabe:</td>
-        <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-        <td valign="middle">
-$$<br>
-                a^2 + b^2 &= c^2 \\<br>
-\Leftarrow      a^2 &= c^2 - b^2<br>
-$$<br>
-	</td>
-        <td valign="middle">
-	<img src="http://www.dokuforge.de/static/style_mathe-a5.png" alt="[tex]">
-        </td>
-</tr>
-<tr>
-	<td valign="middle">
-$$<br>
-                a^2 + b^2 &= c^2 \\<br>
-\Rightarrow     a^2 &= c^2 - b^2<br>
-$$<br>
-	</td>
-        <td valign="middle">
-	<img src="http://www.dokuforge.de/static/style_mathe-a6.png" alt="[tex]">
-        </td>
-</tr>
-<tr>
-	<td valign="middle">
-$$<br>
-                a^2 + b^2 &= c^2 \\<br>
-\Leftrightarrow a^2 &= c^2 - b^2<br>
-$$<br>
-	</td>
-        <td valign="middle">
-	<img src="http://www.dokuforge.de/static/style_mathe-a7.png" alt="[tex]">
-        </td>
-</tr>
-<tr>
-	<td valign="middle">
-$$<br>
-                a^2 + b^2 &= c^2 \\<br>
-\iff            a^2 &= c^2 - b^2<br>
-$$<br>
-        </td>
-	</td>
-        <td valign="middle">
-	<img src="http://www.dokuforge.de/static/style_mathe-a8.png" alt="[tex]">
-        </td>
-</tr>
-</table>
-
-<p>Mitten in einer Zeile haben sie jedoch die normale Wirkung:</p>
-
-<table  width="80%">
-<tr>
-        <td width="40%">Eingabe:</td>
-        <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-        <td valign="middle">
-$$<br>
-  a^2 + b^2 &= c^2 \iff a^2 &= c^2 - b^2<br>
-$$<br>
-        </td>
-        <td valign="middle">
-	<img src="http://www.dokuforge.de/static/style_mathe-a9.png" alt="[tex]">
-        </td>
-</tr>
-</table>
-
 
 <h3><a name="satz">Beweis und Satz</a></h3>
 
@@ -289,19 +205,19 @@ Ladung innerhalb der Fläche.</p>
 Sätzen und Beweisen zu pflastern. Das können wir ihnen leider nicht verweigern
 und haben daher die Syntax</p>
 
-<pre style="background-color: rgb(170, 204, 255);"> SATZ</pre>
+<pre class="ednote"> SATZ</pre>
 <p>Hier ein Satz</p>
-<pre style="background-color: rgb(170, 204, 255);"> END</pre>
+<pre class="ednote"> END</pre>
 <p>bzw.</p>
-<pre style="background-color: rgb(170, 204, 255);"> SATZ</pre>
+<pre class="ednote"> SATZ</pre>
 <p>Hier noch ein Satz</p>
-<pre style="background-color: rgb(170, 204, 255);"> BEWEIS</pre>
+<pre class="ednote"> BEWEIS</pre>
 <p>und sein Beweis</p>
-<pre style="background-color: rgb(170, 204, 255);"> QED</pre>
+<pre class="ednote"> QED</pre>
 <p>ins Leben gerufen. Falls man auf einen Satz verweisen möchte, kann man ihn mit einem Label versehen:</p>
-<pre style="background-color: rgb(170, 204, 255);"> SATZ:gauss</pre>
+<pre class="ednote"> SATZ:gauss</pre>
 <p>Der Satz von Gauß</p>
-<pre style="background-color: rgb(170, 204, 255);"> END</pre>
+<pre class="ednote"> END</pre>
 <p>Im Text kann man dann auf den Satz verweisen: Wie man in SATZ:gauss sieht,
 entspricht der gesamte elektrische Fluss durch eine geschlossene Fläche der
 Ladung innerhalb der Fläche.</p>
