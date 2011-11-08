@@ -9,7 +9,7 @@ class BaseParser:
     @ivar input: the input string
     @ivar pos: current position in the input string
     @ivar stack: contains the current context
-    @ivar output: the output string
+    @ivar output: is a stack of current outputs
     @cvar escapemap: a mapping of characters that need escaping to their
             escaped representation
     """
@@ -18,8 +18,8 @@ class BaseParser:
         assert isinstance(string, unicode)
         self.input = string
         self.pos = 0
-        self.stack = [ "start" ]
-        self.output = ''
+        self.stack = [ "root", "start" ]
+        self.output = [ "", "" ]
 
     def lookstate(self):
         """
@@ -35,13 +35,23 @@ class BaseParser:
         @rtype: str
         @returns: the removed state
         """
-        return self.stack.pop()
+        state = self.stack.pop()
+        value = self.output.pop()
+        try:
+            handler = getattr(self, "handle_%s" % state)
+        except AttributeError:
+            pass
+        else:
+            value = handler(value)
+        self.put(value)
+        return state
 
     def pushstate(self, value):
         """
         put a new state an top of the context
         """
-        return self.stack.append(value)
+        self.output.append("")
+        self.stack.append(value)
 
     def poptoken(self):
         """
@@ -91,14 +101,14 @@ class BaseParser:
         @type s: unicode
         @value s: string to append
         """
-        self.output += s
+        self.output[-1] += s
 
     def result(self):
         """
         @rtype: unicode
         @returns: result string
         """
-        return self.output
+        return self.output[-1]
 
     def __str__(self):
         """

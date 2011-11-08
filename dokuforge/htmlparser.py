@@ -22,6 +22,15 @@ class DokuforgeToHtmlParser(BaseParser):
         BaseParser.__init__(self, string)
         self.debug = debug
 
+    handle_heading = "<h3>%s</h3>".__mod__
+    handle_subheading = "<h4>%s</h4>".__mod__
+    handle_emphasis = "<i>%s</i>".__mod__
+    handle_paragraph = "<p>%s</p>".__mod__
+    handle_authors = handle_emphasis
+    handle_keyword = "<b>%s</b>".__mod__
+    handle_inlinemath = "$%s$".__mod__
+    handle_displaymath = "$$%s$$".__mod__
+
     def cleanup(self):
         """
         close all open states
@@ -31,60 +40,29 @@ class DokuforgeToHtmlParser(BaseParser):
             if currentstate == "start":
                 self.popstate()
                 self.pushstate("normal")
-            elif currentstate == "heading":
+            elif currentstate in ("authors", "displaymath", "heading",
+                                  "keyword", "paragraph", "seennewline",
+                                  "seennewpar", "subheading"):
                 self.popstate()
-                self.put('</h3>\n')
-            elif currentstate == "subheading":
-                self.popstate()
-                self.put('</h4>\n')
-            elif currentstate == "authorsnext":
-                self.popstate()
-                self.put('\n\n')
-            elif currentstate == "headingnext":
+                self.put('\n')
+            elif currentstate in ("authorsnext", "headingnext", "listnext",
+                                  "keywordnext"):
                 self.popstate()
                 self.put('\n\n')
-            elif currentstate == "listnext":
-                self.popstate()
-                self.put('\n\n')
-            elif currentstate == "authors":
-                self.popstate()
-                self.put('</i>\n')
             elif currentstate == "list":
                 self.popstate()
                 self.put('</li>\n</ul>\n')
-            elif currentstate == "paragraph":
+            elif currentstate in ("emphasis", "inlinemath"):
                 self.popstate()
-                self.put('</p>\n')
-            elif currentstate == "emphasis":
-                self.popstate()
-                self.put('</i>')
-            elif currentstate == "keywordnext":
-                self.popstate()
-                self.put('\n\n')
-            elif currentstate == "keyword":
-                self.popstate()
-                self.put('</b>\n')
             elif currentstate == "ednote":
                 self.popstate()
                 if not self.lookstate() == "ednote":
                     self.put('</pre>')
-            elif currentstate == "inlinemath":
-                self.popstate()
-                self.put('$')
-            elif currentstate == "displaymath":
-                self.popstate()
-                self.put('$$\n')
             elif currentstate == "seenwhitespace":
                 self.popstate()
                 self.put(' ')
-            elif currentstate == "seennewline":
-                self.popstate()
-                self.put('\n')
-            elif currentstate == "seennewpar":
-                self.popstate()
-                self.put('\n')
             else:
-                pass
+                raise ValueError("invalid state")
 
     def predictnextstructure(self, token):
         """
@@ -140,12 +118,8 @@ class DokuforgeToHtmlParser(BaseParser):
             ## second handle whitespace
             ## we contract whitespace as far as sensible
             if token == ' ' or token == '\t':
-                if currentstate == "start" or \
-                       currentstate == "seenwhitespace" or \
-                       currentstate == "seennewline" or \
-                       currentstate == "seennewpar":
-                    pass
-                else:
+                if currentstate not in ("start", "seenwhitespace",
+                                        "seennewline","seennewpar"):
                     self.pushstate("seenwhitespace")
                 continue
             elif token == '\n':
@@ -197,15 +171,11 @@ class DokuforgeToHtmlParser(BaseParser):
                 if token == '$':
                     if currentstate == "inlinemath":
                         self.popstate()
-                        self.put(token)
                     else:
                         # displaymath
                         self.popstate()
                         if self.looktoken() == '$':
                             self.poptoken()
-                            self.put('$$')
-                        else:
-                            self.put('$$')
                 ## but we still need to escape
                 else:
                     self.putescaped(token)
@@ -213,7 +183,6 @@ class DokuforgeToHtmlParser(BaseParser):
 
             ## fourth if a new paragraph is beginning insert it into the context
             if self.lookstate() == "normal":
-                self.put('<p>')
                 self.pushstate("paragraph")
                 if token == '*':
                     self.pushstate("keywordnext")
@@ -232,10 +201,8 @@ class DokuforgeToHtmlParser(BaseParser):
                 if self.looktoken() == '$':
                     self.poptoken()
                     self.pushstate("displaymath")
-                    self.put('$$')
                 else:
                     self.pushstate("inlinemath")
-                    self.put(token)
             ### [heading] and [[subheading]]
             ### with optional (authors) following
             elif token == '[':
@@ -244,24 +211,20 @@ class DokuforgeToHtmlParser(BaseParser):
                     self.cleanup()
                     if self.looktoken() == '[':
                         self.poptoken()
-                        self.put('<h4>')
                         self.pushstate("subheading")
                     else:
-                        self.put('<h3>')
                         self.pushstate("heading")
                 else:
                     self.put(token)
             elif token == ']':
                 if currentstate == "heading":
                     self.popstate()
-                    self.put('</h3>')
                     if self.lookprintabletoken() == '(':
                         self.pushstate("authorsnext")
                 elif currentstate == "subheading":
                     if self.looktoken() == ']':
                         self.poptoken()
                         self.popstate()
-                        self.put('</h4>')
                         if self.lookprintabletoken() == '(':
                             ## activate paren
                             self.pushstate("authorsnext")
@@ -273,33 +236,27 @@ class DokuforgeToHtmlParser(BaseParser):
             elif token == '(':
                 if currentstate == "authorsnext":
                     self.popstate()
-                    self.put('<i>')
                     self.pushstate("authors")
                 else:
                     self.put(token)
             elif token == ')':
                 if currentstate == "authors":
                     self.popstate()
-                    self.put('</i>')
                 else:
                     self.put(token)
             ### _emphasis_
             elif token == '_':
                 if currentstate == "emphasis":
                     self.popstate()
-                    self.put('</i>')
                 else:
                     self.pushstate("emphasis")
-                    self.put('<i>')
             ### *keywords* only avalailable at the beginnig of paragraphs
             elif token == '*':
                 if currentstate == "keywordnext":
                     self.popstate()
-                    self.put('<b>')
                     self.pushstate("keyword")
                 elif currentstate == "keyword":
                     self.popstate()
-                    self.put('</b>')
                 else:
                     self.put(token)
             ### lists only available at the beginning of lines

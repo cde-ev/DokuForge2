@@ -19,6 +19,15 @@ class DokuforgeToTeXParser(BaseParser):
         BaseParser.__init__(self, string)
         self.debug = debug
 
+    handle_heading = "\\section{%s}".__mod__
+    handle_subheading = "\\subsection{%s}".__mod__
+    handle_emphasis = "\\emph{%s}".__mod__
+    handle_authors = "\\authors{%s}".__mod__
+    handle_keyword = "\\textbf{%s}".__mod__
+    handle_paragraph = "%s\n\\par\n".__mod__
+    handle_inlinemath = "$%s$".__mod__
+    handle_displaymath = "\\[%s\\]".__mod__
+
     def cleanup(self):
         """
         close all open states
@@ -28,60 +37,31 @@ class DokuforgeToTeXParser(BaseParser):
             if currentstate == "start":
                 self.popstate()
                 self.pushstate("normal")
-            elif currentstate == "heading":
+            elif currentstate in ("authors", "displaymath", "heading",
+                                  "keyword", "seennewline", "subheading"):
                 self.popstate()
-                self.put('}\n')
-            elif currentstate == "subheading":
-                self.popstate()
-                self.put('}\n')
-            elif currentstate == "authorsnext":
-                self.popstate()
-                self.put('\n\n')
-            elif currentstate == "headingnext":
+                self.put('\n')
+            elif currentstate in ("authorsnext", "headingnext", "listnext",
+                                  "keywordnext"):
                 self.popstate()
                 self.put('\n\n')
-            elif currentstate == "listnext":
-                self.popstate()
-                self.put('\n\n')
-            elif currentstate == "authors":
-                self.popstate()
-                self.put('}\n')
             elif currentstate == "list":
                 self.popstate()
                 self.put('\n\end{itemize}\n')
-            elif currentstate == "paragraph":
+            elif currentstate in ("paragraph", "emphasis", "inlinemath"):
                 self.popstate()
-                self.put('\n\par\n')
-            elif currentstate == "emphasis":
-                self.popstate()
-                self.put('}')
-            elif currentstate == "keywordnext":
-                self.popstate()
-                self.put('\n\n')
-            elif currentstate == "keyword":
-                self.popstate()
-                self.put('}\n')
             elif currentstate == "ednote":
                 self.popstate()
                 if not self.lookstate() == "ednote":
                     self.put('\end{ednote}')
-            elif currentstate == "inlinemath":
-                self.popstate()
-                self.put('$')
-            elif currentstate == "displaymath":
-                self.popstate()
-                self.put('\]\n')
             elif currentstate == "seenwhitespace":
                 self.popstate()
                 self.put(' ')
-            elif currentstate == "seennewline":
-                self.popstate()
-                self.put('\n')
             elif currentstate == "seennewpar":
                 self.popstate()
                 self.put('\n\par\n')
             else:
-                pass
+                raise ValueError("invalid state")
 
     def predictnextstructure(self, token):
         """
@@ -195,15 +175,11 @@ class DokuforgeToTeXParser(BaseParser):
                 if token == '$':
                     if currentstate == "inlinemath":
                         self.popstate()
-                        self.put(token)
                     else:
                         # displaymath
                         self.popstate()
                         if self.looktoken() == '$':
                             self.poptoken()
-                            self.put(r'\]')
-                        else:
-                            self.put(r'\]')
                 ## but we still need to escape
                 else:
                     self.putescaped(token)
@@ -230,10 +206,8 @@ class DokuforgeToTeXParser(BaseParser):
                 if self.looktoken() == '$':
                     self.poptoken()
                     self.pushstate("displaymath")
-                    self.put(r'\[')
                 else:
                     self.pushstate("inlinemath")
-                    self.put(token)
             ### [heading] and [[subheading]]
             ### with optional (authors) following
             elif token == '[':
@@ -242,24 +216,20 @@ class DokuforgeToTeXParser(BaseParser):
                     self.cleanup()
                     if self.looktoken() == '[':
                         self.poptoken()
-                        self.put(r'\subsection{')
                         self.pushstate("subheading")
                     else:
-                        self.put(r'\section{')
                         self.pushstate("heading")
                 else:
                     self.put(token)
             elif token == ']':
                 if currentstate == "heading":
                     self.popstate()
-                    self.put('}')
                     if self.lookprintabletoken() == '(':
                         self.pushstate("authorsnext")
                 elif currentstate == "subheading":
                     if self.looktoken() == ']':
                         self.poptoken()
                         self.popstate()
-                        self.put('}')
                         if self.lookprintabletoken() == '(':
                             ## activate paren
                             self.pushstate("authorsnext")
@@ -271,33 +241,27 @@ class DokuforgeToTeXParser(BaseParser):
             elif token == '(':
                 if currentstate == "authorsnext":
                     self.popstate()
-                    self.put(r'\authors{')
                     self.pushstate("authors")
                 else:
                     self.put(token)
             elif token == ')':
                 if currentstate == "authors":
                     self.popstate()
-                    self.put('}')
                 else:
                     self.put(token)
             ### _emphasis_
             elif token == '_':
                 if currentstate == "emphasis":
                     self.popstate()
-                    self.put('}')
                 else:
                     self.pushstate("emphasis")
-                    self.put(r'\emph{')
             ### *keywords* only avalailable at the beginnig of paragraphs
             elif token == '*':
                 if currentstate == "keywordnext":
                     self.popstate()
-                    self.put(r'\textbf{')
                     self.pushstate("keyword")
                 elif currentstate == "keyword":
                     self.popstate()
-                    self.put('}')
                 else:
                     self.put(token)
             ### lists only available at the beginning of lines
