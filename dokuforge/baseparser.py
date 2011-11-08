@@ -1,0 +1,118 @@
+class BaseParser:
+    """
+    Base class for parsing Dokuforge Syntax.
+
+    It works by scanning the text one token at a time (with a bit of
+    lookahead) and remembering all context in a stack, so the meaning of
+    tokens change as the context changes.
+
+    @ivar input: the input string
+    @ivar pos: current position in the input string
+    @ivar stack: contains the current context
+    @ivar output: the output string
+    @cvar escapemap: a mapping of characters that need escaping to their
+            escaped representation
+    """
+    escapemap = {}
+    def __init__(self, string):
+        assert isinstance(string, unicode)
+        self.input = string
+        self.pos = 0
+        self.stack = [ "start" ]
+        self.output = ''
+
+    def lookstate(self):
+        """
+        @rtype: str
+        @returns: topmost state in the context
+        """
+        return self.stack[-1]
+
+    def popstate(self):
+        """
+        remove a state from the context
+
+        @rtype: str
+        @returns: the removed state
+        """
+        return self.stack.pop()
+
+    def pushstate(self, value):
+        """
+        put a new state an top of the context
+        """
+        return self.stack.append(value)
+
+    def poptoken(self):
+        """
+        get a new token from the input string and advance the position in
+        the input string.
+
+        @rtype: char
+        @returns: the char at the current position
+        @raises: IndexError
+        """
+        self.pos += 1
+        return self.input[self.pos-1]
+
+    def looktoken(self):
+        """
+        view the next token from the input string without side effects. If
+        no token is available return an empty string.
+
+        @rtype: char
+        @returns: the next char
+        """
+        try:
+            return self.input[self.pos]
+        except IndexError:
+            return ''
+
+    def lookprintabletoken(self):
+        """
+        view the next non-whitespace token from the input string without
+        side effects. If no token is available return an empty string.
+
+        @rtype: char
+        @returns: the next char
+        """
+        try:
+            tmp = 0
+            while self.input[self.pos + tmp] in ' \t\n':
+                tmp += 1
+            return self.input[self.pos + tmp]
+        except IndexError:
+            return ''
+
+    def put(self, s):
+        """
+        append s to the output string
+
+        @type s: unicode
+        @value s: string to append
+        """
+        self.output += s
+
+    def result(self):
+        """
+        @rtype: unicode
+        @returns: result string
+        """
+        return self.output
+
+    def __str__(self):
+        """
+        return representation of the current context
+        """
+        return str(self.stack)
+
+    def putescaped(self, s):
+        """
+        append s to the output string escaping special characters
+
+        @type s: unicode
+        @value s: string to append
+        """
+        assert isinstance(s, unicode)
+        for token in s:
+            self.put(self.escapemap.get(token, token))
