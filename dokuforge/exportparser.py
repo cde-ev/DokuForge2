@@ -22,9 +22,9 @@ class DokuforgeToTeXParser(BaseParser):
     handle_heading = "\\section{%s}".__mod__
     handle_subheading = "\\subsection{%s}".__mod__
     handle_emphasis = "\\emph{%s}".__mod__
+    handle_paragraph = "%s\n\\par\n".__mod__
     handle_authors = "\\authors{%s}".__mod__
     handle_keyword = "\\textbf{%s}".__mod__
-    handle_paragraph = "%s\n\\par\n".__mod__
     handle_inlinemath = "$%s$".__mod__
     handle_displaymath = "\\[%s\\]".__mod__
     handle_ednote = "\\begin{ednote}%s\end{ednote}".__mod__
@@ -120,12 +120,8 @@ class DokuforgeToTeXParser(BaseParser):
             ## second handle whitespace
             ## we contract whitespace as far as sensible
             if token == ' ' or token == '\t':
-                if currentstate == "start" or \
-                       currentstate == "seenwhitespace" or \
-                       currentstate == "seennewline" or \
-                       currentstate == "seennewpar":
-                    pass
-                else:
+                if currentstate not in ("start", "seenwhitespace",
+                                        "seennewline", "seennewpar"):
                     self.pushstate("seenwhitespace")
                 continue
             elif token == '\n':

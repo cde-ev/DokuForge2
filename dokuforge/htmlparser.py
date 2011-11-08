@@ -121,7 +121,7 @@ class DokuforgeToHtmlParser(BaseParser):
             ## we contract whitespace as far as sensible
             if token == ' ' or token == '\t':
                 if currentstate not in ("start", "seenwhitespace",
-                                        "seennewline","seennewpar"):
+                                        "seennewline", "seennewpar"):
                     self.pushstate("seenwhitespace")
                 continue
             elif token == '\n':
