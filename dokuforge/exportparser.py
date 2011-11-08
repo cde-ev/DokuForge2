@@ -27,6 +27,7 @@ class DokuforgeToTeXParser(BaseParser):
     handle_paragraph = "%s\n\\par\n".__mod__
     handle_inlinemath = "$%s$".__mod__
     handle_displaymath = "\\[%s\\]".__mod__
+    handle_ednote = "\\begin{ednote}%s\end{ednote}".__mod__
 
     def cleanup(self):
         """
@@ -48,12 +49,9 @@ class DokuforgeToTeXParser(BaseParser):
             elif currentstate == "list":
                 self.popstate()
                 self.put('\n\end{itemize}\n')
-            elif currentstate in ("paragraph", "emphasis", "inlinemath"):
+            elif currentstate in ("ednote", "emphasis", "inlinemath",
+                                  "nestedednote", "paragraph"):
                 self.popstate()
-            elif currentstate == "ednote":
-                self.popstate()
-                if not self.lookstate() == "ednote":
-                    self.put('\end{ednote}')
             elif currentstate == "seenwhitespace":
                 self.popstate()
                 self.put(' ')
@@ -100,16 +98,20 @@ class DokuforgeToTeXParser(BaseParser):
 
             ## first handle ednotes
             ## here everything is copied verbatim
-            if currentstate == "ednote":
+            if currentstate == "nestedednote":
                 if token == '{':
-                    self.pushstate("ednote")
-                    self.put('\begin{ednote}')
+                    self.pushstate("nestedednote")
                 elif token == '}':
                     self.popstate()
-                    if self.lookstate() == "ednote":
-                        self.put('}')
-                    else:
-                        self.put('\end{ednote}\n')
+                self.putescaped(token)
+                continue
+            if currentstate == "ednote":
+                if token == '{':
+                    self.put('{')
+                    self.pushstate("nestedednote")
+                elif token == '}':
+                    self.popstate()
+                    self.put('\n')
                 else:
                     # FIME regulate escaping
                     self.putescaped(token)
@@ -200,7 +202,7 @@ class DokuforgeToTeXParser(BaseParser):
             if token == '{':
                 self.cleanup()
                 self.pushstate("ednote")
-                self.put('\\begin{ednote}\n')
+                self.put('\n')
             ### math in the forms $inline$ and $$display$$
             elif token == '$':
                 if self.looktoken() == '$':

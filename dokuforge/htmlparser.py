@@ -30,6 +30,7 @@ class DokuforgeToHtmlParser(BaseParser):
     handle_keyword = "<b>%s</b>".__mod__
     handle_inlinemath = "$%s$".__mod__
     handle_displaymath = "$$%s$$".__mod__
+    handle_ednote = "<pre>%s</pre>".__mod__
 
     def cleanup(self):
         """
@@ -52,12 +53,9 @@ class DokuforgeToHtmlParser(BaseParser):
             elif currentstate == "list":
                 self.popstate()
                 self.put('</li>\n</ul>\n')
-            elif currentstate in ("emphasis", "inlinemath"):
+            elif currentstate in ("ednote", "emphasis", "inlinemath",
+                                  "nestedednote"):
                 self.popstate()
-            elif currentstate == "ednote":
-                self.popstate()
-                if not self.lookstate() == "ednote":
-                    self.put('</pre>')
             elif currentstate == "seenwhitespace":
                 self.popstate()
                 self.put(' ')
@@ -101,16 +99,20 @@ class DokuforgeToHtmlParser(BaseParser):
 
             ## first handle ednotes
             ## here everything is copied verbatim
-            if currentstate == "ednote":
+            if currentstate == "nestedednote":
                 if token == '{':
-                    self.pushstate("ednote")
-                    self.put('{')
+                    self.pushstate("nestedednote")
                 elif token == '}':
                     self.popstate()
-                    if self.lookstate() == "ednote":
-                        self.put('}')
-                    else:
-                        self.put('</pre>\n')
+                self.putescaped(token)
+                continue
+            if currentstate == "ednote":
+                if token == '{':
+                    self.put('{')
+                    self.pushstate("nestedednote")
+                elif token == '}':
+                    self.popstate()
+                    self.put('\n')
                 else:
                     self.putescaped(token)
                 continue
@@ -195,7 +197,6 @@ class DokuforgeToHtmlParser(BaseParser):
             if token == '{':
                 self.cleanup()
                 self.pushstate("ednote")
-                self.put('<pre>')
             ### math in the forms $inline$ and $$display$$
             elif token == '$':
                 if self.looktoken() == '$':
