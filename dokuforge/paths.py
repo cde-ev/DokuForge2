@@ -6,9 +6,9 @@ from dokuforge.user import UserDB
 
 default_config = """
 [path]
-rootdir = .
+rootdir = ./work/example
 dfdir = %(rootdir)s/df
-admindir = %(rootdir)s/work
+admindir = %(rootdir)s/admin
 sessiondbpath = :memory:
 staticservepath = static/
 """

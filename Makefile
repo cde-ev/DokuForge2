@@ -5,11 +5,11 @@ doc:
 	epydoc --config epydoc.conf
 
 setup:
-	rm -rf work df
+	rm -rf work
 	python createexample.py
 
 clean:
-	rm -rf html work df
+	rm -rf html work
 	rm -f *.pyc *~ dokuforge/*.pyc .coverage
 
 check: test
