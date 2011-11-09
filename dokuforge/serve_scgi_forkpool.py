@@ -13,7 +13,7 @@ import ConfigParser
 import sys
 
 def main(configfile):
-    config = ConfigParser.RawConfigParser()
+    config = ConfigParser.SafeConfigParser()
     config.read(configfile)
 
     port = int(config.get('scgi','port'))
