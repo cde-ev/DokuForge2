@@ -16,8 +16,10 @@ class DokuforgeToHtmlParser(BaseParser):
             '<': "&lt;",
             '>': "&gt;",
             '&': "&amp;",
-            '"': "&#34;"}
-    
+            '"': "&#34;",
+            "'": "&#39;"
+        }
+
     def __init__(self, string, debug = False):
         BaseParser.__init__(self, string)
         self.debug = debug
@@ -31,47 +33,8 @@ class DokuforgeToHtmlParser(BaseParser):
     handle_inlinemath = "$%s$".__mod__
     handle_displaymath = "$$%s$$".__mod__
     handle_ednote = "<pre>%s</pre>".__mod__
-
-    def cleanup(self):
-        """
-        close all open states
-        """
-        while not self.lookstate() == "normal":
-            currentstate = self.lookstate()
-            if currentstate == "start":
-                self.popstate()
-                self.pushstate("normal")
-            elif currentstate in ("authors", "displaymath", "heading",
-                                  "keyword", "paragraph", "seennewline",
-                                  "seennewpar", "subheading"):
-                self.popstate()
-                self.put('\n')
-            elif currentstate in ("authorsnext", "headingnext", "listnext",
-                                  "keywordnext"):
-                self.popstate()
-                self.put('\n\n')
-            elif currentstate == "list":
-                self.popstate()
-                self.put('</li>\n</ul>\n')
-            elif currentstate in ("ednote", "emphasis", "inlinemath",
-                                  "nestedednote"):
-                self.popstate()
-            elif currentstate == "seenwhitespace":
-                self.popstate()
-                self.put(' ')
-            else:
-                raise ValueError("invalid state")
-
-    def predictnextstructure(self, token):
-        """
-        After a newline some future tokens have a special meaning. This
-        function is to be called after every newline and marks these tokens
-        as active.
-        """
-        if token == '[':
-            self.pushstate("headingnext")
-        if token == '-':
-            self.pushstate("listnext")
+    handle_list = "<ul>\n%s</ul>".__mod__
+    handle_item = "<li>%s</li>\n".__mod__
 
     def parse(self):
         """
@@ -112,7 +75,6 @@ class DokuforgeToHtmlParser(BaseParser):
                     self.pushstate("nestedednote")
                 elif token == '}':
                     self.popstate()
-                    self.put('\n')
                 else:
                     self.putescaped(token)
                 continue
@@ -155,7 +117,7 @@ class DokuforgeToHtmlParser(BaseParser):
             elif currentstate == "seennewpar":
                 self.popstate()
                 self.cleanup()
-                self.put('\n')
+                self.put('\n\n')
                 ## activate special tokens
                 self.predictnextstructure(token)
             elif currentstate == "start":
@@ -267,12 +229,13 @@ class DokuforgeToHtmlParser(BaseParser):
             elif token == '-':
                 if currentstate == "listnext":
                     self.popstate()
-                    if self.lookstate() == "list":
-                        self.put('</li>\n<li>')
+                    if self.lookstate() == "item":
+                        self.popstate()
+                        self.pushstate("item")
                     else:
                         self.cleanup()
-                        self.put('<ul>\n<li>')
                         self.pushstate("list")
+                        self.pushstate("item")
                 else:
                     self.put(token)
             ### the default case for all the non-special tokens

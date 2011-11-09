@@ -28,49 +28,8 @@ class DokuforgeToTeXParser(BaseParser):
     handle_inlinemath = "$%s$".__mod__
     handle_displaymath = "\\[%s\\]".__mod__
     handle_ednote = "\\begin{ednote}%s\end{ednote}".__mod__
-
-    def cleanup(self):
-        """
-        close all open states
-        """
-        while not self.lookstate() == "normal":
-            currentstate = self.lookstate()
-            if currentstate == "start":
-                self.popstate()
-                self.pushstate("normal")
-            elif currentstate in ("authors", "displaymath", "heading",
-                                  "keyword", "seennewline", "subheading"):
-                self.popstate()
-                self.put('\n')
-            elif currentstate in ("authorsnext", "headingnext", "listnext",
-                                  "keywordnext"):
-                self.popstate()
-                self.put('\n\n')
-            elif currentstate == "list":
-                self.popstate()
-                self.put('\n\end{itemize}\n')
-            elif currentstate in ("ednote", "emphasis", "inlinemath",
-                                  "nestedednote", "paragraph"):
-                self.popstate()
-            elif currentstate == "seenwhitespace":
-                self.popstate()
-                self.put(' ')
-            elif currentstate == "seennewpar":
-                self.popstate()
-                self.put('\n\par\n')
-            else:
-                raise ValueError("invalid state")
-
-    def predictnextstructure(self, token):
-        """
-        After a newline some future tokens have a special meaning. This
-        function is to be called after every newline and marks these tokens
-        as active.
-        """
-        if token == '[':
-            self.pushstate("headingnext")
-        if token == '-':
-            self.pushstate("listnext")
+    handle_list = "\\begin{itemize}\n%s\end{itemize}".__mod__
+    handle_item = "\\item %s\n".__mod__
 
     def parse(self):
         """
@@ -269,12 +228,13 @@ class DokuforgeToTeXParser(BaseParser):
             elif token == '-':
                 if currentstate == "listnext":
                     self.popstate()
-                    if self.lookstate() == "list":
-                        self.put('\n\\item ')
+                    if self.lookstate() == "item":
+                        self.popstate()
+                        self.pushstate("item")
                     else:
                         self.cleanup()
-                        self.put('\\begin{itemize}\n\\item ')
                         self.pushstate("list")
+                        self.pushstate("item")
                 else:
                     self.put(token)
             ### the default case for all the non-special tokens

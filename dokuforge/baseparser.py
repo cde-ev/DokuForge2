@@ -126,3 +126,51 @@ class BaseParser:
         assert isinstance(s, unicode)
         for token in s:
             self.put(self.escapemap.get(token, token))
+
+    def cleanup(self):
+        """
+        close all open states
+        """
+        pars = 0
+        while not self.lookstate() == "normal":
+            currentstate = self.lookstate()
+            if currentstate == "start":
+                self.popstate()
+                self.pushstate("normal")
+            elif currentstate in ("authors", "displaymath", "heading",
+                                  "keyword", "paragraph", "subheading"):
+                self.popstate()
+            elif currentstate in ("authorsnext", "headingnext", "listnext",
+                                  "keywordnext"):
+                self.popstate()
+            elif currentstate in ("list", "item"):
+                self.popstate()
+            elif currentstate in ("ednote", "emphasis", "inlinemath",
+                                  "nestedednote"):
+                self.popstate()
+            elif currentstate == "seenwhitespace":
+                self.popstate()
+                self.put(' ')
+            elif currentstate == "seennewline":
+                self.popstate()
+                if pars < 1:
+                    pars = 1
+            elif currentstate == "seennewpar":
+                self.popstate()
+                pars = 2
+            else:
+                raise ValueError("invalid state")
+        for i in range(pars):
+            self.put('\n')
+
+    def predictnextstructure(self, token):
+        """
+        After a newline some future tokens have a special meaning. This
+        function is to be called after every newline and marks these tokens
+        as active.
+        """
+        if token == '[':
+            self.pushstate("headingnext")
+        if token == '-':
+            self.pushstate("listnext")
+
