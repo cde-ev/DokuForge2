@@ -5,7 +5,7 @@ from dokuforge.storage import Storage
 from dokuforge.user import UserDB
 
 default_config = """
-[dokuforge]
+[path]
 rootdir = .
 dfdir = %(rootdir)s/df
 workdir = %(rootdir)s/work
@@ -14,7 +14,7 @@ staticservepath = static/
 """
 
 class PathConfig(object):
-    section = "dokuforge"
+    section = "path"
     def __init__(self):
         self.cp = ConfigParser.SafeConfigParser()
         self.cp.readfp(StringIO(default_config))
