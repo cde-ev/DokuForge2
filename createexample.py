@@ -70,9 +70,15 @@ title = Archiv aelterer CdE-Akademien
                         [(u'course01',u"Internethumor und seine Schuld am Weltuntergang", 3),
                          (u'course02', u"Helenistische Heldenideale", 2)])
         (version, cont) = aca.getCourse(u'course01').editpage(0)
-        aca.getCourse(u'course01').savepage(0, version, u"""[Example Section]
-        This is an example with some nice math: $e^{i\pi}+1=0$.
-        """, u"init")
+        aca.getCourse(u'course01').savepage(0, version, 
+u"""[Example Section]
+This is an example with some nice math: $e^{i\pi}+1=0$.
+
+And even a mathematical limmerick!
+
+$$\int_1^{\sqrt[3]{3}} z^2 dz \cdot \cos(\\frac{3\pi}{9}) = \ln(\sqrt[3]{e})$$
+""", 
+        u"init")
         aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "academy.py", stream=file("./dokuforge/academy.py",mode="r")), u"Ein lustiges Bild", u"myx", user=u"init")
         aca.getCourse(u'course01').attachblob(1, FileStorage(filename = "storage.py", stream=file("./dokuforge/storage.py", mode="r")), u"Ein anderes lustiges Bild", u"somey", user=u"init")
         aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "course.py", stream=file("./dokuforge/course.py", mode="r")), u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
