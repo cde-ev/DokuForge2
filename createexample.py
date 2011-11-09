@@ -23,7 +23,7 @@ def main(size=100, pc=PathConfig()):
     @type pc: PathConfig
     """
     try:
-        os.mkdir(pc.workdir)
+        os.mkdir(pc.admindir)
     except OSError:
         pass
     userdb = pc.userdb

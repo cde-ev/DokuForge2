@@ -8,7 +8,7 @@ default_config = """
 [path]
 rootdir = .
 dfdir = %(rootdir)s/df
-workdir = %(rootdir)s/work
+admindir = %(rootdir)s/work
 sessiondbpath = :memory:
 staticservepath = static/
 """
@@ -42,9 +42,9 @@ class PathConfig(object):
         return self.cp.get(self.section, "dfdir")
 
     @property
-    def workdir(self):
+    def admindir(self):
         """path to directory containing configuration files"""
-        return self.cp.get(self.section, "workdir")
+        return self.cp.get(self.section, "admindir")
 
     @property
     def sessiondbpath(self):
@@ -62,7 +62,7 @@ class PathConfig(object):
 
     @property
     def userdb(self):
-        return UserDB(Storage(self.workdir, "userdb"))
+        return UserDB(Storage(self.admindir, "userdb"))
 
     def loaduserdb(self):
         userdb = self.userdb
@@ -71,4 +71,4 @@ class PathConfig(object):
 
     @property
     def groupstore(self):
-        return Storage(self.workdir, "groupdb")
+        return Storage(self.admindir, "groupdb")
