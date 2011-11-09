@@ -141,7 +141,7 @@ class BaseParser:
                                   "keyword", "paragraph", "subheading"):
                 self.popstate()
             elif currentstate in ("authorsnext", "headingnext", "listnext",
-                                  "keywordnext"):
+                                  "keywordnext", "ednotenext"):
                 self.popstate()
             elif currentstate in ("list", "item"):
                 self.popstate()
@@ -173,6 +173,8 @@ class BaseParser:
             self.pushstate("headingnext")
         if token == '-':
             self.pushstate("listnext")
+        if token == '{':
+            self.pushstate("ednotenext")
 
     def parse(self):
         """

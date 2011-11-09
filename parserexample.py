@@ -5,8 +5,7 @@ from dokuforge.htmlparser import DokuforgeToHtmlParser
 from dokuforge.exportparser import DokuforgeToTeXParser
 
 teststring = u"""
-
-  [Eine Ueberschrift]
+ [Eine Ueberschrift]
 (Autor, Korrektor und Chef)
 
  Lorem  囲碁  ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel dui
@@ -15,25 +14,15 @@ mi. Mauris feugiat erat eget quam varius eu congue lectus viverra. Ut sed
 luctus. Nam aliquam lobortis rutrum. Phasellus quis arcu non dui pretium
   aliquam. Phasellus id mauris mauris, quis lobortis justo.
 
- Cras eget lectus urna. Pellentesque lobortis turpis sed nibh ultricies  
-  fermentum. Integer iaculis tempus nisl, eget luctus orci varius  
-   volutpat. Cras condimentum facilisis scelerisque. Nullam eget tortor ipsum,  
-    in rhoncus mi. Sed nec odio sem. Aenean rutrum, dui vel vehicula pulvinar,  
-     purus magna euismod dui, id pharetra libero mauris nec dolor. 
-
 [Eine zweite Ueberschrift]
-[[Eine Unterueberschrift]]
+[[Eine Unterueberschrift]](Douglas Adams)
 
-(Douglas Adams)
-
-Fermats letzter Satz sagt, dass die Gleichung $x^n+y^n = z^n$ fuer $n\ge3$
+Fermats letzter Satz sagt, dass die Gleichung $x^n+y^n = z^n$ fuer $n\\ge3$
 keine ganzzahlige Loesung, auszer den trivialen, besitzt. Dies war ein
 _lange_ Zeit unbewiesenes Theorem. Hier nun eine Liste von interessanten
-Zahlen.
+Zahlen. Diese Formel steht $$e^{i\\pi}+1=0$$ im Text ist aber eigentlich abgesetzt.
 
-$$e^{i\pi}+1=0$$
-
-Und jetzt $a+b=0$ mischen wir $$c=\sum_{i=0}^{n}x_n$$ fleiszig $x-y>0$ inline und $$$$\zeta^2$ displaymath.
+$$\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}$$
 
 Aber *Null* war lange Zeit gar keine Zahl. Nam ultricies pharetra
 luctus. Nam aliquam lobortis rutrum. Phasellus quis arcu non dui pretium
@@ -44,7 +33,7 @@ tortor ipsum, in rhoncus mi. Sed nec odio sem. Aenean rutrum, dui vel
 vehicula pulvinar, purus magna euismod dui, id pharetra libero mauris nec
 dolor.
 
-Bitte Escape mich: <>&" und das wars auch schon.
+Bitte Escape mich: <>&"'\\ und das wars auch schon.
 
 [[Eine weitere Unterueberschrift]]
 
@@ -71,13 +60,23 @@ manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 
   mit einer Leerzeile und { nested braces }. }
 
-
+Und hier noch ein {Hinweis} der mitten im Satz steht.
 """
 
 parser = DokuforgeToHtmlParser(teststring, debug = True)
 
-print parser.parse().encode("utf8")
 
-exporter = DokuforgeToTeXParser(teststring, debug = True)
+html =  parser.parse().encode("utf8")
+
+print "========================================"
+
+print html
+
+print "========================================"
+print "========================================"
+
+exporter = DokuforgeToTeXParser(teststring)
 
 print exporter.parse().encode("utf8")
+
+print "========================================"
