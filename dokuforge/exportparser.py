@@ -32,7 +32,7 @@ class DokuforgeToTeXParser(BaseParser):
     handle_inlinemath = "$%s$".__mod__
     handle_displaymath = lambda self, data: self.do_block(data, "\\[%s\\]")
     handle_ednote = lambda self, data: self.do_block(data, "\\begin{ednote}%s\end{ednote}")
-    handle_list = lambda self, data: self.do_environ(data, "\\begin{itemize}%s\end{itemize}")
+    handle_list = lambda self, data: self.do_environ(data, "\\begin{itemize}\n%s\end{itemize}")
     handle_item = lambda self, data: self.do_block(data, "\\item %s")
 
     def postprocessor(self, data):

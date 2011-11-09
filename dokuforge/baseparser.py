@@ -221,15 +221,11 @@ class BaseParser:
                 self.popstate()
                 self.pushstate("normal")
             elif currentstate in ("authors", "displaymath", "heading",
-                                  "keyword", "paragraph", "subheading"):
-                self.popstate()
-            elif currentstate in ("authorsnext", "headingnext", "listnext",
-                                  "keywordnext", "ednotenext", "displaymathnext"):
-                self.popstate()
-            elif currentstate in ("list", "item"):
-                self.popstate()
-            elif currentstate in ("ednote", "emphasis", "inlinemath",
-                                  "nestedednote"):
+                                  "keyword", "paragraph", "subheading",
+                                  "authorsnext", "headingnext", "listnext",
+                                  "keywordnext", "ednotenext",
+                                  "displaymathnext", "list", "item", "ednote",
+                                  "emphasis", "inlinemath", "nestedednote"):
                 self.popstate()
             elif currentstate == "seenwhitespace":
                 self.popstate()
