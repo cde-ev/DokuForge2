@@ -182,6 +182,9 @@ class BaseParser:
 
     def result(self):
         """
+        Return the result. This tries to apply self.postprocessor which gives
+        a hook to filter the result one more time.
+
         @rtype: unicode
         @returns: result string
         """
