@@ -36,17 +36,53 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("style.css")|e }}" media="all">
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("print.css")|e }}" media="print">
 	<title>Dokuforge2</title>
+{% block math %}
+<script type="text/javascript">
+function checkMathCookie()
+{
+  var i,x,y,ARRcookies = document.cookie.split(";");
+  for (i = 0; i < ARRcookies.length; i++) {
+    x = ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+    y = ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+    x = x.replace(/^\s+|\s+$/g,"");
+    if (x == "wants_mathjax") {
+      if (y== "True") {
+        return true
+      } else {
+	return false
+      }
+    }
+  }
+  enableMathCookie()
+  return true
+}
+function enableMathCookie()
+{
+  document.cookie="wants_mathjax=True"
+}
+function disableMathCookie()
+{
+  document.cookie="wants_mathjax=False"
+}
+
+</script>
+{% endblock %}
+<script type="text/javascript">
+if (checkMathCookie() == true){
+  var mathjax_include = document.createElement("script");
+  mathjax_include.type = "text/javascript"
+  mathjax_include.src = "{{staticjoin("mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML")}}"
+  document.getElementsByTagName("head")[0].appendChild(mathjax_include)
+}
+</script>
 {% block mathjax %}
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']]}});
   MathJax.Hub.Config({tex2jax: {displayMath: [['$$','$$']]}});
 </script>
-<script type="text/javascript"
-  src="{{staticjoin("mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML")}}">
-</script>
 {% endblock %}
 </head>
-<body>
+<body onload="checkMathCookie()">
 <div id="page">
 {%- block header %}
  <div id="header">
@@ -68,6 +104,16 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 	<a href="{{ buildurl("groups")|e }}">Gruppenverwaltung</a>
 	{%- endif -%}
    {%- endif %}
+   <script type="text/javascript">
+     if (checkMathCookie() == true) {
+       document.write('<a href="" onClick="disableMathCookie()">Mathe: an</a>')
+     } else {
+       document.write('<a href="" onClick="enableMathCookie()">Mathe: aus</a>')
+     }
+   </script>
+   <noscript>
+     Mathe aus
+   </noscript>
    <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
    </div>
    <div id="subheading">
