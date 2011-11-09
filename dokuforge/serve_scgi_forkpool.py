@@ -15,11 +15,8 @@ import sys
 def main(configfile):
     config = ConfigParser.SafeConfigParser()
     config.read(configfile)
-
     port = int(config.get('scgi','port'))
-
-    pc = PathConfig()
-    pc.sessiondbpath = "%(workdir)s/sessiondb.sqlite3"
+    pc = PathConfig(config)
     app = buildapp(pc)
     SCGIServer(app, port).enable_sighandler().run()
 

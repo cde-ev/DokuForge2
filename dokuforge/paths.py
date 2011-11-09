@@ -15,9 +15,12 @@ staticservepath = static/
 
 class PathConfig(object):
     section = "path"
-    def __init__(self):
-        self.cp = ConfigParser.SafeConfigParser()
-        self.cp.readfp(StringIO(default_config))
+    def __init__(self,config=None):
+        if config is None:
+            self.cp = ConfigParser.SafeConfigParser()
+            self.cp.readfp(StringIO(default_config))
+        else:
+            self.cp = config
 
     def read(self, configfile):
         self.cp =ConfigParser.SafeConfigParser()

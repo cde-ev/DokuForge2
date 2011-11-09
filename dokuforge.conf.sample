@@ -1,2 +1,9 @@
 [scgi]
 port = 4000
+
+[path]
+rootdir = .
+dfdir = %(rootdir)s/df
+workdir = %(rootdir)s/work
+sessiondbpath = %(workdir)s/sessiondb.sqlite3
+staticservepath = static/
