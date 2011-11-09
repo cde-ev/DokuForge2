@@ -24,14 +24,14 @@ class DokuforgeToHtmlParser(BaseParser):
         BaseParser.__init__(self, string)
         self.debug = debug
 
-    handle_heading = "<h3>%s</h3>".__mod__
-    handle_subheading = "<h4>%s</h4>".__mod__
+    handle_ednote = lambda self, data: self.do_block(data, "<pre>%s</pre>")
+    handle_paragraph = lambda self, data: self.do_block(data, "<p>%s</p>")
+    handle_list = lambda self, data: self.do_environ(data, "<ul>%s</ul>")
+    handle_item = lambda self, data: self.do_block(data, "<li>%s</li>")
+    handle_displaymath = lambda self, data: self.do_block(data, "$$%s$$")
+    handle_authors = lambda self, data: self.do_block(data, "<i>%s</i>")
+    handle_heading = lambda self, data: self.do_block(data, "<h3>%s</h3>")
+    handle_subheading = lambda self, data: self.do_block(data, "<h4>%s</h4>")
     handle_emphasis = "<i>%s</i>".__mod__
-    handle_paragraph = "<p>%s</p>".__mod__
-    handle_authors = handle_emphasis
     handle_keyword = "<b>%s</b>".__mod__
     handle_inlinemath = "$%s$".__mod__
-    handle_displaymath = "$$%s$$".__mod__
-    handle_ednote = "<pre>%s</pre>".__mod__
-    handle_list = "<ul>\n%s</ul>".__mod__
-    handle_item = "<li>%s</li>\n".__mod__

@@ -1,3 +1,5 @@
+from dokuforge.common import end_with_newline
+
 class BaseParser:
     """
     Base class for parsing Dokuforge Syntax.
@@ -103,12 +105,90 @@ class BaseParser:
         """
         self.output[-1] += s
 
+    def ensurenewline(self):
+        """
+        Ensure that the last token in the output is a newline.
+
+        This is intended to insert a newline for better formatting of the
+        output text whenever no newline was input by the user.
+        """
+        ## we walk the stack from top to bottom
+        stackpos = -1
+        while stackpos > -len(self.output):
+            try:
+                if not self.output[stackpos][-1] == '\n':
+                    self.put('\n')
+                    return
+                else:
+                    return
+            ## there might be an IndexError if the topmost entrys in the stack
+            ## are empty strings, thus recurse
+            except IndexError:
+                stackpos -= 1
+        ## if we have nothing yet, we do nothing
+        ## this prevents inserting a silly newline at the start of the result
+
+    def ensurenewpar(self):
+        """
+        Ensure that the two last token in the output are newlines.
+
+        This is intended to insert a new par for better formatting of the
+        output text whenever no new par was input by the user.
+        """
+        ## we walk the stack from top to bottom
+        stackpos = -1
+        ## we need to keep track whether we already found a newline or not
+        foundone = False
+        while stackpos > -len(self.output):
+            try:
+                if not self.output[stackpos][-1] == '\n':
+                    if not foundone:
+                        self.put('\n\n')
+                    else:
+                        self.put('\n')
+                    return
+                else:
+                    foundone = True
+                    if not self.output[stackpos][-2] == '\n':
+                        self.put('\n')
+                        return
+                    else:
+                        return
+            ## there might be an IndexError if the topmost entrys in the stack
+            ## are near empty strings, thus recurse
+            except IndexError:
+                stackpos -= 1
+        ## if we have nothing yet, we do nothing
+        ## this prevents inserting a silly new par at the start of the result
+
+    def do_block(self, data, pattern):
+        """
+        helper function for the actual parsers
+
+        Ensure that the block begins on a new line of itself.
+        """
+        self.ensurenewline()
+        return pattern % data
+
+    def do_environ(self, data, pattern):
+        """
+        helper function for the actual parsers
+
+        Ensure that the environment begins on a new line of itself and
+        the closing is on a line of itself too.
+        """
+        self.ensurenewline()
+        return pattern % end_with_newline(data)
+
     def result(self):
         """
         @rtype: unicode
         @returns: result string
         """
-        return self.output[-1]
+        try:
+            return self.postprocessor(self.output[-1])
+        except AttributeError:
+            return self.output[-1]
 
     def __str__(self):
         """
@@ -141,7 +221,7 @@ class BaseParser:
                                   "keyword", "paragraph", "subheading"):
                 self.popstate()
             elif currentstate in ("authorsnext", "headingnext", "listnext",
-                                  "keywordnext", "ednotenext"):
+                                  "keywordnext", "ednotenext", "displaymathnext"):
                 self.popstate()
             elif currentstate in ("list", "item"):
                 self.popstate()
@@ -175,6 +255,9 @@ class BaseParser:
             self.pushstate("listnext")
         if token == '{':
             self.pushstate("ednotenext")
+        if token == '$':
+            if self.looktoken() == '$':
+                self.pushstate("displaymathnext")
 
     def parse(self):
         """
@@ -305,6 +388,7 @@ class BaseParser:
             elif token == '$':
                 if self.looktoken() == '$':
                     self.poptoken()
+                    self.cleanup()
                     self.pushstate("displaymath")
                 else:
                     self.pushstate("inlinemath")
