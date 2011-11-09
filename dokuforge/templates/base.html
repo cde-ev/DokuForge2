@@ -36,7 +36,6 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("style.css")|e }}" media="all">
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("print.css")|e }}" media="print">
 	<title>Dokuforge2</title>
-{% block math %}
 <script type="text/javascript">
 function checkMathCookie()
 {
@@ -64,9 +63,7 @@ function disableMathCookie()
 {
   document.cookie="wants_mathjax=False; path=/;"
 }
-
 </script>
-{% endblock %}
 <script type="text/javascript">
 if (checkMathCookie() == true){
   var mathjax_include = document.createElement("script");
@@ -104,16 +101,29 @@ if (checkMathCookie() == true){
 	<a href="{{ buildurl("groups")|e }}">Gruppenverwaltung</a>
 	{%- endif -%}
    {%- endif %}
-   <script type="text/javascript">
-     if (checkMathCookie() == true) {
-       document.write('<a href="" onClick="disableMathCookie()">Mathe: an</a>')
-     } else {
-       document.write('<a href="" onClick="enableMathCookie()">Mathe: aus</a>')
-     }
-   </script>
-   <noscript>
-     Mathe: aus
-   </noscript>
+   {%- if allowMathChange %}
+       <script type="text/javascript">
+	 if (checkMathCookie() == true) {
+	   document.write('<a href="" onClick="disableMathCookie()">Mathe: an</a>')
+	 } else {
+	   document.write('<a href="" onClick="enableMathCookie()">Mathe: aus</a>')
+	 }
+       </script>
+       <noscript>
+	 Mathe: aus
+       </noscript>
+       {% else %}
+       <script type="text/javascript">
+	 if (checkMathCookie() == true) {
+	   document.write('Mathe: an')
+	 } else {
+	   document.write('Mathe: aus')
+	 }
+       </script>
+       <noscript>
+	 Mathe: aus
+       </noscript>
+   {% endif -%}
    <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
    </div>
    <div id="subheading">
