@@ -17,6 +17,18 @@ class BaseParser:
             escaped representation
     """
     escapemap = {}
+    handle_ednote = lambda self, data: self.do_block(data, "{%s}")
+    handle_paragraph = lambda self, data: self.do_block(data, "%s")
+    handle_list = lambda self, data: self.do_environ(data, "%s")
+    handle_item = lambda self, data: self.do_block(data, "- %s")
+    handle_displaymath = lambda self, data: self.do_block(data, "$$%s$$")
+    handle_authors = lambda self, data: self.do_block(data, "(%s)")
+    handle_heading = lambda self, data: self.do_block(data, "[%s]")
+    handle_subheading = lambda self, data: self.do_block(data, "[[%s]]")
+    handle_emphasis = "_%s_".__mod__
+    handle_keyword = "*%s*".__mod__
+    handle_inlinemath = "$%s$".__mod__
+
     def __init__(self, string, debug=False):
         assert isinstance(string, unicode)
         self.input = string
