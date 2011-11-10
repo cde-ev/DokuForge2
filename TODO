@@ -5,6 +5,7 @@
 * exporter
 
 == not so important ==
+* cleanup whitespace handling in parser
 * nicer design
 * upgraded navigation (back-buttons, all sort of cross-links)
 * page estimates
