@@ -12,7 +12,7 @@ class DokuforgeToTeXParser(BaseParser):
     tokens change as the context changes.
     """
     escapemap = {
-            u'\\': u"\\forbidden\\"}
+            ord(u'\\'): u"\\forbidden\\"}
 
     def handle_paragraph(self, data):
         self.ensurenewpar()

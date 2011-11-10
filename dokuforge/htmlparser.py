@@ -11,11 +11,11 @@ class DokuforgeToHtmlParser(BaseParser):
     tokens change as the context changes.
     """
     escapemap = {
-            u'<': u"&lt;",
-            u'>': u"&gt;",
-            u'&': u"&amp;",
-            u'"': u"&#34;",
-            u"'": u"&#39;"
+            ord(u'<'): u"&lt;",
+            ord(u'>'): u"&gt;",
+            ord(u'&'): u"&amp;",
+            ord(u'"'): u"&#34;",
+            ord(u"'"): u"&#39;"
         }
 
     handle_ednote = lambda self, data: self.do_block(data, u"<pre>%s</pre>")

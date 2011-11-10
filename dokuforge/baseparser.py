@@ -222,8 +222,7 @@ class BaseParser:
         @value s: string to append
         """
         assert isinstance(s, unicode)
-        for token in s:
-            self.put(self.escapemap.get(token, token))
+        self.put(s.translate(self.escapemap))
 
     def cleanup(self):
         """
