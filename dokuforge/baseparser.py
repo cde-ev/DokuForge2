@@ -92,7 +92,7 @@ class BaseParser:
         try:
             return self.input[self.pos]
         except IndexError:
-            return ''
+            return u''
 
     def lookprintabletoken(self):
         """
@@ -104,11 +104,11 @@ class BaseParser:
         """
         try:
             tmp = 0
-            while self.input[self.pos + tmp] in ' \t\n':
+            while self.input[self.pos + tmp] in u' \t\n':
                 tmp += 1
             return self.input[self.pos + tmp]
         except IndexError:
-            return ''
+            return u''
 
     def put(self, s):
         """
@@ -130,8 +130,8 @@ class BaseParser:
         stackpos = -1
         while stackpos > -len(self.output):
             try:
-                if not self.output[stackpos][-1] == '\n':
-                    self.put('\n')
+                if not self.output[stackpos][-1] == u'\n':
+                    self.put(u'\n')
                     return
                 else:
                     return
@@ -155,16 +155,16 @@ class BaseParser:
         foundone = False
         while stackpos > -len(self.output):
             try:
-                if not self.output[stackpos][-1] == '\n':
+                if not self.output[stackpos][-1] == u'\n':
                     if not foundone:
-                        self.put('\n\n')
+                        self.put(u'\n\n')
                     else:
-                        self.put('\n')
+                        self.put(u'\n')
                     return
                 else:
                     foundone = True
-                    if not self.output[stackpos][-2] == '\n':
-                        self.put('\n')
+                    if not self.output[stackpos][-2] == u'\n':
+                        self.put(u'\n')
                         return
                     else:
                         return
