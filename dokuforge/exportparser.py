@@ -12,25 +12,25 @@ class DokuforgeToTeXParser(BaseParser):
     tokens change as the context changes.
     """
     escapemap = {
-            '\\': "\\forbidden\\"}
+            u'\\': u"\\forbidden\\"}
 
     def handle_paragraph(self, data):
         self.ensurenewpar()
         return end_with_newpar(data)
 
-    handle_heading = lambda self, data: self.do_block(data, "\\section{%s}")
-    handle_subheading = lambda self, data: self.do_block(data, "\\subsection{%s}")
-    handle_authors = lambda self, data: self.do_block(data, "\\authors{%s}")
-    handle_emphasis = "\\emph{%s}".__mod__
-    handle_keyword = "\\textbf{%s}".__mod__
-    handle_inlinemath = "$%s$".__mod__
-    handle_displaymath = lambda self, data: self.do_block(data, "\\[%s\\]")
-    handle_ednote = lambda self, data: self.do_block(data, "\\begin{ednote}%s\end{ednote}")
-    handle_list = lambda self, data: self.do_environ(data, "\\begin{itemize}\n%s\end{itemize}")
-    handle_item = lambda self, data: self.do_block(data, "\\item %s")
+    handle_heading = lambda self, data: self.do_block(data, u"\\section{%s}")
+    handle_subheading = lambda self, data: self.do_block(data, u"\\subsection{%s}")
+    handle_authors = lambda self, data: self.do_block(data, u"\\authors{%s}")
+    handle_emphasis = u"\\emph{%s}".__mod__
+    handle_keyword = u"\\textbf{%s}".__mod__
+    handle_inlinemath = u"$%s$".__mod__
+    handle_displaymath = lambda self, data: self.do_block(data, u"\\[%s\\]")
+    handle_ednote = lambda self, data: self.do_block(data, u"\\begin{ednote}%s\end{ednote}")
+    handle_list = lambda self, data: self.do_environ(data, u"\\begin{itemize}\n%s\end{itemize}")
+    handle_item = lambda self, data: self.do_block(data, u"\\item %s")
 
     def postprocessor(self, data):
         ## compress excessive newlines
-        while '\n\n\n' in data:
-            data = data.replace('\n\n\n', '\n\n')
+        while u'\n\n\n' in data:
+            data = data.replace(u'\n\n\n', u'\n\n')
         return data

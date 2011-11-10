@@ -17,17 +17,17 @@ class BaseParser:
             escaped representation
     """
     escapemap = {}
-    handle_ednote = lambda self, data: self.do_block(data, "{%s}")
-    handle_paragraph = lambda self, data: self.do_block(data, "%s")
-    handle_list = lambda self, data: self.do_environ(data, "%s")
-    handle_item = lambda self, data: self.do_block(data, "- %s")
-    handle_displaymath = lambda self, data: self.do_block(data, "$$%s$$")
-    handle_authors = lambda self, data: self.do_block(data, "(%s)")
-    handle_heading = lambda self, data: self.do_block(data, "[%s]")
-    handle_subheading = lambda self, data: self.do_block(data, "[[%s]]")
-    handle_emphasis = "_%s_".__mod__
-    handle_keyword = "*%s*".__mod__
-    handle_inlinemath = "$%s$".__mod__
+    handle_ednote = lambda self, data: self.do_block(data, u"{%s}")
+    handle_paragraph = lambda self, data: self.do_block(data, u"%s")
+    handle_list = lambda self, data: self.do_environ(data, u"%s")
+    handle_item = lambda self, data: self.do_block(data, u"- %s")
+    handle_displaymath = lambda self, data: self.do_block(data, u"$$%s$$")
+    handle_authors = lambda self, data: self.do_block(data, u"(%s)")
+    handle_heading = lambda self, data: self.do_block(data, u"[%s]")
+    handle_subheading = lambda self, data: self.do_block(data, u"[[%s]]")
+    handle_emphasis = u"_%s_".__mod__
+    handle_keyword = u"*%s*".__mod__
+    handle_inlinemath = u"$%s$".__mod__
 
     def __init__(self, string, debug=False):
         assert isinstance(string, unicode)
@@ -35,7 +35,7 @@ class BaseParser:
         self.debug = debug
         self.pos = 0
         self.stack = [ "root", "start" ]
-        self.output = [ "", "" ]
+        self.output = [ u"", u"" ]
 
     def lookstate(self):
         """
@@ -66,7 +66,7 @@ class BaseParser:
         """
         put a new state an top of the context
         """
-        self.output.append("")
+        self.output.append(u"")
         self.stack.append(value)
 
     def poptoken(self):
@@ -243,7 +243,7 @@ class BaseParser:
                 self.popstate()
             elif currentstate == "seenwhitespace":
                 self.popstate()
-                self.put(' ')
+                self.put(u' ')
             elif currentstate == "seennewline":
                 self.popstate()
                 if pars < 1:
@@ -254,7 +254,7 @@ class BaseParser:
             else:
                 raise ValueError("invalid state")
         for i in range(pars):
-            self.put('\n')
+            self.put(u'\n')
 
     def predictnextstructure(self, token):
         """
@@ -262,14 +262,14 @@ class BaseParser:
         function is to be called after every newline and marks these tokens
         as active.
         """
-        if token == '[':
+        if token == u'[':
             self.pushstate("headingnext")
-        if token == '-':
+        if token == u'-':
             self.pushstate("listnext")
-        if token == '{':
+        if token == u'{':
             self.pushstate("ednotenext")
-        if token == '$':
-            if self.looktoken() == '$':
+        if token == u'$':
+            if self.looktoken() == u'$':
                 self.pushstate("displaymathnext")
 
     def parse(self):
@@ -299,17 +299,17 @@ class BaseParser:
             ## first handle ednotes
             ## here everything is copied verbatim
             if currentstate == "nestedednote":
-                if token == '{':
+                if token == u'{':
                     self.pushstate("nestedednote")
-                elif token == '}':
+                elif token == u'}':
                     self.popstate()
                 self.putescaped(token)
                 continue
             if currentstate == "ednote":
-                if token == '{':
-                    self.put('{')
+                if token == u'{':
+                    self.put(u'{')
                     self.pushstate("nestedednote")
-                elif token == '}':
+                elif token == u'}':
                     self.popstate()
                 else:
                     # FIXME regulate escaping
@@ -319,12 +319,12 @@ class BaseParser:
 
             ## second handle whitespace
             ## we contract whitespace as far as sensible
-            if token == ' ' or token == '\t':
+            if token == u' ' or token == u'\t':
                 if currentstate not in ("start", "seenwhitespace",
                                         "seennewline", "seennewpar"):
                     self.pushstate("seenwhitespace")
                 continue
-            elif token == '\n':
+            elif token == u'\n':
                 if currentstate == "start" or currentstate == "seennewpar":
                     pass
                 elif currentstate == "seenwhitespace":
@@ -346,16 +346,16 @@ class BaseParser:
                 pass
             elif currentstate == "seenwhitespace":
                 self.popstate()
-                self.put(' ')
+                self.put(u' ')
             elif currentstate == "seennewline":
                 self.popstate()
-                self.put('\n')
+                self.put(u'\n')
                 ## activate special tokens
                 self.predictnextstructure(token)
             elif currentstate == "seennewpar":
                 self.popstate()
                 self.cleanup()
-                self.put('\n\n')
+                self.put(u'\n\n')
                 ## activate special tokens
                 self.predictnextstructure(token)
             elif currentstate == "start":
@@ -370,13 +370,13 @@ class BaseParser:
             if self.lookstate() == "inlinemath" or \
                    self.lookstate() == "displaymath":
                 ## math special token $
-                if token == '$':
+                if token == u'$':
                     if currentstate == "inlinemath":
                         self.popstate()
                     else:
                         # displaymath
                         self.popstate()
-                        if self.looktoken() == '$':
+                        if self.looktoken() == u'$':
                             self.poptoken()
                 ## but we still need to escape
                 else:
@@ -386,7 +386,7 @@ class BaseParser:
             ## fourth if a new paragraph is beginning insert it into the context
             if self.lookstate() == "normal":
                 self.pushstate("paragraph")
-                if token == '*':
+                if token == u'*':
                     self.pushstate("keywordnext")
 
             ## update current state, since it could be modified
@@ -394,12 +394,12 @@ class BaseParser:
 
             ## fifth now we handle all printable tokens
             ### ednotes as { note to self }
-            if token == '{':
+            if token == u'{':
                 self.cleanup()
                 self.pushstate("ednote")
             ### math in the forms $inline$ and $$display$$
-            elif token == '$':
-                if self.looktoken() == '$':
+            elif token == u'$':
+                if self.looktoken() == u'$':
                     self.poptoken()
                     self.cleanup()
                     self.pushstate("displaymath")
@@ -407,27 +407,27 @@ class BaseParser:
                     self.pushstate("inlinemath")
             ### [heading] and [[subheading]]
             ### with optional (authors) following
-            elif token == '[':
+            elif token == u'[':
                 if currentstate == "headingnext":
                     self.popstate()
                     self.cleanup()
-                    if self.looktoken() == '[':
+                    if self.looktoken() == u'[':
                         self.poptoken()
                         self.pushstate("subheading")
                     else:
                         self.pushstate("heading")
                 else:
                     self.put(token)
-            elif token == ']':
+            elif token == u']':
                 if currentstate == "heading":
                     self.popstate()
-                    if self.lookprintabletoken() == '(':
+                    if self.lookprintabletoken() == u'(':
                         self.pushstate("authorsnext")
                 elif currentstate == "subheading":
-                    if self.looktoken() == ']':
+                    if self.looktoken() == u']':
                         self.poptoken()
                         self.popstate()
-                        if self.lookprintabletoken() == '(':
+                        if self.lookprintabletoken() == u'(':
                             ## activate paren
                             self.pushstate("authorsnext")
                     else:
@@ -435,25 +435,25 @@ class BaseParser:
                 else:
                     self.put(token)
             ### (authors) only available after [heading] and [[subheading]]
-            elif token == '(':
+            elif token == u'(':
                 if currentstate == "authorsnext":
                     self.popstate()
                     self.pushstate("authors")
                 else:
                     self.put(token)
-            elif token == ')':
+            elif token == u')':
                 if currentstate == "authors":
                     self.popstate()
                 else:
                     self.put(token)
             ### _emphasis_
-            elif token == '_':
+            elif token == u'_':
                 if currentstate == "emphasis":
                     self.popstate()
                 else:
                     self.pushstate("emphasis")
             ### *keywords* only avalailable at the beginnig of paragraphs
-            elif token == '*':
+            elif token == u'*':
                 if currentstate == "keywordnext":
                     self.popstate()
                     self.pushstate("keyword")
@@ -465,7 +465,7 @@ class BaseParser:
             ### - items
             ### - like
             ### - this
-            elif token == '-':
+            elif token == u'-':
                 if currentstate == "listnext":
                     self.popstate()
                     if self.lookstate() == "item":
