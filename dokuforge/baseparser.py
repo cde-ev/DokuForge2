@@ -9,6 +9,7 @@ class BaseParser:
     tokens change as the context changes.
 
     @ivar input: the input string
+    @ivar debug: toggles debug output
     @ivar pos: current position in the input string
     @ivar stack: contains the current context
     @ivar output: is a stack of current outputs
@@ -16,9 +17,10 @@ class BaseParser:
             escaped representation
     """
     escapemap = {}
-    def __init__(self, string):
+    def __init__(self, string, debug=False):
         assert isinstance(string, unicode)
         self.input = string
+        self.debug = debug
         self.pos = 0
         self.stack = [ "root", "start" ]
         self.output = [ "", "" ]

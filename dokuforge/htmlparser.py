@@ -9,8 +9,6 @@ class DokuforgeToHtmlParser(BaseParser):
     It works by scanning the text one token at a time (with a bit of
     lookahead) and remembering all context in a stack, so the meaning of
     tokens change as the context changes.
-
-    @ivar debug: toggles debug output
     """
     escapemap = {
             '<': "&lt;",
@@ -19,10 +17,6 @@ class DokuforgeToHtmlParser(BaseParser):
             '"': "&#34;",
             "'": "&#39;"
         }
-
-    def __init__(self, string, debug = False):
-        BaseParser.__init__(self, string)
-        self.debug = debug
 
     handle_ednote = lambda self, data: self.do_block(data, "<pre>%s</pre>")
     handle_paragraph = lambda self, data: self.do_block(data, "<p>%s</p>")

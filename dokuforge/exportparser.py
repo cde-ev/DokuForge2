@@ -10,15 +10,9 @@ class DokuforgeToTeXParser(BaseParser):
     It works by scanning the text one token at a time (with a bit of
     lookahead) and remembering all context in a stack, so the meaning of
     tokens change as the context changes.
-
-    @ivar debug: toggles debug output
     """
     escapemap = {
             '\\': "\\forbidden\\"}
-
-    def __init__(self, string, debug = False):
-        BaseParser.__init__(self, string)
-        self.debug = debug
 
     def handle_paragraph(self, data):
         self.ensurenewpar()
