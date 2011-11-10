@@ -2,3 +2,6 @@
 #footer { background-color: #ffffff; }
 #content { background-color: #ffffff; }
 body { background-color: #ffffff; }
+.dokucontent { background-color: #ffffff; }
+.dokucontent pre { background-color: #f0f0f0; }
+

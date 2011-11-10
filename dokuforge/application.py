@@ -25,6 +25,7 @@ from werkzeug.wrappers import Request, Response
 from dokuforge.academy import Academy
 import dokuforge.common as common
 from dokuforge.common import CheckError
+from dokuforge.htmlparser import DokuforgeToHtmlParser
 
 sysrand = random.SystemRandom()
 
@@ -500,6 +501,8 @@ class Application:
                                         extraparams=extraparams)
         return self.render_property(rs, template, usercontent, ok=True,
                                     extraparams=extraparams)
+
+    ## here come the endpoint handler
 
     def do_start(self, rs):
         """
@@ -1206,6 +1209,8 @@ class Application:
         return self.do_filesave(rs, self.groupstore, "groups.html",
                                 checkhook = self.tryConfigParser)
 
+    ### here come the renderer
+
     def render_start(self, rs):
         """
         @type rs: RequestState
@@ -1244,7 +1249,8 @@ class Application:
             ## version
             content=thecontent,
             version=theversion,
-            ok=ok)
+            ok=ok,
+            allowMathChange = False)
         return self.render("edit.html", rs, params)
 
 
@@ -1318,7 +1324,8 @@ class Application:
             course=thecourse.view(),
             page=thepage,
             ok=ok,
-            error=error)
+            error=error,
+            allowMathChange = False)
         return self.render("addblob.html", rs, params)
 
 
@@ -1334,7 +1341,8 @@ class Application:
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
-            page=thepage)
+            page=thepage,
+            allowMathChange = False)
         return self.render("uploadblob.html", rs, params)
 
     def render_showblob(self, rs, theacademy, thecourse, thepage, blob,
@@ -1372,7 +1380,8 @@ class Application:
             page=thepage,
             blob=thecourse.viewblob(blob),
             ok=ok,
-            error=error)
+            error=error,
+            allowMathChange = False)
         return self.render("editblob.html", rs, params)
 
 
@@ -1385,7 +1394,8 @@ class Application:
         """
         params = dict(academy=theacademy.view(),
                       ok=ok,
-                      error=error)
+                      error=error,
+                      allowMathChange = False)
         return self.render("createcoursequiz.html", rs, params)
 
     def render_createacademyquiz(self, rs, ok=None, error=None):
@@ -1395,7 +1405,8 @@ class Application:
         @type error: None or CheckError
         """
         params = dict(ok=ok,
-                      error=error)
+                      error=error,
+                      allowMathChange = False)
         return self.render("createacademyquiz.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse, thepage, saved=False):
@@ -1406,11 +1417,12 @@ class Application:
         @type thepage: int
         @type saved: bool
         """
+        parser = DokuforgeToHtmlParser(thecourse.showpage(thepage))
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            content=thecourse.showpage(thepage),
+            content=parser.parse(),
             saved=saved,
             blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
         return self.render("show.html", rs, params)
@@ -1435,7 +1447,8 @@ class Application:
             content=thecontent,
             version=theversion,
             ok=ok,
-            error=error)
+            error=error,
+            allowMathChange = False)
         params.update(extraparams)
         return self.render(templatename, rs, params)
 
@@ -1454,7 +1467,8 @@ class Application:
         params = dict(
             content=thecontent,
             ok=ok,
-            error=error)
+            error=error,
+            allowMathChange = False)
         params.update(extraparams)
         return self.render(templatename, rs, params)
 
@@ -1466,12 +1480,16 @@ class Application:
         """
         assert isinstance(templatename, str)
         rs.response.content_type = "text/html; charset=utf8"
+        allowMathChange = True
+        if rs.request.method == "POST":
+            allowMathChange = False
         params = dict(
             user = rs.user,
             form=rs.request.form,
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail),
-            staticjoin = lambda name: self.staticjoin(name, rs))
+            staticjoin = lambda name: self.staticjoin(name, rs),
+            allowMathChange = allowMathChange)
         params.update(extraparams)
         template = self.jinjaenv.get_template(templatename)
         rs.response.data = template.render(params).encode("utf8")

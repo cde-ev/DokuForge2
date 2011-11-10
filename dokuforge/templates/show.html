@@ -10,9 +10,10 @@
 {% block content %}
 Teil #{{ page|string }}
 <hr>
-<pre>
-{{ content|e }}
-</pre>
+<div class="dokucontent">
+{# content does not need to be escaped, since this is done by the parser #}
+{{ content }}
+</div>
 <hr>
 
 
@@ -27,7 +28,7 @@ Teil #{{ page|string }}
 Zugeordnete Bilder:
 <ul>
 {%- for blob in blobs %}
-<li> 
+<li>
   <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e }})</a>
 {%- if user.allowedWrite(academy, course) %}
 {{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}

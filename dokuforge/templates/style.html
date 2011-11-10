@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% block mathjax %}
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['\\(','\\)']]}});
+  MathJax.Hub.Config({tex2jax: {displayMath: [['\\[','\\]']]}});
+</script>
+{% endblock %}
 {% block subheading %}
 Style-Guide
 {% endblock %}

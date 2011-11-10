@@ -9,8 +9,10 @@ findet eine Testinstanz des neuen Dokuforge unter folgender Adresse.
 
 http://...
 
-Fuer einen Account schreibt bitte eine Mail an uns. Wir freuen uns ueber
-Feedback. Hier jetzt nochmal die wichtigsten Aenderungen im Ueberblick.
+Wir moechten euch bitten, diese auf Herz und Nieren zu pruefen, damit wir
+moegliche Probleme jetzt schon entdecken. Fuer einen Account schreibt bitte
+eine Mail an uns. Wir freuen uns ueber Feedback. Hier jetzt nochmal die
+wichtigsten Aenderungen im Ueberblick.
 
 * Das neue Dokuforge hat optimistische Synchronisation. Es gibt also
   keinerlei Locks mehr; statt dessen wird erst im nachhinein
@@ -28,10 +30,17 @@ Feedback. Hier jetzt nochmal die wichtigsten Aenderungen im Ueberblick.
   Archiv einrichten koennen, damit die Startseite wieder uebersichtlich
   wird.
 
+* Fuer das darstellen Mathematik benutzen wir jetzt eine
+  Javascript-Bibliothek. Dies kann man rechts oben ein- und ausschalten. Da
+  wir recht unterschiedliche Erfahrungen hinsichtlich der Leistung dieser
+  Loesung hatten, bitten wir euch die Mathedarstellung mal auszuprobieren
+  und uns zu berichten, wie gut es funktioniert hat (insbesondere
+  hinsichtlich der Geschwindigkeit).
+
 Daneben gibt es noch ein paar Details, hauptsaechlich fuer Interessierte.
 
 * Als Technik verwenden wir Python, WSGI, Jinja und werkzeug (letzteres ist
-  eine Python-Bibliothek).
+  eine Python-Bibliothek). Das Matherendering erledigt Mathjax.
 
 * Einsehen alter Versionen ist jetzt etwas, was jeder kann, der die
   Seite ueberhaupt lesen kann. Entsprechend koennen wir auch souveraen
@@ -48,9 +57,7 @@ Todo-Liste stehen zurzeit unter anderem die folgenden Sachen.
 * Ein neuer Exporter. Mit all den Verbesserungen, die wir im Laufe der Zeit
   angesammelt haben.
 
-* Eine richtige Vorschau mit Auszeichnungen.
-
-* Ein ordentliches Design.
+* Das Design ist noch nicht ganz ausgereift.
 
 Insbesondere bei letzterem wuerden wir uns ueber Anregung und Hilfe
 freuen. Jetzt wuenschen wir euch viel Spasz mit dem neuen Dokuforge.

@@ -50,3 +50,17 @@ body {
 .button {
     display: inline;
 }
+.dokucontent {
+    margin-left: 1em;
+    margin-right: 1em;
+    padding: .5ex 2ex .5ex 2ex;
+    background-color: #ddddff;
+}
+
+.dokucontent pre {
+    background-color: #aaddff;
+}
+
+.ednote {
+    background-color: #aaddff;
+}

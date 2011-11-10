@@ -47,32 +47,41 @@ entsprechende Bild.</p>
 bitte keine Leerzeichen, Umlaute, Unterstriche und Bindestriche.</p>
 
 
-<p>Das sieht dann z.B. so aus.</p>
+<p>Das sieht dann z.B. so aus:</p>
 
-<pre>
-In ABBILDUNG:gugelhupf sieht man einen Gugelhupf.
-</pre>
+<table  width="80%">
+<tr>
+	<td width="40%">Eingabe:</td>
+	<td width="40%">Vorschau:</td>
+</tr>
+<tr>
+	<td>
+        In ABBILDUNG:gugelhupf sieht man einen Gugelhupf.
+        </td>
+	<td>
+        In ABBILDUNG:gugelhupf sieht man einen Gugelhupf.
+        </td>
+</tr>
+</table>
 
 <p>Nun müsst ihr noch die entsprechende Abbildung hinzufügen. Über den Button 
-&bdquo;neues Bild hinzuf&uuml;gen&ldquo; gelangt ihr zu dem entsprechenden Dialog.
-</p>
+&bdquo;neue Abbildung&ldquo; gelangt ihr zu dem entsprechenden Dialog. Als erstes
+müsst ihr das oben verwendete Abbildungskürzel und eine Bildunterschrift eingeben.
+Im Anschluss könnt ihr die Bilddatei hochladen. Die Datei muss als Endung das jeweilige
+Dateiformat tragen, z.B. &bdquo;gugelhupf.jpg&ldquo;.</p>
+
+<p>Später könnt ihr die angelegten Abbildungen betrachten, die Bildunterschrift editieren
+und ein neues Bild hochladen.</p>
 
 <p>Fotos sollten als jpg gespeichert werden. Für Screenshots, Scans von
 Strichzeichnungen und Ähnliches sollte png verwendet werden. Dabei ist
 darauf zu achten, dass bei diesen Pixelgrafiken die Anzahl der Pixel groß
-genug ist. Wir benötigen etwa 100 Pixel pro Zentimeter 
+genug ist. Wir benötigen etwa 100 Pixel pro Zentimeter
 Druckgröße.</p>
 
-<p>Andere Abbildungen (Zeichnungen) sendet bitte als Vektorgrafik
-ein. Hier sind (e)ps und PDF die bevorzugten Formate. Aber bitte keine Pixel-Bilder einfach
+<p>Andere Abbildungen (Diagramme, Zeichnungen) sendet bitte als Vektorgrafik
+ein. Hier ist PDF das bevorzugte Format. Aber bitte keine Pixel-Bilder einfach
 als PDF abspeichern!</p>
-
-<p>F&uuml;r Diagramme bitte stets auch die Rohdaten ein leicht zu parsendem Format
-   hochladen. Dies gibt uns die M&ouml;glichkeit, die Diagramme im Zweifel noch mal
-   selbst zu erzeugen, damit sie &uuml;ber die gesamate Dokumentation einheitlich aussehen.
-   Genauso bei in anderem Format (wie xfig, ps) erstellten Zeichnungen auch das Rohformat
-   mit hochladen; dann k&ouml;nnen wir leicht noch Rechtschreibfehler korrigieren, oder die
-   Schriftart anpassen.</p>
 
 
 <h3><a name="formate">Kurzübersicht Bildformate:</a></h3>
