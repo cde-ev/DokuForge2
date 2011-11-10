@@ -367,8 +367,7 @@ class BaseParser:
             ## third handle math
             ## this deactivates all other special characters
             ## even ednotes since math needs curly braces
-            if self.lookstate() == "inlinemath" or \
-                   self.lookstate() == "displaymath":
+            if self.lookstate() in ("inlinemath", "displaymath"):
                 ## math special token $
                 if token == u'$':
                     if currentstate == "inlinemath":
@@ -467,8 +466,8 @@ class BaseParser:
             ### - this
             elif token == u'-':
                 if currentstate == "listnext":
-                    self.popstate()
-                    if self.lookstate() == "item":
+                    currentstate = self.popstate()
+                    if currentstate == "item":
                         self.popstate()
                         self.pushstate("item")
                     else:
