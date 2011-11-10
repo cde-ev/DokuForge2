@@ -68,7 +68,7 @@ function disableMathCookie()
 if (checkMathCookie() == true){
   var mathjax_include = document.createElement("script");
   mathjax_include.type = "text/javascript"
-  mathjax_include.src = "{{staticjoin("mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML")}}"
+  mathjax_include.src = "{{ mathjaxjoin("MathJax.js?config=TeX-AMS-MML_HTMLorMML") }}"
   document.getElementsByTagName("head")[0].appendChild(mathjax_include)
 }
 </script>

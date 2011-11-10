@@ -11,6 +11,7 @@ dfdir = %(rootdir)s/df
 admindir = %(rootdir)s/admin
 sessiondbpath = :memory:
 staticservepath = static/
+mathjaxuri = %(staticservepath)s/mathjax/
 """
 
 class PathConfig(object):
@@ -59,6 +60,10 @@ class PathConfig(object):
     @property
     def staticservepath(self):
         return self.cp.get(self.section, "staticservepath")
+
+    @property
+    def mathjaxuri(self):
+        return self.cp.get(self.section, "mathjaxuri")
 
     @property
     def userdb(self):

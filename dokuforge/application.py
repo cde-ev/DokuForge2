@@ -170,6 +170,7 @@ class Application:
                 loader=jinja2.FileSystemLoader(self.templatepath))
         self.groupstore = pathconfig.groupstore
         self.staticservepath = pathconfig.staticservepath
+        self.mathjaxuri = pathconfig.mathjaxuri
         rule = werkzeug.routing.Rule
         self.routingmap = werkzeug.routing.Map([
             rule("/", methods=("GET", "HEAD"), endpoint="start"),
@@ -294,6 +295,18 @@ class Application:
         ## If staticservepath is a full url, the join is the staticservepath.
         static = urlparse.urljoin(rs.request.url_root, self.staticservepath)
         return urlparse.urljoin(static, name)
+
+    def mathjaxjoin(self, name, rs):
+        """
+        @type rs: RequestState
+        @type name: str
+        @param name: filename to serve from mathjax
+        @returns: url for the file
+        """
+        assert isinstance(name, str)
+        ## If mathjaxuri is a full url, the join is the mathjaxuri.
+        mathjax = urlparse.urljoin(rs.request.url_root, self.mathjaxuri)
+        return urlparse.urljoin(mathjax, name)
 
     def getAcademy(self, name, user=None):
         """
@@ -1489,6 +1502,7 @@ class Application:
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail),
             staticjoin = lambda name: self.staticjoin(name, rs),
+            mathjaxjoin = lambda name: self.mathjaxjoin(name, rs),
             allowMathChange = allowMathChange)
         params.update(extraparams)
         template = self.jinjaenv.get_template(templatename)
