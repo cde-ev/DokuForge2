@@ -466,8 +466,8 @@ class BaseParser:
             ### - this
             elif token == u'-':
                 if currentstate == "listnext":
-                    currentstate = self.popstate()
-                    if currentstate == "item":
+                    self.popstate()
+                    if self.lookstate() == "item":
                         self.popstate()
                         self.pushstate("item")
                     else:
