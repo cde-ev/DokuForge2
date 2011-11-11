@@ -184,38 +184,3 @@ def validateExistence(path, name):
     if not os.path.exists(os.path.join(path, name)):
         raise CheckError(u"Interner Name existiert nicht!",
                          u"Bitte den Namen korrigieren.")
-
-def end_with_newline(string):
-    """
-    Check if there is a newline at the end of string and append one if not so.
-
-    @type string: unicode
-    @returns: string with potetially appended newline
-    """
-    assert isinstance(string, unicode)
-    try:
-        if not string[-1] == '\n':
-            string += '\n'
-    except IndexError:
-        string += '\n'
-    return string
-
-def end_with_newpar(string):
-    """
-    Check if there is a new par (two newlines) at the end of string and
-    append one if not so.
-
-    @type string: unicode
-    @returns: string with potetially appended new par
-    """
-    assert isinstance(string, unicode)
-    try:
-        if not string[-1] == '\n':
-            string += '\n\n'
-        else:
-            if not string[-2] == '\n':
-                string += '\n'
-    except IndexError:
-        string += '\n\n'
-    return string
-

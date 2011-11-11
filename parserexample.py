@@ -37,6 +37,8 @@ Bitte Escape mich: <>&"'\\ und das wars auch schon.
 
 [[Eine weitere Unterueberschrift]]
 
+(kein Autor)
+
 Wir packen unsere Koffer und nehmen mit
 - einen Sonnenschirm, Kapazitaet 3000000 kWh was eine sehr grosze Zahl ist,
     aber zum Glueck noch auf diesen Absatz passt

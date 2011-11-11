@@ -1,5 +1,3 @@
-from dokuforge.common import end_with_newline
-
 class BaseParser:
     """
     Base class for parsing Dokuforge Syntax.
@@ -17,14 +15,16 @@ class BaseParser:
             escaped representation
     """
     escapemap = {}
+
     handle_ednote = lambda self, data: self.do_block(data, u"{%s}")
-    handle_paragraph = lambda self, data: self.do_block(data, u"%s")
-    handle_list = lambda self, data: self.do_environ(data, u"%s")
-    handle_item = lambda self, data: self.do_block(data, u"- %s")
-    handle_displaymath = lambda self, data: self.do_block(data, u"$$%s$$")
-    handle_authors = lambda self, data: self.do_block(data, u"(%s)")
-    handle_heading = lambda self, data: self.do_block(data, u"[%s]")
-    handle_subheading = lambda self, data: self.do_block(data, u"[[%s]]")
+
+    handle_paragraph = u"%s".__mod__
+    handle_list = u"%s".__mod__
+    handle_item = u"- %s".__mod__
+    handle_displaymath = u"$$%s$$".__mod__
+    handle_authors = u"(%s)".__mod__
+    handle_heading = u"[%s]".__mod__
+    handle_subheading = u"[[%s]]".__mod__
     handle_emphasis = u"_%s_".__mod__
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%s$".__mod__
@@ -70,6 +70,40 @@ class BaseParser:
         self.output.append(u"")
         self.stack.append(value)
 
+    def shiftseennewpardown(self):
+        ## this is the seennewpar
+        stateone = self.stack.pop()
+        valueone = self.output.pop()
+        ## this is whatever else
+        statetwo = self.stack.pop()
+        valuetwo = self.output.pop()
+        ## push the seennewpar with empty content
+        self.stack.append(stateone)
+        self.output.append(u"")
+        ## push other state with content which ended up in seennewpar
+        ## but were intended for this state
+        self.stack.append(statetwo)
+        self.output.append(valuetwo + valueone)
+
+    def transposestates(self):
+        stateone = self.stack.pop()
+        valueone = self.output.pop()
+        statetwo = self.stack.pop()
+        valuetwo = self.output.pop()
+        self.stack.append(stateone)
+        self.output.append(valueone)
+        self.stack.append(statetwo)
+        self.output.append(valuetwo)
+
+    def pullupwantsnewline(self):
+        self.transposestates()
+        if not self.lookstate() == "wantsnewline":
+            self.transposestate()
+
+    def do_block(self, data, pattern):
+        self.pushstate("wantsnewline")
+        return pattern % data
+
     def poptoken(self):
         """
         get a new token from the input string and advance the position in
@@ -111,6 +145,15 @@ class BaseParser:
         except IndexError:
             return u''
 
+    def insertwhitespace(self):
+        self.put(u' ')
+
+    def insertnewline(self):
+        self.put(u'\n')
+
+    def insertnewpar(self):
+        self.put(u'\n\n')
+
     def put(self, s):
         """
         append s to the output string
@@ -119,81 +162,6 @@ class BaseParser:
         @value s: string to append
         """
         self.output[-1] += s
-
-    def ensurenewline(self):
-        """
-        Ensure that the last token in the output is a newline.
-
-        This is intended to insert a newline for better formatting of the
-        output text whenever no newline was input by the user.
-        """
-        ## we walk the stack from top to bottom
-        stackpos = -1
-        while stackpos > -len(self.output):
-            try:
-                if not self.output[stackpos][-1] == u'\n':
-                    self.put(u'\n')
-                    return
-                else:
-                    return
-            ## there might be an IndexError if the topmost entrys in the stack
-            ## are empty strings, thus recurse
-            except IndexError:
-                stackpos -= 1
-        ## if we have nothing yet, we do nothing
-        ## this prevents inserting a silly newline at the start of the result
-
-    def ensurenewpar(self):
-        """
-        Ensure that the two last token in the output are newlines.
-
-        This is intended to insert a new par for better formatting of the
-        output text whenever no new par was input by the user.
-        """
-        ## we walk the stack from top to bottom
-        stackpos = -1
-        ## we need to keep track whether we already found a newline or not
-        foundone = False
-        while stackpos > -len(self.output):
-            try:
-                if not self.output[stackpos][-1] == u'\n':
-                    if not foundone:
-                        self.put(u'\n\n')
-                    else:
-                        self.put(u'\n')
-                    return
-                else:
-                    foundone = True
-                    if not self.output[stackpos][-2] == u'\n':
-                        self.put(u'\n')
-                        return
-                    else:
-                        return
-            ## there might be an IndexError if the topmost entrys in the stack
-            ## are near empty strings, thus recurse
-            except IndexError:
-                stackpos -= 1
-        ## if we have nothing yet, we do nothing
-        ## this prevents inserting a silly new par at the start of the result
-
-    def do_block(self, data, pattern):
-        """
-        helper function for the actual parsers
-
-        Ensure that the block begins on a new line of itself.
-        """
-        self.ensurenewline()
-        return pattern % data
-
-    def do_environ(self, data, pattern):
-        """
-        helper function for the actual parsers
-
-        Ensure that the environment begins on a new line of itself and
-        the closing is on a line of itself too.
-        """
-        self.ensurenewline()
-        return pattern % end_with_newline(data)
 
     def result(self):
         """
@@ -228,7 +196,6 @@ class BaseParser:
         """
         close all open states
         """
-        pars = 0
         while not self.lookstate() == "normal":
             currentstate = self.lookstate()
             if currentstate == "start":
@@ -243,18 +210,21 @@ class BaseParser:
                 self.popstate()
             elif currentstate == "seenwhitespace":
                 self.popstate()
-                self.put(u' ')
-            elif currentstate == "seennewline":
+            elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
-                if pars < 1:
-                    pars = 1
+                self.insertnewline()
             elif currentstate == "seennewpar":
-                self.popstate()
-                pars = 2
+                ## push the newpar one step down
+                ## this allows to close all other contexts before the newpar
+                ## is commited to the output string
+                self.shiftseennewpardown()
+                ## once we reached the bottom, process the newpar
+                if self.lookstate() == "normal":
+                    self.transposestates()
+                    self.popstate()
+                    self.insertnewpar()
             else:
                 raise ValueError("invalid state")
-        for i in range(pars):
-            self.put(u'\n')
 
     def predictnextstructure(self, token):
         """
@@ -265,7 +235,8 @@ class BaseParser:
         if token == u'[':
             self.pushstate("headingnext")
         if token == u'-':
-            self.pushstate("listnext")
+            if self.looktoken() in ' \t':
+                self.pushstate("listnext")
         if token == u'{':
             self.pushstate("ednotenext")
         if token == u'$':
@@ -321,7 +292,8 @@ class BaseParser:
             ## we contract whitespace as far as sensible
             if token == u' ' or token == u'\t':
                 if currentstate not in ("start", "seenwhitespace",
-                                        "seennewline", "seennewpar"):
+                                        "seennewline", "seennewpar",
+                                        "wantsnewline"):
                     self.pushstate("seenwhitespace")
                 continue
             elif token == u'\n':
@@ -333,6 +305,9 @@ class BaseParser:
                 elif currentstate == "seennewline":
                     self.popstate()
                     self.pushstate("seennewpar")
+                elif currentstate == "wantsnewline":
+                    self.popstate()
+                    self.pushstate("seennewline")
                 else:
                     self.pushstate("seennewline")
                 continue
@@ -342,20 +317,19 @@ class BaseParser:
             ## a double newline ends all environments (except ednotes)
             if currentstate == "paragraph":
                 ## minor optimization, but I feel it is worth it
-                ## to shortcircuit this selfment
+                ## to shortcircuit this statement
                 pass
             elif currentstate == "seenwhitespace":
                 self.popstate()
-                self.put(u' ')
-            elif currentstate == "seennewline":
+                self.insertwhitespace()
+            elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
-                self.put(u'\n')
+                self.insertnewline()
                 ## activate special tokens
                 self.predictnextstructure(token)
             elif currentstate == "seennewpar":
-                self.popstate()
+                ## handling of the seennewpar is done by cleanup
                 self.cleanup()
-                self.put(u'\n\n')
                 ## activate special tokens
                 self.predictnextstructure(token)
             elif currentstate == "start":
@@ -394,13 +368,21 @@ class BaseParser:
             ## fifth now we handle all printable tokens
             ### ednotes as { note to self }
             if token == u'{':
-                self.cleanup()
+                if currentstate == "ednotenext":
+                    self.cleanup()
+                else:
+                    self.cleanup()
+                    self.insertnewline()
                 self.pushstate("ednote")
             ### math in the forms $inline$ and $$display$$
             elif token == u'$':
                 if self.looktoken() == u'$':
                     self.poptoken()
-                    self.cleanup()
+                    if currentstate == "displaymathnext":
+                        self.cleanup()
+                    else:
+                        self.cleanup()
+                        self.insertnewline()
                     self.pushstate("displaymath")
                 else:
                     self.pushstate("inlinemath")
@@ -421,7 +403,9 @@ class BaseParser:
                 if currentstate == "heading":
                     self.popstate()
                     if self.lookprintabletoken() == u'(':
+                        ## activate paren
                         self.pushstate("authorsnext")
+                        self.pullupwantsnewline()
                 elif currentstate == "subheading":
                     if self.looktoken() == u']':
                         self.poptoken()
@@ -429,6 +413,7 @@ class BaseParser:
                         if self.lookprintabletoken() == u'(':
                             ## activate paren
                             self.pushstate("authorsnext")
+                            self.pullupwantsnewline()
                     else:
                         self.put(token)
                 else:
@@ -467,13 +452,17 @@ class BaseParser:
             elif token == u'-':
                 if currentstate == "listnext":
                     self.popstate()
-                    if self.lookstate() == "item":
-                        self.popstate()
-                        self.pushstate("item")
+                    if self.looktoken() in u' \t':
+                        self.poptoken()
+                        if self.lookstate() == "item":
+                            self.popstate()
+                            self.pushstate("item")
+                        else:
+                            self.cleanup()
+                            self.pushstate("list")
+                            self.pushstate("item")
                     else:
-                        self.cleanup()
-                        self.pushstate("list")
-                        self.pushstate("item")
+                        self.put(token)
                 else:
                     self.put(token)
             ### the default case for all the non-special tokens
