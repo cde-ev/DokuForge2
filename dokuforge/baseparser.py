@@ -16,6 +16,10 @@ class BaseParser:
     """
     escapemap = {}
 
+    ## heading and subheading need to take care of activating the parenthesis
+    ## for author markup
+    ## (otherwise the authorsnext gets stacked ontop of the wantsnewline and we
+    ## have to do nasty workarounding)
     def handle_heading(self, data):
         if self.lookprintabletoken() == u'(':
             ## activate paren
@@ -30,12 +34,22 @@ class BaseParser:
         self.pushstate("wantsnewline")
         return u"[[%s]]" % data
 
+    ## everything that ends with a closing printable token may not be followed
+    ## by a newline, but for the following cases we always wish a newline, thus
+    ## they are handled with do_block
     handle_ednote = lambda self, data: self.do_block(data, u"{%s}")
     handle_displaymath = lambda self, data: self.do_block(data, u"$$%s$$")
     handle_authors = lambda self, data: self.do_block(data, u"(%s)")
+
+    ## the following entities are closed on newlines/newpars, thus no special
+    ## treatment of whitespace is necessary. should they be interupted
+    ## (e.g. by an ednote) then the offending context has to take care of
+    ## correct whitespace
     handle_paragraph = u"%s".__mod__
     handle_list = u"%s".__mod__
     handle_item = u"- %s".__mod__
+
+    ## finally we don't want any special whitespace around these
     handle_emphasis = u"_%s_".__mod__
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%s$".__mod__
@@ -82,6 +96,19 @@ class BaseParser:
         self.stack.append(value)
 
     def shiftseennewpardown(self):
+        """
+        exchange seennewpar on top of the stack with the state below.
+
+        newpars terminate all contexts (except ednotes) via cleanup. But we
+        want to emit the newpar only after we closed all other contexts (like
+        lists). So we have to push it down the stack.
+
+        We have to do a bit of magic because the seennewpar will receive the
+        content of the states which are popped from the stack above it (since we
+        push the seennewpar down).
+        """
+        if not self.lookstate() == "seennewpar":
+            return
         ## this is the seennewpar
         stateone = self.stack.pop()
         valueone = self.output.pop()
@@ -97,6 +124,11 @@ class BaseParser:
         self.output.append(valuetwo + valueone)
 
     def transposestates(self):
+        """
+        Exchange the two topmost states of the stack.
+
+        This exchanges the content to, so be careful not to reverse anything.
+        """
         stateone = self.stack.pop()
         valueone = self.output.pop()
         statetwo = self.stack.pop()
@@ -107,6 +139,13 @@ class BaseParser:
         self.output.append(valuetwo)
 
     def do_block(self, data, pattern):
+        """
+        Generic handler for things that want a newline behind them.
+
+        Examples are headings which are terminated by ] but where no newline
+        needs to follow. So if no newline comes we insert one for better
+        formating.
+        """
         self.pushstate("wantsnewline")
         return pattern % data
 
@@ -152,12 +191,21 @@ class BaseParser:
             return u''
 
     def insertwhitespace(self):
+        """
+        interface for putting whitespace
+        """
         self.put(u' ')
 
     def insertnewline(self):
+        """
+        interface for putting newlines
+        """
         self.put(u'\n')
 
     def insertnewpar(self):
+        """
+        interface for putting newpars
+        """
         self.put(u'\n\n')
 
     def put(self, s):
@@ -200,7 +248,9 @@ class BaseParser:
 
     def cleanup(self):
         """
-        close all open states
+        close all open states.
+
+        This is triggered by newpars and several other contexts.
         """
         while not self.lookstate() == "normal":
             currentstate = self.lookstate()
@@ -216,6 +266,7 @@ class BaseParser:
                 self.popstate()
             elif currentstate == "seenwhitespace":
                 self.popstate()
+                self.insertwhitespace()
             elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
                 self.insertnewline()
@@ -312,6 +363,7 @@ class BaseParser:
                     self.popstate()
                     self.pushstate("seennewpar")
                 elif currentstate == "wantsnewline":
+                    ## if we want a newline and there is one everything is nice
                     self.popstate()
                     self.pushstate("seennewline")
                 else:
@@ -374,6 +426,9 @@ class BaseParser:
             ## fifth now we handle all printable tokens
             ### ednotes as { note to self }
             if token == u'{':
+                ## if we are at the beginnig of a line (as advertised by
+                ## predictnextstructure) everything is okay, otherwise we
+                ## have to insert a newline
                 if currentstate == "ednotenext":
                     self.cleanup()
                 else:
@@ -384,6 +439,9 @@ class BaseParser:
             elif token == u'$':
                 if self.looktoken() == u'$':
                     self.poptoken()
+                    ## if we are at the beginnig of a line (as advertised by
+                    ## predictnextstructure) everything is okay, otherwise we
+                    ## have to insert a newline
                     if currentstate == "displaymathnext":
                         self.cleanup()
                     else:
