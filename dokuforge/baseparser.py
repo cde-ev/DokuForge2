@@ -16,40 +16,14 @@ class BaseParser:
     """
     escapemap = {}
 
-    ## heading and subheading need to take care of activating the parenthesis
-    ## for author markup
-    ## (otherwise the authorsnext gets stacked ontop of the wantsnewline and we
-    ## have to do nasty workarounding)
-    def handle_heading(self, data):
-        if self.lookprintabletoken() == u'(':
-            ## activate paren
-            self.pushstate("authorsnext")
-        self.pushstate("wantsnewline")
-        return u"[%s]" % data
-
-    def handle_subheading(self, data):
-        if self.lookprintabletoken() == u'(':
-            ## activate paren
-            self.pushstate("authorsnext")
-        self.pushstate("wantsnewline")
-        return u"[[%s]]" % data
-
-    ## everything that ends with a closing printable token may not be followed
-    ## by a newline, but for the following cases we always wish a newline, thus
-    ## they are handled with do_block
-    handle_ednote = lambda self, data: self.do_block(data, u"{%s}")
-    handle_displaymath = lambda self, data: self.do_block(data, u"$$%s$$")
-    handle_authors = lambda self, data: self.do_block(data, u"(%s)")
-
-    ## the following entities are closed on newlines/newpars, thus no special
-    ## treatment of whitespace is necessary. should they be interupted
-    ## (e.g. by an ednote) then the offending context has to take care of
-    ## correct whitespace
+    handle_heading = u"[%s]".__mod__
+    handle_subheading = u"[[%s]]".__mod__
+    handle_ednote = u"{%s}".__mod__
+    handle_displaymath = u"$$%s$$".__mod__
+    handle_authors = u"(%s)".__mod__
     handle_paragraph = u"%s".__mod__
     handle_list = u"%s".__mod__
     handle_item = u"- %s".__mod__
-
-    ## finally we don't want any special whitespace around these
     handle_emphasis = u"_%s_".__mod__
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%1s$".__mod__
@@ -339,6 +313,7 @@ class BaseParser:
                     self.pushstate("nestedednote")
                 elif token == u'}':
                     self.popstate()
+                    self.pushstate("wantsnewline")
                 else:
                     # FIXME regulate escaping
                     # guarante no '\end{ednote}' is contained
@@ -409,6 +384,7 @@ class BaseParser:
                         self.popstate()
                         if self.looktoken() == u'$':
                             self.poptoken()
+                        self.pushstate("wantsnewline")
                 ## but we still need to escape
                 else:
                     self.putescaped(token)
@@ -465,13 +441,19 @@ class BaseParser:
                     self.put(token)
             elif token == u']':
                 if currentstate == "heading":
-                    ## this has to activate the paren
                     self.popstate()
+                    ## activate paren
+                    if self.lookprintabletoken() == u'(':
+                        self.pushstate("authorsnext")
+                    self.pushstate("wantsnewline")
                 elif currentstate == "subheading":
                     if self.looktoken() == u']':
                         self.poptoken()
-                        ## this has to activate the paren
                         self.popstate()
+                        ## activate paren
+                        if self.lookprintabletoken() == u'(':
+                            self.pushstate("authorsnext")
+                        self.pushstate("wantsnewline")
                     else:
                         self.put(token)
                 else:
@@ -486,6 +468,7 @@ class BaseParser:
             elif token == u')':
                 if currentstate == "authors":
                     self.popstate()
+                    self.pushstate("wantsnewline")
                 else:
                     self.put(token)
             ### _emphasis_
