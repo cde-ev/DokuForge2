@@ -7,7 +7,7 @@ Designentscheidungen neu ueberdacht. Deswegen bitten wir auch erfahrene
 Dokuteammitglieder sich mit dem neuen Dokuforge vertraut zu machen. Ihr
 findet eine Testinstanz des neuen Dokuforge unter folgender Adresse.
 
-http://...
+http://df2.dokuforge.de
 
 Wir moechten euch bitten, diese auf Herz und Nieren zu pruefen, damit wir
 moegliche Probleme jetzt schon entdecken. Fuer einen Account schreibt bitte
@@ -64,6 +64,3 @@ freuen. Jetzt wuenschen wir euch viel Spasz mit dem neuen Dokuforge.
 
 Viele Gruesse,
   Helmut, Klaus, Markus
-
-
-
