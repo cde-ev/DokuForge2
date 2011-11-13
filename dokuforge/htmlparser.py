@@ -18,10 +18,22 @@ class DokuforgeToHtmlParser(BaseParser):
             ord(u"'"): u"&#39;"
         }
 
+    def handle_heading(self, data):
+        if self.lookprintabletoken() == u'(':
+            ## activate paren
+            self.pushstate("authorsnext")
+        self.pushstate("wantsnewline")
+        return u"<h3>%s</h3>" % data
+
+    def handle_subheading(self, data):
+        if self.lookprintabletoken() == u'(':
+            ## activate paren
+            self.pushstate("authorsnext")
+        self.pushstate("wantsnewline")
+        return u"<h4>%s</h4>" % data
+
     handle_ednote = lambda self, data: self.do_block(data, u"<pre>%s</pre>")
     handle_displaymath = lambda self, data: self.do_block(data, u"$$%s$$")
-    handle_heading = lambda self, data: self.do_block(data, u"<h3>%s</h3>")
-    handle_subheading = lambda self, data: self.do_block(data, u"<h4>%s</h4>")
     handle_authors = lambda self, data: self.do_block(data, u"<i>%s</i>")
     handle_paragraph = "<p>%s</p>".__mod__
     handle_list = u"<ul>\n%s\n</ul>".__mod__

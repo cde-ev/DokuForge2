@@ -16,15 +16,26 @@ class BaseParser:
     """
     escapemap = {}
 
-    handle_ednote = lambda self, data: self.do_block(data, u"{%s}")
+    def handle_heading(self, data):
+        if self.lookprintabletoken() == u'(':
+            ## activate paren
+            self.pushstate("authorsnext")
+        self.pushstate("wantsnewline")
+        return u"[%s]" % data
 
+    def handle_subheading(self, data):
+        if self.lookprintabletoken() == u'(':
+            ## activate paren
+            self.pushstate("authorsnext")
+        self.pushstate("wantsnewline")
+        return u"[[%s]]" % data
+
+    handle_ednote = lambda self, data: self.do_block(data, u"{%s}")
+    handle_displaymath = lambda self, data: self.do_block(data, u"$$%s$$")
+    handle_authors = lambda self, data: self.do_block(data, u"(%s)")
     handle_paragraph = u"%s".__mod__
     handle_list = u"%s".__mod__
     handle_item = u"- %s".__mod__
-    handle_displaymath = u"$$%s$$".__mod__
-    handle_authors = u"(%s)".__mod__
-    handle_heading = u"[%s]".__mod__
-    handle_subheading = u"[[%s]]".__mod__
     handle_emphasis = u"_%s_".__mod__
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%s$".__mod__
@@ -94,11 +105,6 @@ class BaseParser:
         self.output.append(valueone)
         self.stack.append(statetwo)
         self.output.append(valuetwo)
-
-    def pullupwantsnewline(self):
-        self.transposestates()
-        if not self.lookstate() == "wantsnewline":
-            self.transposestate()
 
     def do_block(self, data, pattern):
         self.pushstate("wantsnewline")
@@ -401,19 +407,13 @@ class BaseParser:
                     self.put(token)
             elif token == u']':
                 if currentstate == "heading":
+                    ## this has to activate the paren
                     self.popstate()
-                    if self.lookprintabletoken() == u'(':
-                        ## activate paren
-                        self.pushstate("authorsnext")
-                        self.pullupwantsnewline()
                 elif currentstate == "subheading":
                     if self.looktoken() == u']':
                         self.poptoken()
+                        ## this has to activate the paren
                         self.popstate()
-                        if self.lookprintabletoken() == u'(':
-                            ## activate paren
-                            self.pushstate("authorsnext")
-                            self.pullupwantsnewline()
                     else:
                         self.put(token)
                 else:
