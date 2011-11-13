@@ -64,3 +64,8 @@ body {
 .ednote {
     background-color: #aaddff;
 }
+
+textarea {
+	width: 100%;
+	min-height: 10em;
+}
