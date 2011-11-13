@@ -20,7 +20,7 @@ class BaseParser:
     handle_ednote = lambda self, data: self.do_block(data, u"{%s}")
     handle_paragraph = lambda self, data: self.do_block(data, u"%s")
     handle_list = lambda self, data: self.do_environ(data, u"%s")
-    handle_item = lambda self, data: self.do_block(data, u"- %s")
+    handle_item = lambda self, data: self.do_block(data, u"-%s")
     handle_displaymath = lambda self, data: self.do_block(data, u"$$%s$$")
     handle_authors = lambda self, data: self.do_block(data, u"(%s)")
     handle_heading = lambda self, data: self.do_block(data, u"[%s]")
