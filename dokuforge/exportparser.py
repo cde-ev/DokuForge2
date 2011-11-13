@@ -33,7 +33,7 @@ class DokuforgeToTeXParser(BaseParser):
     handle_paragraph = "%s".__mod__
     handle_emphasis = u"\\emph{%s}".__mod__
     handle_keyword = u"\\textbf{%s}".__mod__
-    handle_inlinemath = u"$%s$".__mod__
+    # inherit handle_inlinemath
     handle_list = u"\\begin{itemize}\n%s\n\end{itemize}".__mod__
     handle_item = u"\\item %s".__mod__
 

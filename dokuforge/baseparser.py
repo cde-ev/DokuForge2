@@ -52,7 +52,7 @@ class BaseParser:
     ## finally we don't want any special whitespace around these
     handle_emphasis = u"_%s_".__mod__
     handle_keyword = u"*%s*".__mod__
-    handle_inlinemath = u"$%s$".__mod__
+    handle_inlinemath = u"$%1s$".__mod__
     handle_nestedednote = u"{%s}".__mod__
 
     def __init__(self, string, debug=False):

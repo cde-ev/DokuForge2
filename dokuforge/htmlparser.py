@@ -40,4 +40,4 @@ class DokuforgeToHtmlParser(BaseParser):
     handle_item = u"<li>%s</li>".__mod__
     handle_emphasis = u"<i>%s</i>".__mod__
     handle_keyword = u"<b>%s</b>".__mod__
-    handle_inlinemath = u"$%s$".__mod__
+    # inherit handle_inlinemath
