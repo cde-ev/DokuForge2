@@ -21,7 +21,6 @@ class DokuforgeToHtmlParser(BaseParser):
     handle_heading = u"<h3>%s</h3>".__mod__
     handle_subheading = u"<h4>%s</h4>".__mod__
     handle_ednote = u"<pre>%s</pre>".__mod__
-    handle_displaymath = u"$$%s$$".__mod__
     handle_authors = u"<i>%s</i>".__mod__
     handle_paragraph = "<p>%s</p>".__mod__
     handle_list = u"<ul>\n%s\n</ul>".__mod__
@@ -29,3 +28,4 @@ class DokuforgeToHtmlParser(BaseParser):
     handle_emphasis = u"<i>%s</i>".__mod__
     handle_keyword = u"<b>%s</b>".__mod__
     # inherit handle_inlinemath
+    # inherit handle_displaymath

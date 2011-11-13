@@ -19,7 +19,7 @@ class BaseParser:
     handle_heading = u"[%s]".__mod__
     handle_subheading = u"[[%s]]".__mod__
     handle_ednote = u"{%s}".__mod__
-    handle_displaymath = u"$$%s$$".__mod__
+    handle_displaymath = u"$$%1s$$".__mod__
     handle_authors = u"(%s)".__mod__
     handle_paragraph = u"%s".__mod__
     handle_list = u"%s".__mod__
@@ -263,6 +263,8 @@ class BaseParser:
         function is to be called after every newline and marks these tokens
         as active.
         """
+        if self.lookstate() in ("inlinemath", "displaymath", "ednote"):
+            return
         if token == u'[':
             self.pushstate("headingnext")
         if token == u'-':
