@@ -483,7 +483,7 @@ class Application:
         @type getter: callale
         @type template: str
         @type extraparams: dict
-        @param filestore: getter function for the property to edit
+        @param getter: getter function for the property to edit
         @param template: the template with which to render the edit mask
         @param extraparams: any further params the template needs
         """
@@ -1348,8 +1348,6 @@ class Application:
         @type theacademy: Academy
         @type thecourse: Course
         @type thepage: int
-        @type label: unicode
-        @type comment: unicode
         """
         params = dict(
             academy=theacademy.view(),

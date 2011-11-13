@@ -117,7 +117,7 @@ class BaseParser:
 
         @rtype: char
         @returns: the char at the current position
-        @raises: IndexError
+        @raises IndexError
         """
         self.pos += 1
         return self.input[self.pos-1]
@@ -165,7 +165,7 @@ class BaseParser:
         append s to the output string
 
         @type s: unicode
-        @value s: string to append
+        @param s: string to append
         """
         self.output[-1] += s
 
@@ -193,7 +193,7 @@ class BaseParser:
         append s to the output string escaping special characters
 
         @type s: unicode
-        @value s: string to append
+        @param s: string to append
         """
         assert isinstance(s, unicode)
         self.put(s.translate(self.escapemap))
