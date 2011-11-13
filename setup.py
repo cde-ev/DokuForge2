@@ -5,5 +5,5 @@ from distutils.core import setup
 setup(name="dokuforge",
       packages=["dokuforge"],
       package_data=dict(dokuforge=["templates/*.html",
-                                   "templates/sytle/*",
+                                   "templates/style/*",
                                    "static/*.css"]))
