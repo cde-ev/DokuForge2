@@ -3,6 +3,7 @@
 
 from dokuforge.htmlparser import DokuforgeToHtmlParser
 from dokuforge.exportparser import DokuforgeToTeXParser
+from dokuforge.baseparser import BaseParser
 
 teststring = u"""
  [Eine Ueberschrift]
@@ -70,6 +71,22 @@ parser = DokuforgeToHtmlParser(teststring, debug = True)
 
 html =  parser.parse().encode("utf8")
 
+print "========================================"
+
+base = BaseParser(teststring)
+
+dokuforge = base.parse().encode("utf8")
+
+print dokuforge
+
+print "========================================"
+print "========================================"
+
+basetwo = BaseParser(dokuforge.decode("utf8"))
+
+print basetwo.parse().encode("utf8")
+
+print "========================================"
 print "========================================"
 
 print html
