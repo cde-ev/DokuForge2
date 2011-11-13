@@ -292,7 +292,7 @@ class BaseParser:
         if token == u'[':
             self.pushstate("headingnext")
         if token == u'-':
-            if self.looktoken() in ' \t':
+            if self.looktoken() == u' ' or self.looktoken() == u'\t':
                 self.pushstate("listnext")
         if token == u'{':
             self.pushstate("ednotenext")
@@ -510,7 +510,7 @@ class BaseParser:
             elif token == u'-':
                 if currentstate == "listnext":
                     self.popstate()
-                    if self.looktoken() in u' \t':
+                    if self.looktoken() == u' ' or self.looktoken() == u'\t':
                         self.poptoken()
                         if self.lookstate() == "item":
                             self.popstate()
