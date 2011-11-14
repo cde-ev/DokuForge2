@@ -244,7 +244,7 @@ class BaseParser:
                     self.popstate()
                     self.insertnewpar()
             else:
-                raise ValueError("invalid state")
+                raise ValueError("invalid state: %s" % currentstate)
 
     def predictnextstructure(self, token):
         """
