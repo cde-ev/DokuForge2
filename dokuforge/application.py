@@ -490,7 +490,8 @@ class Application:
         """
         assert isinstance(template, str)
         content = getter()
-        return self.render_property(rs, template, content.decode("utf8"),
+        assert isinstance(content, unicode)
+        return self.render_property(rs, template, content,
                                     extraparams=extraparams)
 
     def do_propertysave(self, rs, setter, template, extraparams=dict()):
