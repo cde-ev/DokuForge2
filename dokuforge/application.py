@@ -128,6 +128,7 @@ class RequestState:
         self.response = Response()
         self.sessionhandler = SessionHandler(sessiondb, request, self.response)
         self.userdb = userdb
+        self.userdb.load()
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.mapadapter = mapadapter
         self.endpoint_args = None # set later in Application.render
