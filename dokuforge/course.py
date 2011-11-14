@@ -11,15 +11,29 @@ import dokuforge.common as common
 
 class Outline:
     def __init__(self, number):
+        """
+        @type number: int
+        """
         self.number = number
         self.content = []
     def addheading(self, title):
+        """
+        @type title: unicode
+        """
+        assert isinstance(title, unicode)
         if title:
             self.content.append(("heading", title))
     def addsubheading(self, title):
+        """
+        @type title: unicode
+        """
+        assert isinstance(title, unicode)
         if title:
             self.content.append(("subheading", title))
     def items(self):
+        """
+        @rtype: [(str, unicode)]
+        """
         return self.content
 
 class Course(StorageDir):
@@ -102,7 +116,8 @@ class Course(StorageDir):
         outlines = []
         for p in pages:
             outline = Outline(p)
-            headings = re.findall(r'^\[.*\]$', self.showpage(p), re.MULTILINE)
+            headings = re.findall(ur'^\[.*\]$', self.showpage(p),
+                                  re.MULTILINE|re.UNICODE)
             for h in headings:
                 if h[1] == u'[':
                     outline.addsubheading(h[2:-2])
