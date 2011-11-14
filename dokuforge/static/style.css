@@ -71,3 +71,6 @@ textarea {
 	width: 100%;
 	min-height: 10em;
 }
+.dokucontent .displaymath {
+    text-align: center;
+}
