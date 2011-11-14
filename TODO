@@ -5,7 +5,6 @@
 * exporter
 
 == not so important ==
-* cleanup whitespace handling in parser
 * nicer design
 * upgraded navigation (back-buttons, all sort of cross-links)
 * page estimates
@@ -16,3 +15,4 @@
 * trail export (to view the current length)
 * interactive page swapping
 * create portable variant
+* escaping in ednotes in exportparser
