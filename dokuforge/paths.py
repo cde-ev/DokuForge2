@@ -1,7 +1,7 @@
 import ConfigParser
 from cStringIO import StringIO
 
-from dokuforge.storage import Storage
+from dokuforge.storage import CachingStorage
 from dokuforge.user import UserDB
 
 default_config = """
@@ -67,7 +67,7 @@ class PathConfig(object):
 
     @property
     def userdb(self):
-        return UserDB(Storage(self.admindir, "userdb"))
+        return UserDB(CachingStorage(self.admindir, "userdb"))
 
     def loaduserdb(self):
         userdb = self.userdb
@@ -76,4 +76,4 @@ class PathConfig(object):
 
     @property
     def groupstore(self):
-        return Storage(self.admindir, "groupdb")
+        return CachingStorage(self.admindir, "groupdb")
