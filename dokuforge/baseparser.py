@@ -6,6 +6,11 @@ tokenre = re.compile("[}{)(*_-]" + # single chars
                      "|[^][}{)( \t\n$*_-]+", # rest
                      re.UNICODE)
 
+SPC_NONE = 0
+SPC_SPC = 1
+SPC_NL = 2
+SPC_PAR = 3
+
 class BaseParser:
     """
     Base class for parsing Dokuforge Syntax.
@@ -36,6 +41,10 @@ class BaseParser:
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%1s$".__mod__
     handle_nestedednote = u"{%s}".__mod__
+    handle_seenwhitespace = "%.0s ".__mod__
+    handle_seennewline = "%.0s\n".__mod__
+    handle_seennewpar = "%.0s\n\n".__mod__
+    handle_wantsnewline = "\n%s".__mod__
 
     def __init__(self, string, debug=False):
         assert isinstance(string, unicode)
@@ -52,6 +61,14 @@ class BaseParser:
         @returns: topmost state in the context
         """
         return self.stack[-1]
+
+    def eatstate(self):
+        """
+        remove a state from the context suppressing its output
+        @returns: the removed state
+        """
+        self.output.pop()
+        return self.stack.pop()
 
     def popstate(self):
         """
@@ -120,17 +137,6 @@ class BaseParser:
         self.stack.append(statetwo)
         self.output.append(valuetwo)
 
-    def do_block(self, data, pattern):
-        """
-        Generic handler for things that want a newline behind them.
-
-        Examples are headings which are terminated by ] but where no newline
-        needs to follow. So if no newline comes we insert one for better
-        formating.
-        """
-        self.pushstate("wantsnewline")
-        return pattern % data
-
     def poptoken(self):
         """
         get a new token from the input string and advance the position in
@@ -172,23 +178,11 @@ class BaseParser:
         except IndexError:
             return u''
 
-    def insertwhitespace(self):
-        """
-        interface for putting whitespace
-        """
-        self.put(u' ')
-
     def insertnewline(self):
         """
         interface for putting newlines
         """
         self.put(u'\n')
-
-    def insertnewpar(self):
-        """
-        interface for putting newpars
-        """
-        self.put(u'\n\n')
 
     def put(self, s):
         """
@@ -239,19 +233,15 @@ class BaseParser:
             if currentstate == "start":
                 self.popstate()
                 self.pushstate("normal")
-            elif currentstate in ("authors", "displaymath", "heading",
-                                  "keyword", "paragraph", "subheading",
-                                  "authorsnext", "headingnext", "listnext",
-                                  "keywordnext", "ednotenext",
-                                  "displaymathnext", "list", "item", "ednote",
-                                  "emphasis", "inlinemath", "nestedednote"):
+            elif currentstate in ("authors", "authorsnext", "displaymath",
+                                  "ednote", "emphasis", "heading",
+                                  "inlinemath", "item", "keyword", "list",
+                                  "nestedednote", "paragraph", "subheading"):
                 self.popstate()
             elif currentstate == "seenwhitespace":
                 self.popstate()
-                self.insertwhitespace()
             elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
-                self.insertnewline()
             elif currentstate == "seennewpar":
                 ## push the newpar one step down
                 ## this allows to close all other contexts before the newpar
@@ -261,33 +251,24 @@ class BaseParser:
                 if self.lookstate() == "normal":
                     self.transposestates()
                     self.popstate()
-                    self.insertnewpar()
             else:
                 raise ValueError("invalid state")
-
-    def predictnextstructure(self, token):
-        """
-        After a newline some future tokens have a special meaning. This
-        function is to be called after every newline and marks these tokens
-        as active.
-        """
-        if self.lookstate() in ("inlinemath", "displaymath", "ednote"):
-            return
-        if token.startswith(u'['):
-            self.pushstate("headingnext")
-        if token == u'-':
-            if self.looktoken()[0:1] in (u' ', u'\t'):
-                self.pushstate("listnext")
-        if token == u'{':
-            self.pushstate("ednotenext")
-        if token.startswith(u"$$"):
-            self.pushstate("displaymathnext")
 
     def parse(self):
         """
         The actual parser.
         """
+        spaces = SPC_PAR
+        token = u"\n\n"
         while True:
+            if token.isspace():
+                spaces = max(spaces, SPC_SPC) # at least some space
+                if token == u'\n':
+                    spaces = min(spaces + 1, SPC_PAR)
+                if token.startswith(u"\n\n"):
+                    spaces = SPC_PAR
+            else:
+                spaces = SPC_NONE
             ## retrieve token
             try:
                 token = self.poptoken()
@@ -337,37 +318,22 @@ class BaseParser:
                                         "wantsnewline"):
                     self.pushstate("seenwhitespace")
                 continue
-            elif token == u'\n':
-                if currentstate == "start" or currentstate == "seennewpar":
-                    pass
-                elif currentstate == "seenwhitespace":
-                    self.popstate()
-                    self.pushstate("seennewline")
-                elif currentstate == "seennewline":
-                    self.popstate()
-                    self.pushstate("seennewpar")
-                elif currentstate == "wantsnewline":
-                    ## if we want a newline and there is one everything is nice
-                    self.popstate()
-                    self.pushstate("seennewline")
+            if token.startswith(u"\n"):
+                if currentstate in ("start", "seennewpar"):
+                    continue
+                if currentstate in ("seenwhitespace", "wantsnewline"):
+                    self.eatstate()
+                if token == u'\n':
+                    if currentstate == "seennewline":
+                        self.eatstate()
+                        self.pushstate("seennewpar")
+                    else:
+                        self.pushstate("seennewline")
                 else:
-                    self.pushstate("seennewline")
-                continue
-            elif token.startswith(u"\n\n"):
-                if currentstate == "seenwhitespace":
-                    self.popstate()
-                    self.pushstate("seennewpar")
-                elif currentstate == "seennewline":
-                    self.popstate()
-                    self.pushstate("seennewpar")
-                elif currentstate == "wantsnewline":
-                    ## if we want a newline and there is one everything is nice
-                    self.popstate()
-                    self.pushstate("seennewpar")
-                else:
+                    if currentstate == "seennewline":
+                        self.eatstate()
                     self.pushstate("seennewpar")
                 continue
-
 
             ## now we have a non-whitespace token so we clean up the state
             ## i.e. remove whitespace from the context
@@ -376,24 +342,16 @@ class BaseParser:
                 ## minor optimization, but I feel it is worth it
                 ## to shortcircuit this statement
                 pass
-            elif currentstate == "seenwhitespace":
+            elif currentstate in ("seenwhitespace", "seennewline"):
                 self.popstate()
-                self.insertwhitespace()
-            elif currentstate in ("seennewline", "wantsnewline"):
+            elif currentstate == "wantsnewline":
                 self.popstate()
-                self.insertnewline()
-                ## activate special tokens
-                self.predictnextstructure(token)
             elif currentstate == "seennewpar":
                 ## handling of the seennewpar is done by cleanup
                 self.cleanup()
-                ## activate special tokens
-                self.predictnextstructure(token)
             elif currentstate == "start":
                 self.popstate()
                 self.pushstate("normal")
-                ## activate special tokens
-                self.predictnextstructure(token)
 
             ## third handle math
             ## this deactivates all other special characters
@@ -414,56 +372,40 @@ class BaseParser:
                     self.putescaped(token)
                 continue
 
-            ## fourth if a new paragraph is beginning insert it into the context
-            if self.lookstate() == "normal":
-                self.pushstate("paragraph")
-                if token == u'*':
-                    self.pushstate("keywordnext")
-
             ## update current state, since it could be modified
             currentstate = self.lookstate()
 
             ## fifth now we handle all printable tokens
             ### ednotes as { note to self }
             if token == u'{':
-                ## if we are at the beginnig of a line (as advertised by
-                ## predictnextstructure) everything is okay, otherwise we
-                ## have to insert a newline
-                if currentstate == "ednotenext":
-                    self.cleanup()
-                else:
-                    self.cleanup()
+                ## if we are at the beginnig of a line everything is okay,
+                ## otherwise we have to insert a newline
+                self.cleanup()
+                if spaces < SPC_NL:
                     self.insertnewline()
                 self.pushstate("ednote")
             ### math in the forms $inline$ and $$display$$
             elif token == u'$':
                 self.pushstate("inlinemath")
             elif token == u"$$":
-                ## if we are at the beginnig of a line (as advertised by
-                ## predictnextstructure) everything is okay, otherwise we
-                ## have to insert a newline
-                if currentstate == "displaymathnext":
-                    self.cleanup()
-                else:
-                    self.cleanup()
+                self.cleanup()
+                if spaces < SPC_NL:
                     self.insertnewline()
                 self.pushstate("displaymath")
             ### [heading] and [[subheading]]
             ### with optional (authors) following
             elif token.startswith(u'['):
-                if token == u'[':
-                    newstate = "heading"
-                    rem = token[1:]
-                else:
-                    newstate = "subheading"
-                    rem = token[2:]
-                if currentstate == "headingnext":
-                    self.popstate()
-                    self.cleanup()
-                    self.pushstate(newstate)
-                    self.putescaped(rem)
-                else:
+                if spaces < SPC_NL:
+                    if currentstate == "normal":
+                        self.pushstate("paragraph")
                     self.putescaped(token)
+                else:
+                    self.cleanup()
+                    if token == u'[':
+                        self.pushstate("heading")
+                        self.putescaped(token[1:])
+                    else: # token == u'[['
+                        self.pushstate("subheading")
             elif token.startswith(u']'):
                 if currentstate == "heading":
                     self.popstate()
@@ -479,18 +421,12 @@ class BaseParser:
                     self.pushstate("wantsnewline")
                 self.putescaped(token)
             ### (authors) only available after [heading] and [[subheading]]
-            elif token == u'(':
-                if currentstate == "authorsnext":
-                    self.popstate()
-                    self.pushstate("authors")
-                else:
-                    self.put(token)
-            elif token == u')':
-                if currentstate == "authors":
-                    self.popstate()
-                    self.pushstate("wantsnewline")
-                else:
-                    self.put(token)
+            elif token == u'(' and currentstate == "authorsnext":
+                self.popstate()
+                self.pushstate("authors")
+            elif token == u')' and currentstate == "authors":
+                self.popstate()
+                self.pushstate("wantsnewline")
             ### _emphasis_
             elif token == u'_':
                 if currentstate == "emphasis":
@@ -498,37 +434,31 @@ class BaseParser:
                 else:
                     self.pushstate("emphasis")
             ### *keywords* only avalailable at the beginnig of paragraphs
-            elif token == u'*':
-                if currentstate == "keywordnext":
-                    self.popstate()
+            elif token == u'*' and currentstate in ("normal", "keyword"):
+                if self.lookstate() == "normal":
+                    self.pushstate("paragraph")
                     self.pushstate("keyword")
-                elif currentstate == "keyword":
+                else: # keyword
                     self.popstate()
-                else:
-                    self.put(token)
             ### lists only available at the beginning of lines
             ### - items
             ### - like
             ### - this
-            elif token == u'-':
-                if currentstate == "listnext":
+            elif token == u'-' and spaces >= SPC_NL and \
+                    self.looktoken() in (u' ', u'\t'):
+                self.poptoken()
+                if self.lookstate() == "item":
                     self.popstate()
-                    if self.looktoken() == u' ' or self.looktoken() == u'\t':
-                        self.poptoken()
-                        if self.lookstate() == "item":
-                            self.popstate()
-                            self.pushstate("item")
-                        else:
-                            self.cleanup()
-                            self.pushstate("list")
-                            self.pushstate("item")
-                    else:
-                        self.put(token)
+                    self.pushstate("item")
                 else:
-                    self.put(token)
+                    self.cleanup()
+                    self.pushstate("list")
+                    self.pushstate("item")
             ### the default case for all the non-special tokens
             ### but escaping the special tokens
             else:
+                if self.lookstate() == "normal":
+                    self.pushstate("paragraph")
                 self.putescaped(token)
 
         ## finally return the result
