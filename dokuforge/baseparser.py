@@ -112,17 +112,6 @@ class BaseParser:
         self.stack.append(statetwo)
         self.output.append(valuetwo)
 
-    def do_block(self, data, pattern):
-        """
-        Generic handler for things that want a newline behind them.
-
-        Examples are headings which are terminated by ] but where no newline
-        needs to follow. So if no newline comes we insert one for better
-        formating.
-        """
-        self.pushstate("wantsnewline")
-        return pattern % data
-
     def poptoken(self):
         """
         get a new token from the input string and advance the position in
