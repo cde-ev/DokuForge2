@@ -9,8 +9,15 @@
 {% block content %}
 {%- if course.pages %}
 <ol>
-	{%- for page in course.pages %}
-	<li><a href="{{ buildurl('page', {'page': page})|e }}"> Teil #{{ page|string }}</a>
+	{%- for page in course.outlines %}
+	<li><a href="{{ buildurl('page', {'page': page.number})|e }}"> Teil #{{ page.number|string }}</a>
+                {%- for (type, title) in page.items() -%}
+	            {%- if type == "heading" -%}
+	                <h4>{{title|e}}<h4>
+	            {%- elif type == "subheading" -%}
+	                <h5>&nbsp;&nbsp;&nbsp;&nbsp;{{title|e}}<h5>
+	            {%- endif -%}
+                {%- endfor -%}
 		{%- if not loop.first -%}
 		   {%- if user.allowedWrite(academy, course) %}
 		      {{ button(buildurl("moveup"), "Hochrücken",
