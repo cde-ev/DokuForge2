@@ -229,3 +229,25 @@ class Storage(object):
             os.unlink(self.fullpath())
             # 3) return new state
             return False, currentversion, mergedcontent
+
+
+class CachingStorage(Storage):
+    """
+    A storage Object that caches the contents; useful if a lot
+    of read is attemted
+    """
+
+    def __init__(self, path, filename):
+        Storage.__init__(self, path, filename)
+        self.cachedtime = 0 # Jan 1, 1970 -- way before the first dokuforge2 installation
+        self.cachedvalue = ""
+
+    def content(self, havelock=None):
+        self.ensureexistence(havelock = havelock)
+        mtime = os.path.getmtime(self.fullpath("%s,v")) 
+        if mtime == self.cachedtime:
+            pass # content already up to date
+        else:
+            self.cachedtime = mtime
+            self.cachedvalue = Storage.content(self)
+        return self.cachedvalue
