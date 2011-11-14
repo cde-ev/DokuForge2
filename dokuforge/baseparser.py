@@ -69,6 +69,18 @@ class BaseParser:
         self.output.append(u"")
         self.stack.append(value)
 
+    def changestate(self, state):
+        """
+        Change the current state to another state. The caller has to ensure
+        that the current state has received no output. Also this change in
+        state will not invoke any handle_* methods. It will silently eat the
+        current state as if it had never been there.
+        @type state: str
+        """
+        assert isinstance(state, str)
+        assert self.output[-1] == u""
+        self.stack[-1] = state
+
     def shiftseennewpardown(self):
         """
         exchange seennewpar on top of the stack with the state below.
@@ -323,15 +335,12 @@ class BaseParser:
                 if currentstate == "start" or currentstate == "seennewpar":
                     pass
                 elif currentstate == "seenwhitespace":
-                    self.popstate()
-                    self.pushstate("seennewline")
+                    self.changestate("seennewline")
                 elif currentstate == "seennewline":
-                    self.popstate()
-                    self.pushstate("seennewpar")
+                    self.changestate("seennewpar")
                 elif currentstate == "wantsnewline":
                     ## if we want a newline and there is one everything is nice
-                    self.popstate()
-                    self.pushstate("seennewline")
+                    self.changestate("seennewline")
                 else:
                     self.pushstate("seennewline")
                 continue
@@ -471,8 +480,7 @@ class BaseParser:
             ### *keywords* only avalailable at the beginnig of paragraphs
             elif token == u'*':
                 if currentstate == "keywordnext":
-                    self.popstate()
-                    self.pushstate("keyword")
+                    self.changestate("keyword")
                 elif currentstate == "keyword":
                     self.popstate()
                 else:
