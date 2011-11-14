@@ -39,7 +39,7 @@ class User:
             Grants the coresponding privelege for one course. Write does
             never imply read.
          - akademie_x_y --
-            x in {read, write, view}, y akademiename, z kursname
+            x in {read, write, view}, y akademiename
 
             Grants the coresponding privelege for one academy, in the case
             of read and write implying the priveleges for all courses of the
