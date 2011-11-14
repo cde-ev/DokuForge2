@@ -1,3 +1,11 @@
+import re
+
+tokenre = re.compile("[}{)(*_-]" + # single chars
+                     "|\\${1,2}|\\[{1,2}|\\]{1,2}" + # single/double chars
+                     "|[ \t]+|\\n+" + # char groups
+                     "|[^][}{)( \t\n$*_-]+", # rest
+                     re.UNICODE)
+
 class BaseParser:
     """
     Base class for parsing Dokuforge Syntax.
@@ -31,7 +39,8 @@ class BaseParser:
 
     def __init__(self, string, debug=False):
         assert isinstance(string, unicode)
-        self.input = string
+        self.input = [m.string.__getslice__(*m.span())
+                      for m in tokenre.finditer(string)]
         self.debug = debug
         self.pos = 0
         self.stack = [ "root", "start" ]
@@ -90,8 +99,7 @@ class BaseParser:
         statetwo = self.stack.pop()
         valuetwo = self.output.pop()
         ## push the seennewpar with empty content
-        self.stack.append(stateone)
-        self.output.append(u"")
+        self.pushstate(stateone)
         ## push other state with content which ended up in seennewpar
         ## but were intended for this state
         self.stack.append(statetwo)
@@ -158,7 +166,7 @@ class BaseParser:
         """
         try:
             tmp = 0
-            while self.input[self.pos + tmp] in u' \t\n':
+            while self.input[self.pos + tmp].isspace():
                 tmp += 1
             return self.input[self.pos + tmp]
         except IndexError:
@@ -265,16 +273,15 @@ class BaseParser:
         """
         if self.lookstate() in ("inlinemath", "displaymath", "ednote"):
             return
-        if token == u'[':
+        if token.startswith(u'['):
             self.pushstate("headingnext")
         if token == u'-':
-            if self.looktoken() == u' ' or self.looktoken() == u'\t':
+            if self.looktoken()[0:1] in (u' ', u'\t'):
                 self.pushstate("listnext")
         if token == u'{':
             self.pushstate("ednotenext")
-        if token == u'$':
-            if self.looktoken() == u'$':
-                self.pushstate("displaymathnext")
+        if token.startswith(u"$$"):
+            self.pushstate("displaymathnext")
 
     def parse(self):
         """
@@ -324,7 +331,7 @@ class BaseParser:
 
             ## second handle whitespace
             ## we contract whitespace as far as sensible
-            if token == u' ' or token == u'\t':
+            if token[0:1] in (u' ', u'\t'):
                 if currentstate not in ("start", "seenwhitespace",
                                         "seennewline", "seennewpar",
                                         "wantsnewline"):
@@ -346,6 +353,21 @@ class BaseParser:
                 else:
                     self.pushstate("seennewline")
                 continue
+            elif token.startswith(u"\n\n"):
+                if currentstate == "seenwhitespace":
+                    self.popstate()
+                    self.pushstate("seennewpar")
+                elif currentstate == "seennewline":
+                    self.popstate()
+                    self.pushstate("seennewpar")
+                elif currentstate == "wantsnewline":
+                    ## if we want a newline and there is one everything is nice
+                    self.popstate()
+                    self.pushstate("seennewpar")
+                else:
+                    self.pushstate("seennewpar")
+                continue
+
 
             ## now we have a non-whitespace token so we clean up the state
             ## i.e. remove whitespace from the context
@@ -378,15 +400,15 @@ class BaseParser:
             ## even ednotes since math needs curly braces
             if self.lookstate() in ("inlinemath", "displaymath"):
                 ## math special token $
-                if token == u'$':
+                if token.startswith(u'$'):
                     if currentstate == "inlinemath":
                         self.popstate()
+                        self.putescaped(token[1:])
                     else:
                         # displaymath
                         self.popstate()
-                        if self.looktoken() == u'$':
-                            self.poptoken()
                         self.pushstate("wantsnewline")
+                        self.putescaped(token[2:])
                 ## but we still need to escape
                 else:
                     self.putescaped(token)
@@ -415,51 +437,47 @@ class BaseParser:
                 self.pushstate("ednote")
             ### math in the forms $inline$ and $$display$$
             elif token == u'$':
-                if self.looktoken() == u'$':
-                    self.poptoken()
-                    ## if we are at the beginnig of a line (as advertised by
-                    ## predictnextstructure) everything is okay, otherwise we
-                    ## have to insert a newline
-                    if currentstate == "displaymathnext":
-                        self.cleanup()
-                    else:
-                        self.cleanup()
-                        self.insertnewline()
-                    self.pushstate("displaymath")
+                self.pushstate("inlinemath")
+            elif token == u"$$":
+                ## if we are at the beginnig of a line (as advertised by
+                ## predictnextstructure) everything is okay, otherwise we
+                ## have to insert a newline
+                if currentstate == "displaymathnext":
+                    self.cleanup()
                 else:
-                    self.pushstate("inlinemath")
+                    self.cleanup()
+                    self.insertnewline()
+                self.pushstate("displaymath")
             ### [heading] and [[subheading]]
             ### with optional (authors) following
-            elif token == u'[':
+            elif token.startswith(u'['):
+                if token == u'[':
+                    newstate = "heading"
+                    rem = token[1:]
+                else:
+                    newstate = "subheading"
+                    rem = token[2:]
                 if currentstate == "headingnext":
                     self.popstate()
                     self.cleanup()
-                    if self.looktoken() == u'[':
-                        self.poptoken()
-                        self.pushstate("subheading")
-                    else:
-                        self.pushstate("heading")
+                    self.pushstate(newstate)
+                    self.putescaped(rem)
                 else:
-                    self.put(token)
-            elif token == u']':
+                    self.putescaped(token)
+            elif token.startswith(u']'):
                 if currentstate == "heading":
                     self.popstate()
-                    ## activate paren
-                    if self.lookprintabletoken() == u'(':
+                    token = token[1:]
+                    if (not token) and self.lookprintabletoken() == u'(':
                         self.pushstate("authorsnext")
                     self.pushstate("wantsnewline")
-                elif currentstate == "subheading":
-                    if self.looktoken() == u']':
-                        self.poptoken()
-                        self.popstate()
-                        ## activate paren
-                        if self.lookprintabletoken() == u'(':
-                            self.pushstate("authorsnext")
-                        self.pushstate("wantsnewline")
-                    else:
-                        self.put(token)
-                else:
-                    self.put(token)
+                elif token.startswith(u"]]") and currentstate == "subheading":
+                    self.popstate()
+                    token = token[2:]
+                    if (not token) and self.lookprintabletoken() == u'(':
+                        self.pushstate("authorsnext")
+                    self.pushstate("wantsnewline")
+                self.putescaped(token)
             ### (authors) only available after [heading] and [[subheading]]
             elif token == u'(':
                 if currentstate == "authorsnext":
