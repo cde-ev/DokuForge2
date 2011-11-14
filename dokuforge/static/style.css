@@ -34,13 +34,11 @@
     font-size: x-large;
     font-weight: bold;
     margin-right: 12.5em;
-    background-color: #999933;
 }
 #location {
     position: absolute;
     bottom: 1ex;
     margin-right: 20em;
-    background-color: #990033;
 }
 .important {
     color: red;
