@@ -28,6 +28,9 @@ class BaseParser:
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%1s$".__mod__
     handle_nestedednote = u"{%s}".__mod__
+    handle_seenwhitespace = u"%.0s ".__mod__
+    handle_seennewline = u"%.0s\n".__mod__
+    handle_wantsnewline = handle_seennewline
 
     def __init__(self, string, debug=False):
         assert isinstance(string, unicode)
@@ -241,10 +244,8 @@ class BaseParser:
                 self.popstate()
             elif currentstate == "seenwhitespace":
                 self.popstate()
-                self.insertwhitespace()
             elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
-                self.insertnewline()
             elif currentstate == "seennewpar":
                 ## push the newpar one step down
                 ## this allows to close all other contexts before the newpar
@@ -354,10 +355,8 @@ class BaseParser:
                 pass
             elif currentstate == "seenwhitespace":
                 self.popstate()
-                self.insertwhitespace()
             elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
-                self.insertnewline()
                 ## activate special tokens
                 self.predictnextstructure(token)
             elif currentstate == "seennewpar":
