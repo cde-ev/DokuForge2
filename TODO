@@ -14,5 +14,5 @@
 * webaccess to rcs history
 * trail export (to view the current length)
 * interactive page swapping
-* create portable variant (virtual machine which serves dokuforge locally)
+* create manual for setting up a local dokuforge server
 * escaping in ednotes in exportparser
