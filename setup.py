@@ -7,7 +7,8 @@ import subprocess
 def add_versioninfo():
     try:
         p = subprocess.Popen(["git", "show", "-s", "--format=%H"],
-                             stdout=subprocess.PIPE)
+                             stdout=subprocess.PIPE,
+                             cwd=os.path.join(os.path.dirname(__file__)))
     except OSError:
         return
     commitid, _ = p.communicate()
