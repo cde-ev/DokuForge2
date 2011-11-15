@@ -312,12 +312,6 @@ class DokuforgeTests(unittest.TestCase):
         form["groups"] = ["cde"]
         self.br.open(form.click(label="Akademie anlegen"))
         self.assertTrue("Interner Name nicht wohlgeformt!" in self.get_data())
-        form = list(self.br.forms())[1]
-        form["name"] = "foobar"
-        form["title"] = "next Testakademie"
-        form["groups"] = ["cde", "spam"]
-        self.br.open(form.click(label="Akademie anlegen"))
-        self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
         self.is_loggedin()
 
     def testGroups(self):
