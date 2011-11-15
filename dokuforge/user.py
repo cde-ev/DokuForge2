@@ -349,8 +349,8 @@ class UserDB:
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():
-            permissions = dict((perm.split(' ')[0].decode("utf8"),
-                                strtobool(perm.split(' ')[1].decode("utf8")))
+            permissions = dict((perm.strip().split(' ')[0].decode("utf8"),
+                                strtobool(perm.strip().split(' ')[1].decode("utf8")))
                 for perm in config.get(name, 'permissions').split(','))
             self.addUser(config.get(name, 'name').decode("utf8"),
                          config.get(name, 'status').decode("utf8"),
