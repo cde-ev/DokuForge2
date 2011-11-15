@@ -26,6 +26,10 @@ from dokuforge.academy import Academy
 import dokuforge.common as common
 from dokuforge.common import CheckError
 from dokuforge.htmlparser import DokuforgeToHtmlParser
+try:
+    from dokuforge.versioninfo import commitid
+except ImportError:
+    commitid = "unknown"
 
 sysrand = random.SystemRandom()
 
@@ -1497,6 +1501,7 @@ class Application:
             allowMathChange = False
         params = dict(
             user = rs.user,
+            commitid=commitid.decode("utf8"),
             form=rs.request.form,
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail),
