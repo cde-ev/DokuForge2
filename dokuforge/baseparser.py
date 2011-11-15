@@ -28,6 +28,9 @@ class BaseParser:
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%1s$".__mod__
     handle_nestedednote = u"{%s}".__mod__
+    handle_seenwhitespace = u"%.0s ".__mod__
+    handle_seennewline = u"%.0s\n".__mod__
+    handle_wantsnewline = handle_seennewline
 
     def __init__(self, string, debug=False):
         assert isinstance(string, unicode)
@@ -68,6 +71,18 @@ class BaseParser:
         """
         self.output.append(u"")
         self.stack.append(value)
+
+    def changestate(self, state):
+        """
+        Change the current state to another state. The caller has to ensure
+        that the current state has received no output. Also this change in
+        state will not invoke any handle_* methods. It will silently eat the
+        current state as if it had never been there.
+        @type state: str
+        """
+        assert isinstance(state, str)
+        assert self.output[-1] == u""
+        self.stack[-1] = state
 
     def shiftseennewpardown(self):
         """
@@ -111,17 +126,6 @@ class BaseParser:
         self.output.append(valueone)
         self.stack.append(statetwo)
         self.output.append(valuetwo)
-
-    def do_block(self, data, pattern):
-        """
-        Generic handler for things that want a newline behind them.
-
-        Examples are headings which are terminated by ] but where no newline
-        needs to follow. So if no newline comes we insert one for better
-        formating.
-        """
-        self.pushstate("wantsnewline")
-        return pattern % data
 
     def poptoken(self):
         """
@@ -240,10 +244,8 @@ class BaseParser:
                 self.popstate()
             elif currentstate == "seenwhitespace":
                 self.popstate()
-                self.insertwhitespace()
             elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
-                self.insertnewline()
             elif currentstate == "seennewpar":
                 ## push the newpar one step down
                 ## this allows to close all other contexts before the newpar
@@ -255,7 +257,7 @@ class BaseParser:
                     self.popstate()
                     self.insertnewpar()
             else:
-                raise ValueError("invalid state")
+                raise ValueError("invalid state: %s" % currentstate)
 
     def predictnextstructure(self, token):
         """
@@ -334,15 +336,12 @@ class BaseParser:
                 if currentstate == "start" or currentstate == "seennewpar":
                     pass
                 elif currentstate == "seenwhitespace":
-                    self.popstate()
-                    self.pushstate("seennewline")
+                    self.changestate("seennewline")
                 elif currentstate == "seennewline":
-                    self.popstate()
-                    self.pushstate("seennewpar")
+                    self.changestate("seennewpar")
                 elif currentstate == "wantsnewline":
                     ## if we want a newline and there is one everything is nice
-                    self.popstate()
-                    self.pushstate("seennewline")
+                    self.changestate("seennewline")
                 else:
                     self.pushstate("seennewline")
                 continue
@@ -356,10 +355,8 @@ class BaseParser:
                 pass
             elif currentstate == "seenwhitespace":
                 self.popstate()
-                self.insertwhitespace()
             elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
-                self.insertnewline()
                 ## activate special tokens
                 self.predictnextstructure(token)
             elif currentstate == "seennewpar":
@@ -482,8 +479,7 @@ class BaseParser:
             ### *keywords* only avalailable at the beginnig of paragraphs
             elif token == u'*':
                 if currentstate == "keywordnext":
-                    self.popstate()
-                    self.pushstate("keyword")
+                    self.changestate("keyword")
                 elif currentstate == "keyword":
                     self.popstate()
                 else:

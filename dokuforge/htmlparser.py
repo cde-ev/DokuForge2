@@ -28,4 +28,5 @@ class DokuforgeToHtmlParser(BaseParser):
     handle_emphasis = u"<i>%s</i>".__mod__
     handle_keyword = u"<b>%s</b>".__mod__
     # inherit handle_inlinemath
-    # inherit handle_displaymath
+    handle_displaymath = u"<div class=\"displaymath\">$$%1s$$</div>".__mod__
+

@@ -251,3 +251,8 @@ class CachingStorage(Storage):
             self.cachedtime = mtime
             self.cachedvalue = Storage.content(self)
         return self.cachedvalue
+
+    def lastchanged(self, havelock=None):
+        self.ensureexistence(havelock = havelock)
+        return os.path.getmtime(self.fullpath("%s,v"))
+

@@ -100,6 +100,7 @@ if (checkMathCookie() == true){
 	{%- if user.isSuperAdmin() %}
 	<a href="{{ buildurl("groups")|e }}">Gruppenverwaltung</a>
 	{%- endif -%}
+	<br>
    {%- endif %}
    {%- if allowMathChange %}
        <script type="text/javascript">
@@ -147,6 +148,7 @@ Dies sollte nicht sichtbar sein.
 {% endblock -%}
 </div>
 </body>
+<!-- Dokuforge revision is {{ commitid }}. -->
 </html>
 {# vim:syntax=jinja
 #}

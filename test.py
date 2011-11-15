@@ -191,6 +191,30 @@ class DokuforgeTests(unittest.TestCase):
             self.assertTrue(outputstr.encode("utf8") in self.get_data())
         self.is_loggedin()
 
+    def testMarkup(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(text="Editieren"))
+        form = list(self.br.forms())[1]
+        form["content"] = \
+"""[Section]
+(Authors)
+*keyword*, $\\sqrt{2}$ and _emphasis_
+$$\\sqrt{2}$$
+[[subsection]]
+- bullet1
+- bullet2
+chars like < > & " to be escaped and an { ednote \\end{ednote} }
+"""
+        self.br.open(form.click(label="Speichern und Beenden"))
+        content = self.get_data()
+        self.assertTrue("$\\sqrt{2}$" in content)
+        self.assertTrue("ednote \\end{ednote}" in content)
+        self.is_loggedin()
+
     def testMovePage(self):
         self.br.open(self.url)
         self.do_login()

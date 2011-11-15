@@ -1,5 +1,6 @@
 from __future__ import with_statement
 import os
+import re
 
 from werkzeug.datastructures import FileStorage
 
@@ -7,6 +8,33 @@ from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
 import dokuforge.common as common
+
+class Outline:
+    def __init__(self, number):
+        """
+        @type number: int
+        """
+        self.number = number
+        self.content = []
+    def addheading(self, title):
+        """
+        @type title: unicode
+        """
+        assert isinstance(title, unicode)
+        if title:
+            self.content.append(("heading", title))
+    def addsubheading(self, title):
+        """
+        @type title: unicode
+        """
+        assert isinstance(title, unicode)
+        if title:
+            self.content.append(("subheading", title))
+    def items(self):
+        """
+        @rtype: [(str, unicode)]
+        """
+        return self.content
 
 class Course(StorageDir):
     """
@@ -76,6 +104,27 @@ class Course(StorageDir):
         """
         lines = self.getcontent("Index", havelock).splitlines()
         return [int(line.split()[0]) for line in lines if line != ""]
+
+    def outlinepages(self, havelock=None):
+        """
+        @type havelock: None or LockDir
+        @returns: a list of the available pages with information such as
+            headings cointained in correct order
+        @rtype: [Outline]
+        """
+        pages = self.listpages()
+        outlines = []
+        for p in pages:
+            outline = Outline(p)
+            headings = re.findall(ur'^\[.*\]$', self.showpage(p),
+                                  re.MULTILINE|re.UNICODE)
+            for h in headings:
+                if h[1] == u'[':
+                    outline.addsubheading(h[2:-2])
+                else:
+                    outline.addheading(h[1:-1])
+            outlines.append(outline)
+        return outlines
 
     def listdeadpages(self):
         """
@@ -447,10 +496,11 @@ class Course(StorageDir):
         """
         @rtype: LazyView
         @returns: a mapping providing the keys: name(str), pages([int]),
-                deadpages([int]), title(unicode)
+                deadpages([int]), title(unicode), outlines([Outline])
         """
         functions = dict(
             pages = self.listpages,
-            deadpages = self.listdeadpages)
+            deadpages = self.listdeadpages,
+            outlines = self.outlinepages)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)

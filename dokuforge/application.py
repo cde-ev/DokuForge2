@@ -26,6 +26,10 @@ from dokuforge.academy import Academy
 import dokuforge.common as common
 from dokuforge.common import CheckError
 from dokuforge.htmlparser import DokuforgeToHtmlParser
+try:
+    from dokuforge.versioninfo import commitid
+except ImportError:
+    commitid = "unknown"
 
 sysrand = random.SystemRandom()
 
@@ -128,7 +132,6 @@ class RequestState:
         self.response = Response()
         self.sessionhandler = SessionHandler(sessiondb, request, self.response)
         self.userdb = userdb
-        self.userdb.load()
         self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
         self.mapadapter = mapadapter
         self.endpoint_args = None # set later in Application.render
@@ -398,6 +401,7 @@ class Application:
     @Request.application
     def __call__(self, request):
         mapadapter = self.routingmap.bind_to_environ(request.environ)
+        self.userdb.load()
         rs = RequestState(request, self.sessiondb, self.userdb, mapadapter)
         try:
             endpoint, args = mapadapter.match()
@@ -465,13 +469,13 @@ class Application:
                 usercontent.encode("utf8"), user=rs.user.name.encode("utf8"))
         version = version.decode("utf8")
         content = content.decode("utf8")
-        if not savehook is None:
-            savehook()
         if not ok:
             error = CheckError(u"Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!",
                                u"Bitte l&ouml;se den Konflikt auf und speichere danach erneut.")
             return self.render_file(rs, template, version, content, ok=False,
                                     error = error, extraparams=extraparams)
+        if not savehook is None:
+            savehook()
         return self.render_file(rs, template, version, content, ok=True,
                                 extraparams=extraparams)
 
@@ -1498,6 +1502,7 @@ class Application:
             allowMathChange = False
         params = dict(
             user = rs.user,
+            commitid=commitid.decode("utf8"),
             form=rs.request.form,
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail),

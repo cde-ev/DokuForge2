@@ -5,7 +5,6 @@
 * exporter
 
 == not so important ==
-* cleanup whitespace handling in parser
 * nicer design
 * upgraded navigation (back-buttons, all sort of cross-links)
 * page estimates
@@ -15,4 +14,5 @@
 * webaccess to rcs history
 * trail export (to view the current length)
 * interactive page swapping
-* create portable variant
+* create manual for setting up a local dokuforge server
+* escaping in ednotes in exportparser

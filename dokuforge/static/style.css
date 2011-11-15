@@ -3,7 +3,7 @@
     padding: 1ex;
     margin: 0px;
     position: relative;
-    min-height: 14.5ex;
+    min-height: 15ex;
 }
 #footer {
     background-color: #9999ff;
@@ -28,15 +28,17 @@
     position: absolute;
     bottom: 1ex;
     right: 1ex;
+    text-align: right;
 }
 #subheading {
     font-size: x-large;
     font-weight: bold;
+    margin-right: 12.5em;
 }
 #location {
     position: absolute;
     bottom: 1ex;
-    margin-right: 45ex;
+    margin-right: 20em;
 }
 .important {
     color: red;
@@ -68,4 +70,7 @@ body {
 textarea {
 	width: 100%;
 	min-height: 10em;
+}
+.dokucontent .displaymath {
+    text-align: center;
 }

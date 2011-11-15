@@ -39,7 +39,7 @@ class User:
             Grants the coresponding privelege for one course. Write does
             never imply read.
          - akademie_x_y --
-            x in {read, write, view}, y akademiename, z kursname
+            x in {read, write, view}, y akademiename
 
             Grants the coresponding privelege for one academy, in the case
             of read and write implying the priveleges for all courses of the
@@ -237,6 +237,8 @@ class UserDB:
 
     @ivar db: dictionary containing (username, User object) pairs
     @ivar storage: storage.Storage object holding the userdb
+    @ivar lastchanged: time of last update, this is compared to the mtime of
+        the CachingStorage
     """
     def __init__(self, storage):
         """
@@ -244,6 +246,7 @@ class UserDB:
         """
         self.db = dict()
         self.storage = storage
+        self.lastchanged = -1
 
     def addUser(self, name, status, password, permissions):
         """
@@ -335,16 +338,22 @@ class UserDB:
 
         This erases all in-memory changes.
         """
+        ## if nothing is changed return
+        if self.storage.lastchanged() <= self.lastchanged:
+            return
         config = ConfigParser.SafeConfigParser()
         content = StringIO(self.storage.content())
+        ## update time, since we read the new content
+        self.lastchanged = self.storage.cachedtime
         config.readfp(content)
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():
-            permissions = dict((perm.split(' ')[0].decode("utf8"),
-                                strtobool(perm.split(' ')[1].decode("utf8")))
+            permissions = dict((perm.strip().split(' ')[0].decode("utf8"),
+                                strtobool(perm.strip().split(' ')[1].decode("utf8")))
                 for perm in config.get(name, 'permissions').split(','))
             self.addUser(config.get(name, 'name').decode("utf8"),
                          config.get(name, 'status').decode("utf8"),
                          config.get(name, 'password').decode("utf8"),
                          permissions)
+
