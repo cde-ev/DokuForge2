@@ -315,6 +315,8 @@ class DokuforgeTests(unittest.TestCase):
         form = list(self.br.forms())[1]
         form["name"] = "foobar"
         form["title"] = "next Testakademie"
+        # hack an invalid group
+        mechanize.Item(form.find_control("groups"), dict(value="spam"))
         form["groups"] = ["cde", "spam"]
         self.br.open(form.click(label="Akademie anlegen"))
         self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
