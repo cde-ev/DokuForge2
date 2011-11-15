@@ -667,7 +667,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         name = rs.request.form["name"] # FIXME: raises KeyError
         title = rs.request.form["title"] # FIXME: raises KeyError
-        groups = rs.request.form["groups"].split() # FIXME: raises KeyError
+        groups = rs.request.form.getlist("groups") # FIXME: raises KeyError
         try:
             self.createAcademy(name, title, groups)
         except CheckError as error:
@@ -1418,6 +1418,7 @@ class Application:
         """
         params = dict(ok=ok,
                       error=error,
+                      allgroups=self.listGroups(),
                       allowMathChange = False)
         return self.render("createacademyquiz.html", rs, params)
 
