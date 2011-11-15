@@ -4,25 +4,26 @@ from distutils.core import setup
 import os
 import subprocess
 
+workdir = os.path.dirname(os.path.realpath(__file__))
+
 def add_versioninfo():
     try:
         p = subprocess.Popen(["git", "show", "-s", "--format=%H"],
                              stdout=subprocess.PIPE,
-                             cwd=os.path.join(os.path.dirname(__file__)))
+                             cwd=workdir)
     except OSError:
         return
     commitid, _ = p.communicate()
     if p.returncode != 0:
         return
     commitid = commitid.strip()
-    with file(os.path.join(os.path.dirname(__file__), "dokuforge",
-                           "versioninfo.py"), "w") as verfile:
+    with file(os.path.join(workdir, "dokuforge", "versioninfo.py"),
+              "w") as verfile:
         verfile.write('commitid = "%s"\n' % commitid)
 
 def clean_versioninfo():
     try:
-        os.unlink(os.path.join(os.path.dirname(__file__), "dokuforge",
-                               "versioninfo.py"))
+        os.unlink(os.path.join(workdir, "dokuforge", "versioninfo.py"))
     except OSError:
         pass
 
