@@ -1,0 +1,64 @@
+Prerequisites:
+~~~~~~~~~~~~~~
+
+ * Python (version >= 2.6)
+ * werkzeug
+   Required: yes
+   Homepage: http://werkzeug.pocoo.org/
+   Debian: python-werkzeug
+   FreeBSD: www/py-werkzeug
+   Gentoo: dev-python/werkzeug
+ * jinja (version 2.x)
+   Required: yes
+   Homepage: http://jinja.pocoo.org/
+   Debian: python-jinja2
+   FreeBSD: devel/py-Jinja2
+   Gentoo: dev-python/jinja
+ * rcs
+   Required: yes
+   Homepage: http://www.cs.purdue.edu/homes/trinkle/RCS/
+   Debian: rcs
+   FreeBSD: included in base system
+   Gentoo: dev-vcs/rcs
+ * mechanize
+   Required: only for the test suite
+   Homepage: http://wwwsearch.sourceforge.net/mechanize/
+   Debian: python-mechanize
+   FreeBSD: www/py-mechanize
+   Gentoo: dev-python/mechanize
+ * wsgitools
+   Required: for using serve_* except serve_debug
+   Homepage: http://www.subdivi.de/~helmut/wsgitools/
+   Debian: not packaged
+   FreeBSD: not packaged
+   Gentoo: not packaged
+   Download: http://www.subdivi.de/~helmut/darcs/wsgitools/dist/wsgitools-0.2.2.tar.gz
+ * mathjax
+   Required: only for rendering math
+   Homepage: http://www.mathjax.org/
+   Debian: not packaged
+   FreeBSD: www/mathjax (pending)
+   Gentoo: not packaged
+   Download: http://github.com/mathjax/MathJax/zipball/v1.1a
+ * epydoc
+   Required:
+   Homepage: http://epydoc.sourceforge.net/
+   Debian: python-epydoc
+   FreeBSD: devel/epydoc
+   Gentoo: dev-python/epydoc
+
+ Short forms:
+  * Debian: aptitude install python-werkzeug python-jinja2 rcs python-mechanize python-epydoc
+  * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-mechanize devel/epydoc
+  * Gentoo: emerge dev-python/werkzeug dev-python/jinja dev-vcs/rcs dev-python/mechanize dev-python/epydoc
+
+Configuration:
+~~~~~~~~~~~~~~
+Copy dokuforge.conf.sample and update it. A basic data set for testing can be
+created by invoking python createexample.py.
+
+Running:
+~~~~~~~~
+The simplest form is
+python -m dokuforge.serve_simple path_to_your_dokuforge.conf
+It will start a webserver on localhost:8800.
