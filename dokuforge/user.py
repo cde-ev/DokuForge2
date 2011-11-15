@@ -237,8 +237,8 @@ class UserDB:
 
     @ivar db: dictionary containing (username, User object) pairs
     @ivar storage: storage.Storage object holding the userdb
-    @ivar lastchanged: time of last update, this is compared to the cachedtime
-        of the CachingStorage
+    @ivar lastchanged: time of last update, this is compared to the mtime of
+        the CachingStorage
     """
     def __init__(self, storage):
         """
@@ -339,7 +339,7 @@ class UserDB:
         This erases all in-memory changes.
         """
         ## if nothing is changed return
-        if self.storage.cachedtime <= self.lastchanged:
+        if self.storage.lastchanged() <= self.lastchanged:
             return
         config = ConfigParser.SafeConfigParser()
         content = StringIO(self.storage.content())
