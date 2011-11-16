@@ -466,8 +466,8 @@ class Application:
         version = version.decode("utf8")
         content = content.decode("utf8")
         if not ok:
-            error = CheckError(u"Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!",
-                               u"Bitte l&ouml;se den Konflikt auf und speichere danach erneut.")
+            error = CheckError(u"Es ist ein Konflikt mit einer anderen Änderung aufgetreten!",
+                               u"Bitte löse den Konflikt auf und speichere danach erneut.")
             return self.render_file(rs, template, version, content, ok=False,
                                     error = error, extraparams=extraparams)
         if not savehook is None:

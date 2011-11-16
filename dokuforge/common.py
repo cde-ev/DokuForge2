@@ -74,7 +74,7 @@ def validateGroups(groups, allgroups):
     assert all(isinstance(g, unicode) for g in groups)
     if len(groups) == 0:
         raise CheckError(u"Keine Gruppen gefunden!",
-                         u"Jede Akademie muss mindestens einer Gruppe angeh&ouml;ren. Bitte korrigieren und erneut versuchen.")
+                         u"Jede Akademie muss mindestens einer Gruppe angehören. Bitte korrigieren und erneut versuchen.")
     for g in groups:
         if g not in allgroups:
             raise CheckError(u"Nichtexistente Gruppe gefunden!",
