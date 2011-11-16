@@ -257,8 +257,7 @@ class BaseParser:
             return
         if token == u'[':
             self.pushstate("headingnext")
-        if token == u'-' and ( self.looktoken() == u' ' or
-                               self.looktoken() == u'\t' ):
+        if token == u'-' and self.looktoken() in (u' ', u'\t'):
             self.pushstate("listnext")
         if token == u'{':
             self.pushstate("ednotenext")
@@ -320,7 +319,7 @@ class BaseParser:
                     self.pushstate("seenwhitespace")
                 continue
             elif token == u'\n':
-                if currentstate == "start" or currentstate == "seennewpar":
+                if currentstate in ("start", "seennewpar"):
                     pass
                 elif currentstate in ("seenwhitespace", "wantsnewline"):
                     ## if we want a newline and there is one everything is nice
