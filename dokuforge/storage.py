@@ -130,8 +130,8 @@ class Storage(object):
                                            self.fullpath()])
 
     def asrcs(self, havelock=None):
-        with havelock or self.lock:
-            self.ensureexistence()
+        with havelock or self.lock as gotlock:
+            self.ensureexistence(havelock=gotlock)
             f = file(self.fullpath("%s,v"), mode = "r")
             content = f.read()
             f.close()
