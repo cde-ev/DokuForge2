@@ -470,8 +470,8 @@ class Application:
         version = version.decode("utf8")
         content = content.decode("utf8")
         if not ok:
-            error = CheckError(u"Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!",
-                               u"Bitte l&ouml;se den Konflikt auf und speichere danach erneut.")
+            error = CheckError(u"Es ist ein Konflikt mit einer anderen Änderung aufgetreten!",
+                               u"Bitte löse den Konflikt auf und speichere danach erneut.")
             return self.render_file(rs, template, version, content, ok=False,
                                     error = error, extraparams=extraparams)
         if not savehook is None:
@@ -672,7 +672,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         name = rs.request.form["name"] # FIXME: raises KeyError
         title = rs.request.form["title"] # FIXME: raises KeyError
-        groups = rs.request.form["groups"].split() # FIXME: raises KeyError
+        groups = rs.request.form.getlist("groups") # FIXME: raises KeyError
         try:
             self.createAcademy(name, title, groups)
         except CheckError as error:
@@ -1093,9 +1093,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_property(rs, aca.getgroupsstring,
-                                "academygroups.html",
-                                extraparams={'academy': aca.view()})
+        return self.render_academygroups(rs, aca)
 
     def do_academygroupssave(self, rs, academy=None):
         """
@@ -1107,9 +1105,13 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        return self.do_propertysave(rs, aca.setgroups,
-                                    "academygroups.html",
-                                    extraparams={'academy': aca.view()})
+        groups = rs.request.form.getlist("groups") # FIXME: raises KeyError
+        try:
+            aca.setgroups(groups)
+        except CheckError as error:
+            return self.render_academygroups(rs, aca,  ok = False,
+                                             error = error)
+        return self.render_academygroups(rs, aca, ok = True)
 
     def do_academytitle(self, rs, academy=None):
         """
@@ -1423,8 +1425,21 @@ class Application:
         """
         params = dict(ok=ok,
                       error=error,
+                      allgroups=self.listGroups(),
                       allowMathChange = False)
         return self.render("createacademyquiz.html", rs, params)
+
+    def render_academygroups(self, rs, theacademy, ok = None, error = None):
+        """
+        @type rs: RequestState
+        @type theacademy: Academy
+        """
+        params = dict(academy = theacademy.view(),
+                      allgroups = self.listGroups(),
+                      allowMathChange = False,
+                      ok = ok,
+                      error = error)
+        return self.render("academygroups.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse, thepage, saved=False):
         """

@@ -290,11 +290,13 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(text="Gruppen bearbeiten"))
         form = list(self.br.forms())[1]
-        form["content"] = "cde qed"
+        form["groups"] = ["cde"]
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Aenderungen erfolgreich gespeichert." in self.get_data())
+        self.assertTrue("Gruppen erfolgreich bearbeitet." in self.get_data())
         form = list(self.br.forms())[1]
-        form["content"] = "cde spam"
+        # hack an invalid group
+        mechanize.Item(form.find_control("groups"), dict(value="spam"))
+        form["groups"] = ["cde", "spam"]
         self.br.open(form.click(label="Speichern und Editieren"))
         self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
         self.is_loggedin()
@@ -325,7 +327,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form = list(self.br.forms())[1]
         form["name"] = "newacademy-2001"
         form["title"] = "Testakademie"
-        form["groups"] = "cde"
+        form["groups"] = ["cde"]
         self.br.open(form.click(label="Akademie anlegen"))
         self.assertTrue("Testakademie" in self.get_data())
         self.assertTrue("X-Akademie" in self.get_data())
@@ -333,13 +335,15 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form = list(self.br.forms())[1]
         form["name"] = "foo_bar"
         form["title"] = "next Testakademie"
-        form["groups"] = "cde"
+        form["groups"] = ["cde"]
         self.br.open(form.click(label="Akademie anlegen"))
         self.assertTrue("Interner Name nicht wohlgeformt!" in self.get_data())
         form = list(self.br.forms())[1]
         form["name"] = "foobar"
         form["title"] = "next Testakademie"
-        form["groups"] = "cde spam"
+        # hack an invalid group
+        mechanize.Item(form.find_control("groups"), dict(value="spam"))
+        form["groups"] = ["cde", "spam"]
         self.br.open(form.click(label="Akademie anlegen"))
         self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
         self.is_loggedin()

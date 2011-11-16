@@ -8,11 +8,17 @@
 {% endblock %}
 {% block content %}
 
-{{ threeway(ok, 'Bitte Gruppen eingeben und mit "Speichern" beenden.',
-            "Aenderungen erfolgreich gespeichert.", error.message,
-            error.explanation) }}
+{{ threeway(ok, "Bitte Gruppen bearbeiten.", "Gruppen erfolgreich bearbeitet.", error.message, error.explanation) }}
 <form action="{{ buildurl("academygroupssave")|e }}" method="post" id="save">
-	<textarea name="content">{{ content|e }}</textarea>
+        Gruppen: <select name="groups" multiple>
+            {%- for group, title in allgroups.items() %}
+	        {% if group in academy.groups -%}
+                    <option value="{{ group|e }}" selected>{{ title|e }}</option>
+                {%- else -%}
+                    <option value="{{ group|e }}">{{ title|e }}</option>
+		{%- endif -%}
+            {%- endfor -%}
+        </select>
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>

@@ -54,7 +54,7 @@ kann man schoenes bauen", wollen wir uns also ein Beispiel nehmen. Und jetzt
 machen wir noch einen Gedankensprung -- schon sind wir auf einem anderen
 Planeten.
 
-Man kann z.B. auch ganz viele Abkuerzungen u.a. unterbringen um lange
+_Man_ kann z.B. auch ganz viele Abkuerzungen u.a. unterbringen um lange
 Absaetze (s.o.) zu stutzen, aber das ist nur ca. halb so leserlich. Auch
 nicht besser wird es wenn man ganz viele AKRONYME verwendet ... Aber
 manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
