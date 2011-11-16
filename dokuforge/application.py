@@ -1058,13 +1058,13 @@ class Application:
         return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
-        assert academy is not None and course is not None and page is not None
         """
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
         @type page: int
         """
+        assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
