@@ -4,6 +4,7 @@
 from dokuforge.htmlparser import DokuforgeToHtmlParser
 from dokuforge.exportparser import DokuforgeToTeXParser
 from dokuforge.baseparser import BaseParser
+from dokuforge.estimatorparser import Estimator
 
 teststring = u"""
  [Eine Ueberschrift]
@@ -99,3 +100,6 @@ exporter = DokuforgeToTeXParser(teststring)
 print exporter.parse().encode("utf8")
 
 print "========================================"
+
+estimator = Estimator(teststring)
+print estimator.parse()
