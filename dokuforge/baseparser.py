@@ -31,6 +31,7 @@ class BaseParser:
     handle_seenwhitespace = u"%.0s ".__mod__
     handle_seennewline = u"%.0s\n".__mod__
     handle_wantsnewline = handle_seennewline
+    handle_seennewpar = u"%.0s\n\n".__mod__
 
     def __init__(self, string, debug=False):
         assert isinstance(string, unicode)
@@ -174,12 +175,6 @@ class BaseParser:
         """
         self.put(u'\n')
 
-    def insertnewpar(self):
-        """
-        interface for putting newpars
-        """
-        self.put(u'\n\n')
-
     def put(self, s):
         """
         append s to the output string
@@ -249,7 +244,6 @@ class BaseParser:
                 if self.lookstate() == "normal":
                     self.transposestates()
                     self.popstate()
-                    self.insertnewpar()
             else:
                 raise ValueError("invalid state: %s" % currentstate)
 
