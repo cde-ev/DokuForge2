@@ -407,7 +407,9 @@ class Course(StorageDir):
 
         common.validateBlobLabel(label)
         common.validateBlobComment(comment)
-        common.validateBlobFilename(data.filename.encode("utf8"))
+        # Note: Some browsers may be unable to set the filename.
+        filename = (data.filename or u"unnamedfile").encode("utf8")
+        common.validateBlobFilename(filename)
 
         if user is not None:
             assert isinstance(user, unicode)
@@ -435,7 +437,7 @@ class Course(StorageDir):
         blob.store(data, user = user)
         bloblabel.store(label.encode("utf8"), user = user)
         blobcomment.store(comment.encode("utf8"), user = user)
-        blobname.store(data.filename.encode("utf8"), user = user)
+        blobname.store(filename, user=user)
         return newnumber
 
     def listblobs(self, number):

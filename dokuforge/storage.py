@@ -121,16 +121,17 @@ class Storage(object):
     def ensureexistence(self, havelock=None):
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
-                subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
-                                       self.fullpath()])
-                file(self.fullpath(), mode = "w").close()
-                subprocess.check_call(["ci", "-q", "-f",
-                                       "-minitial, implicit, empty commit",
-                                       self.fullpath()])
+                if not os.path.exists(self.fullpath("%s,v")):
+                    subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
+                                           self.fullpath()])
+                    file(self.fullpath(), mode = "w").close()
+                    subprocess.check_call(["ci", "-q", "-f",
+                                           "-minitial, implicit, empty commit",
+                                           self.fullpath()])
 
     def asrcs(self, havelock=None):
-        with havelock or self.lock:
-            self.ensureexistence()
+        with havelock or self.lock as gotlock:
+            self.ensureexistence(havelock=gotlock)
             f = file(self.fullpath("%s,v"), mode = "r")
             content = f.read()
             f.close()
