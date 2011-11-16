@@ -265,7 +265,7 @@ class BaseParser:
             self.pushstate("headingnext")
         if token == u'-' and ( self.looktoken() == u' ' or
                                self.looktoken() == u'\t' ):
-                self.pushstate("listnext")
+            self.pushstate("listnext")
         if token == u'{':
             self.pushstate("ednotenext")
         if token == u'$' and self.looktoken() == u'$':
