@@ -457,18 +457,16 @@ class BaseParser:
             ### - items
             ### - like
             ### - this
-            elif token == u'-' and currentstate == "listnext":
+            elif token == u'-' and currentstate == "listnext" and \
+                    self.looktoken() in (u' ', u'\t'):
                 self.popstate()
-                if self.looktoken() == u' ' or self.looktoken() == u'\t':
-                    self.poptoken()
-                    if self.lookstate() == "item":
-                        self.popstate()
-                    else:
-                        self.cleanup()
-                        self.pushstate("list")
-                    self.pushstate("item")
+                self.poptoken()
+                if self.lookstate() == "item":
+                    self.popstate()
                 else:
-                    self.put(token)
+                    self.cleanup()
+                    self.pushstate("list")
+                self.pushstate("item")
             ### the default case for all the non-special tokens
             ### but escaping the special tokens
             else:
