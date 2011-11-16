@@ -268,7 +268,7 @@ class DokuforgeTests(unittest.TestCase):
         form = list(self.br.forms())[1]
         form["groups"] = ["cde"]
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Gruppenverwaltung" in self.get_data())
+        self.assertTrue("Gruppen erfolgreich bearbeitet." in self.get_data())
         form = list(self.br.forms())[1]
         # hack an invalid group
         mechanize.Item(form.find_control("groups"), dict(value="spam"))
