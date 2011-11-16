@@ -1045,7 +1045,6 @@ class Application:
         try:
             c.attachblob(page, usercontent, comment=usercomment,
                          label=userlabel, user=rs.user.name)
-            return self.render_show(rs, aca, c, page)
         except CheckError as error:
             ## comment and label are checked in the first stage in do_uploadblob
             ## hence only the filename can be offending
@@ -1053,12 +1052,15 @@ class Application:
             try:
                 blob = c.attachblob(page, usercontent, comment=usercomment,
                                 label=userlabel, user=rs.user.name)
-                return self.render_editblob(rs, aca, c, page, blob, ok=False,
-                                            error=error)
             except CheckError:
                 ## this case should never happen
                 ## (except manually crafted POSTs)
                 return self.render_addblob(rs, aca, c, page)
+            else:
+                return self.render_editblob(rs, aca, c, page, blob, ok=False,
+                                            error=error)
+        else:
+            return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
         assert academy is not None and course is not None and page is not None
