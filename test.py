@@ -266,11 +266,13 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(text="Gruppen bearbeiten"))
         form = list(self.br.forms())[1]
-        form["content"] = "cde qed"
+        form["groups"] = ["cde"]
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Aenderungen erfolgreich gespeichert." in self.get_data())
+        self.assertTrue("Gruppenverwaltung" in self.get_data())
         form = list(self.br.forms())[1]
-        form["content"] = "cde spam"
+        # hack an invalid group
+        mechanize.Item(form.find_control("groups"), dict(value="spam"))
+        form["groups"] = ["cde", "spam"]
         self.br.open(form.click(label="Speichern und Editieren"))
         self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
         self.is_loggedin()

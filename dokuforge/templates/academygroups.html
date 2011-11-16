@@ -8,6 +8,7 @@
 {% endblock %}
 {% block content %}
 
+{{ threeway(ok, "Bitte Gruppen bearbeiten.", "Gruppen erfolgreich bearbeitet.", error.message, error.explanation) }}
 <form action="{{ buildurl("academygroupssave")|e }}" method="post" id="save">
         Gruppen: <select name="groups" multiple>
             {%- for group, title in allgroups.items() %}

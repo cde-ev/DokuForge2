@@ -1101,8 +1101,12 @@ class Application:
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
         groups = rs.request.form.getlist("groups") # FIXME: raises KeyError
-        aca.setgroups(groups)
-        return self.render_academygroups(rs, aca)
+        try:
+            aca.setgroups(groups)
+        except CheckError as error:
+            return self.render_academygroups(rs, aca,  ok = False,
+                                             error = error)
+        return self.render_academygroups(rs, aca, ok = True)
 
     def do_academytitle(self, rs, academy=None):
         """
@@ -1420,14 +1424,16 @@ class Application:
                       allowMathChange = False)
         return self.render("createacademyquiz.html", rs, params)
 
-    def render_academygroups(self, rs, theacademy):
+    def render_academygroups(self, rs, theacademy, ok = None, error = None):
         """
         @type rs: RequestState
         @type theacademy: Academy
         """
         params = dict(academy = theacademy.view(),
                       allgroups = self.listGroups(),
-                      allowMathChange = False)
+                      allowMathChange = False,
+                      ok = ok,
+                      error = error)
         return self.render("academygroups.html", rs, params)
 
     def render_show(self, rs, theacademy, thecourse, thepage, saved=False):
