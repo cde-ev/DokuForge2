@@ -106,7 +106,7 @@ def validateBlobLabel(label):
     assert isinstance(label, unicode)
     if re.match('^[a-z0-9]{1,200}$', label) is None:
         raise CheckError(u"Kürzel nicht wohlgeformt!",
-                         u"Das Kürzel darf lediglich Kleinbuchstaben und Ziffern enthalten und auch nicht leer sein.")
+                         u"Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten und auch nicht leer sein.")
 
 def validateBlobComment(comment):
     """
