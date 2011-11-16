@@ -1046,15 +1046,16 @@ class Application:
             c.attachblob(page, usercontent, comment=usercomment,
                          label=userlabel, user=rs.user.name)
         except CheckError as error:
-            usercontent.filename = u"einedatei.dat"
             if error.message == u"Dateiname nicht wohlgeformt!":
+                usercontent.filename = common.sanitizeBlobFilename(usercontent.filename)
                 blob = c.attachblob(page, usercontent, comment=usercomment,
                                 label=userlabel, user=rs.user.name)
+                return self.render_editblob(rs, aca, c, page, blob, ok=False,
+                                            error=error)
             else:
-                blob = c.attachblob(page, usercontent, comment=u"Bildunterschrift",
-                                    label=u"somefig", user=rs.user.name)
-            return self.render_editblob(rs, aca, c, page, blob, ok=False,
-                                       error=error)
+                ## this case should never happen
+                ## (except manually crafted POSTs)
+                return self.render_addblob(rs, aca, c, page)
         return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):

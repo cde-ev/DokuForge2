@@ -132,7 +132,7 @@ def validateBlobFilename(filename):
     @raises CheckError:
     """
     assert isinstance(filename, str)
-    if re.match('^[-a-zA-Z0-9_.]{1,200}$', filename) is None:
+    if re.match('^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
         raise CheckError(u"Dateiname nicht wohlgeformt!",
                          u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen.")
 
@@ -184,3 +184,6 @@ def validateExistence(path, name):
     if not os.path.exists(os.path.join(path, name)):
         raise CheckError(u"Interner Name existiert nicht!",
                          u"Bitte den Namen korrigieren.")
+
+def sanitizeBlobFilename(name):
+    return u"einedatei.dat"

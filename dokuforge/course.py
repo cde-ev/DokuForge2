@@ -408,7 +408,7 @@ class Course(StorageDir):
         common.validateBlobLabel(label)
         common.validateBlobComment(comment)
         # Note: Some browsers may be unable to set the filename.
-        filename = (data.filename or u"unnamedfile").encode("utf8")
+        filename = (data.filename or u"").encode("utf8")
         common.validateBlobFilename(filename)
 
         if user is not None:
