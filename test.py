@@ -232,7 +232,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form = list(self.br.forms())[2]
         self.br.open(form.click(label=u"Neuen Teil anlegen".encode("utf8")))
         self.is_loggedin()
-        self.assertTrue("Teil #2" in self.get_data())
+        self.assertTrue("Teil&nbsp;#2" in self.get_data())
 
     def testCourseTitle(self):
         self.br.open(self.url)
@@ -255,7 +255,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
-        self.assertFalse("Teil #0" in self.get_data())
+        self.assertFalse("Teil&nbsp;#0" in self.get_data())
         self.is_loggedin()
 
     def testRestorePage(self):
@@ -269,7 +269,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.br.click_link(url_regex=re.compile("course01/!deadpages$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label="wiederherstellen"))
-        self.assertTrue("Teil #0" in self.get_data())
+        self.assertTrue("Teil&nbsp;#0" in self.get_data())
         self.is_loggedin()
 
     def testAcademyTitle(self):

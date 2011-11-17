@@ -8,25 +8,44 @@
 {% endblock %}
 {% block content %}
 {%- if course.pages %}
-<ol>
+<div class="toc">
+        {%- set i = 0 -%}
 	{%- for page in course.outlines %}
-	<li><a href="{{ buildurl('page', {'page': page.number})|e }}"> Teil #{{ page.number|string }}</a>
+        {%- set i = i + 1 -%}
+	<div class="tocpart">
+	   <table>
+	     <tr>
+	       <td >
+		 <div class="tocnumber">
+		   <a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{i|e}}</a></div>
+                 <a href="{{ buildurl('page', {'page': page.number})|e }}"> Teil&nbsp;#{{ page.number|string }}</a>
+		 </td>
+	         <td class="tocoutline">
                 {%- for (type, title) in page.items() -%}
+		    {# FIXME links currently link only to a page, not to a specific heading. #}
 	            {%- if type == "heading" -%}
-	                <h4>{{title|e}}<h4>
+	                <div class="tocheading"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{title|e}}</a></div>
 	            {%- elif type == "subheading" -%}
-	                <h5>&nbsp;&nbsp;&nbsp;&nbsp;{{title|e}}<h5>
+	                <div class="tocsubheading"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{title|e}}</a></div>
 	            {%- endif -%}
+		{%- else -%}
+	                <div class="tocempty">(...)</div>
                 {%- endfor -%}
+		</td>
+		<td>
 		{%- if not loop.first -%}
 		   {%- if user.allowedWrite(academy, course) %}
 		      {{ button(buildurl("moveup"), "Hochrücken",
 	              	 dict(number=loop.index0)) }}
 		   {%- endif -%}
 		{%- endif -%}
-	</li>
+		</td>
+	      </tr>
+	   </table>
+	</div>
+	
 	{%- endfor %}
-</ol>
+</div>
 {%- else -%}
 <em>Keine Teile gefunden gefunden.</em>
 {%- endif -%}

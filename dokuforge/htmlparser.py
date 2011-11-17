@@ -20,7 +20,7 @@ class DokuforgeToHtmlParser(BaseParser):
 
     handle_heading = u"<h3>%s</h3>".__mod__
     handle_subheading = u"<h4>%s</h4>".__mod__
-    handle_ednote = u"<pre>%s</pre>".__mod__
+    handle_ednote = u"<pre class=\"ednote\">%s</pre>".__mod__
     handle_authors = u"<i>%s</i>".__mod__
     handle_paragraph = "<p>%s</p>".__mod__
     handle_list = u"<ul>\n%s\n</ul>".__mod__

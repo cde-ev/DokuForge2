@@ -59,11 +59,11 @@ body {
     background-color: #ddddff;
 }
 
-.dokucontent pre {
+.ednote {
     background-color: #aaddff;
 }
 
-.ednote {
+.dokucontent .ednote {
     background-color: #aaddff;
 }
 
@@ -74,3 +74,89 @@ textarea {
 .dokucontent .displaymath {
     text-align: center;
 }
+
+.tocpart {
+    background-color: #aaaaff;
+    padding: 1ex;
+    margin: 1ex;
+}
+
+.tocnumber {
+    font-size: 5ex;
+    text-align: center;
+}
+
+.tocheading {
+    font-weight: bold;
+    padding-left: 1em;
+}
+
+.tocsubheading {
+    font-weight: bold;
+    padding-left: 5em;
+}
+
+.tocempty {
+    font-style: italic;
+    padding-left: 1em;
+}
+
+.tocoutline {
+    width: 100%;
+}
+
+a.inconspicuous {
+    color: #000000;
+    text-decoration: none;
+}
+
+a.inconspicuous:link {
+    color: #000000;
+    text-decoration: none;
+}
+
+a.inconspicuous:visited {
+    color: #000000;
+    text-decoration: none;
+}
+
+a.inconspicuous:focus {
+    color: #000000;
+    text-decoration: none;
+}
+
+a.inconspicuous:hover {
+    color: #000000;
+    text-decoration: none;
+}
+
+a.inconspicuous:active {
+    color: #000000;
+    text-decoration: none;
+}
+
+a {
+    color: #5500aa;
+}
+
+a:link {
+    color: #880088;
+}
+
+a:visited {
+    color: #550055;
+}
+
+a:focus {
+    color: #880088;
+}
+
+a:hover {
+    color: #880088;
+}
+
+a:active {
+    color: #880088;
+}
+
+
