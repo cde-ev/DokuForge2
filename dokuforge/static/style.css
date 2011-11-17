@@ -74,17 +74,32 @@ textarea {
 .dokucontent .displaymath {
     text-align: center;
 }
-
+.toc {
+	list-style-type: none;
+}
 .tocpart {
     background-color: #aaaaff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
+    min-height: 9ex;
 }
-
+.tocpartstart {
+	float: left;
+	width: 5em;
+}
 .tocnumber {
     font-size: 5ex;
+    float: left;
     text-align: center;
+	width: 100%;
+}
+.tocspan {
+	float: left;
+	clear: left;
+	display: block;
+	width: 100%;
+	text-align: center;
 }
 
 .tocheading {
@@ -105,7 +120,9 @@ textarea {
 .tocoutline {
     width: 100%;
 }
-
+.tocpart form {
+	float: right;
+}
 .courseitem {
     background-color: #aaaaff;
     padding: 1ex;
