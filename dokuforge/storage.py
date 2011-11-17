@@ -6,7 +6,10 @@ import time
 import subprocess
 import re
 
+import pyparsing
+
 from dokuforge.common import check_output
+from dokuforge.rcslib import RCS
 
 def rlogv(filename):
     """
@@ -137,19 +140,49 @@ class Storage(object):
             f.close()
             return content
 
+    def parsercs(self, havelock=None):
+        """
+        @rtype: RCS or None
+        """
+        self.ensureexistence(havelock=havelock)
+        for path in map(self.fullpath, ("%s,v", "RCS/%s,v")):
+            try:
+                with file(path) as rcsfile:
+                    content = rcsfile.read()
+            except IOError:
+                continue
+            try:
+                # FIXME: what other exceptions may occur here?
+                rcs = RCS.parse(content)
+            except pyparsing.ParseException:
+                continue
+            return rcs
+        return None
+
     def status(self, havelock=None):
         """
-        @rtype: str
+        @rtype: str or None
         """
-        self.ensureexistence(havelock = havelock)
-        result = rlogv(self.fullpath("%s,v"))
-        if result is None:
-            result = rlogv(self.fullpath("RCS/%s,v"))
-        return result
+        rcs = self.parsercs(havelock=havelock)
+        if rcs is None:
+            return None
+        try:
+            return rcs.headrevision()
+        except KeyError:
+            return None
+
+    def contentbyrcs(self, havelock):
+        self.ensureexistence(havelock=havelock)
+        return check_output(["co", "-q", "-p", "-kb", self.fullpath()])
 
     def content(self, havelock=None):
-        self.ensureexistence(havelock = havelock)
-        return check_output(["co", "-q", "-p", "-kb", self.fullpath()])
+        rcs = self.parsercs(havelock=havelock)
+        try:
+            if rcs is None:
+                raise KeyError
+            return rcs.headtext()
+        except KeyError:
+            return self.contentbyrcs(havelock)
 
     def startedit(self, havelock=None):
         """
@@ -160,13 +193,15 @@ class Storage(object):
         that version is still the head revision.
 
         @returns: an opaque version string and the contents of the file
-        @rtype: (str, str)
+        @rtype: (str or None, str)
         """
-        with havelock or self.lock as gotlock:
-            self.ensureexistence(havelock = gotlock)
-            status = self.status(havelock = gotlock)
-            content = self.content(havelock = gotlock)
-            return status, content
+        rcs = self.parsercs(havelock=havelock)
+        try:
+            if rcs is None:
+                raise KeyError
+            return (rcs.headrevision(), rcs.headtext())
+        except KeyError:
+            return (None, self.contentbyrcs(havelock=havelock))
 
     def endedit(self, version, newcontent, user=None, havelock=None):
         """
@@ -183,6 +218,7 @@ class Storage(object):
         @param newcontent: the new content, produced by the user starting from
                            the content at the provided version
         @type user: None or str
+        @rtype: (bool, str or None, str)
         @returns: a triple (ok, newversion, mergedcontent) where ok is boolen
             with value True if the save was sucessfull (if not, a merge has
             to be done manually), and (newversion, mergedcontent) is a state
