@@ -12,7 +12,7 @@
 }
 #content {
     background-color: #ccccff;
-    padding: 1ex;
+    padding: 2ex;
 }
 #page {
 }
@@ -78,7 +78,8 @@ textarea {
 .tocpart {
     background-color: #aaaaff;
     padding: 1ex;
-    margin: 1ex;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
 }
 
 .tocnumber {
@@ -103,6 +104,13 @@ textarea {
 
 .tocoutline {
     width: 100%;
+}
+
+.courseitem {
+    background-color: #aaaaff;
+    padding: 1ex;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
 }
 
 a.inconspicuous {

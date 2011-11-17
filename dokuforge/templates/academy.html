@@ -7,18 +7,21 @@
 {% endblock %}
 {% block content %}
 {% if academy.courses %}
-<ol>
+<div class="courselist">
 	{%- for course in academy.courses -%}
 	    {%- if user.allowedRead(academy, course) %}
-	    <li><a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a></li>
+	    <div class="courseitem">
+	      <a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a>
+	    </div>
 	    {%- else -%}
-	    <li>{{ course.title|e }}</li>
+	    <div class="courseitem">{{ course.title|e }}</div>
 	    {%- endif -%}
 	{%- endfor %}
-</ol>
+</div>
 {%- else -%}
-<em>Keine Kurse gefunden.</em>
+<em>Keine Kurse gefunden.</em><br>
 {%- endif -%}
+<div class="academyoperations">
 {%- if user.mayExport(academy)%}
 {# 
 <a href="{{ buildurl("export")|e }}">Exportieren</a>
@@ -29,4 +32,5 @@
 <a href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a>
 <a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
 {%- endif -%}
+</div>
 {% endblock %}

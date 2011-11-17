@@ -47,12 +47,9 @@
 	{%- endfor %}
 </div>
 {%- else -%}
-<em>Keine Teile gefunden gefunden.</em>
+<em>Keine Teile gefunden gefunden.</em><br>
 {%- endif -%}
-{%- if user.allowedWrite(academy, course) %}
-{{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
-<a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>
-{%- endif -%}
+<div class="courseoperations">
 {%- if user.mayExport(academy) %}
 <a href="{{ buildurl("raw")|e }}">Roh-Export</a>
 {%- endif -%}
@@ -60,4 +57,9 @@
 <a href="{{ buildurl("coursetitle")|e }}">Titel bearbeiten</a>
 </a>
 {%- endif -%}
+{%- if user.allowedWrite(academy, course) %}
+<a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>
+{{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
+{%- endif -%}
+</div>
 {% endblock %}
