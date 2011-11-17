@@ -26,6 +26,7 @@ from dokuforge.academy import Academy
 import dokuforge.common as common
 from dokuforge.common import CheckError
 from dokuforge.htmlparser import DokuforgeToHtmlParser
+from dokuforge.estimatorparser import Estimator
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
@@ -1434,12 +1435,15 @@ class Application:
         @type thepage: int
         @type saved: bool
         """
-        parser = DokuforgeToHtmlParser(thecourse.showpage(thepage))
+        pagecontent = thecourse.showpage(thepage)
+        parsed = DokuforgeToHtmlParser(pagecontent).parse()
+        estimate = Estimator(pagecontent).parse()
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            content=parser.parse(),
+            content=parsed,
+            estimate=estimate,
             saved=saved,
             blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
         return self.render("show.html", rs, params)
