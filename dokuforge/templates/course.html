@@ -29,7 +29,7 @@
 	                <div class="tocsubheading"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{title|e}}</a></div>
 	            {%- endif -%}
 		{%- else -%}
-	                <div class="tocempty">(...)</div>
+	                <div class="tocempty"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">(...)</a></div>
                 {%- endfor -%}
 		</td>
 		<td>
