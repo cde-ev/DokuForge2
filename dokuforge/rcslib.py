@@ -2,7 +2,6 @@
 
 from pyparsing import Dict, Group, OneOrMore, Optional, QuotedString, \
         Suppress, White, Word, ZeroOrMore, alphanums, alphas
-import sys
 
 semicolon = Suppress(";").leaveWhitespace()
 attrname = Word(alphas)("attr").leaveWhitespace()
@@ -32,5 +31,39 @@ versions = Dict(version + ZeroOrMore(doublenl + version))
 rcsfile = block("header") + newline + verblocks("verblocks") + newline + \
           dataattr("desc") + doublenl + versions("versions")
 
-result = rcsfile.parseFile(sys.argv[1])
-print result.versions[result.header["head"]]["text"]
+class RCS:
+    def __init__(self, parseresult):
+        """
+        @type parseresult: pyparsing.ParseResult
+        @param parseresult: a rcsfile parse result
+        """
+        self.parseresult = parseresult
+
+    @classmethod
+    def parse(cls, content):
+        """
+        @type content: str
+        @param content: a rcs file
+        @rtype: RCS
+        """
+        assert isinstance(content, str)
+        return cls(rcsfile.parseString(content))
+
+    def headrevision(self):
+        """
+        @rtype: str
+        @raises KeyError:
+        """
+        return self.parseresult.header["head"]
+
+    def headtext(self):
+        """
+        @rtype: str
+        @raises KeyError:
+        """
+        return self.parseresult.versions[self.headrevision()]["text"]
+
+if __name__ == '__main__':
+    import sys
+    result = rcsfile.parseFile(sys.argv[1])
+    print RCS(result).headtext()
