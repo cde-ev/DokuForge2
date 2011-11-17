@@ -57,4 +57,4 @@ class Estimator(BaseParser):
         return Estimate(0)
 
     def result(self):
-        return int(BaseParser.result(self))
+        return int(Estimate(BaseParser.result(self)))
