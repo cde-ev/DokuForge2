@@ -1454,6 +1454,7 @@ class Application:
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
+            commit = thecourse.getcommit(thepage),
             content=parser.parse(),
             saved=saved,
             blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
