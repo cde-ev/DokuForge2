@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from dokuforge.treeparser import TreeParser
+from dokuforge.baseparser import BaseParser, ParseTree
 
-class DokuforgeToHtmlParser(TreeParser):
+class DokuforgeToHtmlParser(BaseParser):
     """
     Parser for converting Dokuforge Syntax into viewable html.
 
@@ -30,3 +30,9 @@ class DokuforgeToHtmlParser(TreeParser):
     # inherit handle_inlinemath
     handle_displaymath = u"<div class=\"displaymath\">$$%1s$$</div>".__mod__
 
+    def __init__(self, obj):
+        if isinstance(obj, ParseTree):
+            BaseParser.__init__(self)
+            self.tree = obj
+        else:
+            BaseParser.__init__(self, obj)

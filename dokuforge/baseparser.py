@@ -118,7 +118,7 @@ class BaseParser:
 
     escapemap = {}
 
-    def __init__(self, string, debug=False):
+    def __init__(self, string=u"", debug=False):
         assert isinstance(string, unicode)
         self.input = string
         self.debug = debug

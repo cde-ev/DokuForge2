@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from dokuforge.treeparser import TreeParser
-from dokuforge.dokuforgeparser import DokuforgeToDokuforgeParser
+from dokuforge.baseparser import BaseParser
+from dokuforge.htmlparser import DokuforgeToHtmlParser
+from dokuforge.exportparser import DokuforgeToTeXParser
 
 #囲碁
 
@@ -67,10 +68,24 @@ manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 Und hier noch ein {Hinweis} der mitten im Satz steht.
 """
 
-parser = TreeParser(teststring, debug = True)
+parser = BaseParser(teststring, debug = True)
 
 tree = parser.parse()
 
 tree.display(verbose=True)
 
+print "========================================"
 print parser.generateoutput()
+print "========================================"
+
+html = DokuforgeToHtmlParser(tree)
+
+print "========================================"
+print html.generateoutput()
+print "========================================"
+
+tex = DokuforgeToTeXParser(tree)
+
+print "========================================"
+print tex.generateoutput()
+print "========================================"

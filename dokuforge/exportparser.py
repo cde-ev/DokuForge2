@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from dokuforge.treeparser import BaseParser
+from dokuforge.baseparser import BaseParser, ParseTree
 
 class DokuforgeToTeXParser(BaseParser):
     """
@@ -25,3 +25,9 @@ class DokuforgeToTeXParser(BaseParser):
     handle_list = u"\\begin{itemize}\n%s\n\end{itemize}".__mod__
     handle_item = u"\\item %s".__mod__
 
+    def __init__(self, obj):
+        if isinstance(obj, ParseTree):
+            BaseParser.__init__(self)
+            self.tree = obj
+        else:
+            BaseParser.__init__(self, obj)
