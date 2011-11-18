@@ -184,6 +184,15 @@ class Storage(object):
             result = rlogv(self.fullpath("RCS/%s,v"))
         return result
 
+    def commitstatus(self, havelock=None):
+        """
+        Obtain information about the last change made to this storage object.
+        @returns: a str-str dict with information about the head commit; in particular,
+                  it will contain the keys 'revision', 'author', and 'date'.
+        """
+        self.ensureexistence(havelock=havelock)
+        return rloghead(self.fullpath("%s,v"))
+
     def content(self, havelock=None):
         self.ensureexistence(havelock = havelock)
         return check_output(["co", "-q", "-p", "-kb", self.fullpath()])
