@@ -14,7 +14,11 @@ class ParseLeaf:
         whitespace = u""
         for i in range(indent):
             whitespace += u"    "
-        print whitespace + u"ParseLeaf: " + self.ident.encode("utf8") + u" (" + self.data.encode("utf8") + u")"
+        assert isinstance(self.data, unicode)
+        assert isinstance(whitespace, unicode)
+        assert isinstance(self.ident, str)
+        string = u"%sParseLeaf: %s (%s)" % (whitespace, self.ident, self.data)
+        print string.encode("utf8")
 
 class ParseTree:
     def __init__(self, ident):
@@ -345,10 +349,7 @@ class BaseParser:
             if self.debug:
                 self.tree.display()
                 print self
-                try:
-                    print "Token:", token
-                except UnicodeEncodeError:
-                    print "Token: <???> unicode token"
+                print u"Token:", token.encode("utf8")
             ## process the token
 
             ## first handle ednotes

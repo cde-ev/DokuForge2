@@ -5,13 +5,11 @@ from dokuforge.baseparser import BaseParser
 from dokuforge.htmlparser import DokuforgeToHtmlParser
 from dokuforge.exportparser import DokuforgeToTeXParser
 
-#囲碁
-
 teststring = u"""
  [Eine Ueberschrift]
 (Autor, Korrektor und Chef)
 
- Lorem    ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel dui
+ Lorem  囲碁  ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel dui
 mi. Mauris feugiat erat eget quam varius eu congue lectus viverra. Ut sed
   velit dapibus eros ultricies blandit a in felis. Nam ultricies pharetra
 luctus. Nam aliquam lobortis rutrum. Phasellus quis arcu non dui pretium
@@ -75,17 +73,17 @@ tree = parser.parse()
 tree.display(verbose=True)
 
 print "========================================"
-print parser.generateoutput()
+print parser.generateoutput().encode("utf8")
 print "========================================"
 
 html = DokuforgeToHtmlParser(tree)
 
 print "========================================"
-print html.generateoutput()
+print html.generateoutput().encode("utf8")
 print "========================================"
 
 tex = DokuforgeToTeXParser(tree)
 
 print "========================================"
-print tex.generateoutput()
+print tex.generateoutput().encode("utf8")
 print "========================================"
