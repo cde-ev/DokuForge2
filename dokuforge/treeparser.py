@@ -219,6 +219,14 @@ class TreeParser:
                     self.tree.insert(ParseLeaf("Word", s))
                 else:
                     self.tree.appendtoleaf(s)
+            elif s in u'0123456789':
+                leaf = self.tree.lookactiveleaf()
+                if leaf is None or not leaf.ident == "Number":
+                    self.tree.insert(ParseLeaf("Number", s))
+                else:
+                    self.tree.appendtoleaf(s)
+            else:
+                self.tree.insert(ParseLeaf("Token", s))
         else:
             self.tree.insert(ParseLeaf("Token", s))
 
@@ -286,7 +294,21 @@ class TreeParser:
             self.pushstate("ednotenext")
         if token == u'$' and self.looktoken() == u'$':
             self.pushstate("displaymathnext")
-# 
+
+    def deletetrailingwhitespace(self, tree=None):
+        if tree is None:
+            tree = self.tree
+        if isinstance(tree, ParseLeaf):
+            return
+        if len(tree.tree) == 0:
+            return
+        while tree.tree[-1].ident == "Whitespace":
+            tree.tree.pop()
+            if len(tree.tree) == 0:
+                return
+        for x in tree.tree:
+            self.deletetrailingwhitespace(x)
+
     def parse(self):
         """
         The actual parser.
@@ -493,6 +515,8 @@ class TreeParser:
             ### but escaping the special tokens
             else:
                 self.put(token)
+
+        self.deletetrailingwhitespace()
 
         self.tree.close()
 
