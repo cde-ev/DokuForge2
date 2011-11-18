@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from dokuforge.htmlparser import DokuforgeToHtmlParser
-from dokuforge.exportparser import DokuforgeToTeXParser
 from dokuforge.baseparser import BaseParser
+
+#囲碁
 
 teststring = u"""
  [Eine Ueberschrift]
 (Autor, Korrektor und Chef)
 
- Lorem  囲碁  ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel dui
+ Lorem    ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel dui
 mi. Mauris feugiat erat eget quam varius eu congue lectus viverra. Ut sed
   velit dapibus eros ultricies blandit a in felis. Nam ultricies pharetra
 luctus. Nam aliquam lobortis rutrum. Phasellus quis arcu non dui pretium
@@ -66,36 +66,8 @@ manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 Und hier noch ein {Hinweis} der mitten im Satz steht.
 """
 
-parser = DokuforgeToHtmlParser(teststring, debug = True)
+parser = BaseParser(teststring)#, debug = True)
 
+tree = parser.parse()
 
-html =  parser.parse().encode("utf8")
-
-print "========================================"
-
-base = BaseParser(teststring)
-
-dokuforge = base.parse().encode("utf8")
-
-print dokuforge
-
-print "========================================"
-print "========================================"
-
-basetwo = BaseParser(dokuforge.decode("utf8"))
-
-print basetwo.parse().encode("utf8")
-
-print "========================================"
-print "========================================"
-
-print html
-
-print "========================================"
-print "========================================"
-
-exporter = DokuforgeToTeXParser(teststring)
-
-print exporter.parse().encode("utf8")
-
-print "========================================"
+tree.display(verbose=True)

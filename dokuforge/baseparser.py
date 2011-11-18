@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class ParseLeaf:
     def __init__(self, ident, data):
         self.ident = ident
@@ -6,13 +8,13 @@ class ParseLeaf:
     def isactive(self):
         return False
 
-    def display(self, indent=0):
+    def display(self, indent=0, verbose=False):
+        if not verbose:
+            return
         whitespace = u""
         for i in range(indent):
-            whitespace += u"  "
-        print whitespace + u"ParseLeaf: " + self.ident + " (" + self.data + ")"
-        for x in self.tree:
-            x.display(indent + 1)
+            whitespace += u"    "
+        print whitespace + u"ParseLeaf: " + self.ident.encode("utf8") + u" (" + self.data.encode("utf8") + u")"
 
 class ParseTree:
     def __init__(self, ident):
@@ -27,6 +29,7 @@ class ParseTree:
         assert self.active
         if len(self.tree) == 0:
             self.tree.append(newtree)
+            return
         if self.tree[-1].isactive():
             self.tree[-1].insert(newtree)
         else:
@@ -36,18 +39,54 @@ class ParseTree:
         assert self.active
         if len(self.tree) == 0:
             self.active = False
+            return self.ident
         if self.tree[-1].isactive():
-            self.tree[-1].close()
+            return self.tree[-1].close()
         else:
             self.active = False
+            return self.ident
 
-    def display(self, indent=0):
+    def display(self, indent=0, verbose=False):
         whitespace = u""
+        marker = u""
         for i in range(indent):
-            whitespace += u"  "
-        print whitespace + u"ParseTree: " + self.ident
+            whitespace += u"    "
+        if self.isactive():
+            marker = u"*"
+        print whitespace + u"ParseTree: " + self.ident + marker
         for x in self.tree:
-            x.display(indent + 1)
+            x.display(indent + 1, verbose)
+
+    def lookstate(self):
+        assert self.active
+        if len(self.tree) == 0:
+            return self.ident
+        if self.tree[-1].isactive():
+            return self.tree[-1].lookstate()
+        else:
+            return self.ident
+
+    def lookactiveleaf(self):
+        assert self.active
+        if len(self.tree) == 0:
+            return None
+        if isinstance(self.tree[-1], ParseTree):
+            if self.tree[-1].active:
+                return self.tree[-1].lookactiveleaf()
+            else:
+                return None
+        else:
+            return self.tree[-1]
+
+    def appendtoleaf(self, s):
+        assert self.active
+        assert not len(self.tree) == 0
+        if isinstance(self.tree[-1], ParseTree):
+            assert self.tree[-1].active
+            self.tree[-1].appendtoleaf(s)
+        else:
+            self.tree[-1].data += s
+
 
 class BaseParser:
     """
@@ -62,11 +101,7 @@ class BaseParser:
     @ivar pos: current position in the input string
     @ivar stack: contains the current context
     @ivar output: is a stack of current outputs
-    @cvar escapemap: a mapping of characters that need escaping to their
-            escaped representation
     """
-    escapemap = {}
-
     handle_heading = u"[%s]".__mod__
     handle_subheading = u"[[%s]]".__mod__
     handle_ednote = u"{%s}".__mod__
@@ -89,16 +124,18 @@ class BaseParser:
         self.input = string
         self.debug = debug
         self.pos = 0
-        self.stack = [ "root", "start" ]
-        self.output = [ u"", u"" ]
-        self.tree = []
+        self.stack = [ "start" ]
+        self.tree = ParseTree("root")
 
     def lookstate(self):
         """
         @rtype: str
         @returns: topmost state in the context
         """
-        return self.stack[-1]
+        if len(self.stack) == 0:
+            return self.tree.lookstate()
+        else:
+            return self.stack[-1]
 
     def popstate(self):
         """
@@ -107,16 +144,25 @@ class BaseParser:
         @rtype: str
         @returns: the removed state
         """
-        state = self.stack.pop()
-        self.tree.close()
-        return state
+        if len(self.stack) == 0:
+            return self.tree.close()
+        else:
+            state = self.stack.pop()
+            if state == "seenwhitespace":
+                self.tree.insert(ParseLeaf("Whitespace", u" "))
+            elif state in ("seennewline", "wantsnewline"):
+                self.tree.insert(ParseLeaf("Newline", u"\n"))
+            elif state == "seennewpar":
+                self.tree.insert(ParseLeaf("Newpar", u"\n\n"))
 
     def pushstate(self, value):
         """
         put a new state an top of the context
         """
-        self.stack.append(value)
-        self.tree.insert(ParseTree(value))
+        if value in ("seenwhitespace", "seennewline", "seennewpar", "headingnext", "listnext", "ednotenext", "displaymathnext", "authorsnext", "wantsnewline", "keywordnext"):
+            self.stack.append(value)
+        else:
+            self.tree.insert(ParseTree(value))
 
     def changestate(self, state):
         """
@@ -126,52 +172,8 @@ class BaseParser:
         current state as if it had never been there.
         @type state: str
         """
-        assert isinstance(state, str)
-        assert self.output[-1] == u""
+        assert not len(self.stack) == 0
         self.stack[-1] = state
-
-    def shiftseennewpardown(self):
-        """
-        exchange seennewpar on top of the stack with the state below.
-
-        newpars terminate all contexts (except ednotes) via cleanup. But we
-        want to emit the newpar only after we closed all other contexts (like
-        lists). So we have to push it down the stack.
-
-        We have to do a bit of magic because the seennewpar will receive the
-        content of the states which are popped from the stack above it (since we
-        push the seennewpar down).
-        """
-        if not self.lookstate() == "seennewpar":
-            return
-        ## this is the seennewpar
-        stateone = self.stack.pop()
-        valueone = self.output.pop()
-        ## this is whatever else
-        statetwo = self.stack.pop()
-        valuetwo = self.output.pop()
-        ## push the seennewpar with empty content
-        self.stack.append(stateone)
-        self.output.append(u"")
-        ## push other state with content which ended up in seennewpar
-        ## but were intended for this state
-        self.stack.append(statetwo)
-        self.output.append(valuetwo + valueone)
-
-    def transposestates(self):
-        """
-        Exchange the two topmost states of the stack.
-
-        This exchanges the content to, so be careful not to reverse anything.
-        """
-        stateone = self.stack.pop()
-        valueone = self.output.pop()
-        statetwo = self.stack.pop()
-        valuetwo = self.output.pop()
-        self.stack.append(stateone)
-        self.output.append(valueone)
-        self.stack.append(statetwo)
-        self.output.append(valuetwo)
 
     def poptoken(self):
         """
@@ -218,7 +220,7 @@ class BaseParser:
         """
         interface for putting newlines
         """
-        self.put(u'\n')
+        self.tree.insert(ParseLeaf("Newline", u"\n"))
 
     def put(self, s):
         """
@@ -227,7 +229,15 @@ class BaseParser:
         @type s: unicode
         @param s: string to append
         """
-        self.tree.insert(ParseLeaf("Token", s))
+        if not self.lookstate() in ("inlinemath", "displaymath", "ednote"):
+            if s in u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZäüößÄÖÜ':
+                leaf = self.tree.lookactiveleaf()
+                if leaf is None or not leaf.ident == "Word":
+                    self.tree.insert(ParseLeaf("Word", s))
+                else:
+                    self.tree.appendtoleaf(s)
+        else:
+            self.tree.insert(ParseLeaf("Token", s))
 
     def result(self):
         """
@@ -248,27 +258,16 @@ class BaseParser:
         """
         return str(self.stack)
 
-    def putescaped(self, s):
-        """
-        append s to the output string escaping special characters
-
-        @type s: unicode
-        @param s: string to append
-        """
-        assert isinstance(s, unicode)
-        self.put(s.translate(self.escapemap))
-
     def cleanup(self):
         """
         close all open states.
 
         This is triggered by newpars and several other contexts.
         """
-        while not self.lookstate() == "normal":
+        while not self.lookstate() == "root":
             currentstate = self.lookstate()
             if currentstate == "start":
                 self.popstate()
-                self.pushstate("normal")
             elif currentstate in ("authors", "displaymath", "heading",
                                   "keyword", "paragraph", "subheading",
                                   "authorsnext", "headingnext", "listnext",
@@ -281,14 +280,10 @@ class BaseParser:
             elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
             elif currentstate == "seennewpar":
-                ## push the newpar one step down
-                ## this allows to close all other contexts before the newpar
-                ## is commited to the output string
-                self.shiftseennewpardown()
-                ## once we reached the bottom, process the newpar
-                if self.lookstate() == "normal":
-                    self.transposestates()
+                if self.tree.lookstate() == "root":
                     self.popstate()
+                else:
+                    self.tree.close()
             else:
                 raise ValueError("invalid state: %s" % currentstate)
 
@@ -308,7 +303,7 @@ class BaseParser:
             self.pushstate("ednotenext")
         if token == u'$' and self.looktoken() == u'$':
             self.pushstate("displaymathnext")
-
+# 
     def parse(self):
         """
         The actual parser.
@@ -326,6 +321,7 @@ class BaseParser:
             ## actually useful, I quite missed something like this in the
             ## big cannons I tried before
             if self.debug:
+                self.tree.display()
                 print self
                 try:
                     print "Token:", token
@@ -341,7 +337,7 @@ class BaseParser:
                 elif token == u'}':
                     self.popstate()
                 else:
-                    self.putescaped(token)
+                    self.put(token)
                 continue
             if currentstate == "ednote":
                 if token == u'{':
@@ -352,7 +348,7 @@ class BaseParser:
                 else:
                     # FIXME regulate escaping
                     # guarante no '\end{ednote}' is contained
-                    self.putescaped(token)
+                    self.put(token)
                 continue
 
             ## second handle whitespace
@@ -395,7 +391,6 @@ class BaseParser:
                 self.predictnextstructure(token)
             elif currentstate == "start":
                 self.popstate()
-                self.pushstate("normal")
                 ## activate special tokens
                 self.predictnextstructure(token)
 
@@ -415,11 +410,11 @@ class BaseParser:
                         self.pushstate("wantsnewline")
                 ## but we still need to escape
                 else:
-                    self.putescaped(token)
+                    self.put(token)
                 continue
 
             ## fourth if a new paragraph is beginning insert it into the context
-            if self.lookstate() == "normal":
+            if self.lookstate() == "root":
                 self.pushstate("paragraph")
                 if token == u'*':
                     self.pushstate("keywordnext")
@@ -514,7 +509,9 @@ class BaseParser:
             ### the default case for all the non-special tokens
             ### but escaping the special tokens
             else:
-                self.putescaped(token)
+                self.put(token)
 
-        ## finally return the result
-        return self.result()
+        self.tree.close()
+
+        ## finally return the tree
+        return self.tree
