@@ -1,3 +1,54 @@
+class ParseLeaf:
+    def __init__(self, ident, data):
+        self.ident = ident
+        self.data = data
+
+    def isactive(self):
+        return False
+
+    def display(self, indent=0):
+        whitespace = u""
+        for i in range(indent):
+            whitespace += u"  "
+        print whitespace + u"ParseLeaf: " + self.ident + " (" + self.data + ")"
+        for x in self.tree:
+            x.display(indent + 1)
+
+class ParseTree:
+    def __init__(self, ident):
+        self.tree = []
+        self.active = True
+        self.ident = ident
+
+    def isactive(self):
+        return self.active
+
+    def insert(self, newtree):
+        assert self.active
+        if len(self.tree) == 0:
+            self.tree.append(newtree)
+        if self.tree[-1].isactive():
+            self.tree[-1].insert(newtree)
+        else:
+            self.tree.append(newtree)
+
+    def close(self):
+        assert self.active
+        if len(self.tree) == 0:
+            self.active = False
+        if self.tree[-1].isactive():
+            self.tree[-1].close()
+        else:
+            self.active = False
+
+    def display(self, indent=0):
+        whitespace = u""
+        for i in range(indent):
+            whitespace += u"  "
+        print whitespace + u"ParseTree: " + self.ident
+        for x in self.tree:
+            x.display(indent + 1)
+
 class BaseParser:
     """
     Base class for parsing Dokuforge Syntax.
@@ -40,6 +91,7 @@ class BaseParser:
         self.pos = 0
         self.stack = [ "root", "start" ]
         self.output = [ u"", u"" ]
+        self.tree = []
 
     def lookstate(self):
         """
@@ -56,22 +108,15 @@ class BaseParser:
         @returns: the removed state
         """
         state = self.stack.pop()
-        value = self.output.pop()
-        try:
-            handler = getattr(self, "handle_%s" % state)
-        except AttributeError:
-            pass
-        else:
-            value = handler(value)
-        self.put(value)
+        self.tree.close()
         return state
 
     def pushstate(self, value):
         """
         put a new state an top of the context
         """
-        self.output.append(u"")
         self.stack.append(value)
+        self.tree.insert(ParseTree(value))
 
     def changestate(self, state):
         """
@@ -182,7 +227,7 @@ class BaseParser:
         @type s: unicode
         @param s: string to append
         """
-        self.output[-1] += s
+        self.tree.insert(ParseLeaf("Token", s))
 
     def result(self):
         """
