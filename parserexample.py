@@ -34,7 +34,7 @@ tortor ipsum, in rhoncus mi. Sed nec odio sem. Aenean rutrum, dui vel
 vehicula pulvinar, purus magna euismod dui, id pharetra libero mauris nec
 dolor.
 
-Bitte Escape mich: <>&"'\\ und das wars auch schon.
+Bitte Escape mich: <>&"' \\ \\\\command und das wars auch schon.
 
 [[Eine weitere Unterueberschrift]]
 
@@ -59,7 +59,7 @@ Absaetze (s.o.) zu stutzen, aber das ist nur ca. halb so leserlich. Auch
 nicht besser wird es wenn man ganz viele AKRONYME verwendet ... Aber
 manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 
-{ Hier noch ein Hinweis in verbatim,
+{ Hier noch ein Hinweis in verbatim, mit <>"'& \\ Sonderzeichen
 
   mit einer Leerzeile und { nested braces }. }
 

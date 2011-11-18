@@ -13,6 +13,8 @@ class DokuforgeToTeXParser(BaseParser):
     escapemap = {
             ord(u'\\'): u"\\forbidden\\"}
 
+    escapeexceptions = ["ednote", "nestedednote"]
+
     handle_heading = u"\\section{%s}".__mod__
     handle_subheading = u"\\subsection{%s}".__mod__
     handle_ednote = u"\\begin{ednote}%s\end{ednote}".__mod__

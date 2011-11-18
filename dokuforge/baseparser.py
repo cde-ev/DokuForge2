@@ -14,11 +14,7 @@ class ParseLeaf:
         whitespace = u""
         for i in range(indent):
             whitespace += u"    "
-        assert isinstance(self.data, unicode)
-        assert isinstance(whitespace, unicode)
-        assert isinstance(self.ident, str)
-        string = u"%sParseLeaf: %s (%s)" % (whitespace, self.ident, self.data)
-        print string.encode("utf8")
+        print (u"%sParseLeaf: %s (%s)" % (whitespace, self.ident, self.data)).encode("utf8")
 
 class ParseTree:
     def __init__(self, ident):
@@ -86,7 +82,6 @@ class ParseTree:
         assert self.active
         assert not len(self.tree) == 0
         if isinstance(self.tree[-1], ParseTree):
-            assert self.tree[-1].active
             self.tree[-1].appendtoleaf(s)
         else:
             self.tree[-1].data += s
@@ -121,6 +116,8 @@ class BaseParser:
     handle_nestedednote = u"{%s}".__mod__
 
     escapemap = {}
+
+    escapeexceptions = []
 
     def __init__(self, string=u"", debug=False):
         assert isinstance(string, unicode)
@@ -541,16 +538,20 @@ class BaseParser:
         ## finally return the tree
         return self.tree
 
-    def generateoutput(self, tree=None):
+    def generateoutput(self, tree=None, escape = True):
         root = False
         if tree is None:
             tree = self.tree
             root = True
         if isinstance(tree, ParseLeaf):
+            if escape:
+                return tree.data.translate(self.escapemap)
             return tree.data
         output = u""
+        if tree.ident in self.escapeexceptions:
+            escape=False
         for x in tree.tree:
-            value = self.generateoutput(x)
+            value = self.generateoutput(x, escape)
             try:
                 handler = getattr(self, "handle_%s" % x.ident)
             except AttributeError:
