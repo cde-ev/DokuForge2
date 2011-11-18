@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from dokuforge.baseparser import BaseParser
+from dokuforge.treeparser import TreeParser
 
 class DokuforgeToTeXParser(BaseParser):
     """
