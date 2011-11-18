@@ -1,4 +1,4 @@
-from dokuforge.treeparser import TreeParser
+from dokuforge.treeparser import TreeParser, ParseLeaf
 
 
 class DokuforgeToDokuforgeParser:

@@ -2,7 +2,7 @@
 
 from dokuforge.treeparser import TreeParser
 
-class DokuforgeToTeXParser(BaseParser):
+class DokuforgeToTeXParser:
     """
     Parser for converting Dokuforge Syntax into TeX for export.
 

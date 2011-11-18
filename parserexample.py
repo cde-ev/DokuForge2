@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from dokuforge.baseparser import TreeParser
-from dokuforge.baseparser import BaseParser
+from dokuforge.treeparser import TreeParser
+from dokuforge.dokuforgeparser import DokuforgeToDokuforgeParser
 
 #囲碁
 
@@ -73,6 +73,6 @@ tree = parser.parse()
 
 tree.display(verbose=True)
 
-dokuparser = BaseParser(tree)
+dokuparser = DokuforgeToDokuforgeParser(tree)
 
 print dokuparser.generateoutput()
