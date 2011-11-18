@@ -29,6 +29,43 @@ def rlogv(filename):
     else:
         return None
 
+rcsseparator='----------------------------' 
+
+def rloghead(filename):
+    """
+    Get relevant information for the head revision of the given rcs file
+
+    @type filename: str
+    @returns: a str-str dict with information about the head commit; in particular,
+              it will contain the keys 'revision', 'author', and 'date'.
+    """
+    assert isinstance(filename, str)
+    
+    # Amzingly enough, the "official" way to obtain revision information
+    # is to parse the output of rlog. This statement is obtained from
+    # Thien-Thi Nguyen <ttn@gnuvola.org> (maintainer of GNU RCS) in an private
+    # email on Oct 16, 2011 that also promised that such a script will never 
+    # be broken by any future releases.
+    answer = {}
+
+    revision = rlogv(filename)
+    answer['revision'] = revision
+    rlog = check_output(["rlog","-q","-r%s" % revision,filename])
+    lines = rlog.splitlines()
+    while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
+        lines.pop(0)
+    lines.pop(0)
+    lines.pop(0)
+    stateline = lines.pop(0)
+    params = stateline.split(';')
+    for param in params:
+        keyvalue = param.split(': ',1)
+        if len(keyvalue) > 1:
+            answer[keyvalue[0].lstrip()]=keyvalue[1]
+
+    return answer
+
+
 class LockDir:
     def __init__(self, path):
         """
