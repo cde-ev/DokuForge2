@@ -16,7 +16,7 @@ class Outline:
         """
         self.number = number
         self.content = []
-        self.lastchange = {'author': 'unkown', 'revision' : '?', 'date' : '?'}
+        self.lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'?'}
     def addheading(self, title):
         """
         @type title: unicode
@@ -41,7 +41,7 @@ class Outline:
         Add information about the last commit. Must contain at
         least revision, date, and author
 
-        @type info: {(str,str)}
+        @type info: {(str,unicode)}
         """
         assert 'date' in info.keys()
         assert 'author'  in info.keys()
@@ -53,9 +53,9 @@ class Outline:
         """
         @rtype: unicode
         """
-        return ("%s/%s (%s)" % (self.lastchange['revision'],
+        return u"%s/%s (%s)" % (self.lastchange['revision'],
                                 self.lastchange['author'],
-                                self.lastchange['date'])).encode("utf8")
+                                self.lastchange['date'])
 
 class Course(StorageDir):
     """
@@ -137,7 +137,7 @@ class Course(StorageDir):
         outlines = []
         for p in pages:
             outline = Outline(p)
-            outline.addcommitinfo(self.getstorage("page%d" % p).commitstatus())
+            outline.addcommitinfo(self.getcommit(p))
             headings = re.findall(ur'^\[.*\]$', self.showpage(p),
                                   re.MULTILINE|re.UNICODE)
             for h in headings:
@@ -147,6 +147,14 @@ class Course(StorageDir):
                     outline.addheading(h[1:-1])
             outlines.append(outline)
         return outlines
+
+    def getcommit(self, page):
+        """
+        @type page: int
+        @rtype: {str, unicode}
+        """
+        info = self.getstorage("page%d" % page).commitstatus()
+        return dict(map(lambda (k,v):(k,v.encode("utf8")), info.iteritems()))
 
     def listdeadpages(self):
         """
