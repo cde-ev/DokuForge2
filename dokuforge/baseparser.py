@@ -88,7 +88,7 @@ class ParseTree:
             self.tree[-1].data += s
 
 
-class TreeParser:
+class BaseParser:
     """
     Base class for parsing Dokuforge Syntax.
 
@@ -102,6 +102,7 @@ class TreeParser:
     @ivar stack: contains the current context
     @ivar output: is a stack of current outputs
     """
+
     handle_heading = u"[%s]".__mod__
     handle_subheading = u"[[%s]]".__mod__
     handle_ednote = u"{%s}".__mod__
@@ -114,6 +115,8 @@ class TreeParser:
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%1s$".__mod__
     handle_nestedednote = u"{%s}".__mod__
+
+    escapemap = {}
 
     def __init__(self, string, debug=False):
         assert isinstance(string, unicode)

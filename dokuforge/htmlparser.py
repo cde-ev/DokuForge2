@@ -2,7 +2,7 @@
 
 from dokuforge.treeparser import TreeParser
 
-class DokuforgeToHtmlParser:
+class DokuforgeToHtmlParser(TreeParser):
     """
     Parser for converting Dokuforge Syntax into viewable html.
 

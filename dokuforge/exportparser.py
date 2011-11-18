@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from dokuforge.treeparser import TreeParser
+from dokuforge.treeparser import BaseParser
 
-class DokuforgeToTeXParser:
+class DokuforgeToTeXParser(BaseParser):
     """
     Parser for converting Dokuforge Syntax into TeX for export.
 

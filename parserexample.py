@@ -73,6 +73,4 @@ tree = parser.parse()
 
 tree.display(verbose=True)
 
-dokuparser = DokuforgeToDokuforgeParser(tree)
-
-print dokuparser.generateoutput()
+print parser.generateoutput()
