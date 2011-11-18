@@ -19,6 +19,7 @@
 		 <div class="tocnumber">
 		   <a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{i|e}}</a></div>
                  <a href="{{ buildurl('page', {'page': page.number})|e }}"> Teil&nbsp;#{{ page.number|string }}</a>
+                 {{ page.versionstring|e }}
 		 </td>
 	         <td class="tocoutline">
                 {%- for (type, title) in page.items() -%}

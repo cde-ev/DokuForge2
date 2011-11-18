@@ -16,6 +16,7 @@ class Outline:
         """
         self.number = number
         self.content = []
+        self.lastchange = {'author': 'unkown', 'revision' : '?', 'date' : '?'}
     def addheading(self, title):
         """
         @type title: unicode
@@ -35,6 +36,26 @@ class Outline:
         @rtype: [(str, unicode)]
         """
         return self.content
+    def addcommitinfo(self, info):
+        """
+        Add information about the last commit. Must contain at
+        least revision, date, and author
+
+        @type info: {(str,str)}
+        """
+        assert 'date' in info.keys()
+        assert 'author'  in info.keys()
+        assert 'revision' in info.keys()
+        
+        self.lastchange = info
+    @property
+    def versionstring(self):
+        """
+        @rtype: unicode
+        """
+        return ("%s/%s (%s)" % (self.lastchange['revision'],
+                                self.lastchange['author'],
+                                self.lastchange['date'])).encode("utf8")
 
 class Course(StorageDir):
     """
@@ -116,6 +137,7 @@ class Course(StorageDir):
         outlines = []
         for p in pages:
             outline = Outline(p)
+            outline.addcommitinfo(self.getstorage("page%d" % p).commitstatus())
             headings = re.findall(ur'^\[.*\]$', self.showpage(p),
                                   re.MULTILINE|re.UNICODE)
             for h in headings:
