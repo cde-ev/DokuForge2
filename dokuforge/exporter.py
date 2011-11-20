@@ -12,6 +12,7 @@ ${COURSECONTENT}
 """
 
 template_coursepage = r"""${COURSEPAGE}
+${PAGEFIGURES}
 ${COURSECONTENT}"""
 
 template_master = r"""\documentclass{padoc}
@@ -66,6 +67,7 @@ template_figure = r"""\begin{figure}
   \caption{${FIGURECAPTION}}
   \label{${FIGURELABEL}}
 \end{figure}
+${PAGEFIGURES}
 """
 
 template_fortschritt = r"""\begin{ednote}
@@ -130,6 +132,17 @@ class Exporter:
                 parser = DokuforgeToTeXParser(c.showpage(p))
                 parser.parse()
                 content = tsubst(content, COURSEPAGE = parser.result())
+                for b in c.listblobs(p):
+                    blob = c.viewblob(b)
+                    content = tsubst(content, PAGEFIGURES = template_figure)
+                    content = tsubst(content,
+                                     FIGUREPATH = os.path.join(c.name,
+                                                               blob["filename"]),
+                                     FIGURELABEL = blob["label"],
+                                     FIGURECAPTION = blob["comment"])
+                    writefile(os.path.join(self.dir, c.name, blob["filename"]),
+                              blob["data"])
+                content = tsubst(content, PAGEFIGURES = u'')
             content = tsubst(content, COURSECONTENT = u'')
             content = content.safe_substitute()
             writefile(os.path.join(self.dir, c.name,
