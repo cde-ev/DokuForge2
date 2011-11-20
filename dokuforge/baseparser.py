@@ -92,14 +92,20 @@ class BaseParser:
     Base class for parsing Dokuforge Syntax.
 
     It works by scanning the text one token at a time (with a bit of
-    lookahead) and remembering all context in a stack, so the meaning of
-    tokens change as the context changes.
+    lookahead) and remembering all context in a tree and a stack, so the
+    meaning of tokens change as the context changes.
+
+    The context is distributed between the tree and the stack in the
+    following way: The tree takes all permanent tokens which shall be
+    included in the output; the stack takes all temporary tokens which are
+    only important for the current state of the parser, but discarded once
+    the have fulfilled their use.
 
     @ivar input: the input string
     @ivar debug: toggles debug output
     @ivar pos: current position in the input string
     @ivar stack: contains the current context
-    @ivar output: is a stack of current outputs
+    @ivar tree: is an abstract syntax tree of the input
     """
 
     handle_heading = u"[%s]".__mod__
@@ -119,14 +125,22 @@ class BaseParser:
 
     escapeexceptions = []
 
-    def __init__(self, string=u"", debug=False):
-        assert isinstance(string, unicode)
-        self.input = string
-        self.debug = debug
-        self.pos = 0
-        self.stack = [ "start" ]
-        self.tree = ParseTree("root")
-        self.output = u""
+    def __init__(self, obj=u"", debug=False):
+        if isinstance(obj, ParseTree):
+            self.tree = obj
+            self.input = u""
+            self.debug = debug
+            self.pos = 0
+            self.stack = [ "start" ]
+            self.output = u""
+        else:
+            assert isinstance(obj, unicode)
+            self.input = obj
+            self.debug = debug
+            self.pos = 0
+            self.stack = [ "start" ]
+            self.tree = ParseTree("root")
+            self.output = u""
 
     def lookstate(self):
         """

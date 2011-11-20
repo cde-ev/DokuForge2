@@ -30,9 +30,3 @@ class DokuforgeToHtmlParser(BaseParser):
     # inherit handle_inlinemath
     handle_displaymath = u"<div class=\"displaymath\">$$%1s$$</div>".__mod__
 
-    def __init__(self, obj):
-        if isinstance(obj, ParseTree):
-            BaseParser.__init__(self)
-            self.tree = obj
-        else:
-            BaseParser.__init__(self, obj)
