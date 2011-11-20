@@ -1450,11 +1450,12 @@ class Application:
         @type saved: bool
         """
         parser = DokuforgeToHtmlParser(thecourse.showpage(thepage))
+        parser.parse()
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            content=parser.parse(),
+            content=parser.generateoutput(),
             saved=saved,
             blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
         return self.render("show.html", rs, params)
