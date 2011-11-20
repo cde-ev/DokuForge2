@@ -65,8 +65,6 @@ ${COURSELIST}
 \end{document}
 """
 
-template_course
-
 def testCourseName(course):
     if re.match('^kurs[0-9]+$', course.name) is None:
         return False
@@ -85,6 +83,10 @@ def postprocessor(data):
         data = data.replace('\n\n\n', '\n\n')
     return data
 
+def writefile(path, content):
+    f = file(path, mode = "w")
+    f.write(postprocessor(content))
+    f.close()
 
 class Exporter:
     def __init__(self, aca):
@@ -98,10 +100,9 @@ class Exporter:
         self.exported = True
         courses = self.aca.listCourses()
         courses = filter(testCourseName, courses)
+        courselist = u'\n'
         for c in courses:
             os.mkdir(os.path.join(self.dir, c.name))
-            f = file(os.path.join(self.dir, c.name,
-                                  "chap%s.tex" % courseNumber(c)), mode = "w")
             content = string.Template(template_course)
             content = tsubst(content, COURSENUMBER = courseNumber(c))
             for p in c.listpages():
@@ -111,4 +112,10 @@ class Exporter:
                 content = tsubst(content, COURSEPAGE = parser.result())
             content = tsubst(content, COURSECONTENT = u'')
             content = content.safe_substitute()
-            f.write(postprocessor(content))
+            writefile(os.path.join(self.dir, c.name,
+                                  "chap%s.tex" % courseNumber(c)), content)
+            courselist += u'\\include{%s/chap%s.tex}\n' % (c.name, courseNumber(c))
+        master = string.Template(template_master)
+        master = tsubst(master, COURSELIST = courselist)
+        master = master.safe_substitute()
+        writefile(os.path.join(self.dir, "master.tex"), master)
