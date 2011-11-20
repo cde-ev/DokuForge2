@@ -1,6 +1,71 @@
 import tempfile
 import string
 import re
+import os
+
+from dokuforge.exportparser import DokuforgeToTeXParser
+
+template_course = r"""\course{${COURSENUMBER}}
+
+${COURSECONTENT}
+
+\endinput
+"""
+
+template_coursepage = r"""${COURSEPAGE}
+
+${COURSECONTENT}
+"""
+
+template_master = r"""\documentclass{padoc}
+\listfiles
+
+\makeatletter
+
+\def\ednote%
+  {\@verbatim\frenchspacing\@vobeyspaces\@xednote}
+\def\endednote%
+  {\if@newlist \leavevmode\fi\endtrivlist}
+\begingroup
+  \catcode `[= 1 \catcode`]=2
+  \catcode `\{=12 \catcode `\}=12
+  \catcode `|=0 \catcode`\\=12
+  |gdef|@xednote#1\end{ednote}[#1|end[ednote]]
+|endgroup
+
+\let\b@ckslash\backslash
+\def\backslash%
+  {\ifmmode\b@ckslash\else$\b@ckslash$\fi}
+
+\makeatother
+
+\let\@\empty
+\let\acronym\textsmaller
+
+%% Pakete und Definitionen
+
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+
+\usepackage{mathalign}
+\usepackage{amsmath}
+\usepackage{misc}
+\usepackage{multicol}
+
+\begin{document}
+
+\include{fortschritt}
+
+\include{titel}
+\include{vorwort}
+
+\tableofcontents
+
+${COURSELIST}
+
+\end{document}
+"""
+
+template_course
 
 def testCourseName(course):
     if re.match('^kurs[0-9]+$', course.name) is None:
@@ -18,13 +83,6 @@ class Exporter:
     def __init__(self):
         self.dir = tempfile.mkdtemp(prefix="export")
         self.exported = False
-        self.template_course = r"""\course{${COURSENUMBER}}
-
-${COURSECONTENT}
-
-\endinput
-"""
-        self.template_coursepage = r"""${COU
 
     def export(self, aca):
         if self.exported:
@@ -34,7 +92,15 @@ ${COURSECONTENT}
         courses = self.aca.listCourses()
         courses = filter(testCourseName, courses)
         for c in courses:
-            template = string.Template(self.template_course)
-            template = tsubst(template, COURSENUMBER = courseNumber(course))
+            os.mkdir(os.path.join(self.dir, c.name))
+            f = file(os.path.join(self.dir, c.name,
+                                  "chap%s.tex" % courseNumber(c), mode = "w"))
+            content = string.Template(template_course)
+            content = tsubst(content, COURSENUMBER = courseNumber(c))
             for p in c.listpages():
-                
+                content = tsubst(content, COURSECONTENT = template_cousepage)
+                parser = DokuforgeToTeXParser(c.showpage(p))
+                parser.parse()
+                content = tsubst(content, COURSEPAGE = parser.generateoutput())
+            content = tsubst(content, COURSECONTENT = u'')
+            f.write(content)
