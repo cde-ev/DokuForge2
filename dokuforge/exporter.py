@@ -79,28 +79,36 @@ def courseNumber(course):
 def tsubst(template, **keys):
     return string.Template(template.safe_substitute(keys))
 
+def postprocessor(data):
+    ## compress excessive newlines
+    while '\n\n\n' in data:
+        data = data.replace('\n\n\n', '\n\n')
+    return data
+
+
 class Exporter:
-    def __init__(self):
+    def __init__(self, aca):
         self.dir = tempfile.mkdtemp(prefix="export")
         self.exported = False
+        self.aca = aca
 
-    def export(self, aca):
+    def export(self):
         if self.exported:
             return False
         self.exported = True
-        self.aca = aca
         courses = self.aca.listCourses()
         courses = filter(testCourseName, courses)
         for c in courses:
             os.mkdir(os.path.join(self.dir, c.name))
             f = file(os.path.join(self.dir, c.name,
-                                  "chap%s.tex" % courseNumber(c), mode = "w"))
+                                  "chap%s.tex" % courseNumber(c)), mode = "w")
             content = string.Template(template_course)
             content = tsubst(content, COURSENUMBER = courseNumber(c))
             for p in c.listpages():
-                content = tsubst(content, COURSECONTENT = template_cousepage)
+                content = tsubst(content, COURSECONTENT = template_coursepage)
                 parser = DokuforgeToTeXParser(c.showpage(p))
                 parser.parse()
-                content = tsubst(content, COURSEPAGE = parser.generateoutput())
+                content = tsubst(content, COURSEPAGE = parser.result())
             content = tsubst(content, COURSECONTENT = u'')
-            f.write(content)
+            content = content.safe_substitute()
+            f.write(postprocessor(content))
