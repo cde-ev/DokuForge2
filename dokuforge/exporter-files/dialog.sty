@@ -1,0 +1,69 @@
+%%%%%%%%%%%%%% Dialogumgebung (Kabarett)
+%%%%%%%%%%%%%% Die Trenner.*-Dateien ins Hauptverzeichnis
+
+\def\itdialogue@item#1>%
+  {\itdialogue@doitem#1|>}
+\def\itdialogue@doitem#1|#2>%
+  {{\setbox0=\hbox{\pmhalign{#1:\enskip}}}
+   \def\next{#2}\ifx\next\@empty
+     \itdialogue@dodoitem#1|>%
+   \else
+     \itdialogue@dodoitem#1#2>%
+   \fi}
+\def\itdialogue@dodoitem#1|>%
+  {\item[\it#1:\enskip\hfill]}
+
+\def\startitdialogue%
+  {\startpmhalign%there were spaces before the \startpmhalign I deleted them
+                 %-- markus 2010
+     \begin{list}{}
+       {\listparindent\parindent \parsep0pt \labelsep0pt \itemsep0pt \topsep0pt \partopsep\baselineskip\relax
+        \labelwidth\pmwidth \leftmargin\pmwidth}%
+       \let\<\itdialogue@item}
+\def\stopitdialogue%
+  {\end{list}\stoppmhalign}
+
+%%%%%%%%%%%%%%%%%%%%
+
+% Regieschriftart:
+\newcommand{\regiefont}[1]{\textit{#1}}
+
+% Trennzeichen fuer die Theaterstuecke
+\pdfmapfile{+Trenner.map}
+\font\TrennerFont=Trenner at 14pt
+\def\Trenner{\bgroup\TrennerFont A\egroup}
+
+% Obeylines fuers Kabarett
+\bgroup\obeylines%
+  \gdef\cabaretobeylines%
+    {\everypar{}% sonst versauen uns die sections die indents
+     \def\par{\ifvmode\vskip\baselineskip\else\endgraf\fi}\obeylines%
+     \def\:##1^^M{\indent\emph{##1:}\endgraf}%
+     \parindent-2em \leftskip2em}%
+  \let\endcabaretobeylines\empty%
+\egroup
+
+\global\let\oldaddvspace\addvspace
+\gdef\deactivateaddvspace%
+  {\def\addvspace##1{\let\addvspace\oldaddvspace}}%
+
+\newdimen\m@baselineskip
+
+\def\Trennlinie%
+{\par%
+  \vbox to 0pt{\vss}%
+  \vskip-\baselineskip%
+  \bgroup%
+  \m@baselineskip\baselineskip%
+  \baselineskip0pt%
+  \lineskip0pt%
+  \lineskiplimit0pt%
+  \vskip\m@baselineskip%
+  % mit 2pt sieht es mittig aus, falls wir mal auf die Idee kommen, den
+  % \baselineskip zu aendern, muessen wir auch hier anpassen
+  \vbox to 0pt{\vskip2pt\centerline{\Trenner}\vss}%
+  \vskip\m@baselineskip%
+  \egroup%
+}
+
+\def\gobble#1{}

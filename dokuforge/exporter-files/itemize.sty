@@ -1,0 +1,128 @@
+% Copyright (C) 2000-2005 Marc Schäfer <marc_schaefer@gmx.de>
+% All Rights Reserved.
+% Permission for use in all CdE and BuB documentations is granted.
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{itemize}[2003/07/23 Improved Itemize and Enumerate Environments]
+
+\RequirePackage{pmhalign}
+
+%
+% \begin{itemize/enumerate} [packed,joinedup,flushleft,dontendpar]
+%   ...
+% \end{itemize/enumerate}
+%
+% packed:     no vertical space between items
+%
+% joinedup:   no vertical space before and after the list
+%
+% flushleft:  labels start at the left margin
+%
+% dontendpar: no not automatically end the paragraph.
+%
+
+
+%
+% Implementing the Options
+%
+
+% The option XXX is implemented by defining macros with the
+% names `itop@XXX@start', `itop@XXX@declaration' and 
+% `itop@XXX@end' which will called at the appropriate times.
+% Not all macros have to be defined.
+
+\def\itop@flushleft@start%
+  {\startpmhalign}
+\def\itop@flushleft@declaration%
+  {\advance\leftmargin -\labelwidth
+   \labelwidth\pmwidth
+   \advance\leftmargin  \labelwidth
+   \def\makelabel##1%
+     {\pmhalign{\hfil##1}}}
+\def\itop@flushleft@end%
+  {\stoppmhalign}
+
+\def\itop@packed@declaration%
+  {\itemsep\z@ \parsep\z@ \listparindent\parindent}
+
+\def\itop@joinedup@declaration%
+  {\topsep\z@ \partopsep\z@}
+
+% The next macro seems to me a bit too, erm, violent, but I
+% don't know the offixial LaTeX way of doing it.
+
+\def\itop@dontendpar@end%
+  {\global\everypar{{\setbox\z@\lastbox}\global\everypar{}}}
+
+%
+% Processing Lists
+% 
+
+% The following macro takes a comma-separated option list
+% and for each option calls the command named `itop@<OPTION>@#2'
+
+\def\itli@do#1#2%
+  {\gdef\itli@postfix{#2}\itli@dodo#1,\itli@dodo,}
+
+\def\itli@dodo#1,%
+  {\ifx\itli@dodo#1\else
+     \@ifundefined{itop@#1@\itli@postfix}{}%
+       {\@nameuse{itop@#1@\itli@postfix}}%
+     \expandafter\itli@dodo
+   \fi}
+
+%
+% Setting Things Up
+%
+
+% The following macro is checks whether there actually are any
+% options given and if not just falls back to the original
+% initialiser given as the first argument. This keeps the
+% amount of intrusion to a minimum. The first let restores
+% the original definition of the \end...-macro in case
+% we have a nested list here.
+
+\def\itpr@initialise#1#2#3%
+  {\let#3#2%
+   \@ifnextchar[%
+     {\itpr@doinitialise{#1}{#3}}%
+     {#1}}
+
+% Now that we know we will have to do something, we locally
+% wrap the \list-macro and the macro that ends the environment
+% (needn't be \endlist since there is \let) given as the second
+% argument. Doing things locally means less intrusion -- do you
+% see a pattern there?
+
+\let\itpr@original@list\list
+\def\itpr@doinitialise#1#2#3[#4]%
+  {\bgroup
+   \def\list##1##2%
+     {\let\list\itpr@original@list
+      \list{##1}{##2\itli@do{#4}{declaration}}}%
+  \let\itpr@original@end#2%
+  \def#2%
+   {\itpr@original@end\itli@do{#4}{end}\egroup}%
+   \itli@do{#4}{start}#1}
+
+
+%
+% Wrapping stuff
+%
+
+\let\itwr@itemize\itemize
+\let\itwr@enditemize\enditemize
+\def\itemize%
+  {\itpr@initialise\itwr@itemize\itwr@enditemize\enditemize}
+
+\let\itwr@enumerate\enumerate
+\let\itwr@endenumerate\endenumerate
+\def\enumerate%
+  {\itpr@initialise\itwr@enumerate\itwr@endenumerate\endenumerate}
+
+\let\itwr@description\description
+\let\itwr@enddescription\enddescription
+\def\description%
+  {\itpr@initialise\itwr@description\itwr@enddescription\enddescription}
+  
+\endinput

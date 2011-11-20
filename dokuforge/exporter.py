@@ -65,6 +65,36 @@ ${COURSELIST}
 \end{document}
 """
 
+template_figure = r"""\begin{figure}
+  \centering
+  \includegraphics[width=.6\textwidth]{${FIGUREPATH}}
+  \caption{${FIGURECAPTION}}
+  \label{${FIGURELABEL}}
+\end{figure}
+"""
+
+template_fortschritt = r"""\begin{ednote}
+${COURSENOTES}
+
+Allgemeines:
+[ ] Kursfotos nachbearbeiten: 
+[ ] Orga-/Gesamtfotos nachbearbeiten:  
+[ ] Namenslisten-Abgleich Datenbank
+[ ] Namenslisten: KL kennzeichnen: 
+[ ] Vorwort
+[ ] Titelseite (Logo, Text)
+[ ] Fuellbilder
+[ ] Fotos druckbar
+
+Bitte Namen fuer die Redaktion eintragen und, wenn fertig, 
+durch Ankreuzen abhaken.
+\end{ednote}
+"""
+
+template_coursenotes = r"""${COURSENOTE}
+${COURSENOTES}
+"""
+
 def testCourseName(course):
     if re.match('^kurs[0-9]+$', course.name) is None:
         return False
