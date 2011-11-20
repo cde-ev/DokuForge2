@@ -7,16 +7,12 @@ import subprocess
 from dokuforge.exportparser import DokuforgeToTeXParser
 
 template_course = r"""\course{${COURSENUMBER}}
-
 ${COURSECONTENT}
-
 \endinput
 """
 
 template_coursepage = r"""${COURSEPAGE}
-
-${COURSECONTENT}
-"""
+${COURSECONTENT}"""
 
 template_master = r"""\documentclass{padoc}
 \listfiles
@@ -60,9 +56,7 @@ template_master = r"""\documentclass{padoc}
 \include{vorwort}
 
 \tableofcontents
-
 ${COURSELIST}
-
 \end{document}
 """
 
@@ -75,9 +69,7 @@ template_figure = r"""\begin{figure}
 """
 
 template_fortschritt = r"""\begin{ednote}
-${COURSENOTES}
-
-Allgemeines:
+${COURSENOTES}Allgemeines:
 [ ] Kursfotos nachbearbeiten: 
 [ ] Orga-/Gesamtfotos nachbearbeiten:  
 [ ] Namenslisten-Abgleich Datenbank
@@ -92,9 +84,11 @@ durch Ankreuzen abhaken.
 \end{ednote}
 """
 
-template_coursenotes = r"""${COURSENOTE}
-${COURSENOTES}
-"""
+template_coursenotes = r"""Kurs ${COURSENUMBER} (${COURSETITLE})
+Verantwortlich:
+[ ] Redaktion  [ ] Bilder/Grafiken
+
+${COURSENOTES}"""
 
 def testCourseName(course):
     if re.match('^kurs[0-9]+$', course.name) is None:
@@ -108,15 +102,9 @@ def courseNumber(course):
 def tsubst(template, **keys):
     return string.Template(template.safe_substitute(keys))
 
-def postprocessor(data):
-    ## compress excessive newlines
-    while '\n\n\n' in data:
-        data = data.replace('\n\n\n', '\n\n')
-    return data
-
 def writefile(path, content):
     f = file(path, mode = "w")
-    f.write(postprocessor(content))
+    f.write(content)
     f.close()
 
 class Exporter:
@@ -132,6 +120,7 @@ class Exporter:
         courses = self.aca.listCourses()
         courses = filter(testCourseName, courses)
         courselist = u'\n'
+        fortschrittlist = string.Template(u'${COURSENOTES}')
         for c in courses:
             os.mkdir(os.path.join(self.dir, c.name))
             content = string.Template(template_course)
@@ -146,6 +135,17 @@ class Exporter:
             writefile(os.path.join(self.dir, c.name,
                                   "chap%s.tex" % courseNumber(c)), content)
             courselist += u'\\include{%s/chap%s.tex}\n' % (c.name, courseNumber(c))
+            fortschrittlist = tsubst(fortschrittlist,
+                                     COURSENOTES = template_coursenotes)
+            fortschrittlist = tsubst(fortschrittlist,
+                                     COURSENUMBER = courseNumber(c),
+                                     COURSETITLE = c.gettitle())
+        fortschrittlist = tsubst(fortschrittlist, COURSENOTES = u'')
+        fortschrittlist = fortschrittlist.safe_substitute()
+        fortschritt = string.Template(template_fortschritt)
+        fortschritt = tsubst(fortschritt, COURSENOTES = fortschrittlist)
+        fortschritt = fortschritt.safe_substitute()
+        writefile(os.path.join(self.dir, "fortschritt.tex"), fortschritt)
         master = string.Template(template_master)
         master = tsubst(master, COURSELIST = courselist)
         master = master.safe_substitute()
