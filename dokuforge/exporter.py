@@ -2,6 +2,7 @@ import tempfile
 import string
 import re
 import os
+import subprocess
 
 from dokuforge.exportparser import DokuforgeToTeXParser
 
@@ -149,3 +150,5 @@ class Exporter:
         master = tsubst(master, COURSELIST = courselist)
         master = master.safe_substitute()
         writefile(os.path.join(self.dir, "master.tex"), master)
+        for f in os.listdir(os.path.join(os.path.dirname(__file__), "exporter-files")):
+            subprocess.check_call(["cp", "-r", "-t", self.dir, os.path.join(os.path.dirname(__file__), "exporter-files", f)], cwd=os.path.dirname(__file__))
