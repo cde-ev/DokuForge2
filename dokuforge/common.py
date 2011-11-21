@@ -5,7 +5,6 @@ import random
 import subprocess
 import re
 import os
-from dokuforge.estimatorparser import Estimator
 
 try:
     check_output = subprocess.check_output
@@ -200,35 +199,3 @@ def computeblobpages(nrblobs):
     """
     ## this is an empirical number, may be tuned later
     return nrblobs/4
-
-
-def computeestimate(obj, blobs=0):
-    from dokuforge.course import Course
-    from dokuforge.academy import Academy
-    estimate = {'chars': 0, 'charsednotes': 0, 'pages': 0,
-                'pagesednotes': 0, 'blobs': 0, 'blobpages': 0}
-    if isinstance(obj, unicode):
-        estimate['chars'] = Estimator(obj, ednotes = False,
-                                      raw = True).parse()
-        estimate['charsednotes'] = Estimator(obj, ednotes = True,
-                                             raw = True).parse()
-        estimate['pages'] = computepages(
-            Estimator(obj, ednotes = False, raw = False).parse())
-        estimate['pagesednotes'] = computepages(
-            Estimator(obj, ednotes = True, raw = False).parse())
-        estimate['blobs'] = blobs
-        estimate['blobpages'] = computeblobpages(blobs)
-    elif isinstance(obj, Course):
-        pages = obj.listpages()
-        for p in pages:
-            thisestimate = computeestimate(obj.showpage(p),
-                                           len(obj.listblobs(p)))
-            for key in estimate:
-                estimate[key] += thisestimate[key]
-    elif isinstance(obj, Academy):
-        courses = obj.listCourses()
-        for c in courses:
-            thisestimate = computeestimate(c)
-            for key in estimate:
-                estimate[key] += thisestimate[key]
-    return estimate

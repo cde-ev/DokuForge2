@@ -1436,8 +1436,7 @@ class Application:
         """
         pagecontent = thecourse.showpage(thepage)
         parsed = DokuforgeToHtmlParser(pagecontent).parse()
-        estimate = common.computeestimate(pagecontent,
-                                          len(thecourse.listblobs(thepage)))
+        estimate = thecourse.estimatepage(thepage)
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),

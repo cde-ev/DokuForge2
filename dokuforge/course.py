@@ -9,6 +9,7 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
+from dokuforge.estimatorparser import Estimator
 import dokuforge.common as common
 
 class Outline:
@@ -43,8 +44,8 @@ class Outline:
         """
         return self.content
 
-    def addestimate(self, content, blobs):
-        self.estimate = common.computeestimate(content, blobs)
+    def addestimate(self, estimate):
+        self.estimate = estimate
 
     @property
     def estimatestring(self):
@@ -142,12 +143,34 @@ class Course(StorageDir):
                     outline.addsubheading(h[2:-2])
                 else:
                     outline.addheading(h[1:-1])
-            outline.addestimate(content, len(self.listblobs(p)))
+            outline.addestimate(self.estimatepage(p))
             outlines.append(outline)
         return outlines
 
+    def estimatepage(self, page):
+        estimate = {}
+        content = self.showpage(page)
+        blobs = len(self.listblobs(page))
+        estimate['chars'] = Estimator(content, ednotes = False,
+                                      raw = True).parse()
+        estimate['charsednotes'] = Estimator(content, ednotes = True,
+                                             raw = True).parse()
+        estimate['pages'] = common.computepages(
+            Estimator(content, ednotes = False, raw = False).parse())
+        estimate['pagesednotes'] = common.computepages(
+            Estimator(content, ednotes = True, raw = False).parse())
+        estimate['blobs'] = blobs
+        estimate['blobpages'] = common.computeblobpages(blobs)
+        return estimate
+
     def estimate(self):
-        return common.computeestimate(self)
+        estimate = {'chars': 0, 'charsednotes': 0, 'pages': 0,
+                    'pagesednotes': 0, 'blobs': 0, 'blobpages': 0}
+        for p in self.listpages():
+            thisestimate = self.estimatepage(p)
+            for key in estimate:
+                estimate[key] += thisestimate[key]
+        return estimate
 
     def listdeadpages(self):
         """

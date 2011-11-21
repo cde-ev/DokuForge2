@@ -118,7 +118,13 @@ class Academy(StorageDir):
         Course(os.path.join(self.path, name)).settitle(title)
 
     def estimate(self):
-        return common.computeestimate(self)
+        estimate = {'chars': 0, 'charsednotes': 0, 'pages': 0,
+                    'pagesednotes': 0, 'blobs': 0, 'blobpages': 0}
+        for c in self.listCourses():
+            thisestimate = c.estimate()
+            for key in estimate:
+                estimate[key] += thisestimate[key]
+        return estimate
 
     def view(self, extrafunctions=dict()):
         """
