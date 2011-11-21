@@ -184,3 +184,4 @@ def validateExistence(path, name):
     if not os.path.exists(os.path.join(path, name)):
         raise CheckError(u"Interner Name existiert nicht!",
                          u"Bitte den Namen korrigieren.")
+
