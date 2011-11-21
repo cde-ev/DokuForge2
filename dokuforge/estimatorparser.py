@@ -3,7 +3,6 @@
 from dokuforge.baseparser import BaseParser
 
 class Estimate:
-
     """An estimate in chars. Estimates can be added and automatically coerce
     strings and ints."""
     def __init__(self, value):
@@ -40,13 +39,27 @@ class Estimator(BaseParser):
     linelength = 85
 
     def __init__(self, string, raw=False, ednotes=False):
+        """
+        @param string: string to parse
+        @param raw: toggles counting of single chars vs. sophisticated
+          accounting for full lines, default is the sophisticated method
+        @param ednots: toggles counting of ednotes, default is not to count
+          them
+        @type string: unicode
+        @type raw: bool
+        @type ednote: bool
+        """
         BaseParser.__init__(self, string)
         self.ednotes = ednotes
         self.raw = raw
 
     def nlines(self, line, n):
         """Return an estimate for the length of this line.
+
+        If raw is False this estimates the length to be at least n lines so
+        content which stands on a line itself is correctly accounted for.
         @type line: unicode
+        @type n: int
         @rtype: Estimate
         @returns: an estimate of the length of the line, but at least n lines
         """
