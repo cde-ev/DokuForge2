@@ -507,7 +507,7 @@ class BaseParser:
             ## this deactivates all other special characters
             ## even ednotes since math needs curly braces
             if self.lookstate() in ("inlinemath", "displaymath"):
-                ## one exception: look out for \
+                ## one exception: look out for \ which escapes $
                 if token == u'\\':
                     if self.looktoken() == u'$':
                         self.poptoken()
