@@ -36,6 +36,7 @@ class Estimator(BaseParser):
     So certain structures which are known to cause a linebreak account at least
     a full line. The result of this parser is an int.
     """
+    ## this is an empirical number, may be tuned later
     linelength = 85
 
     def __init__(self, string, ednotes=False):

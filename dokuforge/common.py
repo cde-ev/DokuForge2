@@ -184,3 +184,10 @@ def validateExistence(path, name):
     if not os.path.exists(os.path.join(path, name)):
         raise CheckError(u"Interner Name existiert nicht!",
                          u"Bitte den Namen korrigieren.")
+
+def computepages(nrchars):
+    """
+    Calculate the number of pages occupied by nrchars characters.
+    """
+    ## this is an empirical number, may be tuned later
+    return nrchars/3000
