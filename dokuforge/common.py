@@ -5,6 +5,7 @@ import random
 import subprocess
 import re
 import os
+from dokuforge.estimatorparser import Estimator
 
 try:
     check_output = subprocess.check_output
@@ -199,3 +200,18 @@ def computeblobpages(nrblobs):
     """
     ## this is an empirical number, may be tuned later
     return nrblobs/4
+
+def computeestimate(obj, blobs=0):
+    estimate = {}
+    if isinstance(obj, unicode):
+        estimate['chars'] = Estimator(obj, ednotes = False,
+                                      raw = True).parse()
+        estimate['charsednotes'] = Estimator(obj, ednotes = True,
+                                             raw = True).parse()
+        estimate['pages'] = computepages(
+            Estimator(obj, ednotes = False, raw = False).parse())
+        estimate['pagesednotes'] = computepages(
+            Estimator(obj, ednotes = True, raw = False).parse())
+        estimate['blobs'] = blobs
+        estimate['blobpages'] = computeblobpages(blobs)
+    return estimate

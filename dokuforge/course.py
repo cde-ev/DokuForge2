@@ -9,7 +9,6 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
-from dokuforge.estimatorparser import Estimator
 import dokuforge.common as common
 
 class Outline:
@@ -19,7 +18,8 @@ class Outline:
         """
         self.number = number
         self.content = []
-        self.estimate = {'rawchars': 0, 'rawcharswithednotes': 0, 'pages': 0, 'pageswithednotes': 0, 'blobs': 0}
+        self.estimate = {'chars': 0, 'charsednotes': 0, 'pages': 0,
+                         'pagesednotes': 0, 'blobs': 0, 'blobpages': 0}
 
     def addheading(self, title):
         """
@@ -44,24 +44,15 @@ class Outline:
         return self.content
 
     def addestimate(self, content, blobs):
-        self.estimate['rawchars'] = Estimator(content,
-                                              ednotes = False,
-                                              raw = True).parse()
-        self.estimate['rawcharswithednotes'] = Estimator(content,
-                                                         ednotes = True,
-                                                         raw = True).parse()
-        self.estimate['pages'] = common.computepages(Estimator(content,
-                                                               ednotes = False,
-                                                               raw = False).parse())
-        self.estimate['pageswithednotes'] = common.computepages(Estimator(content,
-                                                               ednotes = True,
-                                                               raw = False).parse())
-        self.estimate['blobs'] = blobs
-        self.estimate['blobpages'] = common.computeblobpages(blobs)
+        self.estimate = common.computeestimate(content, blobs)
 
     @property
     def estimatestring(self):
-        return u"Schätzung (in Klammern mit Ednotes): %d (%d) Zeichen; %.1f (%.1f) Seiten und %d Abbildungen (%.1f zusätzliche Seiten)" % (self.estimate['rawchars'], self.estimate['rawcharswithednotes'], self.estimate['pages'], self.estimate['pageswithednotes'], self.estimate['blobs'], self.estimate['blobpages'])
+        return u"Schätzung (in Klammern mit Ednotes): %d (%d) Zeichen; \
+        %.1f (%.1f) Seiten und %d Abbildungen (%.1f zusätzliche \
+        Seiten)" % (self.estimate['chars'], self.estimate['charsednotes'],
+                    self.estimate['pages'], self.estimate['pagesednotes'],
+                    self.estimate['blobs'], self.estimate['blobpages'])
 
 class Course(StorageDir):
     """
