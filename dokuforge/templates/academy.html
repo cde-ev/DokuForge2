@@ -11,7 +11,7 @@
 	{%- for course in academy.courses -%}
 	    {%- if user.allowedRead(academy, course) %}
 	    <li><a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a> <br>
-{{ course.estimate().output() | e}}
+{{ course.estimate.output() | e}}
 </li>
 	    {%- else -%}
 	    <li>{{ course.title|e }}</li>

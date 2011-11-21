@@ -28,7 +28,7 @@ class Valuation:
         Seiten)" % (self.chars, self.charsednotes, self.pages,
                     self.pagesednotes, self.blobs, self.blobpages)
 
-    def doestimate(content, blobs):
+    def doestimate(self, content, blobs):
         self.chars = Estimator(content, ednotes = False,
                                raw = True).parse()
         self.charsednotes = Estimator(content, ednotes = True,
@@ -177,7 +177,9 @@ class Course(StorageDir):
     def estimatepage(self, page):
         content = self.showpage(page)
         blobs = len(self.listblobs(page))
-        return Valuation().doestimate(content, blobs)
+        estimate = Valuation()
+        estimate.doestimate(content, blobs)
+        return estimate
 
     def estimate(self):
         estimate = Valuation()
