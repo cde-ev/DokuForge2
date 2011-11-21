@@ -369,7 +369,7 @@ title = CdE-Akademien
 title = Wie der Name sagt
 """
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Es ist ein Parser Error aufgetreten!" in self.get_data())
+        self.assertTrue("Es ist ein allgemeiner Parser-Fehler aufgetreten!" in self.get_data())
         self.is_loggedin()
 
     def testAdmin(self):
@@ -393,7 +393,7 @@ password = secret
 permissions = df_superadmin True,df_admin True
 """
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Es ist ein Parser Error aufgetreten!" in self.get_data())
+        self.assertTrue("Es ist ein allgemeiner Parser-Fehler aufgetreten!" in self.get_data())
         self.is_loggedin()
 
     def testStyleguide(self):
