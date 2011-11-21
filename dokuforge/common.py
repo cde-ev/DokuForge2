@@ -216,3 +216,24 @@ def validateUserConfig(config):
     except ConfigParser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+
+def validateGroupConfig(config):
+    """
+    Try parsing the supplied config with ConfigParser. If this fails
+    raise a CheckError saying so.
+
+    @type config: unicode
+    """
+    assert isinstance(config, unicode)
+    parser = ConfigParser.SafeConfigParser()
+    try:
+        parser.readfp(StringIO(config.encode("utf8")))
+    except ConfigParser.ParsingError as err:
+        raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
+                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+    try:
+        for name in parser.sections():
+            parser.get(name, 'title')
+    except ConfigParser.NoOptionError as err:
+        raise CheckError(u"Es fehlt eine Angabe!",
+                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)

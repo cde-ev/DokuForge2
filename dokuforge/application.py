@@ -1190,22 +1190,6 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, self.userdb.storage, "admin.html")
 
-    def tryConfigParser(self, content):
-        """
-        Try parsing the supplied content with ConfigParser. If this fails
-        raise a CheckError saying so.
-
-        @type content: unicode
-        """
-        assert isinstance(content, unicode)
-        config = ConfigParser.SafeConfigParser()
-        try:
-            config.readfp(StringIO(content.encode("utf8")))
-        except ConfigParser.ParsingError as err:
-            raise CheckError(u"Es ist ein Parser Error aufgetreten!",
-                             u"Der Fehler lautetete: " + err.message + \
-                             u". Bitte korrigiere ihn und speichere erneut.")
-
     def do_adminsave(self, rs):
         """
         @type rs: RequestState
@@ -1234,7 +1218,7 @@ class Application:
         if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.groupstore, "groups.html",
-                                checkhook = self.tryConfigParser)
+                                checkhook = common.validateGroupConfig)
 
     ### here come the renderer
 
