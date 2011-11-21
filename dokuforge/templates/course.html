@@ -19,7 +19,7 @@
 	            {%- endif -%}
                 {%- endfor -%}
 		    <br>
-		    {{page.estimatestring}}
+		    {{page.estimate.output()|e}}
 		{%- if not loop.first -%}
 		   {%- if user.allowedWrite(academy, course) %}
 		      {{ button(buildurl("moveup"), "Hochrücken",

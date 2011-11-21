@@ -4,7 +4,7 @@ import operator
 
 import werkzeug.exceptions
 
-from dokuforge.course import Course
+from dokuforge.course import Course, Valuation
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
 from dokuforge.common import CheckError
@@ -118,12 +118,9 @@ class Academy(StorageDir):
         Course(os.path.join(self.path, name)).settitle(title)
 
     def estimate(self):
-        estimate = {'chars': 0, 'charsednotes': 0, 'pages': 0,
-                    'pagesednotes': 0, 'blobs': 0, 'blobpages': 0}
+        estimate = Valuation()
         for c in self.listCourses():
-            thisestimate = c.estimate()
-            for key in estimate:
-                estimate[key] += thisestimate[key]
+            estimate += c.estimate()
         return estimate
 
     def view(self, extrafunctions=dict()):

@@ -12,6 +12,42 @@ from dokuforge.view import LazyView, liftdecodeutf8
 from dokuforge.estimatorparser import Estimator
 import dokuforge.common as common
 
+class Valuation:
+    def __init__(self, chars = 0, charsednotes = 0, pages = 0, pagesednotes = 0,
+                 blobs = 0, blobpages = 0):
+        self.chars = chars
+        self.charsednotes = charsednotes
+        self.pages = pages
+        self.pagesednotes = pagesednotes
+        self.blobs = blobs
+        self.blobpages = blobpages
+
+    def output(self):
+        return u"Schätzung (in Klammern mit Ednotes): %d (%d) Zeichen; \
+        %.1f (%.1f) Seiten und %d Abbildungen (%.1f zusätzliche \
+        Seiten)" % (self.chars, self.charsednotes, self.pages,
+                    self.pagesednotes, self.blobs, self.blobpages)
+
+    def doestimate(content, blobs):
+        self.chars = Estimator(content, ednotes = False,
+                               raw = True).parse()
+        self.charsednotes = Estimator(content, ednotes = True,
+                                      raw = True).parse()
+        self.pages = common.computepages(
+            Estimator(content, ednotes = False, raw = False).parse())
+        self.pagesednotes = common.computepages(
+            Estimator(content, ednotes = True, raw = False).parse())
+        self.blobs = blobs
+        self.blobpages = common.computeblobpages(blobs)
+
+    def __add__(self, other):
+        return Valuation(self.chars + other.chars, self.charsednotes +
+                         other.charsednotes, self.pages + other.pages,
+                         self.pagesednotes + other.pagesednotes, self.blobs +
+                         other.blobs, self.blobpages + other.blobpages)
+
+    __radd__ = __add__
+
 class Outline:
     def __init__(self, number):
         """
@@ -19,8 +55,7 @@ class Outline:
         """
         self.number = number
         self.content = []
-        self.estimate = {'chars': 0, 'charsednotes': 0, 'pages': 0,
-                         'pagesednotes': 0, 'blobs': 0, 'blobpages': 0}
+        self.estimate = Valuation()
 
     def addheading(self, title):
         """
@@ -46,14 +81,6 @@ class Outline:
 
     def addestimate(self, estimate):
         self.estimate = estimate
-
-    @property
-    def estimatestring(self):
-        return u"Schätzung (in Klammern mit Ednotes): %d (%d) Zeichen; \
-        %.1f (%.1f) Seiten und %d Abbildungen (%.1f zusätzliche \
-        Seiten)" % (self.estimate['chars'], self.estimate['charsednotes'],
-                    self.estimate['pages'], self.estimate['pagesednotes'],
-                    self.estimate['blobs'], self.estimate['blobpages'])
 
 class Course(StorageDir):
     """
@@ -148,28 +175,14 @@ class Course(StorageDir):
         return outlines
 
     def estimatepage(self, page):
-        estimate = {}
         content = self.showpage(page)
         blobs = len(self.listblobs(page))
-        estimate['chars'] = Estimator(content, ednotes = False,
-                                      raw = True).parse()
-        estimate['charsednotes'] = Estimator(content, ednotes = True,
-                                             raw = True).parse()
-        estimate['pages'] = common.computepages(
-            Estimator(content, ednotes = False, raw = False).parse())
-        estimate['pagesednotes'] = common.computepages(
-            Estimator(content, ednotes = True, raw = False).parse())
-        estimate['blobs'] = blobs
-        estimate['blobpages'] = common.computeblobpages(blobs)
-        return estimate
+        return Valuation().doestimate(content, blobs)
 
     def estimate(self):
-        estimate = {'chars': 0, 'charsednotes': 0, 'pages': 0,
-                    'pagesednotes': 0, 'blobs': 0, 'blobpages': 0}
+        estimate = Valuation()
         for p in self.listpages():
-            thisestimate = self.estimatepage(p)
-            for key in estimate:
-                estimate[key] += thisestimate[key]
+            estimate += self.estimatepage(p)
         return estimate
 
     def listdeadpages(self):

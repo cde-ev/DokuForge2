@@ -11,11 +11,7 @@
   {%- if group in academy.groups -%}
     {%- if user.allowedRead(academy) %}
     <li><a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a> <br>
-{{ "Schätzung (in Klammern mit Ednotes): %d (%d) Zeichen; \
-    %.1f (%.1f) Seiten und %d Abbildungen (%.1f zusätzliche \
-    Seiten)" | format(academy.estimate['chars'], academy.estimate['charsednotes'],
-                      academy.estimate['pages'], academy.estimate['pagesednotes'],
-                      academy.estimate['blobs'], academy.estimate['blobpages']) | e}}</li>
+{{ academy.estimate().output() | e}}</li>
     {%- else -%}
     <li>{{ academy.title|e }}</li>
     {%- endif -%}

@@ -9,11 +9,7 @@
 {% endblock %}
 {% block content %}
 Teil #{{ page|string }}
-{{ "Schätzung (in Klammern mit Ednotes): %d (%d) Zeichen; \
-    %.1f (%.1f) Seiten und %d Abbildungen (%.1f zusätzliche \
-    Seiten)" | format(estimate['chars'], estimate['charsednotes'],
-                      estimate['pages'], estimate['pagesednotes'],
-                      estimate['blobs'], estimate['blobpages']) | e}}<hr>
+{{ estimate.output() | e}}<hr>
 <div class="dokucontent">
 {# content does not need to be escaped, since this is done by the parser #}
 {{ content }}
