@@ -216,13 +216,15 @@ folgenden Punkte zu beachten!</p>
 </tr>
 <tr>
 	<td>
+	<span class="tex2jax_ignore">
         1 m ist noch nicht so viel.<br>
         1 m$^2$ ist schon mehr.<br>
         Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
+	</span>
         </td>
 	<td>
         1 m ist noch nicht so viel.<br>
-        1 m\(^2\) ist schon mehr.<br>
+        1 m$^2$ ist schon mehr.<br>
         Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
         </td>
 </tr>
@@ -247,7 +249,7 @@ sie nur dann automatisch formatieren kann. Also:</p>
 
 <li>
 
-<p>Das Dollarzeichen &bdquo;$&ldquo; kann DokuForge übrigens nicht darstellen.
+<p>Das Dollarzeichen <span class="tex2jax_ignore">&bdquo;$&ldquo;</span> kann DokuForge übrigens nicht darstellen.
 Dieses ist nämlich für mathematische Formeln und ähnliche Bösartigkeiten
 reserviert. Bitte entweder eine ednote oder die Abkürzung USD verwenden.</p>
 
@@ -262,14 +264,16 @@ folgendermaßen eingeben:</p>
 </tr>
 <tr>
 	<td>
+	<span class="tex2jax_ignore">
+        5 m$^2$<br>
+        300 m$^3$<br>n
+        7 km$^{800}$ sind zwar relativ unsinnig, aber ein Beispiel.
+	</span>
+        </td>
+	<td>
         5 m$^2$<br>
         300 m$^3$<br>
         7 km$^{800}$ sind zwar relativ unsinnig, aber ein Beispiel.
-        </td>
-	<td>
-        5 m\(^2\)<br>
-        300 m\(^3\)<br>
-        7 km\(^{800}\) sind zwar relativ unsinnig, aber ein Beispiel.
         </td>
 </tr>
 </table>

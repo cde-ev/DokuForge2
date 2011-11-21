@@ -38,7 +38,9 @@ die abgesetzt werden:</p>
 </tr>
 <tr>
 	<td valign="top">
-	<p>Solange nur $l = c\tau$ sein soll, kann man das im Text schreiben.
+	<span class="tex2jax_ignore">
+	<p>Solange nur $l = c\tau$ sein
+	soll, kann man das im Text schreiben.
 	Die Erkenntnis, dass<br>
 	$$<br>
 	\int\limits_0^{\frac{\pi}{2}} \sin^2(x) +
@@ -46,14 +48,15 @@ die abgesetzt werden:</p>
 	$$<br>
 	ist, kann man dagegen besser in einer
 	abgesetzten Formel vermitteln.</p>
+	</span>
 	</td>
 	<td valign="top">
-	<p>Solange nur \(l = c\tau\) sein soll, kann man das im Text schreiben.
+	<p>Solange nur $l = c\tau$ sein soll, kann man das im Text schreiben.
 	Die Erkenntnis, dass<br>
-	\[
+	$$
 	\int\limits_0^{\frac{\pi}{2}} \sin^2(x) +
 	\cos^2(x) \, dx = \frac{\pi}{2}
-	\]
+	$$
 	ist, kann man dagegen besser in einer
 	abgesetzten Formel vermitteln.</p>
 	</td>
@@ -74,10 +77,12 @@ DokuForge-Mathemodus vorgestellt.</p>
 </tr>
 <tr>
         <td valign="top">
+	<span class="tex2jax_ignore">
 	<p>Mengenzeichen: Bitte $\mathbb{R}$, $\mathbb{C}$, usw. verwenden.</p>
+	</span>
 	</td>
 	<td valign="top">
-	<p>Mengenzeichen: Bitte \(\mathbb{R}\), \(\mathbb{C}\), usw. verwenden.</p>
+	<p>Mengenzeichen: Bitte $\mathbb{R}$, $\mathbb{C}$, usw. verwenden.</p>
 	</td>
 </tr>
 </table>
@@ -95,18 +100,20 @@ DokuForge-Mathemodus vorgestellt.</p>
 </tr>
 <tr>
         <td valign="middle">
-$$\<!-- mathjax automatically grabs \begin{gather} -->begin{gather}<br>
+	<span class="tex2jax_ignore">
+$$\begin{gather}<br>
   (a + b)^2 = a^2 + 2ab + b^2 \\<br>
   (a - b)^2 = a^2 - 2ab + b^2 \\<br>
   (a + b)(a - b)= a^2 + ab - ab + b^2<br>
 \end{gather}$$<br>
+	</span>
 	</td>
 	<td valign="middle">
-\[\begin{gather}
+$$\begin{gather}
   (a + b)^2 = a^2 + 2ab + b^2 \\
   (a - b)^2 = a^2 - 2ab + b^2 \\
   (a + b)(a - b) = a^2 + ab - ab + b^2
-\end{gather}\]
+\end{gather}$$
 	</td>
 </tr>
 </table>
@@ -123,18 +130,20 @@ vor jedes dieser Gleichheitszeichen <i>ein</i> kaufmännisches
 </tr>
 <tr>
         <td valign="middle">
-$$\<!-- mathjax automatically grabs \begin{align} -->begin{align}<br>
+	<span class="tex2jax_ignore">
+$$\begin{align}<br>
   (a + b)^2      &amp;= a^2 + 2ab + b^2 \\<br>
   (a - b)^2      &amp;= a^2 - 2ab + b^2 \\<br>
   (a + b)(a - b) &amp;= a^2 + ab - ab + b^2<br>
 \end{align}$$<br>
+	</span>
         </td>
         <td valign="middle">
-\[\begin{align}
+$$\begin{align}
   (a + b)^2      &amp;= a^2 + 2ab + b^2 \\
   (a - b)^2      &amp;= a^2 - 2ab + b^2 \\
   (a + b)(a - b) &amp;= a^2 + ab - ab + b^2
-\end{align}\]
+\end{align}$$
         </td>
 </tr>
 </table>
@@ -150,20 +159,22 @@ am Ende der Zeile mit einem &bdquo;Label&ldquo; versehen werden:</p>
 </tr>
 <tr>
         <td valign="middle">
-$$\<!-- mathjax automatically grabs \begin{align} -->begin{align}<br>
+	<span class="tex2jax_ignore">
+$$\begin{align}<br>
  \int_0^1 3x^2 + 2x \, dx<br>
      &= \left. x^3 + x^2 \right|_0^1                    \\<br>
      &= 1 + 1                        \label{oneplusone} \\<br>
      &= 2                            \label{equals}<br>
 \end{align}$$<br>
+	</span>
         </td>
         <td valign="middle">
-\[\begin{align}
+$$\begin{align}
  \int_0^1 3x^2 + 2x \, dx
      &= \left. x^3 + x^2 \right|_0^1                    \\
      &= 1 + 1                        \label{oneplusone} \\
      &= 2                            \label{equals}
-\end{align}\]
+\end{align}$$
         </td>
 </tr>
 </table>
