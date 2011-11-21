@@ -201,8 +201,11 @@ def computeblobpages(nrblobs):
     ## this is an empirical number, may be tuned later
     return nrblobs/4
 
+
 def computeestimate(obj, blobs=0):
-    estimate = {}
+    from dokuforge.course import Course
+    estimate = {'chars': 0, 'charsednotes': 0, 'pages': 0,
+                'pagesednotes': 0, 'blobs': 0, 'blobpages': 0}
     if isinstance(obj, unicode):
         estimate['chars'] = Estimator(obj, ednotes = False,
                                       raw = True).parse()
@@ -214,4 +217,11 @@ def computeestimate(obj, blobs=0):
             Estimator(obj, ednotes = True, raw = False).parse())
         estimate['blobs'] = blobs
         estimate['blobpages'] = computeblobpages(blobs)
+    elif isinstance(obj, Course):
+        pages = obj.listpages()
+        for p in pages:
+            thisestimate = computeestimate(obj.showpage(p),
+                                           len(obj.listblobs(p)))
+            for key in estimate:
+                estimate[key] += thisestimate[key]
     return estimate

@@ -130,7 +130,7 @@ class Course(StorageDir):
             headings cointained in correct order
         @rtype: [Outline]
         """
-        pages = self.listpages()
+        pages = self.listpages(havelock = havelock)
         outlines = []
         for p in pages:
             outline = Outline(p)
@@ -145,6 +145,9 @@ class Course(StorageDir):
             outline.addestimate(content, len(self.listblobs(p)))
             outlines.append(outline)
         return outlines
+
+    def estimate(self):
+        return common.computeestimate(self)
 
     def listdeadpages(self):
         """
@@ -521,6 +524,7 @@ class Course(StorageDir):
         functions = dict(
             pages = self.listpages,
             deadpages = self.listdeadpages,
-            outlines = self.outlinepages)
+            outlines = self.outlinepages,
+            estimate = self.estimate)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
