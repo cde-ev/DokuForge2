@@ -271,7 +271,7 @@ class Course(StorageDir):
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock = gotlock)
             lines = index.splitlines()
-            if position < len and position > 0:
+            if position < len(lines) and position > 0:
                 tmp = lines[position-1]
                 lines[position-1] = lines[position]
                 lines[position] = tmp
