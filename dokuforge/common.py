@@ -210,7 +210,6 @@ def validateUserConfig(config):
     try:
         for name in parser.sections():
             parser.get(name, 'permissions')
-            parser.get(name, 'name')
             parser.get(name, 'status')
             parser.get(name, 'password')
     except ConfigParser.NoOptionError as err:

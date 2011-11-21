@@ -320,7 +320,6 @@ class UserDB:
         for name in self.db:
             ename = name.encode("utf8")
             config.add_section(ename)
-            config.set(ename, 'name', self.db[name].name.encode("utf8"))
             config.set(ename, 'status', self.db[name].status.encode("utf8"))
             config.set(ename, 'password', self.db[name].password.encode("utf8"))
             permstr = u','.join(u'%s %r' % t for t in
@@ -357,7 +356,7 @@ class UserDB:
             permissions = dict((perm.strip().split(' ')[0].decode("utf8"),
                                 strtobool(perm.strip().split(' ')[1].decode("utf8")))
                 for perm in config.get(name, 'permissions').split(','))
-            self.addUser(config.get(name, 'name').decode("utf8"),
+            self.addUser(name.decode("utf8"),
                          config.get(name, 'status').decode("utf8"),
                          config.get(name, 'password').decode("utf8"),
                          permissions)
