@@ -13,12 +13,15 @@ def rlogv(filename):
     Return the head revision of an rcs file
 
     (needed, as rlog -v is a FreeBSD extension)
-    @type filename: str
+    @type filename: str or None
     """
+    # FIXME: maybe use proper exceptions to differentiate errors?
     assert isinstance(filename, str)
-    f = file(filename, mode = "r")
-    content = f.read()
-    f.close()
+    try:
+        with file(filename) as rcsfile:
+            content = rcsfile.read()
+    except IOError:
+        return None
     m = re.match(r'^\s*head\s*([0-9.]+)\s*;', content)
     if m:
         return m.groups()[0]
