@@ -24,6 +24,4 @@
 * blob edit complains about invalid chars on valid long inputs
 * blob edit complains about invalid chars on valid long inputs
 * extremely long course titles break layout
-* course/title -> abort is a loop
-* academy/title -> abort is a loop
 * course/aca permit whitespace only titles
