@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import division
 import random
 import subprocess
 import re
@@ -191,3 +192,10 @@ def computepages(nrchars):
     """
     ## this is an empirical number, may be tuned later
     return nrchars/3000
+
+def computeblobpages(nrblobs):
+    """
+    Calculate the number of pages occupied by nrblobs blobs.
+    """
+    ## this is an empirical number, may be tuned later
+    return nrblobs/4

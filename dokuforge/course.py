@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 import os
 import re
@@ -7,6 +9,7 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
+from dokuforge.estimatorparser import Estimator
 import dokuforge.common as common
 
 class Outline:
@@ -16,6 +19,8 @@ class Outline:
         """
         self.number = number
         self.content = []
+        self.estimate = {'rawchars': 0, 'rawcharswithednotes': 0, 'pages': 0, 'pageswithednotes': 0, 'blobs': 0}
+
     def addheading(self, title):
         """
         @type title: unicode
@@ -23,6 +28,7 @@ class Outline:
         assert isinstance(title, unicode)
         if title:
             self.content.append(("heading", title))
+
     def addsubheading(self, title):
         """
         @type title: unicode
@@ -30,11 +36,32 @@ class Outline:
         assert isinstance(title, unicode)
         if title:
             self.content.append(("subheading", title))
+
     def items(self):
         """
         @rtype: [(str, unicode)]
         """
         return self.content
+
+    def addestimate(self, content, blobs):
+        self.estimate['rawchars'] = Estimator(content,
+                                              ednotes = False,
+                                              raw = True).parse()
+        self.estimate['rawcharswithednotes'] = Estimator(content,
+                                                         ednotes = True,
+                                                         raw = True).parse()
+        self.estimate['pages'] = common.computepages(Estimator(content,
+                                                               ednotes = False,
+                                                               raw = False).parse())
+        self.estimate['pageswithednotes'] = common.computepages(Estimator(content,
+                                                               ednotes = True,
+                                                               raw = False).parse())
+        self.estimate['blobs'] = blobs
+        self.estimate['blobpages'] = common.computeblobpages(blobs)
+
+    @property
+    def estimatestring(self):
+        return u"Schätzung (in Klammern mit Ednotes): %d (%d) Zeichen; %.1f (%.1f) Seiten und %d Abbildungen (%.1f zusätzliche Seiten)" % (self.estimate['rawchars'], self.estimate['rawcharswithednotes'], self.estimate['pages'], self.estimate['pageswithednotes'], self.estimate['blobs'], self.estimate['blobpages'])
 
 class Course(StorageDir):
     """
@@ -116,13 +143,15 @@ class Course(StorageDir):
         outlines = []
         for p in pages:
             outline = Outline(p)
-            headings = re.findall(ur'^\[.*\]$', self.showpage(p),
+            content = self.showpage(p)
+            headings = re.findall(ur'^\[.*\]$', content,
                                   re.MULTILINE|re.UNICODE)
             for h in headings:
                 if h[1] == u'[':
                     outline.addsubheading(h[2:-2])
                 else:
                     outline.addheading(h[1:-1])
+            outline.addestimate(content, len(self.listblobs(p)))
             outlines.append(outline)
         return outlines
 

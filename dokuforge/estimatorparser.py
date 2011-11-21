@@ -39,9 +39,10 @@ class Estimator(BaseParser):
     ## this is an empirical number, may be tuned later
     linelength = 85
 
-    def __init__(self, string, ednotes=False):
+    def __init__(self, string, raw=False, ednotes=False):
         BaseParser.__init__(self, string)
         self.ednotes = ednotes
+        self.raw = raw
 
     def nlines(self, line, n):
         """Return an estimate for the length of this line.
@@ -49,7 +50,10 @@ class Estimator(BaseParser):
         @rtype: Estimate
         @returns: an estimate of the length of the line, but at least n lines
         """
-        return Estimate(max(len(line), n*self.linelength))
+        if not self.raw:
+            return Estimate(max(len(line), n*self.linelength))
+        else:
+            return Estimate(line)
 
     handle_heading = lambda self, line: self.nlines(line, 2)
     handle_subheading = lambda self, line: self.nlines(line, 1)

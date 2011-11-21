@@ -18,6 +18,8 @@
 	                <h5>&nbsp;&nbsp;&nbsp;&nbsp;{{title|e}}<h5>
 	            {%- endif -%}
                 {%- endfor -%}
+		    <br>
+		    {{page.estimatestring}}
 		{%- if not loop.first -%}
 		   {%- if user.allowedWrite(academy, course) %}
 		      {{ button(buildurl("moveup"), "Hochrücken",
