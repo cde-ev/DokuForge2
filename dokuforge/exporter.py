@@ -2,20 +2,20 @@ import tempfile
 import string
 import re
 import os
-import subprocess
+import shutil
 
 from dokuforge.exportparser import DokuforgeToTeXParser
 
-template_course = r"""\course{${COURSENUMBER}}
+template_course = ur"""\course{${COURSENUMBER}}
 ${COURSECONTENT}
 \endinput
 """
 
-template_coursepage = r"""${COURSEPAGE}
+template_coursepage = ur"""${COURSEPAGE}
 ${PAGEFIGURES}
 ${COURSECONTENT}"""
 
-template_master = r"""\documentclass{padoc}
+template_master = ur"""\documentclass{padoc}
 \listfiles
 
 \makeatletter
@@ -61,7 +61,7 @@ ${COURSELIST}
 \end{document}
 """
 
-template_figure = r"""\begin{figure}
+template_figure = ur"""\begin{figure}
   \centering
   \includegraphics[width=.6\textwidth]{${FIGUREPATH}}
   \caption{${FIGURECAPTION}}
@@ -70,7 +70,7 @@ template_figure = r"""\begin{figure}
 ${PAGEFIGURES}
 """
 
-template_fortschritt = r"""\begin{ednote}
+template_fortschritt = ur"""\begin{ednote}
 ${COURSENOTES}Allgemeines:
 [ ] Kursfotos nachbearbeiten: 
 [ ] Orga-/Gesamtfotos nachbearbeiten:  
@@ -86,7 +86,7 @@ durch Ankreuzen abhaken.
 \end{ednote}
 """
 
-template_coursenotes = r"""Kurs ${COURSENUMBER} (${COURSETITLE})
+template_coursenotes = ur"""Kurs ${COURSENUMBER} (${COURSETITLE})
 Verantwortlich:
 [ ] Redaktion  [ ] Bilder/Grafiken
 
@@ -163,5 +163,7 @@ class Exporter:
         master = tsubst(master, COURSELIST = courselist)
         master = master.safe_substitute()
         writefile(os.path.join(self.dir, "master.tex"), master)
-        for f in os.listdir(os.path.join(os.path.dirname(__file__), "exporter-files")):
-            subprocess.check_call(["cp", "-r", "-t", self.dir, os.path.join(os.path.dirname(__file__), "exporter-files", f)], cwd=os.path.dirname(__file__))
+        for f in os.listdir(os.path.join(os.path.dirname(__file__),
+                                         "exporter-files")):
+            shutil.copy(os.path.join(os.path.dirname(__file__),
+                                     "exporter-files", f), self.dir)
