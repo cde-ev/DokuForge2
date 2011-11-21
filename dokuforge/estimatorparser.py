@@ -42,36 +42,19 @@ class Estimator(BaseParser):
         BaseParser.__init__(self, string)
         self.ednotes = ednotes
 
-    def fullline(self, line):
+    def nlines(self, line, n):
         """Return an estimate for the length of this line.
         @type line: unicode
         @rtype: Estimate
-        @returns: an estimate of the length of the line, but at least one line
+        @returns: an estimate of the length of the line, but at least n lines
         """
-        return Estimate(max(len(line), self.linelength))
+        return Estimate(max(len(line), n*self.linelength))
 
-    def twolines(self, line):
-        """Return an estimate for the length of this line.
-        @type line: unicode
-        @rtype: Estimate
-        @returns: an estimate of the length of the line, but at least two lines
-        """
-        return Estimate(max(len(line), 2*self.linelength))
-
-    def threelines(self, line):
-        """Return an estimate for the length of this line.
-        @type line: unicode
-        @rtype: Estimate
-        @returns: an estimate of the length of the line, but at least three lines
-        """
-        return Estimate(max(len(line), 3*self.linelength))
-
-
-    handle_heading = twolines
-    handle_subheading = fullline
-    handle_authors = fullline
-    handle_item = fullline
-    handle_displaymath = threelines
+    handle_heading = lambda self, line: self.nlines(line, 2)
+    handle_subheading = lambda self, line: self.nlines(line, 1)
+    handle_authors = lambda self, line: self.nlines(line, 1)
+    handle_item = lambda self, line: self.nlines(line, 1)
+    handle_displaymath = lambda self, line: self.nlines(line, 3)
 
     def handle_ednote(self, ednote):
         """include ednotes according to self.ednotes"""
