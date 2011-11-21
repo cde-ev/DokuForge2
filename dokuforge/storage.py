@@ -37,7 +37,12 @@ def rloghead(filename):
     @type filename: str
     @returns: a str-str dict with information about the head commit; in particular,
               it will contain the keys 'revision', 'author', and 'date'.
+    @rtype: {str: str or None}
+    @raises subprocess.CalledProcessError: if rlog exits non-zero
+    @raises IndexError: when failing to parse rlog output
+    @raises KeyError: if one of the promised keys could not be parsed
     """
+    # FIXME: maybe use better exception than IndexError?
     assert isinstance(filename, str)
     
     # Amzingly enough, the "official" way to obtain revision information
@@ -48,6 +53,8 @@ def rloghead(filename):
     answer = {}
 
     revision = rlogv(filename)
+    if revision is None:
+        raise KeyError("revision")
     answer['revision'] = revision
     rlog = check_output(["rlog","-q","-r%s" % revision,filename])
     lines = rlog.splitlines()
@@ -61,7 +68,9 @@ def rloghead(filename):
         keyvalue = param.split(': ',1)
         if len(keyvalue) > 1:
             answer[keyvalue[0].lstrip()]=keyvalue[1]
-
+    
+    answer["author"] # raises KeyError
+    answer["date"] # raises KeyError
     return answer
 
 
