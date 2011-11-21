@@ -349,6 +349,11 @@ class UserDB:
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():
+            # FIXME: the following line raises NoOptionError
+            # To reproduce this problem go to admin, enter a configuration file
+            # with valid syntax, but with an empty section. It passes the
+            # tryConfigParser method of Application and later fails to load
+            # here.
             permissions = dict((perm.strip().split(' ')[0].decode("utf8"),
                                 strtobool(perm.strip().split(' ')[1].decode("utf8")))
                 for perm in config.get(name, 'permissions').split(','))

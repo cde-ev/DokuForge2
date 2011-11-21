@@ -1192,8 +1192,8 @@ class Application:
         @type content: unicode
         """
         assert isinstance(content, unicode)
+        config = ConfigParser.SafeConfigParser()
         try:
-            config = ConfigParser.SafeConfigParser()
             config.readfp(StringIO(content.encode("utf8")))
         except ConfigParser.ParsingError as err:
             raise CheckError(u"Es ist ein Parser Error aufgetreten!",

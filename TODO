@@ -18,7 +18,7 @@
 * escaping in ednotes in exportparser
 * sensible file types for downloads
 * "wrong password" needs html rendering
-* Adminstration raises exceptions on bad input
+* Adminstration raises exceptions on bad input (see dokuforge/user.py FIXME)
 * blob edit should mention filename restrictions
 * blob edit complains about invalid chars on valid long inputs
 * blob edit complains about invalid chars on valid long inputs
