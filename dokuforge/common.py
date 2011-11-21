@@ -204,6 +204,7 @@ def computeblobpages(nrblobs):
 
 def computeestimate(obj, blobs=0):
     from dokuforge.course import Course
+    from dokuforge.academy import Academy
     estimate = {'chars': 0, 'charsednotes': 0, 'pages': 0,
                 'pagesednotes': 0, 'blobs': 0, 'blobpages': 0}
     if isinstance(obj, unicode):
@@ -222,6 +223,12 @@ def computeestimate(obj, blobs=0):
         for p in pages:
             thisestimate = computeestimate(obj.showpage(p),
                                            len(obj.listblobs(p)))
+            for key in estimate:
+                estimate[key] += thisestimate[key]
+    elif isinstance(obj, Academy):
+        courses = obj.listCourses()
+        for c in courses:
+            thisestimate = computeestimate(c)
             for key in estimate:
                 estimate[key] += thisestimate[key]
     return estimate

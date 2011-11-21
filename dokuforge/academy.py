@@ -117,6 +117,9 @@ class Academy(StorageDir):
         common.validateTitle(title)
         Course(os.path.join(self.path, name)).settitle(title)
 
+    def estimate(self):
+        return common.computeestimate(self)
+
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
@@ -124,6 +127,7 @@ class Academy(StorageDir):
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
-                         groups=self.getgroups)
+                         groups=self.getgroups,
+                         estimate=self.estimate)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
