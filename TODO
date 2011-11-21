@@ -19,7 +19,6 @@
 * sensible file types for downloads
 * "wrong password" needs html rendering
 * Adminstration raises exceptions on bad input
-* blob edit forgets form fields on error
 * blob edit should mention filename restrictions
 * blob edit complains about invalid chars on valid long inputs
 * blob edit complains about invalid chars on valid long inputs
