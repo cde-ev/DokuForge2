@@ -4,6 +4,8 @@ import random
 import subprocess
 import re
 import os
+import ConfigParser
+from cStringIO import StringIO
 
 try:
     check_output = subprocess.check_output
@@ -190,3 +192,27 @@ def validateExistence(path, name):
 
 def sanitizeBlobFilename(name):
     return u"einedatei.dat"
+
+def validateUserConfig(config):
+    """
+    Try parsing the supplied config with ConfigParser. If this fails
+    raise a CheckError saying so.
+
+    @type config: unicode
+    """
+    assert isinstance(config, unicode)
+    parser = ConfigParser.SafeConfigParser()
+    try:
+        parser.readfp(StringIO(config.encode("utf8")))
+    except ConfigParser.ParsingError as err:
+        raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
+                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+    try:
+        for name in parser.sections():
+            parser.get(name, 'permissions')
+            parser.get(name, 'name')
+            parser.get(name, 'status')
+            parser.get(name, 'password')
+    except ConfigParser.NoOptionError as err:
+        raise CheckError(u"Es fehlt eine Angabe!",
+                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)

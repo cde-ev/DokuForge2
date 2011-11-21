@@ -1214,7 +1214,7 @@ class Application:
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.userdb.storage, "admin.html",
-                                checkhook = self.tryConfigParser,
+                                checkhook = common.validateUserConfig,
                                 savehook = self.userdb.load)
 
     def do_groups(self, rs):
