@@ -169,6 +169,7 @@ class BaseParser:
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%1s$".__mod__
     handle_nestedednote = u"{%s}".__mod__
+    handle_Dollar = u"%.0\\$%".__mod__
 
     escapemap = {}
 
@@ -298,6 +299,18 @@ class BaseParser:
         Interface for putting newlines.
         """
         self.tree.insert(ParseLeaf("Newline", u"\n"))
+
+    def insertdollar(self):
+        """
+        Interface for putting newlines.
+        """
+        self.tree.insert(ParseLeaf("Dollar", u"$"))
+
+    def insertbackslash(self):
+        """
+        Interface for putting newlines.
+        """
+        self.tree.insert(ParseLeaf("Backslash", u"\\"))
 
     def put(self, s):
         """
@@ -494,8 +507,13 @@ class BaseParser:
             ## this deactivates all other special characters
             ## even ednotes since math needs curly braces
             if self.lookstate() in ("inlinemath", "displaymath"):
+                ## one exception: look out for \
+                if token == u'\\':
+                    if self.looktoken() == u'$':
+                        self.poptoken()
+                        self.insertdollar()
                 ## math special token $
-                if token == u'$':
+                elif token == u'$':
                     if currentstate == "inlinemath":
                         self.popstate()
                     else:
@@ -602,6 +620,13 @@ class BaseParser:
                     self.cleanup()
                     self.pushstate("list")
                 self.pushstate("item")
+            ### dollar signs are escaped like \$
+            elif token == u'\\':
+                if self.looktoken() == u'$':
+                    self.poptoken()
+                    self.insertdollar()
+                else:
+                    self.insertbackslash()
             ### the default case for all the non-special tokens
             ### but escaping the special tokens
             else:
@@ -632,9 +657,16 @@ class BaseParser:
         if tree is None:
             tree = self.tree
         if isinstance(tree, ParseLeaf):
+            data = tree.data
+            try:
+                handler = getattr(self, "handle_%s" % tree.ident)
+            except AttributeError:
+                pass
+            else:
+                data = handler(data)
             if escape:
-                return tree.data.translate(self.escapemap)
-            return tree.data
+                return data.translate(self.escapemap)
+            return data
         output = u""
         if tree.ident in self.escapeexceptions:
             escape=False

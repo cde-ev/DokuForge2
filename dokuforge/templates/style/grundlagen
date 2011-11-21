@@ -247,9 +247,11 @@ sie nur dann automatisch formatieren kann. Also:</p>
 
 <li>
 
-<p>Das Dollarzeichen &bdquo;$&ldquo; kann DokuForge übrigens nicht darstellen.
-Dieses ist nämlich für mathematische Formeln und ähnliche Bösartigkeiten
-reserviert. Bitte entweder eine ednote oder die Abkürzung USD verwenden.</p>
+<p>Das Dollarzeichen &bdquo;$&ldquo; ist in DokuForge speziell. Dieses wird
+nämlich für mathematische Formeln und ähnliche Bösartigkeiten verwendet.
+Bitte verwende die Abkürzung USD. Falls doch unbedingt ein Dollarzeichen
+erscheinen soll, so muss dieses mit einem Backslash maskiert werden, also \$
+in der Eingabe.</p>
 
 <p>Das Dollarzeichen ist allerdings relevant, wenn du Exponenten darstellen
 willst. Quadratmeter, Kubikzentimeter und Dinge dieser Art bitte
