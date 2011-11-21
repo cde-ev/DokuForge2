@@ -95,6 +95,9 @@ def validateTitle(title):
     if title == u"":
         raise CheckError(u"Leerer Titel!",
                          u"Der Titel darf nicht leer sein.")
+    if re.match('^[ \t]*$', title) is not None:
+        raise CheckError(u"Leerer Titel!",
+                         u"Der Titel darf nicht nur aus Leerzeichen bestehen.")
 
 def validateBlobLabel(label):
     """
@@ -108,7 +111,7 @@ def validateBlobLabel(label):
     assert isinstance(label, unicode)
     if re.match('^[a-z0-9]{1,200}$', label) is None:
         raise CheckError(u"Kürzel nicht wohlgeformt!",
-                         u"Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten und auch nicht leer sein.")
+                         u"Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten, nicht leer sein und nicht mehr als 200 Zeichen enthalten.")
 
 def validateBlobComment(comment):
     """
@@ -139,7 +142,7 @@ def validateBlobFilename(filename):
     assert isinstance(filename, str)
     if re.match('^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
         raise InvalidBlobFilename(u"Dateiname nicht wohlgeformt!",
-                                  u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen.")
+                                  u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen. Der Dateinahme darf nicht mehr als 200 Zeichen enthalten.")
 
 def validateInternalName(name):
     """
@@ -154,7 +157,7 @@ def validateInternalName(name):
     assert isinstance(name, str)
     if re.match('^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
         raise CheckError(u"Interner Name nicht wohlgeformt!",
-                         u"Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten und muss mit einem Buchstaben beginnen.")
+                         u"Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten, muss mit einem Buchstaben beginnen und darf nicht mehr als 200 Zeichen enthalten.")
 
 def validateNonExistence(path, name):
     """
