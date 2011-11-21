@@ -122,6 +122,9 @@ def validateBlobComment(comment):
         raise CheckError(u"Keine Bildunterschrift gefunden!",
                          u"Bitte eine Bildunterschrift eingeben und erneut versuchen.")
 
+class InvalidBlobFilename(CheckError):
+    pass
+
 def validateBlobFilename(filename):
     """
     check whether a filename for a blob is valid. This means matching a certain
@@ -129,12 +132,12 @@ def validateBlobFilename(filename):
 
     @type filename: str
     @param filename: filename to check
-    @raises CheckError:
+    @raises InvalidBlobFilename:
     """
     assert isinstance(filename, str)
-    if re.match('^[-a-zA-Z0-9_.]{1,200}$', filename) is None:
-        raise CheckError(u"Dateiname nicht wohlgeformt!",
-                         u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen.")
+    if re.match('^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
+        raise InvalidBlobFilename(u"Dateiname nicht wohlgeformt!",
+                                  u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen.")
 
 def validateInternalName(name):
     """
@@ -184,3 +187,6 @@ def validateExistence(path, name):
     if not os.path.exists(os.path.join(path, name)):
         raise CheckError(u"Interner Name existiert nicht!",
                          u"Bitte den Namen korrigieren.")
+
+def sanitizeBlobFilename(name):
+    return u"einedatei.dat"
