@@ -26,7 +26,6 @@ from dokuforge.academy import Academy
 import dokuforge.common as common
 from dokuforge.common import CheckError
 from dokuforge.htmlparser import DokuforgeToHtmlParser
-from dokuforge.estimatorparser import Estimator
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
@@ -1437,7 +1436,8 @@ class Application:
         """
         pagecontent = thecourse.showpage(thepage)
         parsed = DokuforgeToHtmlParser(pagecontent).parse()
-        estimate = Estimator(pagecontent).parse()
+        estimate = common.computeestimate(pagecontent,
+                                          len(thecourse.listblobs(thepage)))
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
