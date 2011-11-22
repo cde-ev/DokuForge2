@@ -21,6 +21,9 @@ class ParseLeaf:
         return False
 
     def display(self, indent=0, verbose=False):
+        """
+        Print a representation of the ParseLeaf.
+        """
         if not verbose:
             return
         whitespace = u""
@@ -72,7 +75,8 @@ class ParseTree:
         """
         Mark the node at the current position as inactive.
 
-        This moves the current position one level up.
+        This moves the current position one level up. This acts like a
+        popstate and returns the closed state.
         """
         assert self.active
         if len(self.tree) == 0:
@@ -85,6 +89,9 @@ class ParseTree:
             return self.ident
 
     def display(self, indent=0, verbose=False):
+        """
+        Print a representation of the ParseTree.
+        """
         whitespace = u""
         marker = u""
         for i in range(indent):
@@ -131,8 +138,10 @@ class ParseTree:
         assert self.active
         assert not len(self.tree) == 0
         if isinstance(self.tree[-1], ParseTree):
+            assert self.tree[-1].isactive()
             self.tree[-1].appendtoleaf(data)
         else:
+            assert isinstance(self.tree[-1], ParseLeaf)
             self.tree[-1].data += data
 
 
@@ -177,6 +186,26 @@ class Parser:
         else:
             return self.stack[-1]
 
+    def mangletemporarystate(state):
+        """
+        Process temporary states if they are popped from self.stack.
+
+        @param state: state to process
+        @type state: str
+        """
+        ## the temporary tokens are the newline specials (all the *next)
+        ## and the whitespace specials (seen* and wants*)
+        assert state  in ("headingnext", "listnext", "ednotenext",
+                          "displaymathnext", "authorsnext", "keywordnext",
+                          "wantsnewline","seenwhitespace", "seennewline",
+                          "seennewpar"):
+        if state == "seenwhitespace":
+            self.insertwhitespace()
+        elif state in ("seennewline", "wantsnewline"):
+            self.insertnewline()
+        elif state == "seennewpar":
+            self.insertnewpar()
+
     def popstate(self):
         """
         Remove a state from the context.
@@ -191,12 +220,7 @@ class Parser:
             return self.tree.close()
         else:
             state = self.stack.pop()
-            if state == "seenwhitespace":
-                self.tree.insert(ParseLeaf("Whitespace", u" "))
-            elif state in ("seennewline", "wantsnewline"):
-                self.tree.insert(ParseLeaf("Newline", u"\n"))
-            elif state == "seennewpar":
-                self.tree.insert(ParseLeaf("Newpar", u"\n\n"))
+            self.mangletemporarystate(state)
 
     def pushstate(self, value):
         """
@@ -223,11 +247,17 @@ class Parser:
 
     def changestate(self, state):
         """
-        Change the current state to another state. The caller has to ensure
-        that the current state is a temporary one.
+        Change the current temporary state to another temporary state. The
+        caller has to ensure that the current state is a temporary one.
         @type state: str
         """
         assert not len(self.stack) == 0
+        ## the temporary tokens are the newline specials (all the *next)
+        ## and the whitespace specials (seen* and wants*)
+        assert state  in ("headingnext", "listnext", "ednotenext",
+                          "displaymathnext", "authorsnext", "keywordnext",
+                          "wantsnewline","seenwhitespace", "seennewline",
+                          "seennewpar"):
         self.stack[-1] = state
 
     def poptoken(self):
@@ -271,11 +301,23 @@ class Parser:
         except IndexError:
             return u''
 
+    def insertwhitespace(self):
+        """
+        Interface for putting whitespaces.
+        """
+        self.tree.insert(ParseLeaf("Whitespace", u" "))
+
     def insertnewline(self):
         """
         Interface for putting newlines.
         """
         self.tree.insert(ParseLeaf("Newline", u"\n"))
+
+    def insertnewpar(self):
+        """
+        Interface for putting newpars.
+        """
+        self.tree.insert(ParseLeaf("Newpar", u"\n\n"))
 
     def insertdollar(self):
         """
@@ -299,8 +341,8 @@ class Parser:
         @type s: unicode
         @param s: string to append
         """
-        if not self.lookstate() in ("inlinemath", "displaymath", "ednote",
-                                    "nestedednote"):
+        ## we don't want to process stuff in ednotes
+        if not self.lookstate() in ("ednote", "nestedednote"):
             if s in u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZäüößÄÖÜ':
                 leaf = self.tree.lookactiveleaf()
                 if leaf is None or not leaf.ident == "Word":
@@ -348,6 +390,8 @@ class Parser:
                 self.popstate()
             elif currentstate in ("seennewline", "wantsnewline"):
                 self.popstate()
+            ## paragraphs need to be treated specially since all contexts
+            ## should be close, ere the paragraph is commited to the output
             elif currentstate == "seennewpar":
                 if self.tree.lookstate() == "root":
                     self.popstate()
