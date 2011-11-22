@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from dokuforge.baseparser import BaseParser, ParseTree
+from dokuforge.baseformatter import BaseFormatter
 
-class DokuforgeToHtmlParser(BaseParser):
+class HtmlFormatter(BaseFormatter):
     """
-    Parser for converting Dokuforge Syntax into viewable html.
-
-    It works by scanning the text one token at a time (with a bit of
-    lookahead) and remembering all context in a stack, so the meaning of
-    tokens change as the context changes.
+    Formatter for converting the tree representation into viewable html.
     """
     escapemap = {
             ord(u'<'): u"&lt;",

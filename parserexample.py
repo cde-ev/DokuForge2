@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from dokuforge.baseparser import BaseParser
-from dokuforge.htmlparser import DokuforgeToHtmlParser
-from dokuforge.exportparser import DokuforgeToTeXParser
+from dokuforge.parser import Parser
+from dokuforge.baseformatter import BaseFormatter
+from dokuforge.htmlformatter import HtmlFormatter
+from dokuforge.exportformatter import TeXFormatter
 
 teststring = u"""
  [Eine Ueberschrift]
@@ -66,23 +67,23 @@ manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 Und hier noch ein {Hinweis} der mitten im Satz steht.
 """
 
-parser = BaseParser(teststring, debug = True)
-
+parser = Parser(teststring, debug = True)
 tree = parser.parse()
-
 tree.display(verbose=True)
 
+base = BaseFormatter(tree)
+
 print "========================================"
-print parser.generateoutput().encode("utf8")
+print base.generateoutput().encode("utf8")
 print "========================================"
 
-html = DokuforgeToHtmlParser(tree)
+html = HtmlFormatter(tree)
 
 print "========================================"
 print html.generateoutput().encode("utf8")
 print "========================================"
 
-tex = DokuforgeToTeXParser(tree)
+tex = TeXFormatter(tree)
 
 print "========================================"
 print tex.generateoutput().encode("utf8")

@@ -25,7 +25,8 @@ from werkzeug.wrappers import Request, Response
 from dokuforge.academy import Academy
 import dokuforge.common as common
 from dokuforge.common import CheckError
-from dokuforge.htmlparser import DokuforgeToHtmlParser
+from dokuforge.parser import Parser
+from dokuforge.htmlformatter import HtmlFormatter
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
@@ -1449,13 +1450,14 @@ class Application:
         @type thepage: int
         @type saved: bool
         """
-        parser = DokuforgeToHtmlParser(thecourse.showpage(thepage))
-        parser.parse()
+        parser = Parser(thecourse.showpage(thepage))
+        tree = parser.parse()
+        html = HtmlFormatter(tree)
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
-            content=parser.generateoutput(),
+            content=html.generateoutput(),
             saved=saved,
             blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
         return self.render("show.html", rs, params)
