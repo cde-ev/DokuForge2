@@ -8,8 +8,8 @@ import os
 try:
     check_output = subprocess.check_output
 except AttributeError:
-    def check_output(cmdline):
-        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
+    def check_output(cmdline, **kwargs):
+        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE, **kwargs)
         output, _ = proc.communicate()
         if proc.returncode:
             raise subprocess.CalledProcessError()

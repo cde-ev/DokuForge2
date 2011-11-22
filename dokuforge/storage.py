@@ -8,6 +8,9 @@ import re
 
 from dokuforge.common import check_output
 
+RCSENV = os.environ.copy()
+RCSENV["LC_ALL"] = "C"
+
 def rlogv(filename):
     """
     Return the head revision of an rcs file
@@ -46,7 +49,7 @@ def rloghead(filename):
 
     revision = rlogv(filename)
     answer['revision'] = revision
-    rlog = check_output(["rlog","-q","-r%s" % revision,filename])
+    rlog = check_output(["rlog","-q","-r%s" % revision,filename], env=RCSENV)
     lines = rlog.splitlines()
     while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
         lines.pop(0)
@@ -145,7 +148,8 @@ class Storage(object):
 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
-            subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()])
+            subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
+                                  env=RCSENV)
             objfile = file(self.fullpath(), mode = "w")
             shutil.copyfileobj(content, objfile)
             objfile.close()
@@ -153,18 +157,18 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())
-            subprocess.check_call(args)
+            subprocess.check_call(args, env=RCSENV)
 
     def ensureexistence(self, havelock=None):
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
                 if not os.path.exists(self.fullpath("%s,v")):
                     subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
-                                           self.fullpath()])
+                                           self.fullpath()], env=RCSENV)
                     file(self.fullpath(), mode = "w").close()
                     subprocess.check_call(["ci", "-q", "-f",
                                            "-minitial, implicit, empty commit",
-                                           self.fullpath()])
+                                           self.fullpath()], env=RCSENV)
 
     def asrcs(self, havelock=None):
         with havelock or self.lock as gotlock:
@@ -195,7 +199,8 @@ class Storage(object):
 
     def content(self, havelock=None):
         self.ensureexistence(havelock = havelock)
-        return check_output(["co", "-q", "-p", "-kb", self.fullpath()])
+        return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
+                            env=RCSENV)
 
     def startedit(self, havelock=None):
         """
@@ -255,7 +260,7 @@ class Storage(object):
             ## conflict
             # 1.) store in a branch
             subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
-                                   self.fullpath()])
+                                   self.fullpath()], env=RCSENV)
             objfile = file(self.fullpath(), mode = "w")
             objfile.write(newcontent)
             objfile.close()
@@ -264,7 +269,7 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())
-            subprocess.check_call(args)
+            subprocess.check_call(args, env=RCSENV)
             # 2.) merge in head
             os.chmod(self.fullpath(), 0600)
             subprocess.call(["rcsmerge", "-q", "-r%s" % version,
