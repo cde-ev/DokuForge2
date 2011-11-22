@@ -1,6 +1,5 @@
 == soon and important ==
 * add documentation
-* validate syntax of revision numbers before passing them to storage
 * /docs/$aca/$course/32746238764273846 creates rcs files
   * you can even edit these pages
   * you can relink them
