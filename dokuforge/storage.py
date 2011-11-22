@@ -7,6 +7,10 @@ import subprocess
 import re
 
 from dokuforge.common import check_output
+from dokuforge.common import validateRcsRevision
+from dokuforge.common import RcsUserInputError
+
+from subprocess import CalledProcessError
 
 def rlogv(filename):
     """
@@ -197,6 +201,8 @@ class Storage(object):
         assert isinstance(version, str)
         assert isinstance(newcontent, str)
         assert user is None or isinstance(user, str)
+        validateRcsRevision(version)
+
         ## Transform text to Unix line ending
         newcontent = "\n".join(newcontent.splitlines()) + "\n"
         with havelock or self.lock as gotlock:
@@ -208,8 +214,12 @@ class Storage(object):
                 return True, newversion, newcontent
             ## conflict
             # 1.) store in a branch
-            subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
-                                   self.fullpath()])
+            try:
+                subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
+                                       self.fullpath()])
+            except CalledProcessError:
+                raise RcsUserInputError(u"specified rcs version does not exist",
+                                        u"can only happen in hand-crafted requests")
             objfile = file(self.fullpath(), mode = "w")
             objfile.write(newcontent)
             objfile.close()
