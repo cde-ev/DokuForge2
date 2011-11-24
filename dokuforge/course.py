@@ -1,6 +1,7 @@
 from __future__ import with_statement
 import os
 import re
+import datetime
 
 from werkzeug.datastructures import FileStorage
 
@@ -16,6 +17,7 @@ class Outline:
         """
         self.number = number
         self.content = []
+        self.lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'?'}
     def addheading(self, title):
         """
         @type title: unicode
@@ -35,6 +37,26 @@ class Outline:
         @rtype: [(str, unicode)]
         """
         return self.content
+    def addcommitinfo(self, info):
+        """
+        Add information about the last commit. Must contain at
+        least revision, date, and author
+
+        @type info: {(str,unicode)}
+        """
+        assert 'date' in info.keys()
+        assert 'author'  in info.keys()
+        assert 'revision' in info.keys()
+        
+        self.lastchange = info
+    @property
+    def versionstring(self):
+        """
+        @rtype: unicode
+        """
+        return u"%s/%s (%s)" % (self.lastchange['revision'],
+                                self.lastchange['author'],
+                                self.lastchange['date'])
 
 class Course(StorageDir):
     """
@@ -116,6 +138,7 @@ class Course(StorageDir):
         outlines = []
         for p in pages:
             outline = Outline(p)
+            outline.addcommitinfo(self.getcommit(p))
             headings = re.findall(ur'^\[.*\]$', self.showpage(p),
                                   re.MULTILINE|re.UNICODE)
             for h in headings:
@@ -125,6 +148,14 @@ class Course(StorageDir):
                     outline.addheading(h[1:-1])
             outlines.append(outline)
         return outlines
+
+    def getcommit(self, page):
+        """
+        @type page: int
+        @rtype: {str, unicode}
+        """
+        info = self.getstorage("page%d" % page).commitstatus()
+        return dict(map(lambda (k,v):(k,v.encode("utf8")), info.iteritems()))
 
     def listdeadpages(self):
         """
@@ -494,6 +525,16 @@ class Course(StorageDir):
         blobcomment.store(comment.encode("utf8"), user = user)
         blobname.store(filename.encode("utf8"), user = user)
 
+    def lastchange(self):
+        lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'1970/01/01 00:00:00'}
+        for p in self.listpages():
+            info = self.getcommit(p)
+            date =  datetime.datetime.strptime(info['date'], "%Y/%m/%d %H:%M:%S")
+            compare = datetime.datetime.strptime(lastchange['date'], "%Y/%m/%d %H:%M:%S")
+            if date > compare:
+                lastchange = info
+        return lastchange
+
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
@@ -503,6 +544,7 @@ class Course(StorageDir):
         functions = dict(
             pages = self.listpages,
             deadpages = self.listdeadpages,
-            outlines = self.outlinepages)
+            outlines = self.outlinepages,
+            lastchange = self.lastchange)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)

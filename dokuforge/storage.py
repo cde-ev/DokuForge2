@@ -12,6 +12,9 @@ from dokuforge.common import RcsUserInputError
 
 from subprocess import CalledProcessError
 
+RCSENV = os.environ.copy()
+RCSENV["LC_ALL"] = "C"
+
 def rlogv(filename):
     """
     Return the head revision of an rcs file
@@ -28,6 +31,43 @@ def rlogv(filename):
         return m.groups()[0]
     else:
         return None
+
+rcsseparator='----------------------------' 
+
+def rloghead(filename):
+    """
+    Get relevant information for the head revision of the given rcs file
+
+    @type filename: str
+    @returns: a str-str dict with information about the head commit; in particular,
+              it will contain the keys 'revision', 'author', and 'date'.
+    """
+    assert isinstance(filename, str)
+    
+    # Amzingly enough, the "official" way to obtain revision information
+    # is to parse the output of rlog. This statement is obtained from
+    # Thien-Thi Nguyen <ttn@gnuvola.org> (maintainer of GNU RCS) in an private
+    # email on Oct 16, 2011 that also promised that such a script will never 
+    # be broken by any future releases.
+    answer = {}
+
+    revision = rlogv(filename)
+    answer['revision'] = revision
+    rlog = check_output(["rlog","-q","-r%s" % revision,filename], env=RCSENV)
+    lines = rlog.splitlines()
+    while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
+        lines.pop(0)
+    lines.pop(0)
+    lines.pop(0)
+    stateline = lines.pop(0)
+    params = stateline.split(';')
+    for param in params:
+        keyvalue = param.split(': ',1)
+        if len(keyvalue) > 1:
+            answer[keyvalue[0].lstrip()]=keyvalue[1]
+
+    return answer
+
 
 class LockDir:
     def __init__(self, path):
@@ -112,7 +152,8 @@ class Storage(object):
 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
-            subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()])
+            subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
+                                  env=RCSENV)
             objfile = file(self.fullpath(), mode = "w")
             shutil.copyfileobj(content, objfile)
             objfile.close()
@@ -120,18 +161,18 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())
-            subprocess.check_call(args)
+            subprocess.check_call(args, env=RCSENV)
 
     def ensureexistence(self, havelock=None):
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
                 if not os.path.exists(self.fullpath("%s,v")):
                     subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
-                                           self.fullpath()])
+                                           self.fullpath()], env=RCSENV)
                     file(self.fullpath(), mode = "w").close()
                     subprocess.check_call(["ci", "-q", "-f",
                                            "-minitial, implicit, empty commit",
-                                           self.fullpath()])
+                                           self.fullpath()], env=RCSENV)
 
     def asrcs(self, havelock=None):
         with havelock or self.lock as gotlock:
@@ -151,9 +192,19 @@ class Storage(object):
             result = rlogv(self.fullpath("RCS/%s,v"))
         return result
 
+    def commitstatus(self, havelock=None):
+        """
+        Obtain information about the last change made to this storage object.
+        @returns: a str-str dict with information about the head commit; in particular,
+                  it will contain the keys 'revision', 'author', and 'date'.
+        """
+        self.ensureexistence(havelock=havelock)
+        return rloghead(self.fullpath("%s,v"))
+
     def content(self, havelock=None):
         self.ensureexistence(havelock = havelock)
-        return check_output(["co", "-q", "-p", "-kb", self.fullpath()])
+        return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
+                            env=RCSENV)
 
     def startedit(self, havelock=None):
         """
@@ -216,7 +267,7 @@ class Storage(object):
             # 1.) store in a branch
             try:
                 subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
-                                       self.fullpath()])
+                                       self.fullpath()], env=RCSENV)
             except CalledProcessError:
                 raise RcsUserInputError(u"specified rcs version does not exist",
                                         u"can only happen in hand-crafted requests")
@@ -228,7 +279,7 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())
-            subprocess.check_call(args)
+            subprocess.check_call(args, env=RCSENV)
             # 2.) merge in head
             os.chmod(self.fullpath(), 0600)
             subprocess.call(["rcsmerge", "-q", "-r%s" % version,
