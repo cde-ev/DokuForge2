@@ -45,12 +45,12 @@ template_master = ur"""\documentclass{padoc}
 
 %% Pakete und Definitionen
 
-\\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+""" + u'\\' + ur"""usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
 
-\\usepackage{mathalign}
-\\usepackage{amsmath}
-\\usepackage{misc}
-\\usepackage{multicol}
+""" + u'\\' + ur"""usepackage{mathalign}
+""" + u'\\' + ur"""usepackage{amsmath}
+""" + u'\\' + ur"""usepackage{misc}
+""" + u'\\' + ur"""usepackage{multicol}
 
 \begin{document}
 
