@@ -181,6 +181,6 @@ class Exporter:
                 else:
                     raise
         data = check_output(["tar", "cjf", "-", "-C", self.tempdir, self.aca.name])
-        shutil.rmtree(self.dir)
+        shutil.rmtree(self.tempdir)
         return data
 
