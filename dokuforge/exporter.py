@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
 import tempfile
 import string
 import re
 import os
 import shutil
+import errno
 
 from dokuforge.exportparser import DokuforgeToTeXParser
+from dokuforge.common import check_output
 
 template_course = ur"""\course{${COURSENUMBER}}
 ${COURSECONTENT}
@@ -42,12 +45,12 @@ template_master = ur"""\documentclass{padoc}
 
 %% Pakete und Definitionen
 
-\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+\\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
 
-\usepackage{mathalign}
-\usepackage{amsmath}
-\usepackage{misc}
-\usepackage{multicol}
+\\usepackage{mathalign}
+\\usepackage{amsmath}
+\\usepackage{misc}
+\\usepackage{multicol}
 
 \begin{document}
 
@@ -111,7 +114,9 @@ def writefile(path, content):
 
 class Exporter:
     def __init__(self, aca):
-        self.dir = tempfile.mkdtemp(prefix="export")
+        self.tempdir = tempfile.mkdtemp(prefix="export")
+        os.mkdir(os.path.join(self.tempdir, "%s" % aca.name))
+        self.dir = os.path.join(self.tempdir, "%s" % aca.name)
         self.exported = False
         self.aca = aca
 
@@ -165,5 +170,17 @@ class Exporter:
         writefile(os.path.join(self.dir, "master.tex"), master)
         for f in os.listdir(os.path.join(os.path.dirname(__file__),
                                          "exporter-files")):
-            shutil.copy(os.path.join(os.path.dirname(__file__),
-                                     "exporter-files", f), self.dir)
+            try:
+                shutil.copytree(os.path.join(os.path.dirname(__file__),
+                                             "exporter-files", f),
+                                             os.path.join(self.dir, f))
+            except OSError as exception:
+                if exception.errno == errno.ENOTDIR:
+                    shutil.copy(os.path.join(os.path.dirname(__file__),
+                                             "exporter-files", f), self.dir)
+                else:
+                    raise
+        data = check_output(["tar", "cjf", "-", "-C", self.tempdir, self.aca.name])
+        shutil.rmtree(self.dir)
+        return data
+
