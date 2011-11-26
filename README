@@ -36,7 +36,7 @@ Prerequisites:
  * mathjax
    Required: only for rendering math
    Homepage: http://www.mathjax.org/
-   Debian: not packaged
+   Debian: libjs-mathjax
    FreeBSD: www/mathjax (pending)
    Gentoo: not packaged
    Download: http://github.com/mathjax/MathJax/zipball/v1.1a
@@ -48,7 +48,7 @@ Prerequisites:
    Gentoo: dev-python/epydoc
 
  Short forms:
-  * Debian: aptitude install python-werkzeug python-jinja2 rcs python-mechanize python-epydoc
+  * Debian: aptitude install python-werkzeug python-jinja2 rcs python-mechanize python-epydoc libjs-mathjax
   * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-mechanize devel/epydoc
   * Gentoo: emerge dev-python/werkzeug dev-python/jinja dev-vcs/rcs dev-python/mechanize dev-python/epydoc
 
