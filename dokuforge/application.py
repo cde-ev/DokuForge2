@@ -943,7 +943,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.mayExport(aca):
             return werkzeug.exceptions.Forbidden()
-        rs.response.content_type = "application/octet-stream"
+        rs.response.content_type = "application/x-bzip-compressed-tar"
         exporter = Exporter(aca)
         rs.response.data = exporter.export()
         rs.response.headers['Content-Disposition'] = \
