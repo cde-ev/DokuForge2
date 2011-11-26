@@ -4,6 +4,7 @@ import re
 import datetime
 
 from werkzeug.datastructures import FileStorage
+import werkzeug.exceptions
 
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
@@ -153,7 +154,10 @@ class Course(StorageDir):
         """
         @type page: int
         @rtype: {str, unicode}
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > page or page >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
         info = self.getstorage("page%d" % page).commitstatus()
         return dict(map(lambda (k,v):(k,v.encode("utf8")), info.iteritems()))
 
@@ -189,26 +193,28 @@ class Course(StorageDir):
                 return [n for n in range(nextblobindex) if n not in availableblobs]
 
 
-    def showpage(self, number):
+    def showpage(self, page):
         """
         Show the contents of a page
 
         @type number: int
         @param number: the internal number of that page
         @rtype: unicode
+        @raises werkzeug.exceptions.HTTPException:
         """
-        return self.getcontent("page%d" % number).decode("utf8")
+        if 0 > page or page >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
+        return self.getcontent("page%d" % page).decode("utf8")
 
     def getrcs(self, page):
         """
         @param page: the internal number of the page
         @returns: an rcs file describing all versions of this page
         @rtype: str
+        @raises werkzeug.exceptions.HTTPException:
         """
-        if 0 > page:
-            return ""
-        if page >= self.nextpage():
-            return ""
+        if 0 > page or page >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
         return self.getstorage("page%d" % page).asrcs()
 
     def export(self):
@@ -249,7 +255,10 @@ class Course(StorageDir):
         @param number: the internal page number
         @type number: int
         @type user: None or unicode
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > number or number >= self.nextblob():
+            raise werkzeug.exceptions.NotFound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -266,14 +275,17 @@ class Course(StorageDir):
             newindex = "\n".join(newlines) + "\n"
             indexstore.store(newindex, havelock = gotlock, user = user)
 
-    def delpage(self, number, user=None):
+    def delpage(self, page, user=None):
         """
         Delete a page
 
-        @param number: the internal page number
-        @type number: int
+        @param page: the internal page page
+        @type page: int
         @type user: None or unicode
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > page or page >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -283,7 +295,7 @@ class Course(StorageDir):
             lines = index.splitlines()
             newlines = []
             for line in lines:
-                if int(line.split()[0]) != number:
+                if int(line.split()[0]) != page:
                     newlines.append(line)
             newindex = "\n".join(newlines) + "\n"
             indexstore.store(newindex, havelock = gotlock, user = user)
@@ -294,7 +306,10 @@ class Course(StorageDir):
 
         @type position: int
         @type user: None or unicode
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 1 > position or position >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -314,7 +329,10 @@ class Course(StorageDir):
         relink a (usually deleted) page to the index
         @type page: int
         @type user: None or unicode
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > page or page >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -345,7 +363,10 @@ class Course(StorageDir):
         @type number: int
         @type page: int
         @type user: None or unicode
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > number or number >= self.nextblob():
+            raise werkzeug.exceptions.NotFound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -371,16 +392,19 @@ class Course(StorageDir):
             indexstore.store(newindex, havelock = gotlockindex, user = user)
 
 
-    def editpage(self, number):
+    def editpage(self, page):
         """
         Start editing a page;
 
-        @param number: the internal page number
-        @type number: int
+        @param page: the internal page page
+        @type page: int
         @returns: a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
+        @raises werkzeug.exceptions.HTTPException:
         """
-        page = self.getstorage("page%d" % number)
+        if 0 > page or page >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
+        page = self.getstorage("page%d" % page)
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -402,7 +426,10 @@ class Course(StorageDir):
                   (newversion, mergedcontent) a pair for further editing that
                   can be handled as if obtained from editpage
         @rtype: (unicode, unicode, unicode)
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > number or number >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
         assert isinstance(version, unicode)
         assert isinstance(newcontent, unicode)
         if user is not None:
@@ -414,24 +441,27 @@ class Course(StorageDir):
                                                   user = user)
         return (ok, version.decode("utf8"), mergedcontent.decode("utf8"))
 
-    def attachblob(self, number, data, comment="unknown blob", label="fig",
+    def attachblob(self, page, data, comment="unknown blob", label="fig",
                    user=None):
         """
         Attach a blob to a page
 
-        @param number: the internal number of the page
+        @param page: the internal number of the page
         @param comment: a human readable description, e.g., the caption to be
             added to this figure
         @param label: a short label for the blob (only small letters and
             digits allowed)
         @param user: the df-login name of the user to carried out the edit
-        @type number: int
+        @type page: int
         @type data: str or file-like
         @type label: unicode
         @type comment: unicode
         @type user: unicode or None
         @returns: None on failure or the created blob number
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > page or page >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
         assert isinstance(data, FileStorage)
         assert isinstance(comment, unicode)
         assert isinstance(label, unicode)
@@ -456,7 +486,7 @@ class Course(StorageDir):
                 index = indexstore.content()
                 lines = index.splitlines()
                 for i in range(len(lines)):
-                    if int(lines[i].split()[0]) == number:
+                    if int(lines[i].split()[0]) == page:
                         lines[i] += " %d" % newnumber
                         newindex = "\n".join(lines) + "\n"
                         indexstore.store(newindex, havelock = gotlockindex)
@@ -471,17 +501,20 @@ class Course(StorageDir):
         blobname.store(filename, user=user)
         return newnumber
 
-    def listblobs(self, number):
+    def listblobs(self, page):
         """
         return a list of the blobs associated with the given page
 
-        @param number: the internal page number
-        @type number: int
+        @param page: the internal page page
+        @type page: int
         @rtype: [int]
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > page or page >= self.nextpage():
+            raise werkzeug.exceptions.NotFound()
         for line in self.getcontent("Index").splitlines():
             entries = line.split()
-            if int(entries[0]) == number:
+            if int(entries[0]) == page:
                 entries.pop(0)
                 return [int(x) for x in entries]
         return []
@@ -495,7 +528,10 @@ class Course(StorageDir):
         @rtype: LazyView
         @returns: a mapping providing the keys: data(str), label(unicode),
                   comment(unicode), filename(unicode) and number(int)
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > number or number >= self.nextblob():
+            raise werkzeug.exceptions.NotFound()
         ldu = liftdecodeutf8
         return LazyView(dict(
             data = self.getstorage("blob%d" % number).content,
@@ -508,7 +544,10 @@ class Course(StorageDir):
         """
         modify the blob given by number with the data in the other parameters.
         @raises CheckError: if the input data is malformed
+        @raises werkzeug.exceptions.HTTPException:
         """
+        if 0 > number or number >= self.nextblob():
+            raise werkzeug.exceptions.NotFound()
         assert isinstance(label, unicode)
         assert isinstance(comment, unicode)
         assert isinstance(filename, unicode)
