@@ -28,6 +28,11 @@ Grundsätzlich sind die meisten Mathematikbefehle, die im Kopka beschrieben
 werden, erlaubt. Es können bei Bedarf kursspezifisch neue Befehle erlaubt bzw.
 definiert werden.</p>
 
+<p> Es gibt für das Web-Interface auch eine Vorschau für Matheformeln. Diese
+lässt sich rechts oben ein- und ausschalten. Für die Darstellung wird dabei
+Javascript benoetigt und in der Vergangenheit lief sie nicht in allen
+Browsern flüssig. </p>
+
 <p>DokuForge unterstützt zwei Arten von Formeln: solche im Fließtext und solche,
 die abgesetzt werden:</p>
 
