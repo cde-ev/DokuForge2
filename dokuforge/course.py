@@ -217,7 +217,8 @@ class Course(StorageDir):
                 this course
         @rtype: str
         """
-        return check_output(["tar", "cf", "-", self.path])
+        head, tail = os.path.split(self.path)
+        return check_output(["tar", "cjf", "-", "-C", head, tail])
 
     def newpage(self, user=None):
         """

@@ -926,10 +926,10 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
-        rs.response.content_type = "application/octet-stream"
+        rs.response.content_type = "application/x-bzip-compressed-tar"
         rs.response.data = c.export()
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s_%s.tar" % (aca.name, c.name)
+                "attachment; filename=%s_%s.tar.bz2" % (aca.name, c.name)
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
