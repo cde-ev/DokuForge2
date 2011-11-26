@@ -30,7 +30,7 @@ Prerequisites:
    Required: for using serve_* except serve_debug
    Homepage: http://www.subdivi.de/~helmut/wsgitools/
    Debian: not packaged
-   FreeBSD: not packaged
+   FreeBSD: unoffical port http://www.linta.de/~aehlig/university/wsgitools.shar
    Gentoo: not packaged
    Download: http://www.subdivi.de/~helmut/darcs/wsgitools/dist/wsgitools-0.2.2.tar.gz
  * mathjax
