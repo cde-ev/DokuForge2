@@ -195,7 +195,7 @@ class Parser:
         """
         ## the temporary tokens are the newline specials (all the *next)
         ## and the whitespace specials (seen* and wants*)
-        assert state  in ("headingnext", "listnext", "ednotenext",
+        assert state  in ("start", "headingnext", "listnext", "ednotenext",
                           "displaymathnext", "authorsnext", "keywordnext",
                           "wantsnewline","seenwhitespace", "seennewline",
                           "seennewpar")
@@ -254,7 +254,7 @@ class Parser:
         assert not len(self.stack) == 0
         ## the temporary tokens are the newline specials (all the *next)
         ## and the whitespace specials (seen* and wants*)
-        assert state  in ("headingnext", "listnext", "ednotenext",
+        assert state  in ("start", "headingnext", "listnext", "ednotenext",
                           "displaymathnext", "authorsnext", "keywordnext",
                           "wantsnewline","seenwhitespace", "seennewline",
                           "seennewpar")
@@ -624,7 +624,8 @@ class Parser:
             ### *keywords* only avalailable at the beginnig of paragraphs
             elif token == u'*' and currentstate in ("keywordnext", "keyword"):
                 if currentstate == "keywordnext":
-                    self.changestate("keyword")
+                    self.popstate()
+                    self.pushstate("keyword")
                 else: # keyword
                     self.popstate()
             ### lists only available at the beginning of lines
