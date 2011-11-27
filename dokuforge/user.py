@@ -314,34 +314,6 @@ class UserDB:
         self.db[name] = User(name, status, password, permissions)
         return True
 
-    def modifyUser(self, name, attributes):
-        """
-        modify a user of the database in memory
-
-        @type name: unicode
-        @type attributes: {unicode: unicode}
-        @param attributes: dictionary of changes to apply, sytax is: (action,
-                          value) where action is one of 'status',
-                          'password', 'permission_grant',
-                          'permission_revoke'
-        """
-        assert isinstance(name, unicode)
-        assert all(isinstance(key, unicode) and isinstance(value, unicode)
-                   for key, value in attributes.items())
-        if not name in self.db:
-            return False
-        for (attr_name, attr_value) in attributes.items():
-            if attr_name == u"status":
-                self.db[name].status = attr_value
-            elif attr_name == u"password":
-                self.db[name].password = attr_value
-            elif attr_name == u"permission_grant":
-                self.db[name].permissions[attr_value] = True
-            elif attr_name == u"permission_revoke":
-                self.db[name].permissions[attr_value] = False
-            else:
-                print "Unknown attribute", attr_name, "w/ value", attr_value
-
     def checkLogin(self, name, password):
         """
         @type name: unicode
