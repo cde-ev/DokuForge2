@@ -533,6 +533,8 @@ class Parser:
                     if self.looktoken() == u'$':
                         self.poptoken()
                         self.insertdollar()
+                    else:
+                        self.insertbackslash()
                 ## math special token $
                 elif token == u'$':
                     if currentstate == "inlinemath":
@@ -543,7 +545,6 @@ class Parser:
                         if self.looktoken() == u'$':
                             self.poptoken()
                         self.pushstate("wantsnewline")
-                ## but we still need to escape
                 else:
                     self.put(token)
                 continue
