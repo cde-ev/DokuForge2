@@ -186,7 +186,7 @@ class Parser:
         else:
             return self.stack[-1]
 
-    def mangletemporarystate(state):
+    def mangletemporarystate(self, state):
         """
         Process temporary states if they are popped from self.stack.
 
@@ -198,7 +198,7 @@ class Parser:
         assert state  in ("headingnext", "listnext", "ednotenext",
                           "displaymathnext", "authorsnext", "keywordnext",
                           "wantsnewline","seenwhitespace", "seennewline",
-                          "seennewpar"):
+                          "seennewpar")
         if state == "seenwhitespace":
             self.insertwhitespace()
         elif state in ("seennewline", "wantsnewline"):
@@ -242,7 +242,7 @@ class Parser:
                        "emphasis", "inlinemath", "nestedednote"):
             self.tree.insert(ParseTree(value))
         else:
-            raise ValueError("invalid state: %s" % currentstate)
+            raise ValueError("invalid state: %s" % value)
 
 
     def changestate(self, state):
@@ -257,7 +257,7 @@ class Parser:
         assert state  in ("headingnext", "listnext", "ednotenext",
                           "displaymathnext", "authorsnext", "keywordnext",
                           "wantsnewline","seenwhitespace", "seennewline",
-                          "seennewpar"):
+                          "seennewpar")
         self.stack[-1] = state
 
     def poptoken(self):
