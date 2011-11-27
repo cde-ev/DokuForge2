@@ -9,6 +9,8 @@ import errno
 from dokuforge.exportparser import DokuforgeToTeXParser
 from dokuforge.common import check_output
 
+## Templates used for generating the export
+
 template_course = ur"""\course{${COURSENUMBER}}
 ${COURSECONTENT}
 \endinput
@@ -95,25 +97,60 @@ Verantwortlich:
 
 ${COURSENOTES}"""
 
+## end of templates
+
 def testCourseName(course):
+    """
+    Filter for course names.
+
+    padoc.cls expects a certain format for course names.
+    @rtype: bool
+    @returns: True if the course name is compatible with padoc.cls
+    """
     if re.match('^kurs[0-9]+$', course.name) is None:
         return False
     return True
 
 def courseNumber(course):
+    """
+    Extract the course number from a course name.
+
+    This works in conjunction with testCourseNames, which allows only a very
+    limited set of course names.
+    """
     return course.name[4:]
 
-## do template substitiution
 def tsubst(template, **keys):
+    """
+    Helper function for template substitution.
+    """
     return string.Template(template.safe_substitute(keys))
 
 def writefile(path, content):
+    """
+    Helper function for writing files.
+    """
     f = file(path, mode = "w")
     f.write(content)
     f.close()
 
 class Exporter:
+    """
+    Exporter class.
+
+    Take an academy and build transform it into a (rather complex)
+    TeX-document. Bundle everything up and provide a tar-ball. Most of the
+    magic is in the exportparser, the other steps are pretty
+    straight-forward.
+
+    Everything happens inside a temporary directory which is deleted
+    afterwards. Also note, that all files under 'exporter-files' are copied
+    to the output.
+    """
     def __init__(self, aca):
+        """
+        Prepare for the export.
+        """
         self.tempdir = tempfile.mkdtemp(prefix="export")
         os.mkdir(os.path.join(self.tempdir, "%s" % aca.name))
         self.dir = os.path.join(self.tempdir, "%s" % aca.name)
@@ -121,19 +158,32 @@ class Exporter:
         self.aca = aca
 
     def export(self):
+        """
+        Export.
+
+        @returns: bzipped tar-ball with the export or None (if allready exported)
+        """
         if self.exported:
-            return False
+            return None
         self.exported = True
         courses = self.aca.listCourses()
+        ## we have to filter the courses, so all course names conform with
+        ## padoc.cls
         courses = filter(testCourseName, courses)
+        ## the listing of courses inside master.tex
         courselist = u'\n'
+        ## the listing of courses inside fortschritt.tex
         fortschrittlist = string.Template(u'${COURSENOTES}')
+        ## export one course
         for c in courses:
+            ## each course gets it's own directory
             os.mkdir(os.path.join(self.dir, c.name))
+            ## content is later written to chap<coursenumber>.tex
             content = string.Template(template_course)
             content = tsubst(content, COURSENUMBER = courseNumber(c))
             for p in c.listpages():
                 content = tsubst(content, COURSECONTENT = template_coursepage)
+                ## here be dragons
                 parser = DokuforgeToTeXParser(c.showpage(p))
                 parser.parse()
                 content = tsubst(content, COURSEPAGE = parser.result())
@@ -145,6 +195,7 @@ class Exporter:
                                                                blob["filename"]),
                                      FIGURELABEL = blob["label"],
                                      FIGURECAPTION = blob["comment"])
+                    ## filenames are trusted
                     writefile(os.path.join(self.dir, c.name, blob["filename"]),
                               blob["data"])
                 content = tsubst(content, PAGEFIGURES = u'')
@@ -152,24 +203,29 @@ class Exporter:
             content = content.safe_substitute()
             writefile(os.path.join(self.dir, c.name,
                                   "chap%s.tex" % courseNumber(c)), content)
+            ## update lists
             courselist += u'\\include{%s/chap%s.tex}\n' % (c.name, courseNumber(c))
             fortschrittlist = tsubst(fortschrittlist,
                                      COURSENOTES = template_coursenotes)
             fortschrittlist = tsubst(fortschrittlist,
                                      COURSENUMBER = courseNumber(c),
                                      COURSETITLE = c.gettitle())
+        ## create fortschritt.tex
         fortschrittlist = tsubst(fortschrittlist, COURSENOTES = u'')
         fortschrittlist = fortschrittlist.safe_substitute()
         fortschritt = string.Template(template_fortschritt)
         fortschritt = tsubst(fortschritt, COURSENOTES = fortschrittlist)
         fortschritt = fortschritt.safe_substitute()
         writefile(os.path.join(self.dir, "fortschritt.tex"), fortschritt)
+        ## create master.tex
         master = string.Template(template_master)
         master = tsubst(master, COURSELIST = courselist)
         master = master.safe_substitute()
         writefile(os.path.join(self.dir, "master.tex"), master)
+        ## copy exporter-files/*
         for f in os.listdir(os.path.join(os.path.dirname(__file__),
                                          "exporter-files")):
+            ## this is a bit tedious since we copy directory and files
             try:
                 shutil.copytree(os.path.join(os.path.dirname(__file__),
                                              "exporter-files", f),
@@ -180,7 +236,9 @@ class Exporter:
                                              "exporter-files", f), self.dir)
                 else:
                     raise
+        ## bundle up
         data = check_output(["tar", "cjf", "-", "-C", self.tempdir, self.aca.name])
+        ## clean up
         shutil.rmtree(self.tempdir)
         return data
 
