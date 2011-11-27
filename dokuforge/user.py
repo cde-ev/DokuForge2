@@ -100,7 +100,7 @@ class User:
         @rtype: bool
         """
         assert isinstance(perm, unicode)
-        return bool(self.permissions.get(perm))
+        return self.permissions.get(perm)
 
     def revokedPermission(self, perm):
         """
@@ -110,9 +110,9 @@ class User:
         """
         assert isinstance(perm, unicode)
         state = self.permissions.get(perm)
-        if state is None or state == "True":
+        if state is None or state == True:
             return False
-        elif state == "False":
+        elif state == False:
             return True
         else:
             return False
@@ -147,14 +147,14 @@ class User:
             course = course.name
         ## second check for explicitly revoked privilege
         if course is None:
-            if revokedPermission(u"akademie_read_%s" % aca) or \
-                revokedPermission(u"akademie_view_%s" % aca):
+            if self.revokedPermission(u"akademie_read_%s" % aca) or \
+                self.revokedPermission(u"akademie_view_%s" % aca):
                 return False
         else:
-            if revokedPermission(u"kurs_read_%s_%s" % (aca, course)):
+            if self.revokedPermission(u"kurs_read_%s_%s" % (aca, course)):
                 return False
-            if revokedPermission(u"akademie_read_%s" % aca) and \
-                not hasPermission(u"kurs_read_%s_%s" % (aca, course)):
+            if self.revokedPermission(u"akademie_read_%s" % aca) and \
+                not self.hasPermission(u"kurs_read_%s_%s" % (aca, course)):
                 return False
         ## now we are done with revoked permissions and can continue
         ## third check group level privileges
@@ -202,13 +202,13 @@ class User:
             course = course.name
         ## second check for explicitly revoked privilege
         if course is None:
-            if revokedPermission(u"akademie_write_%s" % aca):
+            if self.revokedPermission(u"akademie_write_%s" % aca):
                 return False
         else:
-            if revokedPermission(u"kurs_write_%s_%s" % (aca, course)):
+            if self.revokedPermission(u"kurs_write_%s_%s" % (aca, course)):
                 return False
-            if revokedPermission(u"akademie_write_%s" % aca) and \
-                not hasPermission(u"kurs_write_%s_%s" % (aca, course)):
+            if self.revokedPermission(u"akademie_write_%s" % aca) and \
+                not self.hasPermission(u"kurs_write_%s_%s" % (aca, course)):
                 return False
         ## now we are done with revoked permissions and can continue
         ## third check group level privileges
@@ -394,11 +394,6 @@ class UserDB:
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():
-            # FIXME: the following line raises NoOptionError
-            # To reproduce this problem go to admin, enter a configuration file
-            # with valid syntax, but with an empty section. It passes the
-            # tryConfigParser method of Application and later fails to load
-            # here.
             permissions = dict((perm.strip().split(' ')[0].decode("utf8"),
                                 strtobool(perm.strip().split(' ')[1].decode("utf8")))
                 for perm in config.get(name, 'permissions').split(','))
