@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from dokuforge.baseparser import BaseParser
+from dokuforge.baseformatter import BaseFormatter
 
-class DokuforgeToTeXParser(BaseParser):
+class TeXFormatter(BaseFormatter):
     """
-    Parser for converting Dokuforge Syntax into TeX for export.
-
-    It works by scanning the text one token at a time (with a bit of
-    lookahead) and remembering all context in a stack, so the meaning of
-    tokens change as the context changes.
+    Formatter for converting the tree representation into TeX for export.
     """
     escapemap = {
             ord(u'\\'): u"\\forbidden\\"}
+
+    escapeexceptions = ["ednote", "nestedednote"]
 
     handle_heading = u"\\section{%s}".__mod__
     handle_subheading = u"\\subsection{%s}".__mod__
@@ -24,4 +22,4 @@ class DokuforgeToTeXParser(BaseParser):
     # inherit handle_inlinemath
     handle_list = u"\\begin{itemize}\n%s\n\end{itemize}".__mod__
     handle_item = u"\\item %s".__mod__
-
+    handle_Dollar = u"%.0\\$%".__mod__

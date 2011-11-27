@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from dokuforge.htmlparser import DokuforgeToHtmlParser
-from dokuforge.exportparser import DokuforgeToTeXParser
-from dokuforge.baseparser import BaseParser
+from dokuforge.parser import Parser
+from dokuforge.baseformatter import BaseFormatter
+from dokuforge.htmlformatter import HtmlFormatter
+from dokuforge.exportformatter import TeXFormatter
 
 teststring = u"""
  [Eine Ueberschrift]
@@ -34,7 +35,7 @@ tortor ipsum, in rhoncus mi. Sed nec odio sem. Aenean rutrum, dui vel
 vehicula pulvinar, purus magna euismod dui, id pharetra libero mauris nec
 dolor.
 
-Bitte Escape mich: <>&"'\\ und das wars auch schon.
+Bitte Escape mich: <>&"' \\ \\\\command und das wars auch schon.
 
 [[Eine weitere Unterueberschrift]]
 
@@ -59,43 +60,31 @@ Absaetze (s.o.) zu stutzen, aber das ist nur ca. halb so leserlich. Auch
 nicht besser wird es wenn man ganz viele AKRONYME verwendet ... Aber
 manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 
-{ Hier noch ein Hinweis in verbatim,
+{ Hier noch ein Hinweis in verbatim, mit <>"'& \\ Sonderzeichen
 
   mit einer Leerzeile und { nested braces }. }
 
 Und hier noch ein {Hinweis} der mitten im Satz steht.
 """
 
-parser = DokuforgeToHtmlParser(teststring, debug = True)
+parser = Parser(teststring, debug = True)
+tree = parser.parse()
+tree.display(verbose=True)
 
-
-html =  parser.parse().encode("utf8")
-
-print "========================================"
-
-base = BaseParser(teststring)
-
-dokuforge = base.parse().encode("utf8")
-
-print dokuforge
+base = BaseFormatter(tree)
 
 print "========================================"
+print base.generateoutput().encode("utf8")
 print "========================================"
 
-basetwo = BaseParser(dokuforge.decode("utf8"))
-
-print basetwo.parse().encode("utf8")
+html = HtmlFormatter(tree)
 
 print "========================================"
+print html.generateoutput().encode("utf8")
 print "========================================"
 
-print html
+tex = TeXFormatter(tree)
 
 print "========================================"
-print "========================================"
-
-exporter = DokuforgeToTeXParser(teststring)
-
-print exporter.parse().encode("utf8")
-
+print tex.generateoutput().encode("utf8")
 print "========================================"
