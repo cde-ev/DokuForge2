@@ -32,7 +32,10 @@ class User:
     @ivar permissions: dictionary of permissions, the key is the name of
         the permission, the value is a boolean, True if the permission is
         granted, False if explicitly revoked. Absence of a key means no
-        permission. The permissions are as follows.
+        permission. Some permissions grant recursive permissions (like
+        akademie_read_y), if there is an explicitly revoked permission it
+        takes precedence over a recursively granted permission. The
+        permissions are as follows.
          - kurs_x_y_z --
             x in {read, write}, y akademiename, z kursname
 
@@ -55,7 +58,9 @@ class User:
             courses of these academies. The privelege show controles whether
             academies of the corresponding groups are displayed.
          - df_{read, write, show} --
-            Grants a global version of the corresponding privelege.
+            Grants a global version of the corresponding privelege. This is
+            a global privelege and thus not affected by explicitly revoked
+            permissions.
          - df_export --
             Grants the privelege to export academies. Requires the
             corresponding read privilege
@@ -87,6 +92,7 @@ class User:
             password = randpasswordstring(6).decode("utf8")
         self.password = password
         self.permissions = permissions
+
     def hasPermission(self, perm):
         """
         check if user has a permission
@@ -95,6 +101,21 @@ class User:
         """
         assert isinstance(perm, unicode)
         return bool(self.permissions.get(perm))
+
+    def revokedPermission(self, perm):
+        """
+        check if user has a permission
+        @type perm: unicode
+        @rtype: bool
+        """
+        assert isinstance(perm, unicode)
+        state = self.permissions.get(perm)
+        if state is None or state == "True":
+            return False
+        elif state == "False":
+            return True
+        else:
+            return False
 
     def allowedRead(self, aca, course = None, recursive = False):
         """
@@ -108,7 +129,7 @@ class User:
         ## first check global priveleges
         if self.hasPermission(u"df_read") or self.isSuperAdmin():
             return True
-        ## now we need to resolve aca
+        ## now we need to resolve aca and course
         ## a bit care has to be taken since we need the groups too
         if isinstance(aca, LazyView):
             groups = aca["groups"]
@@ -117,11 +138,27 @@ class User:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
             aca = aca.name
-        ## second check group level privileges
+        if course is None:
+            pass
+        elif isinstance(course, LazyView):
+            course = course["name"]
+        else:
+            assert isinstance(course, Course)
+            course = course.name
+        ## second check for explicitly revoked privilege
+        if course is None:
+            if revokedPermission(u"akademie_read_%s" % aca) or
+                revokedPermission(u"akademie_view_%s" % aca):
+                return False
+        else:
+            if revokedPermission(u"kurs_read_%s_%s" % (aca, course)):
+                return False
+        ## now we are done with revoked permissions and can continue
+        ## third check group level privileges
         for g in groups:
             if self.hasPermission(u"gruppe_read_%s" % g):
                 return True
-        ## third check the academy level priveleges
+        ## fourth check the academy level priveleges
         if self.hasPermission(u"akademie_read_%s" % aca):
             return True
         if course is None:
@@ -133,12 +170,7 @@ class User:
             ## in non-recursive case we check akademie_view_*
             return self.hasPermission(u"akademie_view_%s" % aca)
         ## at this point we ask for a read privelege of a specific course
-        ## so we resolve course
-        elif isinstance(course, LazyView):
-            course = course["name"]
-        else:
-            assert isinstance(course, Course)
-            course = course.name
+        ## so we resolve it
         return self.hasPermission(u"kurs_read_%s_%s" % (aca, course))
 
     def allowedWrite(self, aca, course = None):
