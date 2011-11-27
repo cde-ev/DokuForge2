@@ -9,10 +9,17 @@
 == later and important ==
 * exporter
 * rework style guide recomendations for citations (e.g. include publisher)
+* rework permission system to enable explicit revocation of specific permissions
 
 == not so important ==
 * nicer design
-* upgraded navigation (back-buttons, all sort of cross-links)
+* upgraded navigation (back-buttons, all sort of cross-links, action links at the top _and_ at the bottom)
+* show some stuff only if relevant (list of blobs, links to deleted stuff, ...)
+* make buttons look like other links or vice versa
+* add functionality to insert parts before/after the current part, when viewing a certain part
+* link directly to headings (with anchors) and not only to the page in general on the page listing for a course
+* add links to edit/delete pages directly from the course page listing
+* add some more context information for easing the navigation for the user
 * page estimates
 * nicer admin interface
 * display captions during page listing
