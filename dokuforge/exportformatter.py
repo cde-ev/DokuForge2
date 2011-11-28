@@ -29,15 +29,14 @@ class TeXFormatter(BaseFormatter):
         """
         Take self.tree and generate an output string.
 
-        This method adds all the bells and whistles the exporter has.
-
-        This uses the handle_* methods to recursively transform the
-        tree. The escaping is done with escapemap and controlled by
-        escapeexceptions.
+        This method adds all the bells and whistles the exporter has. It
+        mainly calls supergenerateoutput. There do not have to be many
+        specials here, since the root ParseTree may only contain paragraph,
+        heading, subheading, authors, displaymath, list, ednote and Newpar.
         """
         output = u""
         for x in self.tree.tree:
-            value = self.supergenerateoutput(x, self.tree, ["root"])
+            value, _ = self.supergenerateoutput(x, self.tree, ["root"])
             try:
                 handler = getattr(self, "handle_%s" % x.ident)
             except AttributeError:
@@ -57,14 +56,18 @@ class TeXFormatter(BaseFormatter):
             else:
                 data = handler(data)
             if escape:
-                return data.translate(self.escapemap)
-            return data
+                return (data.translate(self.escapemap), 0)
+            return (data, 0)
         if tree.ident in self.escapeexceptions:
             escape=False
         output = u""
         context.append(tree.ident)
+        skips = 0
         for x in tree.tree:
-            value = self.supergenerateoutput(x, tree.tree, context, escape)
+            if skips > 0:
+                skips -= 1
+                continue
+            value, skips = self.supergenerateoutput(x, tree.tree, context, escape)
             try:
                 handler = getattr(self, "handle_%s" % x.ident)
             except AttributeError:
@@ -73,4 +76,4 @@ class TeXFormatter(BaseFormatter):
                 value = handler(value)
             output += value
         context.pop()
-        return output
+        return (output, 0)
