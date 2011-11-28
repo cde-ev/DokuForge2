@@ -6,6 +6,7 @@ import re
 import os
 import ConfigParser
 from cStringIO import StringIO
+from werkzeug import exceptions
 
 try:
     check_output = subprocess.check_output
@@ -240,8 +241,30 @@ def validateGroupConfig(config):
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
-class RcsUserInputError(CheckError):
-    pass
+class MalformedUserInput(exceptions.NotFound):
+    """
+    The class of exceptions to be thrown if and when the
+    user provides invlaid input, that cannot occur by just
+    using a browser. In other words, the user hand-crafted
+    a request.
+    
+    This kind of exceptions should also fly up to the werkzeug
+    level.
+    """
+    def __init__(self,*args,**kwargs):
+        exceptions.NotFound.__init__(self,*args, **kwargs)
+
+class RcsUserInputError(CheckError, MalformedUserInput):
+    """
+    The class of exceptions to be thrown if an when the
+    user provides invalid specifications of rcs input (mainly
+    version numbers).
+    """
+    def __init__(self, msg, exp):
+        CheckError.__init__(self,msg,exp)
+        MalformedUserInput.__init__(self)
+
+
 
 def validateRcsRevision(versionnumber):
     """
