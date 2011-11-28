@@ -3,6 +3,20 @@
 from dokuforge.baseformatter import BaseFormatter
 from dokuforge.parser import ParseLeaf
 
+def incontext(context, query):
+    return query in context
+
+whitelist = ["pi"]
+
+def lookleafdata(leaf, neighbours):
+    index = neighbours.index(leaf)
+    try:
+        if not isinstance(neighbours[index+1], ParseLeaf):
+            return None
+        return neighbours[index+1].data
+    except IndexError:
+        return None
+
 class TeXFormatter(BaseFormatter):
     """
     Formatter for converting the tree representation into TeX for export.
@@ -24,6 +38,19 @@ class TeXFormatter(BaseFormatter):
     handle_list = u"\\begin{itemize}\n%s\n\end{itemize}".__mod__
     handle_item = u"\\item %s".__mod__
     handle_Dollar = u"%.0\\$%".__mod__
+
+    def advanced_handle_Backslash(self, leaf, neighbours, context, escape):
+        if not escape:
+            if incontext(context, "ednote"):
+                return (u'\\', 0, escape)
+        if incontext(context, "inlinemath") or \
+            incontext(context, "displaymath"):
+            if lookleafdata(leaf, neighbours) in whitelist:
+                return (u'\\' + lookleafdata(leaf, neighbours), 1, False)
+            else:
+                return (u'\\forbidden\\', 0, False)
+        else:
+            return (u'\\forbidden\\', 0, False)
 
     def generateoutput(self):
         """
@@ -56,7 +83,7 @@ class TeXFormatter(BaseFormatter):
             except AttributeError:
                 pass
             else:
-                data, skips = handler(data, neighbours, context, escape)
+                data, skips, escape = handler(tree, neighbours, context, escape)
             if handler is None:
                 try:
                     handler = getattr(self, "handle_%s" % tree.ident)
