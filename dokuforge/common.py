@@ -241,7 +241,7 @@ def validateGroupConfig(config):
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
-class MalformedUserInput(exceptions.NotFound):
+class MalformedUserInput(exceptions.Conflict):
     """
     The class of exceptions to be thrown if and when the
     user provides invlaid input, that cannot occur by just
@@ -252,7 +252,7 @@ class MalformedUserInput(exceptions.NotFound):
     level.
     """
     def __init__(self,*args,**kwargs):
-        exceptions.NotFound.__init__(self,*args, **kwargs)
+        exceptions.Conflict.__init__(self,*args, **kwargs)
 
 class RcsUserInputError(CheckError, MalformedUserInput):
     """
