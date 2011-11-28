@@ -154,10 +154,10 @@ class Course(StorageDir):
         """
         @type page: int
         @rtype: {str, unicode}
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+            raise common.PageOutOfBound()
         info = self.getstorage("page%d" % page).commitstatus()
         return dict(map(lambda (k,v):(k,v.encode("utf8")), info.iteritems()))
 
@@ -200,10 +200,10 @@ class Course(StorageDir):
         @type number: int
         @param number: the internal number of that page
         @rtype: unicode
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound()
         """
         if 0 > page or page >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+            raise common.PageOutOfBound()
         return self.getcontent("page%d" % page).decode("utf8")
 
     def getrcs(self, page):
@@ -211,10 +211,10 @@ class Course(StorageDir):
         @param page: the internal number of the page
         @returns: an rcs file describing all versions of this page
         @rtype: str
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound()
         """
         if 0 > page or page >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+            raise common.PageOutOfBound()
         return self.getstorage("page%d" % page).asrcs()
 
     def export(self):
@@ -255,10 +255,10 @@ class Course(StorageDir):
         @param number: the internal page number
         @type number: int
         @type user: None or unicode
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound
         """
         if 0 > number or number >= self.nextblob():
-            raise werkzeug.exceptions.NotFound()
+            raise common.PageOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -282,10 +282,10 @@ class Course(StorageDir):
         @param page: the internal page page
         @type page: int
         @type user: None or unicode
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+            raise common.PageOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -306,7 +306,7 @@ class Course(StorageDir):
 
         @type position: int
         @type user: None or unicode
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound
         """
         if 1 > position or position >= self.nextpage():
             raise werkzeug.exceptions.NotFound()
@@ -329,10 +329,10 @@ class Course(StorageDir):
         relink a (usually deleted) page to the index
         @type page: int
         @type user: None or unicode
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+            raise common.PageOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")

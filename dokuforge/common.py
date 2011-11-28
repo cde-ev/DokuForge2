@@ -277,3 +277,13 @@ def validateRcsRevision(versionnumber):
     if re.match('^[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}(\.[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}){0,5}$', versionnumber) is None:
         raise RcsUserInputError(u"rcs version number syntactically malformed",
                                 u"can only happen in hand-crafted requests")
+
+
+class PageOutOfBound(MalformedUserInput):
+    """
+    The class of exceptions to be thrown if and when a request
+    refers to a non-existing page.
+    """
+    def __init__(self, *args, **kvargs):
+        MalformedUserInput.__init__(self, *args, **kvargs)
+
