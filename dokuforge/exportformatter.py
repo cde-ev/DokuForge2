@@ -67,6 +67,10 @@ class TeXFormatter(BaseFormatter):
                incontext(context, "displaymath")) and \
             lookleafdata(leaf, neighbours) in whitelist:
             return (u'\\' + lookleafdata(leaf, neighbours), 1)
+        elif ( incontext(context, "inlinemath") or \
+               incontext(context, "displaymath")) and \
+            lookleaftype(leaf, neighbours) == "Backslash":
+            return (u'\\\\\n' + lookleafdata(leaf, neighbours), 1)
         else:
             if lookleaftype(leaf, neighbours) == "Backslash":
                 return (u'\\forbidden\\newline ', 1)

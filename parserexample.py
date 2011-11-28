@@ -24,7 +24,7 @@ keine ganzzahlige Loesung, auszer den trivialen, besitzt. Dies war ein
 _lange_ Zeit unbewiesenes Theorem. Hier nun eine Liste von interessanten
 Zahlen. Diese Formel steht $$e^{i\\pi}+1=0$$ im Text ist aber eigentlich abgesetzt.
 
-$$\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}$$
+$$\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}\\\\nextline$$
 
 Aber *Null* war lange Zeit gar keine Zahl. Nam ultricies pharetra
 luctus. Nam aliquam lobortis rutrum. Phasellus quis arcu non dui pretium
