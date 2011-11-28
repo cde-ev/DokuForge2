@@ -70,7 +70,10 @@ class TeXFormatter(BaseFormatter):
         elif ( incontext(context, "inlinemath") or \
                incontext(context, "displaymath")) and \
             lookleaftype(leaf, neighbours) == "Backslash":
-            return (u'\\\\\n' + lookleafdata(leaf, neighbours), 1)
+            if lookleaftype(leaf, neighbours, 2) == "Newline":
+                return (u'\\\\', 1)
+            else:
+                return (u'\\\\\n', 1)
         else:
             if lookleaftype(leaf, neighbours) == "Backslash":
                 return (u'\\forbidden\\newline ', 1)
