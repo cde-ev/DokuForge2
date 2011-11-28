@@ -3,10 +3,10 @@
 {{ academy.title|e }}
 {% endblock %}
 {% block location%}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title),
-	   ("page", {}, "Teil #" ~ page),
-	   ("showblob", {}, "Bild #" ~ blob.number)]) }}
+{{ navbar([("academy", academy.title),
+           ("course", course.title),
+	   ("page", "Teil #" ~ page),
+	   ("showblob", "Bild #" ~ blob.number)]) }}
 {% endblock %}
 {% block content %}
 <p>Bildunterschrift/Kommentar: {{ blob.comment|e }}</p>

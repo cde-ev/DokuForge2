@@ -3,9 +3,9 @@
 {{ academy.title|e }}
 {% endblock %}
 {% block location %}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title),
-	   ("showdeadpages", {}, "Attic")])}}
+{{ navbar([("academy", academy.title),
+           ("course", course.title),
+	   ("showdeadpages", "Attic")])}}
 {% endblock %}
 {% block content %}
 {%- if course.deadpages %}

@@ -3,7 +3,7 @@
 Übersicht
 {% endblock %}
 {% block location %}
-{{ navbar([("groupindex", dict(group=group), allgroups[group]|e)]) }}
+{{ complexnavbar([("groupindex", dict(group=group), allgroups[group]|e)]) }}
 {% endblock %}
 {% block content %}
 <ul>

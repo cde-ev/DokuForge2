@@ -3,10 +3,10 @@
 {{ academy.title|e }}
 {% endblock %}
 {% block location%}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title),
-	   ("page", {}, "Teil #" ~ page),
-	   ("addblob", {}, "Bild hochladen")]) }}
+{{ navbar([("academy", academy.title),
+           ("course", course.title),
+	   ("page", "Teil #" ~ page),
+	   ("addblob", "Bild hochladen")]) }}
 {% endblock %}
 
 {% block content %}

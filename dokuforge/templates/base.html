@@ -7,13 +7,24 @@
 </form>
 {%- endmacro -%}
 
-{%- macro navbar(entries) -%}
+{%- macro complexnavbar(entries) -%}
 Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 {%- for (point, args, title) in entries -%}
 {%- if url == '' -%}
 {# comment to protect space #} &gt; {{ title|e}}
 {%- else -%}
 {# comment to protect space #} &gt; <a href="{{ buildurl(point, args)|e }}">{{ title|e }}</a>
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro -%}
+
+{%- macro navbar(entries) -%}
+Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
+{%- for (point, title) in entries -%}
+{%- if url == '' -%}
+{# comment to protect space #} &gt; {{ title|e}}
+{%- else -%}
+{# comment to protect space #} &gt; <a href="{{ buildurl(point, dict())|e }}">{{ title|e }}</a>
 {%- endif -%}
 {%- endfor -%}
 {%- endmacro -%}

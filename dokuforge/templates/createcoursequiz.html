@@ -3,8 +3,8 @@
 {{ academy.title|e }}
 {% endblock %}
 {% block location%}
-{{ navbar([("academy", {}, academy.title),
-           ("createcourse", {}, "Kurs hinzufügen")]) }}
+{{ navbar([("academy", academy.title),
+           ("createcourse", "Kurs hinzufügen")]) }}
 {% endblock %}
 {% block content %}
 
