@@ -287,3 +287,11 @@ class PageOutOfBound(MalformedUserInput):
     def __init__(self, *args, **kvargs):
         MalformedUserInput.__init__(self, *args, **kvargs)
 
+class PageIndexOutOfBound(MalformedUserInput):
+    """
+    The class of exceptions to be thrown if and when a request
+    refers to a non-existing page index.
+    """
+    def __init__(self, *args, **kvargs):
+        MalformedUserInput.__init__(self, *args, **kvargs)
+

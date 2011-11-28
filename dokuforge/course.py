@@ -306,10 +306,10 @@ class Course(StorageDir):
 
         @type position: int
         @type user: None or unicode
-        @raises common.PageOutOfBound
+        @raises common.PageIndexOutOfBound
         """
-        if 1 > position or position >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+        if 1 > position or position >= len(self.listpages()):
+            raise common.PageIndexOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
