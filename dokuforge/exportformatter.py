@@ -56,7 +56,7 @@ class TeXFormatter(BaseFormatter):
         Do not allow '{ednote}' inside ednotes to prevent '\end{ednote}'.
         """
         if data == u"ednote":
-            return u"{forbidden ednote}"
+            return u"{\\@forbidden ednote}"
         else:
             return "{%s}" % data
 
@@ -76,9 +76,9 @@ class TeXFormatter(BaseFormatter):
                 return (u'\\\\\n', 1)
         else:
             if lookleaftype(leaf, neighbours) == "Backslash":
-                return (u'\\forbidden\\newline ', 1)
+                return (u'\\@\\forbidden\\newline ', 1)
             else:
-                return (u'\\forbidden\\', 0)
+                return (u'\\@\\forbidden\\', 0)
 
     def advanced_handle_Token(self, leaf, neighbours, context):
         if leaf.data == u'^':
