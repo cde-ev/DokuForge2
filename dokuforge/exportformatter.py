@@ -21,10 +21,7 @@ class TeXFormatter(BaseFormatter):
     """
     Formatter for converting the tree representation into TeX for export.
     """
-    escapemap = {
-            ord(u'\\'): u"\\forbidden\\"}
-
-    escapeexceptions = ["ednote", "nestedednote"]
+    ## escaping is done by the advanced_hendle_* routines
 
     handle_heading = u"\\section{%s}".__mod__
     handle_subheading = u"\\subsection{%s}".__mod__
@@ -39,18 +36,17 @@ class TeXFormatter(BaseFormatter):
     handle_item = u"\\item %s".__mod__
     handle_Dollar = u"%.0\\$%".__mod__
 
-    def advanced_handle_Backslash(self, leaf, neighbours, context, escape):
-        if not escape:
-            if incontext(context, "ednote"):
-                return (u'\\', 0, escape)
+    def advanced_handle_Backslash(self, leaf, neighbours, context):
+        if incontext(context, "ednote"):
+            return (u'\\', 0)
         if incontext(context, "inlinemath") or \
             incontext(context, "displaymath"):
             if lookleafdata(leaf, neighbours) in whitelist:
-                return (u'\\' + lookleafdata(leaf, neighbours), 1, False)
+                return (u'\\' + lookleafdata(leaf, neighbours), 1)
             else:
-                return (u'\\forbidden\\', 0, False)
+                return (u'\\forbidden\\', 0)
         else:
-            return (u'\\forbidden\\', 0, False)
+            return (u'\\forbidden\\', 0)
 
     def generateoutput(self):
         """
@@ -73,7 +69,7 @@ class TeXFormatter(BaseFormatter):
             output += value
         return output
 
-    def advancedgenerateoutput(self, tree, neighbours, context, escape = True):
+    def advancedgenerateoutput(self, tree, neighbours, context):
         if isinstance(tree, ParseLeaf):
             data = tree.data
             skips = 0
@@ -83,7 +79,7 @@ class TeXFormatter(BaseFormatter):
             except AttributeError:
                 pass
             else:
-                data, skips, escape = handler(tree, neighbours, context, escape)
+                data, skips = handler(tree, neighbours, context)
             if handler is None:
                 try:
                     handler = getattr(self, "handle_%s" % tree.ident)
@@ -91,11 +87,7 @@ class TeXFormatter(BaseFormatter):
                     pass
                 else:
                     data = handler(data)
-            if escape:
-                return (data.translate(self.escapemap), skips)
             return (data, skips)
-        if tree.ident in self.escapeexceptions:
-            escape=False
         output = u""
         context.append(tree.ident)
         skips = 0
@@ -103,7 +95,7 @@ class TeXFormatter(BaseFormatter):
             if skips > 0:
                 skips -= 1
                 continue
-            value, skips = self.advancedgenerateoutput(x, tree.tree, context, escape)
+            value, skips = self.advancedgenerateoutput(x, tree.tree, context)
             try:
                 handler = getattr(self, "handle_%s" % x.ident)
             except AttributeError:
