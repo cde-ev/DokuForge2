@@ -100,7 +100,8 @@ class User:
         @rtype: bool
         """
         assert isinstance(perm, unicode)
-        return self.permissions.get(perm)
+        ## cast None to False
+        return bool(self.permissions.get(perm))
 
     def revokedPermission(self, perm):
         """
@@ -110,9 +111,7 @@ class User:
         """
         assert isinstance(perm, unicode)
         state = self.permissions.get(perm)
-        if state is None or state == True:
-            return False
-        elif state == False:
+        if state is not None and state == False:
             return True
         else:
             return False
