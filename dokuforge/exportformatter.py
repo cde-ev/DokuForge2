@@ -36,7 +36,7 @@ class TeXFormatter(BaseFormatter):
         """
         output = u""
         for x in self.tree.tree:
-            value, _ = self.supergenerateoutput(x, self.tree, ["root"])
+            value, _ = self.advancedgenerateoutput(x, self.tree, ["root"])
             try:
                 handler = getattr(self, "handle_%s" % x.ident)
             except AttributeError:
@@ -46,18 +46,27 @@ class TeXFormatter(BaseFormatter):
             output += value
         return output
 
-    def supergenerateoutput(self, tree, neighbours, context, escape = True):
+    def advancedgenerateoutput(self, tree, neighbours, context, escape = True):
         if isinstance(tree, ParseLeaf):
             data = tree.data
+            skips = 0
+            handler = None
             try:
-                handler = getattr(self, "handle_%s" % tree.ident)
+                handler = getattr(self, "advanced_handle_%s" % tree.ident)
             except AttributeError:
                 pass
             else:
-                data = handler(data)
+                data, skips = handler(data, neighbours, context, escape)
+            if handler is None:
+                try:
+                    handler = getattr(self, "handle_%s" % tree.ident)
+                except AttributeError:
+                    pass
+                else:
+                    data = handler(data)
             if escape:
-                return (data.translate(self.escapemap), 0)
-            return (data, 0)
+                return (data.translate(self.escapemap), skips)
+            return (data, skips)
         if tree.ident in self.escapeexceptions:
             escape=False
         output = u""
@@ -67,7 +76,7 @@ class TeXFormatter(BaseFormatter):
             if skips > 0:
                 skips -= 1
                 continue
-            value, skips = self.supergenerateoutput(x, tree.tree, context, escape)
+            value, skips = self.advancedgenerateoutput(x, tree.tree, context, escape)
             try:
                 handler = getattr(self, "handle_%s" % x.ident)
             except AttributeError:
