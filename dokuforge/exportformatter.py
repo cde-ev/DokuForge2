@@ -26,11 +26,17 @@ def lookleaftype(leaf, neighbours, n=1):
     except IndexError:
         return None
 
+def comparedata(leaf, neighbours, data):
+    for i in len(data):
+        if not lookleafdata(leaf, neighbours, i+1) == data[i]:
+            return False
+    return True
+
 class TeXFormatter(BaseFormatter):
     """
     Formatter for converting the tree representation into TeX for export.
     """
-    ## escaping is done by the advanced_hendle_* routines
+    ## escaping is done by the advanced_handle_* routines
 
     handle_heading = u"\\section{%s}".__mod__
     handle_subheading = u"\\subsection{%s}".__mod__
@@ -62,10 +68,21 @@ class TeXFormatter(BaseFormatter):
             lookleafdata(leaf, neighbours) in whitelist:
             return (u'\\' + lookleafdata(leaf, neighbours), 1)
         else:
-            if lookleaftype(leaf, neighbours) == "Backslash"
+            if lookleaftype(leaf, neighbours) == "Backslash":
                 return (u'\\forbidden\\newline ', 1)
             else:
                 return (u'\\forbidden\\', 0)
+
+    def advanced_handle_Token(self, leaf, neighbours, context):
+        if leaf.data == u'^':
+            ## prevent '^^'
+            skips = 0
+            while lookleafdata(leaf, neighbours, skips+1) == u'^':
+                skips += 1
+            return (u'^', skips)
+        else:
+            return (leaf.data, 0)
+
 
     def generateoutput(self):
         """

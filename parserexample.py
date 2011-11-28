@@ -35,7 +35,7 @@ tortor ipsum, in rhoncus mi. Sed nec odio sem. Aenean rutrum, dui vel
 vehicula pulvinar, purus magna euismod dui, id pharetra libero mauris nec
 dolor.
 
-Bitte Escape mich: <>&"' \\ \\\\command und das wars auch schon.
+Bitte Escape mich: <>&"' \\ \\\\\\\\\\command und das wars auch schon.
 
 [[Eine weitere Unterueberschrift]]
 
@@ -53,7 +53,7 @@ anders als in so mancher andrer Uebung -- nicht ums blosze wiederholen. Und
 so sagte schon Goethe "auch aus Steinen die einem in den Weg gelegt werden,
 kann man schoenes bauen", wollen wir uns also ein Beispiel nehmen. Und jetzt
 machen wir noch einen Gedankensprung -- schon sind wir auf einem anderen
-Planeten.
+Planeten. ^^Jtest
 
 _Man_ kann z.B. auch ganz viele Abkuerzungen u.a. unterbringen um lange
 Absaetze (s.o.) zu stutzen, aber das ist nur ca. halb so leserlich. Auch
