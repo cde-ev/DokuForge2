@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from dokuforge.baseformatter import BaseFormatter
+from dokuforge.parser import ParseLeaf
 
 class TeXFormatter(BaseFormatter):
     """
