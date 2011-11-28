@@ -62,6 +62,8 @@ Absaetze (s.o.) zu stutzen, aber das ist nur ca. halb so leserlich. Auch
 nicht besser wird es wenn man ganz viele AKRONYME verwendet ... Aber
 manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 
+Ein -- Absatz -- mit ganz -- viel Gedankenstrichen. Und hier -- ein einzelner.
+
 { Hier noch ein Hinweis in verbatim, mit <>"'& \\ Sonderzeichen
 
 \end{ednote}

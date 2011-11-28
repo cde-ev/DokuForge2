@@ -56,6 +56,21 @@ def countabbrev(abbrev, leaf, neighbours):
             pos += 1
     return pos
 
+def scanfordash(leaf, neighbours):
+    pos = 3
+    if lookleafdata(leaf, neighbours, pos) == u'.' or \
+        lookleafdata(leaf, neighbours, pos + 1) == u'.' or \
+        lookleafdata(leaf, neighbours, pos + 2) == u'.':
+        return False
+    while not lookleafdata(leaf, neighbours, pos + 2) == u'.':
+        if lookleafdata(leaf, neighbours, pos) == u' ' and \
+            lookleafdata(leaf, neighbours, pos + 1) == u'-' and \
+            lookleafdata(leaf, neighbours, pos + 2) == u'-':
+            return True
+        pos += 1
+    return False
+
+
 class TeXFormatter(BaseFormatter):
     """
     Formatter for converting the tree representation into TeX for export.
@@ -74,6 +89,10 @@ class TeXFormatter(BaseFormatter):
     handle_list = u"\\begin{itemize}\n%s\n\end{itemize}".__mod__
     handle_item = u"\\item %s".__mod__
     handle_Dollar = u"%.0\\$%".__mod__
+
+    def __init__(self, tree):
+        BaseFormatter.__init__(self, tree)
+        self.dashesseen = 0
 
     def handle_nestedednote(self, data):
         """
@@ -101,8 +120,10 @@ class TeXFormatter(BaseFormatter):
         else:
             if lookleaftype(leaf, neighbours) == "Backslash":
                 return (u'\\@\\forbidden\\newline ', 1)
-            else:
+            elif lookleaftype(leaf, neighbours) == "Word":
                 return (u'\\@\\forbidden\\', 0)
+            else:
+                return (u'\\@\\forbidden\\ ', 0)
 
     def advanced_handle_Word(self, leaf, neighbours, context):
         if lookleafdata(leaf, neighbours) == u'.' and \
@@ -112,10 +133,32 @@ class TeXFormatter(BaseFormatter):
                 if checkabbrev(abbrev, leaf, neighbours):
                     return(u'\\@' + u'.\\,'.join(abbrev) + u'.',
                            countabbrev(abbrev, leaf, neighbours))
-        return (leaf.data, 0)
+            return (leaf.data, 0)
+        else:
+            return (leaf.data, 0)
 
     def advanced_handle_Token(self, leaf, neighbours, context):
-        if leaf.data == u'^':
+        if leaf.data == u'.':
+            ## reset number of seen dashes at every full stop
+            self.dashesseen = 0
+            return (u'.', 0)
+        elif leaf.data == u'-':
+            if lookleafdata(leaf, neighbours) == u'-':
+                if not lookleaftype(leaf, neighbours, 2) == "Number":
+                    if self.dashesseen % 2 == 1:
+                        self.dashesseen += 1
+                        return (u'\@~--', 1)
+                    elif lookleaftype(leaf, neighbours, 2) == "Whitespace":
+                        self.dashesseen += 1
+                        return (u'\@--~', 2)
+                    else:
+                        self.dashesseen += 1
+                        return (u'\@--~', 1)
+                else:
+                    return (u'--', 1)
+            else:
+                return (u'-', 0)
+        elif leaf.data == u'^':
             ## prevent '^^'
             skips = 0
             while lookleafdata(leaf, neighbours, skips+1) == u'^':
@@ -123,6 +166,17 @@ class TeXFormatter(BaseFormatter):
             return (u'^', skips)
         else:
             return (leaf.data, 0)
+
+    def advanced_handle_Whitespace(self, leaf, neighbours, context):
+        if lookleafdata(leaf, neighbours, 1) == '-' and \
+            lookleafdata(leaf, neighbours, 2) == '-':
+            if self.dashesseen % 2 == 1 or not scanfordash(leaf, neighbours):
+                self.dashesseen += 1
+                return (u'\@~--', 2)
+            else:
+                return (u' ', 0)
+        else:
+            return (u' ', 0)
 
 
     def generateoutput(self):
