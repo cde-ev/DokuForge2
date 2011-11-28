@@ -4,7 +4,6 @@ import re
 import datetime
 
 from werkzeug.datastructures import FileStorage
-import werkzeug.exceptions
 
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
@@ -363,10 +362,10 @@ class Course(StorageDir):
         @type number: int
         @type page: int
         @type user: None or unicode
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.BlobOutOfBound
         """
         if 0 > number or number >= self.nextblob():
-            raise werkzeug.exceptions.NotFound()
+            raise common.BlobOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -400,10 +399,10 @@ class Course(StorageDir):
         @type page: int
         @returns: a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+            raise common.PageOutOfBound()
         page = self.getstorage("page%d" % page)
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
@@ -426,10 +425,10 @@ class Course(StorageDir):
                   (newversion, mergedcontent) a pair for further editing that
                   can be handled as if obtained from editpage
         @rtype: (unicode, unicode, unicode)
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound
         """
         if 0 > number or number >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+            raise common.PageOutOfBound()
         assert isinstance(version, unicode)
         assert isinstance(newcontent, unicode)
         if user is not None:
@@ -458,10 +457,10 @@ class Course(StorageDir):
         @type comment: unicode
         @type user: unicode or None
         @returns: None on failure or the created blob number
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+            raise common.PageOutOfBound()
         assert isinstance(data, FileStorage)
         assert isinstance(comment, unicode)
         assert isinstance(label, unicode)
@@ -508,10 +507,10 @@ class Course(StorageDir):
         @param page: the internal page page
         @type page: int
         @rtype: [int]
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.BlobOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise werkzeug.exceptions.NotFound()
+            raise common.BlobOutOfBound()
         for line in self.getcontent("Index").splitlines():
             entries = line.split()
             if int(entries[0]) == page:
@@ -528,10 +527,10 @@ class Course(StorageDir):
         @rtype: LazyView
         @returns: a mapping providing the keys: data(str), label(unicode),
                   comment(unicode), filename(unicode) and number(int)
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.BlobOutOfBound
         """
         if 0 > number or number >= self.nextblob():
-            raise werkzeug.exceptions.NotFound()
+            raise common.BlobOutOfBound()
         ldu = liftdecodeutf8
         return LazyView(dict(
             data = self.getstorage("blob%d" % number).content,
@@ -544,10 +543,10 @@ class Course(StorageDir):
         """
         modify the blob given by number with the data in the other parameters.
         @raises CheckError: if the input data is malformed
-        @raises werkzeug.exceptions.HTTPException:
+        @raises common.BlobOutOfBound
         """
         if 0 > number or number >= self.nextblob():
-            raise werkzeug.exceptions.NotFound()
+            raise common.BlobOutOfBound()
         assert isinstance(label, unicode)
         assert isinstance(comment, unicode)
         assert isinstance(filename, unicode)
