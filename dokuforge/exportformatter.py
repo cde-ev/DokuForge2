@@ -8,6 +8,8 @@ def incontext(context, query):
 
 whitelist = ["pi"]
 
+abbreviations = [["z", "B"], ["vgl"]]
+
 def lookleafdata(leaf, neighbours, n=1):
     index = neighbours.index(leaf)
     try:
@@ -31,6 +33,28 @@ def comparedata(leaf, neighbours, data):
         if not lookleafdata(leaf, neighbours, i+1) == data[i]:
             return False
     return True
+
+def checkabbrev(abbrev, leaf, neighbours):
+    pos = 0
+    for x in abbrev:
+        if not lookleafdata(leaf, neighbours, pos) == x and \
+            lookleafdata(leaf, neighbours, pos + 1) == u'.':
+            return False
+        pos += 2
+        if lookleaftype(leaf,neighbours, pos) == "Whitespace":
+            pos += 1
+    return True
+
+def countabbrev(abbrev, leaf, neighbours):
+    pos = 0
+    for x in abbrev:
+        if not lookleafdata(leaf, neighbours, pos) == x and \
+            lookleafdata(leaf, neighbours, pos + 1) == u'.':
+            return 0
+        pos += 2
+        if lookleaftype(leaf,neighbours, pos) == "Whitespace":
+            pos += 1
+    return pos
 
 class TeXFormatter(BaseFormatter):
     """
@@ -79,6 +103,16 @@ class TeXFormatter(BaseFormatter):
                 return (u'\\@\\forbidden\\newline ', 1)
             else:
                 return (u'\\@\\forbidden\\', 0)
+
+    def advanced_handle_Word(self, leaf, neighbours, context):
+        if lookleafdata(leaf, neighbours) == u'.' and \
+            not (incontext(context, "inlinemath") or \
+                 incontext(context, "displaymath"))  :
+            for abbrev in abbreviations:
+                if checkabbrev(abbrev, leaf, neighbours):
+                    return(u'\\@' + u'.\\,'.join(abbrev) + u'.',
+                           countabbrev(abbrev, leaf, neighbours))
+        return (leaf.data, 0)
 
     def advanced_handle_Token(self, leaf, neighbours, context):
         if leaf.data == u'^':

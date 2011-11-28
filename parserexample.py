@@ -14,7 +14,8 @@ teststring = u"""
 mi. Mauris feugiat erat eget quam varius eu congue lectus viverra. Ut sed
   velit dapibus eros ultricies blandit a in felis. Nam ultricies pharetra
 luctus. Nam aliquam lobortis rutrum. Phasellus quis arcu non dui pretium
-  aliquam. Phasellus id mauris mauris, quis lobortis justo.
+  aliquam. Phasellus id mauris mauris, quis lobortis justo. Es ist z.B. auch
+ weiter z. B. eine Abkuerzung vgl. dabei auch anderes.
 
 [Eine zweite Ueberschrift]
 [[Eine Unterueberschrift]](Douglas Adams)
@@ -24,7 +25,7 @@ keine ganzzahlige Loesung, auszer den trivialen, besitzt. Dies war ein
 _lange_ Zeit unbewiesenes Theorem. Hier nun eine Liste von interessanten
 Zahlen. Diese Formel steht $$e^{i\\pi}+1=0$$ im Text ist aber eigentlich abgesetzt.
 
-$$\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}\\\\nextline  \\\\  
+$$\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}\\\\nextline  \\\\
 nextnewline$$
 
 Aber *Null* war lange Zeit gar keine Zahl. Nam ultricies pharetra
