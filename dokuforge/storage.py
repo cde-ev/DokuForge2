@@ -20,12 +20,15 @@ def rlogv(filename):
     Return the head revision of an rcs file
 
     (needed, as rlog -v is a FreeBSD extension)
-    @type filename: str
+    @type filename: str or None
     """
+    # FIXME: maybe use proper exceptions to differentiate errors?
     assert isinstance(filename, str)
-    f = file(filename, mode = "r")
-    content = f.read()
-    f.close()
+    try:
+        with file(filename) as rcsfile:
+            content = rcsfile.read()
+    except IOError:
+        return None
     m = re.match(r'^\s*head\s*([0-9.]+)\s*;', content)
     if m:
         return m.groups()[0]
@@ -41,7 +44,12 @@ def rloghead(filename):
     @type filename: str
     @returns: a str-str dict with information about the head commit; in particular,
               it will contain the keys 'revision', 'author', and 'date'.
+    @rtype: {str: str or None}
+    @raises subprocess.CalledProcessError: if rlog exits non-zero
+    @raises IndexError: when failing to parse rlog output
+    @raises KeyError: if one of the promised keys could not be parsed
     """
+    # FIXME: maybe use better exception than IndexError?
     assert isinstance(filename, str)
     
     # Amzingly enough, the "official" way to obtain revision information
@@ -52,6 +60,8 @@ def rloghead(filename):
     answer = {}
 
     revision = rlogv(filename)
+    if revision is None:
+        raise KeyError("revision")
     answer['revision'] = revision
     rlog = check_output(["rlog","-q","-r%s" % revision,filename], env=RCSENV)
     lines = rlog.splitlines()
@@ -65,7 +75,9 @@ def rloghead(filename):
         keyvalue = param.split(': ',1)
         if len(keyvalue) > 1:
             answer[keyvalue[0].lstrip()]=keyvalue[1]
-
+    
+    answer["author"] # raises KeyError
+    answer["date"] # raises KeyError
     return answer
 
 
@@ -88,6 +100,8 @@ class LockDir:
 
         Acquiring this object multiple times will succeed, but you have to
         release it multiple times, too.
+
+        @raises OSError:
         """
         if self.lockcount != 0:
             self.lockcount += 1
@@ -104,6 +118,9 @@ class LockDir:
                     raise # something else went wrong
 
     def __exit__(self, _1, _2, _3):
+        """
+        @raises OSError:
+        """
         self.lockcount -= 1
         if self.lockcount == 0:
             os.rmdir(self.path)
@@ -145,6 +162,9 @@ class Storage(object):
         @type content: str or filelike
         @param content: the content of the file
         @type message: str
+        @raises subprocess.CalledProcessError:
+        @raises OSError:
+        @raises IOError:
         """
         if isinstance(content, basestring):
             assert isinstance(content, str)
@@ -164,6 +184,11 @@ class Storage(object):
             subprocess.check_call(args, env=RCSENV)
 
     def ensureexistence(self, havelock=None):
+        """
+        @raises subprocess.CalledProcessError:
+        @raises OSError:
+        @raises IOError:
+        """
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
                 if not os.path.exists(self.fullpath("%s,v")):
@@ -175,6 +200,10 @@ class Storage(object):
                                            self.fullpath()], env=RCSENV)
 
     def asrcs(self, havelock=None):
+        """
+        @raises OSError:
+        @raises IOError:
+        """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             f = file(self.fullpath("%s,v"), mode = "r")
@@ -184,7 +213,8 @@ class Storage(object):
 
     def status(self, havelock=None):
         """
-        @rtype: str
+        @rtype: str or None
+        @raises OSError:
         """
         self.ensureexistence(havelock = havelock)
         result = rlogv(self.fullpath("%s,v"))
@@ -197,11 +227,19 @@ class Storage(object):
         Obtain information about the last change made to this storage object.
         @returns: a str-str dict with information about the head commit; in particular,
                   it will contain the keys 'revision', 'author', and 'date'.
+        @raises subprocess.CalledProcessError:
+        @raises OSError:
+        @raises IndexError:
+        @raises KeyError:
         """
         self.ensureexistence(havelock=havelock)
         return rloghead(self.fullpath("%s,v"))
 
     def content(self, havelock=None):
+        """
+        @raises OSError:
+        @raises subprocess.CalledProcessError:
+        """
         self.ensureexistence(havelock = havelock)
         return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
                             env=RCSENV)
@@ -215,7 +253,9 @@ class Storage(object):
         that version is still the head revision.
 
         @returns: an opaque version string and the contents of the file
-        @rtype: (str, str)
+        @rtype: (str or None, str)
+        @raises OSError:
+        @raises subprocess.CalledProcessError:
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
@@ -243,6 +283,12 @@ class Storage(object):
             to be done manually), and (newversion, mergedcontent) is a state
             for further editing that can be used as if obtained from
             startedit
+        @rtype: (bool, str or None, str)
+        @raises OSError:
+        @raises subprocess.CalledProcessError:
+        @raises IOError:
+        @raises KeyError:
+        @raises IndexError:
 
         @note: the newcontents are transformed to native line ending
             (assuming a Unix host).  Therefore endedit CANNOT be used to
@@ -315,6 +361,9 @@ class CachingStorage(Storage):
         return self.cachedvalue
 
     def lastchanged(self, havelock=None):
+        """
+        @raises OSError:
+        """
         self.ensureexistence(havelock = havelock)
         return os.path.getmtime(self.fullpath("%s,v"))
 
