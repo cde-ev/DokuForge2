@@ -62,6 +62,8 @@ manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 
 { Hier noch ein Hinweis in verbatim, mit <>"'& \\ Sonderzeichen
 
+\end{ednote}
+
   mit einer Leerzeile und { nested braces }. }
 
 Und hier noch ein {Hinweis} der mitten im Satz steht.

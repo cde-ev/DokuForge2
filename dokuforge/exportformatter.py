@@ -8,12 +8,21 @@ def incontext(context, query):
 
 whitelist = ["pi"]
 
-def lookleafdata(leaf, neighbours):
+def lookleafdata(leaf, neighbours, n=1):
     index = neighbours.index(leaf)
     try:
-        if not isinstance(neighbours[index+1], ParseLeaf):
+        if not isinstance(neighbours[index+n], ParseLeaf):
             return None
-        return neighbours[index+1].data
+        return neighbours[index+n].data
+    except IndexError:
+        return None
+
+def lookleaftype(leaf, neighbours, n=1):
+    index = neighbours.index(leaf)
+    try:
+        if not isinstance(neighbours[index+n], ParseLeaf):
+            return None
+        return neighbours[index+n].ident
     except IndexError:
         return None
 
@@ -36,17 +45,27 @@ class TeXFormatter(BaseFormatter):
     handle_item = u"\\item %s".__mod__
     handle_Dollar = u"%.0\\$%".__mod__
 
+    def handle_nestedednote(self, data):
+        """
+        Do not allow '{ednote}' inside ednotes to prevent '\end{ednote}'.
+        """
+        if data == u"ednote":
+            return u"{forbidden ednote}"
+        else:
+            return "{%s}" % data
+
     def advanced_handle_Backslash(self, leaf, neighbours, context):
         if incontext(context, "ednote"):
             return (u'\\', 0)
-        if incontext(context, "inlinemath") or \
-            incontext(context, "displaymath"):
-            if lookleafdata(leaf, neighbours) in whitelist:
-                return (u'\\' + lookleafdata(leaf, neighbours), 1)
+        elif ( incontext(context, "inlinemath") or \
+               incontext(context, "displaymath")) and \
+            lookleafdata(leaf, neighbours) in whitelist:
+            return (u'\\' + lookleafdata(leaf, neighbours), 1)
+        else:
+            if lookleaftype(leaf, neighbours) == "Backslash"
+                return (u'\\forbidden\\newline ', 1)
             else:
                 return (u'\\forbidden\\', 0)
-        else:
-            return (u'\\forbidden\\', 0)
 
     def generateoutput(self):
         """
