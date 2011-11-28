@@ -55,10 +55,14 @@ class TeXFormatter(BaseFormatter):
         This method adds all the bells and whistles the exporter has. It
         mainly calls supergenerateoutput. There do not have to be many
         specials here, since the root ParseTree may only contain paragraph,
-        heading, subheading, authors, displaymath, list, ednote and Newpar.
+        heading, subheading, authors, displaymath, list, ednote, Newline and
+        Newpar.
         """
         output = u""
         for x in self.tree.tree:
+            assert x.ident in ("paragraph", "heading", "subheading", "authors",
+                               "displaymath", "list", "ednote", "Newpar",
+                               "Newline")
             value, _ = self.advancedgenerateoutput(x, self.tree, ["root"])
             try:
                 handler = getattr(self, "handle_%s" % x.ident)
@@ -74,6 +78,7 @@ class TeXFormatter(BaseFormatter):
             data = tree.data
             skips = 0
             handler = None
+            ## first try advanced handler
             try:
                 handler = getattr(self, "advanced_handle_%s" % tree.ident)
             except AttributeError:
@@ -81,6 +86,7 @@ class TeXFormatter(BaseFormatter):
             else:
                 data, skips = handler(tree, neighbours, context)
             if handler is None:
+                ## if no advanced handler, try normal handler
                 try:
                     handler = getattr(self, "handle_%s" % tree.ident)
                 except AttributeError:
@@ -88,10 +94,12 @@ class TeXFormatter(BaseFormatter):
                 else:
                     data = handler(data)
             return (data, skips)
+        ## now we have a ParseTree
         output = u""
         context.append(tree.ident)
         skips = 0
         for x in tree.tree:
+            ## skip nodes, allready processed earlier in the loop
             if skips > 0:
                 skips -= 1
                 continue
