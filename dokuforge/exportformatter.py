@@ -90,6 +90,7 @@ class TeXFormatter(BaseFormatter):
     handle_item = u"\\item %s".__mod__
     handle_Dollar = u"%.0\\$%".__mod__
 
+
     def __init__(self, tree):
         BaseFormatter.__init__(self, tree)
         self.dashesseen = 0
@@ -166,6 +167,21 @@ class TeXFormatter(BaseFormatter):
             return (u'^', skips)
         else:
             return (leaf.data, 0)
+
+    def advanced_handle_Number(self, leaf, neighbours, context):
+        number = u''
+        if len(leaf.data) < 5:
+            number = leaf.data
+        else:
+            rem = len(leaf.data) % 3
+            if rem > 0:
+                number = leaf.data[0:rem] + u'\\,'
+            pos = 0
+            while 3*(pos+1) + rem <= len(leaf.data):
+                number += leaf.data[3*pos+rem:3*(pos+1)+rem] + u'\\,'
+                pos +=1
+            number = number[:-2]
+        return (number, 0)
 
     def advanced_handle_Whitespace(self, leaf, neighbours, context):
         if lookleafdata(leaf, neighbours, 1) == '-' and \

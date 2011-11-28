@@ -44,7 +44,7 @@ Bitte Escape mich: <>&"' \\ \\\\\\\\\\command und das wars auch schon.
 (kein Autor)
 
 Wir packen unsere Koffer und nehmen mit
-- einen Sonnenschirm, Kapazitaet 3000000 kWh was eine sehr grosze Zahl ist,
+- einen Sonnenschirm, Kapazitaet 3124567 kWh was eine sehr grosze Zahl ist,
     aber zum Glueck noch auf diesen Absatz passt
 - Wanderschuhe, Fassungsvermoegen 2 l
 - Huepfeseil, Laenge 1 m$^2$
