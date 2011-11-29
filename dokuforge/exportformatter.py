@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
 
+# todo:
+# dates (7.\, August 2010 und 7.\,8.\,2010, 427--347~v.\,Chr.)
+# ellipses (Wort~\ldots{})
+# quotes ("`Danke, Dirk."' und das war's)
+# acronyms
+# units (40~g, 50~m)
+# number specials (20\,\%, 19.\,Jahrhundert, 3.\,Person)
+# escape percent
+# improve dash handling (for errors like 3-9 and a-f)
+
 from dokuforge.baseformatter import BaseFormatter
 from dokuforge.parser import ParseLeaf
 
