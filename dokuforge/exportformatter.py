@@ -149,7 +149,8 @@ class TeXFormatter(BaseFormatter):
                 if context.checkabbrev(abbrev):
                     return(u'\\@' + u'.\\,'.join(abbrev) + u'.',
                            context.countabbrev(abbrev))
-            return (leaf.data, 0)
+        if leaf.data.isupper() and len(leaf.data) > 1:
+            return (u'\\acronym{%s}' % leaf.data, 0)
         else:
             return (leaf.data, 0)
 
