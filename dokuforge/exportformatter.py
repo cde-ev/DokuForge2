@@ -5,7 +5,7 @@
 # ellipses (Wort~\ldots{})
 # quotes ("`Danke, Dirk."' und das war's)
 # acronyms
-# units (40~g, 50~m)
+# units (40\,g, 50\,m)
 # number specials (20\,\%, 19.\,Jahrhundert, 3.\,Person)
 # escape percent
 # improve dash handling (for errors like 3-9 and a-f)
@@ -16,6 +16,8 @@ from dokuforge.parser import ParseLeaf
 whitelist = ["pi"]
 
 abbreviations = [["z", "B"], ["vgl"]]
+
+units = ["m", "s", "V"]
 
 class Context:
     def __init__(self, leaf, neighbours, environ):
@@ -89,6 +91,9 @@ class Context:
             pos += 1
         return False
 
+    def checkunit(self, pos=1):
+        return self.lookleafdata(pos) in units
+
 
 class TeXFormatter(BaseFormatter):
     """
@@ -98,7 +103,7 @@ class TeXFormatter(BaseFormatter):
 
     handle_heading = u"\\section{%s}".__mod__
     handle_subheading = u"\\subsection{%s}".__mod__
-    handle_ednote = u"\\begin{ednote}%s\end{ednote}".__mod__
+    handle_ednote = u"\\begin{ednote}%s\\end{ednote}".__mod__
     handle_displaymath = u"\\[%s\\]".__mod__
     handle_authors = u"\\authors{%s}".__mod__
     handle_paragraph = "%s".__mod__
@@ -157,7 +162,7 @@ class TeXFormatter(BaseFormatter):
             return (leaf.data, 0)
         elif leaf.data == u'.':
             if context.comparedata([u'.', u'.']):
-                return (u'\\a\\ldots{}', 2)
+                return (u'\\@\\ldots{}', 2)
             else:
                 ## reset number of seen dashes at every full stop
                 self.dashesseen = 0
@@ -165,19 +170,21 @@ class TeXFormatter(BaseFormatter):
         elif leaf.data == u'-':
             if context.lookleafdata() == u'-':
                 if not context.lookleaftype(2) == "Number":
-                    if self.dashesseen % 2 == 1:
+                    if context.lookleaftype(2) == "Whitespace":
                         self.dashesseen += 1
-                        return (u'\@~--', 1)
-                    elif context.lookleaftype(2) == "Whitespace":
-                        self.dashesseen += 1
-                        return (u'\@--~', 2)
+                        ## == 0 since we allready increased dashesseen
+                        if self.dashesseen % 2 == 0:
+                            return (u'\\@--~', 2)
+                        else:
+                            return (u'\\@~--', 2)
                     else:
-                        self.dashesseen += 1
-                        return (u'\@--~', 1)
+                        return (u'\\@--', 1)
                 else:
                     return (u'--', 1)
             else:
                 return (u'-', 0)
+        elif leaf.data == u'%':
+            return (u'\\%', 0)
         elif leaf.data == u'^':
             ## prevent '^^'
             skips = 0
@@ -200,15 +207,24 @@ class TeXFormatter(BaseFormatter):
                 number += leaf.data[3*pos+rem:3*(pos+1)+rem] + u'\\,'
                 pos +=1
             number = number[:-2]
+        skip = 0
+        if context.lookleaftype() == "Whitespace":
+            skip = 1
+        if context.checkunit(1+skip):
+            return (number + u'\\,' + context.lookleafdata(skip+1), skip+1)
+        if context.lookleafdata(1+skip) == u'%':
+            return (number + u'\\,\\%', skip+1)
         return (number, 0)
 
     def advanced_handle_Whitespace(self, leaf, context):
         if context.comparedata([u'-', u'-']):
             if self.dashesseen % 2 == 1 or not context.scanfordash():
                 self.dashesseen += 1
-                return (u'\@~--', 2)
+                return (u'\\@~--', 2)
             else:
                 return (u' ', 0)
+        elif context.comparedata([u'.', u'.', u'.']):
+            return (u'\\@~\\ldots{}', 3)
         else:
             return (u' ', 0)
 
