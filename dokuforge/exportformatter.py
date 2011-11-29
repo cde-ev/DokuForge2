@@ -150,7 +150,7 @@ class TeXFormatter(BaseFormatter):
                     return(u'\\@' + u'.\\,'.join(abbrev) + u'.',
                            context.countabbrev(abbrev))
         if leaf.data.isupper() and len(leaf.data) > 1:
-            return (u'\\acronym{%s}' % leaf.data, 0)
+            return (u'\\@\\acronym{%s}' % leaf.data, 0)
         else:
             return (leaf.data, 0)
 
@@ -206,14 +206,14 @@ class TeXFormatter(BaseFormatter):
             number = number[:-2]
         if context.lookleafdata() == u'.' and \
             context.lookleaftype(2) == "Whitespace":
-            return (number + u'.\\,', 2)
+            return (number + u'.\\@\\,', 2)
         skip = 0
         if context.lookleaftype() == "Whitespace":
             skip = 1
         if context.checkunit(1+skip):
-            return (number + u'\\,' + context.lookleafdata(skip+1), skip+1)
+            return (number + u'\\@\\,' + context.lookleafdata(skip+1), skip+1)
         if context.lookleafdata(1+skip) == u'%':
-            return (number + u'\\,\\%', skip+1)
+            return (number + u'\\@\\,\\%', skip+1)
         return (number, 0)
 
     def advanced_handle_Whitespace(self, leaf, context):
