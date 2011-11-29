@@ -172,11 +172,11 @@ class TeXFormatter(BaseFormatter):
                 if not context.lookleaftype(2) == "Number":
                     if context.lookleaftype(2) == "Whitespace":
                         self.dashesseen += 1
-                        ## == 0 since we allready increased dashesseen
-                        if self.dashesseen % 2 == 0:
+                        ## == 1 since we allready increased dashesseen
+                        if self.dashesseen % 2 == 1:
                             return (u'\\@--~', 2)
                         else:
-                            return (u'\\@~--', 2)
+                            return (u'\\@~-- ', 2)
                     else:
                         return (u'\\@--', 1)
                 else:
