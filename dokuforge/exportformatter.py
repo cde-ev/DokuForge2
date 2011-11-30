@@ -30,7 +30,7 @@ u"simeq", u"subset", u"supset", u"approx", u"asymp", u"subseteq",
 u"supseteq", u"cong", u"smile", u"sqsubset", u"sqsupset", u"equiv",
 u"frown", u"sqsubseteq", u"sqsupseteq", u"propto", u"bowtie", u"in", u"ni",
 u"prec", u"succ", u"vdash", u"dashv", u"preceq", u"succeq", u"models",
-u"perp", u"\parallel", u"mid",
+u"perp", u"parallel", u"mid",
 ## negations
 u"not", u"notin",
 ## arrows
@@ -50,7 +50,7 @@ u"heartsuit", u"Re", u"bot", u"spadesuit", u"Im", u"vdash", u"angle",
 u"Join", u"mho", u"dashv", u"backslash", u"infty",
 ## big symbols
 u"bigcap", u"bigodot", u"bigcup", u"bigotimes", u"bigsqcup", u"bigoplus",
-u"bigvee", u"\biguplus", u"bigwedge",
+u"bigvee", u"biguplus", u"bigwedge",
 ## function names
 u"arccos", u"cosh", u"det", u"inf" u"limsup", u"Pr", u"tan", u"arcsin",
 u"cot", u"dim", u"ker", u"ln", u"sec", u"tanh", u"arctan", u"coth", u"exp",
