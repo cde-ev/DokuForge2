@@ -5,63 +5,65 @@ from dokuforge.parser import ParseLeaf
 
 whitelist = [##
 ## greek letters
-"alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta",
-"iota", "kappa", "lambda", "mu", "nu", "xi", "pi", "rho", "sigma", "tau",
-"upsilon", "phi", "chi", "psi", "omega", "Gamma", "Delta", "Theta",
-"Lambda", "Xi", "Pi", "Sigma", "Phi", "Psi", "Omega", "varepsilon",
-"vartheta", "varpi", "varrho", "varsigma", "varphi",
+u"alpha", u"beta", u"gamma", u"delta", u"epsilon", u"zeta", u"eta", u"theta",
+u"iota", u"kappa", u"lambda", u"mu", u"nu", u"xi", u"pi", u"rho", u"sigma", u"tau",
+u"upsilon", u"phi", u"chi", u"psi", u"omega", u"Gamma", u"Delta", u"Theta",
+u"Lambda", u"Xi", u"Pi", u"Sigma", u"Phi", u"Psi", u"Omega", u"varepsilon",
+u"vartheta", u"varpi", u"varrho", u"varsigma", u"varphi",
 ## environments
-"begin", "end",
+u"begin", u"end",
 ## math layout
-"frac", "sqrt", "sum", "int", "ldots", "cdots", "vdots", "ddots", "oint",
-"prod", "coprod"
+u"frac", u"sqrt", u"sum", u"int", u"ldots", u"cdots", u"vdots", u"ddots", u"oint",
+u"prod", u"coprod"
 ## math symbols
-"pm", "cap", "circ", "bigcirc" "mp", "cup", "bullet", "Box" "times",
-"uplus", "diamond", "Diamond", "div", "sqcap", "bigtriangleup", "cdot",
-"sqcup", "bigtriangledown", "ast", "vee", "unlhd", "triangleleft", "star",
-"wedge", "unrhd", "triangleright", "dagger", "oplus", "oslash", "setminus",
-"ddagger", "ominus", "odot", "wr", "amalg", "otimes",
+u"pm", u"cap", u"circ", u"bigcirc" u"mp", u"cup", u"bullet", u"Box" u"times",
+u"uplus", u"diamond", u"Diamond", u"div", u"sqcap", u"bigtriangleup", u"cdot",
+u"sqcup", u"bigtriangledown", u"ast", u"vee", u"unlhd", u"triangleleft", u"star",
+u"wedge", u"unrhd", u"triangleright", u"dagger", u"oplus", u"oslash", u"setminus",
+u"ddagger", u"ominus", u"odot", u"wr", u"amalg", u"otimes",
 ## math relations
-"le", "leq", "ge", "geq", "neq", "sim", "ll", "gg", "doteq", "simeq",
-"subset", "supset", "approx", "asymp", "subseteq", "supseteq", "cong",
-"smile", "sqsubset", "sqsupset", "equiv", "frown", "sqsubseteq",
-"sqsupseteq", "propto", "bowtie", "in", "ni", "prec", "succ", "vdash",
-"dashv", "preceq", "succeq", "models", "perp", "\parallel", "mid",
+u"le", u"leq", u"ge", u"geq", u"neq", u"sim", u"ll", u"gg", u"doteq", u"simeq",
+u"subset", u"supset", u"approx", u"asymp", u"subseteq", u"supseteq", u"cong",
+u"smile", u"sqsubset", u"sqsupset", u"equiv", u"frown", u"sqsubseteq",
+u"sqsupseteq", u"propto", u"bowtie", u"in", u"ni", u"prec", u"succ", u"vdash",
+u"dashv", u"preceq", u"succeq", u"models", u"perp", u"\parallel", u"mid",
 ## negations
-"not", "notin",
+u"not", u"notin",
 ## arrows
-"leftarrow", "gets", "longleftarrow", "uparrow", "Leftarrow",
-"Longleftarrow", "Uparrow", "rightarrow", "to", "longrightarrow",
-"downarrow", "Rightarrow", "Longrightarrow", "Downarrow", "leftrightarrow",
-"longleftrightarrow", "updownarrow", "Leftrightarrow", "Longleftrightarrow",
-"Updownarrow", "mapsto", "longmapsto", "nearrow", "hookleftarrow",
-"hookrightarrow", "searrow", "leftharpoonup", "rightharpoonup", "swarrow",
-"leftharpoondown", "rightharpoondown", "nwarrow", "rightleftharpoons",
-"leadsto",
+u"leftarrow", u"gets", u"longleftarrow", u"uparrow", u"Leftarrow",
+u"Longleftarrow", u"Uparrow", u"rightarrow", u"to", u"longrightarrow",
+u"downarrow", u"Rightarrow", u"Longrightarrow", u"Downarrow", u"leftrightarrow",
+u"longleftrightarrow", u"updownarrow", u"Leftrightarrow", u"Longleftrightarrow",
+u"Updownarrow", u"mapsto", u"longmapsto", u"nearrow", u"hookleftarrow",
+u"hookrightarrow", u"searrow", u"leftharpoonup", u"rightharpoonup", u"swarrow",
+u"leftharpoondown", u"rightharpoondown", u"nwarrow", u"rightleftharpoons",
+u"leadsto",
 ## various symbols
-"aleph", "prime", "forall", "hbar", "emptyset", "exists", "imath", "nablaa",
-"neg", "triangle", "jmath", "surd", "flat", "clubsuit", "ell", "partial",
-"natural", "diamondsuit", "wp", "top", "sharp", "heartsuit", "Re", "bot",
-"spadesuit", "Im", "vdash", "angle", "Join", "mho", "dashv", "backslash",
-"infty",
+u"aleph", u"prime", u"forall", u"hbar", u"emptyset", u"exists", u"imath", u"nablaa",
+u"neg", u"triangle", u"jmath", u"surd", u"flat", u"clubsuit", u"ell", u"partial",
+u"natural", u"diamondsuit", u"wp", u"top", u"sharp", u"heartsuit", u"Re", u"bot",
+u"spadesuit", u"Im", u"vdash", u"angle", u"Join", u"mho", u"dashv", u"backslash",
+u"infty",
 ## big symbols
-"bigcap", "bigodot", "bigcup", "bigotimes", "bigsqcup", "bigoplus",
-"bigvee", "\biguplus", "bigwedge",
+u"bigcap", u"bigodot", u"bigcup", u"bigotimes", u"bigsqcup", u"bigoplus",
+u"bigvee", u"\biguplus", u"bigwedge",
 ## function names
-"arccos", "cosh", "det", "inf" "limsup", "Pr", "tan", "arcsin", "cot",
-"dim", "ker", "ln", "sec", "tanh", "arctan", "coth", "exp", "lg", "log",
-"sin", "arg", "csc", "gcd", "lim", "max", "sinh", "cos", "deg", "hom",
-"liminf", "min", "sup",
+u"arccos", u"cosh", u"det", u"inf" u"limsup", u"Pr", u"tan", u"arcsin", u"cot",
+u"dim", u"ker", u"ln", u"sec", u"tanh", u"arctan", u"coth", u"exp", u"lg", u"log",
+u"sin", u"arg", u"csc", u"gcd", u"lim", u"max", u"sinh", u"cos", u"deg", u"hom",
+u"liminf", u"min", u"sup",
 ## accents
-"hat", "breve", "grave", "bar", "check", "acute", "ti1de", "vec", "dot",
-"ddot", "mathring",
+u"hat", u"breve", u"grave", u"bar", u"check", u"acute", u"ti1de", u"vec", u"dot",
+u"ddot", u"mathring",
 ## parens
-"left", "right", "lfloor", "rfloor", "lceil", "rceil", "langle", "rangle",
+u"left", u"right", u"lfloor", u"rfloor", u"lceil", u"rceil", u"langle", u"rangle",
 ## misc
-"stackrel", ","
+u"stackrel", u","
 ]
 
-abbreviations = [["z", "B"], ["vgl"]]
+abbreviations = [[u"z", u"B"], [u"d", u"h"], [u"u", u"a"], [u"s", u"o"],
+[u"s", u"u"], [u"ca"], [u"etc"], [u"bzw"], [u"vgl"], [u"sog"], [u"o", u"Ä"],
+[u"v", u"Chr"], [u"n", u"Chr"], [u"f"], [u"ff"]]
 
 units = ["m", "s", "V"]
 
