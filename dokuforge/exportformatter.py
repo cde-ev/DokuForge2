@@ -89,7 +89,23 @@ u"eV", u"u", u"ua", u"e", u"bar", u"atm", u"psi", u"Torr",
 u"TL"]
 
 class Context:
+    """
+    Class for storing context information for exporter.
+
+    This class stores the information, where in the ParseTree we are and
+    what is around us. It also provides several methods to extract
+    information about the surounding.
+    """
     def __init__(self, leaf, neighbours, environ):
+        """
+        @param leaf: current object which is processed
+        @type leaf: ParseTree or ParseLeaf
+        @param neighbours: list of all nodes adjacent to leaf, leaf is in this
+            list
+        @type neighbours: [ParseTree or ParseLeaf]
+        @param environ: list of all idents from 'root' to the parent of leaf
+        @type environ: [str]
+        """
         self.leaf = leaf
         self.neighbours = neighbours
         self.environ = environ
@@ -97,6 +113,12 @@ class Context:
 
 
     def inenviron(self, query):
+        """
+        Checks whether we are currently inside a ParseTree of type query.
+
+        @type query: str
+        @rtype: bool
+        """
         for x in query:
             if x in self.environ:
                 return True
@@ -104,6 +126,13 @@ class Context:
 
 
     def lookleafdata(self, n=1):
+        """
+        @param n: offset from our current position
+        @type n: int
+        @rtype: unicode or None
+        @returns: the data of the Leaf n steps ahead of the current position
+            or None if this does not exist or is not a ParseLeaf
+        """
         try:
             if not isinstance(self.neighbours[self.index+n], ParseLeaf):
                 return None
@@ -112,6 +141,13 @@ class Context:
             return None
 
     def lookleaftype(self, n=1):
+        """
+        @param n: offset from our current position
+        @type n: int
+        @rtype: str or None
+        @returns: the type of the Leaf n steps ahead of the current position
+            or None if this does not exist or is not a ParseLeaf
+        """
         try:
             if not isinstance(self.neighbours[self.index+n], ParseLeaf):
                 return None
@@ -120,12 +156,25 @@ class Context:
             return None
 
     def comparedata(self, data):
+        """
+        Checks whether the next nodes contain the specified data
+
+        @param data: pattern to check for
+        @type data: [unicode]
+        @rtype: bool
+        """
         for i in range(len(data)):
             if not self.lookleafdata(i+1) == data[i]:
                 return False
         return True
 
     def checkabbrev(self, abbrev):
+        """
+        Check wheter at the current position starts the abbreviation abbrev.
+
+        @type abbrev: [unicode]
+        @rtype: bool
+        """
         pos = 0
         for x in abbrev:
             if not self.lookleafdata(pos) == x and \
@@ -137,6 +186,17 @@ class Context:
         return True
 
     def countabbrev(self, abbrev):
+        """
+        Count the nodes occupied by the abbreviation abbrev at the current
+        position. The caller has to ensure, that the abbreviation abbrev
+        actually starts at the current position.
+
+        This is not a trivial operation, since we tolerate some whitespace
+        in abbreviations which has to be counted.
+
+        @type abbrev: [unicode]
+        @rtype: int
+        """
         pos = 0
         for x in abbrev:
             if not self.lookleafdata(pos) == x and \
@@ -148,6 +208,15 @@ class Context:
         return pos
 
     def scanfordash(self, pos=3):
+        """
+        Search for a dash in the current sentence. This is important to get
+        the difference between 'a --~nice~-- word' and 'check~-- so you win'
+        right.
+
+        @type pos: int
+        @param pos: offset from current position to start from
+        @rtype: bool
+        """
         if self.lookleafdata(pos) == u'.' or \
             self.lookleafdata(pos + 1) == u'.' or \
             self.lookleafdata(pos + 2) == u'.':
@@ -161,6 +230,12 @@ class Context:
         return False
 
     def checkunit(self, pos=1):
+        """
+        Check wheter there is a unit at offset pos.
+
+        @type pos: int
+        @param pos: offset from current position to start from
+        """
         tocheck = self.lookleafdata(pos)
         for x in siprefix:
             for y in units:
@@ -174,6 +249,7 @@ class TeXFormatter(BaseFormatter):
     Formatter for converting the tree representation into TeX for export.
     """
     ## escaping is done by the advanced_handle_* routines
+    ## they take care of '\' and '%'
 
     handle_heading = u"\\section{%s}".__mod__
     handle_subheading = u"\\subsection{%s}".__mod__
@@ -190,6 +266,9 @@ class TeXFormatter(BaseFormatter):
 
 
     def __init__(self, tree):
+        """
+        @type tree: ParseTree
+        """
         BaseFormatter.__init__(self, tree)
         self.dashesseen = 0
         self.quotesseen = 0
@@ -197,6 +276,8 @@ class TeXFormatter(BaseFormatter):
     def handle_nestedednote(self, data):
         """
         Do not allow '{ednote}' inside ednotes to prevent '\end{ednote}'.
+
+        @type data: unicode
         """
         if data == u"ednote":
             return u"{\\@forbidden ednote}"
@@ -204,6 +285,13 @@ class TeXFormatter(BaseFormatter):
             return "{%s}" % data
 
     def advanced_handle_Backslash(self, leaf, context):
+        """
+        Handling of backslashs is particularly delicate since we want to allow
+        only a limited set of actions.
+
+        @type leaf: ParseLeaf
+        @type context: Context
+        """
         if context.inenviron(["inlinemath", "displaymath"]) and \
             context.lookleafdata() in whitelist:
             return (u'\\' + context.lookleafdata(), 1)
@@ -222,25 +310,42 @@ class TeXFormatter(BaseFormatter):
                 return (u'\\@\\forbidden\\ ', 0)
 
     def advanced_handle_Word(self, leaf, context):
+        """
+        @type leaf: ParseLeaf
+        @type context: Context
+        """
+        ## search for abbreviations
         if context.lookleafdata() == u'.' and \
             not context.inenviron(["inlinemath", "displaymath"]):
             for abbrev in abbreviations:
                 if context.checkabbrev(abbrev):
                     return(u'\\@' + u'.\\,'.join(abbrev) + u'.',
                            context.countabbrev(abbrev))
+        ## search for acronyms
         if leaf.data.isupper() and len(leaf.data) > 1:
             return (u'\\@\\acronym{%s}' % leaf.data, 0)
         else:
             return (leaf.data, 0)
 
     def advanced_handle_Newpar(self, leaf, context):
+        """
+        @type leaf: ParseLeaf
+        @type context: Context
+        """
         ## reset quotes at end of paragraph
         self.quotesseen = 0
         return (u'\n\n', 0)
 
     def advanced_handle_Token(self, leaf, context):
+        """
+        @type leaf: ParseLeaf
+        @type context: Context
+        """
+        ## inside ednotes no post-processing is done
         if context.inenviron(["ednote", "nestedednote"]):
             return (leaf.data, 0)
+        ## search for ellipses
+        ## if no ellipse, a sentence just ended
         elif leaf.data == u'.':
             if context.comparedata([u'.', u'.']):
                 return (u'\\@\\ldots{}', 2)
@@ -248,6 +353,9 @@ class TeXFormatter(BaseFormatter):
                 ## reset number of seen dashes at every full stop
                 self.dashesseen = 0
                 return (u'.', 0)
+        ## search for dashes --
+        ## this is a bit tricky, since we have dashes for ranges 6--9 and
+        ## dashes as delimiters in two forms ' --~a~-- ' and 'b~-- '
         elif leaf.data == u'-':
             if context.lookleafdata() == u'-':
                 if not context.lookleaftype(2) == "Number":
@@ -264,19 +372,25 @@ class TeXFormatter(BaseFormatter):
                     return (u'--', 1)
             else:
                 return (u'-', 0)
+        ## escape %
         elif leaf.data == u'%':
             return (u'\\%', 0)
+        ## ' is not processed further, but should only be used were
+        ## appropriate (especially not as substitute for ")
         elif leaf.data == u"'":
             if not context.inenviron(["inlinemath" ,"displaymath"]):
                 return (u"\\@'", 0)
             else:
                 return (u"'", 0)
+        ## prevent '^^'
         elif leaf.data == u'^':
-            ## prevent '^^'
             skips = 0
             while context.lookleafdata(skips+1) == u'^':
                 skips += 1
             return (u'^', skips)
+        ## handle quotes, there ar left and right ones
+        ## this is locale to each paragraph, so an error does not wreck
+        ## havoc for a whole part
         elif leaf.data == u'"':
             self.quotesseen += 1
             ## == 1 since we allready increased quotesseen
@@ -290,7 +404,12 @@ class TeXFormatter(BaseFormatter):
             return (leaf.data, 0)
 
     def advanced_handle_Number(self, leaf, context):
+        """
+        @type leaf: ParseLeaf
+        @type context: Context
+        """
         number = u''
+        ## format number if it's long enough
         if len(leaf.data) < 5:
             number = leaf.data
         else:
@@ -302,25 +421,37 @@ class TeXFormatter(BaseFormatter):
                 number += leaf.data[3*pos+rem:3*(pos+1)+rem] + u'\\,'
                 pos +=1
             number = number[:-2]
+        ## '3. ' is always output as '3.\,'
         if context.lookleafdata() == u'.' and \
             context.lookleaftype(2) == "Whitespace":
             return (number + u'.\\@\\,', 2)
         skip = 0
+        ## tolerate whitespace ere ...
         if context.lookleaftype() == "Whitespace":
             skip = 1
+        ## we check for units and ...
         if context.checkunit(1+skip):
             return (number + u'\\@\\,' + context.lookleafdata(skip+1), skip+1)
+        ## percentage signs
         if context.lookleafdata(1+skip) == u'%':
             return (number + u'\\@\\,\\%', skip+1)
         return (number, 0)
 
     def advanced_handle_Whitespace(self, leaf, context):
+        """
+        Some whitespace turns into protected whitespace (~).
+
+        @type leaf: ParseLeaf
+        @type context: Context
+        """
+        ## dashes
         if context.comparedata([u'-', u'-']):
             if self.dashesseen % 2 == 1 or not context.scanfordash():
                 self.dashesseen += 1
                 return (u'\\@~--', 2)
             else:
                 return (u' ', 0)
+        ## ellipses
         elif context.comparedata([u'.', u'.', u'.']):
             return (u'\\@~\\ldots{}', 3)
         else:
@@ -354,6 +485,12 @@ class TeXFormatter(BaseFormatter):
         return output
 
     def advancedgenerateoutput(self, tree, context):
+        """
+        Take tree and recursively generate an output string.
+
+        This method uses handle_* and advanced_handle_* methods to generate
+        the output. advanced_handle_* methods are only available for leaves.
+        """
         if isinstance(tree, ParseLeaf):
             data = tree.data
             skips = 0
@@ -377,6 +514,7 @@ class TeXFormatter(BaseFormatter):
         ## now we have a ParseTree
         output = u""
         skips = 0
+        ## update environ
         context.environ.append(tree.ident)
         for x in tree.tree:
             ## skip nodes, allready processed earlier in the loop
@@ -385,6 +523,7 @@ class TeXFormatter(BaseFormatter):
                 continue
             value, skips = self.advancedgenerateoutput(x, Context(x, tree.tree,
                                                                   context.environ))
+            ## no advanced_handle_* methods for non-leaves
             try:
                 handler = getattr(self, "handle_%s" % x.ident)
             except AttributeError:
@@ -392,5 +531,6 @@ class TeXFormatter(BaseFormatter):
             else:
                 value = handler(value)
             output += value
+        ## update environ
         context.environ.pop()
         return (output, 0)
