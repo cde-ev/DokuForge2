@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# todo:
-# dates (427--347~v.\,Chr.)
-# quotes ("`Danke, Dirk."' und das war's)
-# acronyms
-# improve dash handling (for errors like 3-9 and a-f)
-
 from dokuforge.baseformatter import BaseFormatter
 from dokuforge.parser import ParseLeaf
 
@@ -114,6 +108,7 @@ class TeXFormatter(BaseFormatter):
     def __init__(self, tree):
         BaseFormatter.__init__(self, tree)
         self.dashesseen = 0
+        self.quotesseen = 0
 
     def handle_nestedednote(self, data):
         """
@@ -154,6 +149,11 @@ class TeXFormatter(BaseFormatter):
         else:
             return (leaf.data, 0)
 
+    def advanced_handle_Newpar(self, leaf, context):
+        ## reset quotes at end of paragraph
+        self.quotesseen = 0
+        return (u'\n\n', 0)
+
     def advanced_handle_Token(self, leaf, context):
         if context.inenviron(["ednote", "nestedednote"]):
             return (leaf.data, 0)
@@ -182,12 +182,24 @@ class TeXFormatter(BaseFormatter):
                 return (u'-', 0)
         elif leaf.data == u'%':
             return (u'\\%', 0)
+        elif leaf.data == u"'":
+            if not context.inenviron(["inlinemath" ,"displaymath"]):
+                return (u"\\@'", 0)
+            else:
+                return (u"'", 0)
         elif leaf.data == u'^':
             ## prevent '^^'
             skips = 0
             while context.lookleafdata(skips+1) == u'^':
                 skips += 1
             return (u'^', skips)
+        elif leaf.data == u'"':
+            self.quotesseen += 1
+            ## == 1 since we allready increased quotesseen
+            if self.quotesseen % 2 == 1:
+                return (u'"`', 0)
+            else:
+                return (u"\"'", 0)
         else:
             return (leaf.data, 0)
 
