@@ -3,7 +3,63 @@
 from dokuforge.baseformatter import BaseFormatter
 from dokuforge.parser import ParseLeaf
 
-whitelist = ["pi"]
+whitelist = [##
+## greek letters
+"alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta",
+"iota", "kappa", "lambda", "mu", "nu", "xi", "pi", "rho", "sigma", "tau",
+"upsilon", "phi", "chi", "psi", "omega", "Gamma", "Delta", "Theta",
+"Lambda", "Xi", "Pi", "Sigma", "Phi", "Psi", "Omega", "varepsilon",
+"vartheta", "varpi", "varrho", "varsigma", "varphi",
+## environments
+"begin", "end",
+## math layout
+"frac", "sqrt", "sum", "int", "ldots", "cdots", "vdots", "ddots", "oint",
+"prod", "coprod"
+## math symbols
+"pm", "cap", "circ", "bigcirc" "mp", "cup", "bullet", "Box" "times",
+"uplus", "diamond", "Diamond", "div", "sqcap", "bigtriangleup", "cdot",
+"sqcup", "bigtriangledown", "ast", "vee", "unlhd", "triangleleft", "star",
+"wedge", "unrhd", "triangleright", "dagger", "oplus", "oslash", "setminus",
+"ddagger", "ominus", "odot", "wr", "amalg", "otimes",
+## math relations
+"le", "leq", "ge", "geq", "neq", "sim", "ll", "gg", "doteq", "simeq",
+"subset", "supset", "approx", "asymp", "subseteq", "supseteq", "cong",
+"smile", "sqsubset", "sqsupset", "equiv", "frown", "sqsubseteq",
+"sqsupseteq", "propto", "bowtie", "in", "ni", "prec", "succ", "vdash",
+"dashv", "preceq", "succeq", "models", "perp", "\parallel", "mid",
+## negations
+"not", "notin",
+## arrows
+"leftarrow", "gets", "longleftarrow", "uparrow", "Leftarrow",
+"Longleftarrow", "Uparrow", "rightarrow", "to", "longrightarrow",
+"downarrow", "Rightarrow", "Longrightarrow", "Downarrow", "leftrightarrow",
+"longleftrightarrow", "updownarrow", "Leftrightarrow", "Longleftrightarrow",
+"Updownarrow", "mapsto", "longmapsto", "nearrow", "hookleftarrow",
+"hookrightarrow", "searrow", "leftharpoonup", "rightharpoonup", "swarrow",
+"leftharpoondown", "rightharpoondown", "nwarrow", "rightleftharpoons",
+"leadsto",
+## various symbols
+"aleph", "prime", "forall", "hbar", "emptyset", "exists", "imath", "nablaa",
+"neg", "triangle", "jmath", "surd", "flat", "clubsuit", "ell", "partial",
+"natural", "diamondsuit", "wp", "top", "sharp", "heartsuit", "Re", "bot",
+"spadesuit", "Im", "vdash", "angle", "Join", "mho", "dashv", "backslash",
+"infty",
+## big symbols
+"bigcap", "bigodot", "bigcup", "bigotimes", "bigsqcup", "bigoplus",
+"bigvee", "\biguplus", "bigwedge",
+## function names
+"arccos", "cosh", "det", "inf" "limsup", "Pr", "tan", "arcsin", "cot",
+"dim", "ker", "ln", "sec", "tanh", "arctan", "coth", "exp", "lg", "log",
+"sin", "arg", "csc", "gcd", "lim", "max", "sinh", "cos", "deg", "hom",
+"liminf", "min", "sup",
+## accents
+"hat", "breve", "grave", "bar", "check", "acute", "ti1de", "vec", "dot",
+"ddot", "mathring",
+## parens
+"left", "right", "lfloor", "rfloor", "lceil", "rceil", "langle", "rangle",
+## misc
+"stackrel", ","
+]
 
 abbreviations = [["z", "B"], ["vgl"]]
 
@@ -197,8 +253,10 @@ class TeXFormatter(BaseFormatter):
             self.quotesseen += 1
             ## == 1 since we allready increased quotesseen
             if self.quotesseen % 2 == 1:
+                ## left quote
                 return (u'"`', 0)
             else:
+                ## right quote
                 return (u"\"'", 0)
         else:
             return (leaf.data, 0)
