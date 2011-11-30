@@ -3,69 +3,90 @@
 from dokuforge.baseformatter import BaseFormatter
 from dokuforge.parser import ParseLeaf
 
+## list of useful math commands mostly taken from 'A Guide To LaTeX' by Kopka
 whitelist = [##
 ## greek letters
-u"alpha", u"beta", u"gamma", u"delta", u"epsilon", u"zeta", u"eta", u"theta",
-u"iota", u"kappa", u"lambda", u"mu", u"nu", u"xi", u"pi", u"rho", u"sigma", u"tau",
-u"upsilon", u"phi", u"chi", u"psi", u"omega", u"Gamma", u"Delta", u"Theta",
-u"Lambda", u"Xi", u"Pi", u"Sigma", u"Phi", u"Psi", u"Omega", u"varepsilon",
-u"vartheta", u"varpi", u"varrho", u"varsigma", u"varphi",
+u"alpha", u"beta", u"gamma", u"delta", u"epsilon", u"zeta", u"eta",
+u"theta", u"iota", u"kappa", u"lambda", u"mu", u"nu", u"xi", u"pi", u"rho",
+u"sigma", u"tau", u"upsilon", u"phi", u"chi", u"psi", u"omega", u"Gamma",
+u"Delta", u"Theta", u"Lambda", u"Xi", u"Pi", u"Sigma", u"Phi", u"Psi",
+u"Omega", u"varepsilon", u"vartheta", u"varpi", u"varrho", u"varsigma",
+u"varphi",
 ## environments
 u"begin", u"end",
 ## math layout
-u"frac", u"sqrt", u"sum", u"int", u"ldots", u"cdots", u"vdots", u"ddots", u"oint",
-u"prod", u"coprod"
+u"frac", u"sqrt", u"sum", u"int", u"ldots", u"cdots", u"vdots", u"ddots",
+u"oint", u"prod", u"coprod"
 ## math symbols
-u"pm", u"cap", u"circ", u"bigcirc" u"mp", u"cup", u"bullet", u"Box" u"times",
-u"uplus", u"diamond", u"Diamond", u"div", u"sqcap", u"bigtriangleup", u"cdot",
-u"sqcup", u"bigtriangledown", u"ast", u"vee", u"unlhd", u"triangleleft", u"star",
-u"wedge", u"unrhd", u"triangleright", u"dagger", u"oplus", u"oslash", u"setminus",
-u"ddagger", u"ominus", u"odot", u"wr", u"amalg", u"otimes",
+u"pm", u"cap", u"circ", u"bigcirc" u"mp", u"cup", u"bullet", u"Box"
+u"times", u"uplus", u"diamond", u"Diamond", u"div", u"sqcap",
+u"bigtriangleup", u"cdot", u"sqcup", u"bigtriangledown", u"ast", u"vee",
+u"unlhd", u"triangleleft", u"star", u"wedge", u"unrhd", u"triangleright",
+u"dagger", u"oplus", u"oslash", u"setminus", u"ddagger", u"ominus", u"odot",
+u"wr", u"amalg", u"otimes",
 ## math relations
-u"le", u"leq", u"ge", u"geq", u"neq", u"sim", u"ll", u"gg", u"doteq", u"simeq",
-u"subset", u"supset", u"approx", u"asymp", u"subseteq", u"supseteq", u"cong",
-u"smile", u"sqsubset", u"sqsupset", u"equiv", u"frown", u"sqsubseteq",
-u"sqsupseteq", u"propto", u"bowtie", u"in", u"ni", u"prec", u"succ", u"vdash",
-u"dashv", u"preceq", u"succeq", u"models", u"perp", u"\parallel", u"mid",
+u"le", u"leq", u"ge", u"geq", u"neq", u"sim", u"ll", u"gg", u"doteq",
+u"simeq", u"subset", u"supset", u"approx", u"asymp", u"subseteq",
+u"supseteq", u"cong", u"smile", u"sqsubset", u"sqsupset", u"equiv",
+u"frown", u"sqsubseteq", u"sqsupseteq", u"propto", u"bowtie", u"in", u"ni",
+u"prec", u"succ", u"vdash", u"dashv", u"preceq", u"succeq", u"models",
+u"perp", u"\parallel", u"mid",
 ## negations
 u"not", u"notin",
 ## arrows
 u"leftarrow", u"gets", u"longleftarrow", u"uparrow", u"Leftarrow",
 u"Longleftarrow", u"Uparrow", u"rightarrow", u"to", u"longrightarrow",
-u"downarrow", u"Rightarrow", u"Longrightarrow", u"Downarrow", u"leftrightarrow",
-u"longleftrightarrow", u"updownarrow", u"Leftrightarrow", u"Longleftrightarrow",
-u"Updownarrow", u"mapsto", u"longmapsto", u"nearrow", u"hookleftarrow",
-u"hookrightarrow", u"searrow", u"leftharpoonup", u"rightharpoonup", u"swarrow",
-u"leftharpoondown", u"rightharpoondown", u"nwarrow", u"rightleftharpoons",
-u"leadsto",
+u"downarrow", u"Rightarrow", u"Longrightarrow", u"Downarrow",
+u"leftrightarrow", u"longleftrightarrow", u"updownarrow", u"Leftrightarrow",
+u"Longleftrightarrow", u"Updownarrow", u"mapsto", u"longmapsto", u"nearrow",
+u"hookleftarrow", u"hookrightarrow", u"searrow", u"leftharpoonup",
+u"rightharpoonup", u"swarrow", u"leftharpoondown", u"rightharpoondown",
+u"nwarrow", u"rightleftharpoons", u"leadsto",
 ## various symbols
-u"aleph", u"prime", u"forall", u"hbar", u"emptyset", u"exists", u"imath", u"nablaa",
-u"neg", u"triangle", u"jmath", u"surd", u"flat", u"clubsuit", u"ell", u"partial",
-u"natural", u"diamondsuit", u"wp", u"top", u"sharp", u"heartsuit", u"Re", u"bot",
-u"spadesuit", u"Im", u"vdash", u"angle", u"Join", u"mho", u"dashv", u"backslash",
-u"infty",
+u"aleph", u"prime", u"forall", u"hbar", u"emptyset", u"exists", u"imath",
+u"nablaa", u"neg", u"triangle", u"jmath", u"surd", u"flat", u"clubsuit",
+u"ell", u"partial", u"natural", u"diamondsuit", u"wp", u"top", u"sharp",
+u"heartsuit", u"Re", u"bot", u"spadesuit", u"Im", u"vdash", u"angle",
+u"Join", u"mho", u"dashv", u"backslash", u"infty",
 ## big symbols
 u"bigcap", u"bigodot", u"bigcup", u"bigotimes", u"bigsqcup", u"bigoplus",
 u"bigvee", u"\biguplus", u"bigwedge",
 ## function names
-u"arccos", u"cosh", u"det", u"inf" u"limsup", u"Pr", u"tan", u"arcsin", u"cot",
-u"dim", u"ker", u"ln", u"sec", u"tanh", u"arctan", u"coth", u"exp", u"lg", u"log",
-u"sin", u"arg", u"csc", u"gcd", u"lim", u"max", u"sinh", u"cos", u"deg", u"hom",
-u"liminf", u"min", u"sup",
+u"arccos", u"cosh", u"det", u"inf" u"limsup", u"Pr", u"tan", u"arcsin",
+u"cot", u"dim", u"ker", u"ln", u"sec", u"tanh", u"arctan", u"coth", u"exp",
+u"lg", u"log", u"sin", u"arg", u"csc", u"gcd", u"lim", u"max", u"sinh",
+u"cos", u"deg", u"hom", u"liminf", u"min", u"sup",
 ## accents
-u"hat", u"breve", u"grave", u"bar", u"check", u"acute", u"ti1de", u"vec", u"dot",
-u"ddot", u"mathring",
+u"hat", u"breve", u"grave", u"bar", u"check", u"acute", u"ti1de", u"vec",
+u"dot", u"ddot", u"mathring",
 ## parens
-u"left", u"right", u"lfloor", u"rfloor", u"lceil", u"rceil", u"langle", u"rangle",
+u"left", u"right", u"lfloor", u"rfloor", u"lceil", u"rceil", u"langle",
+u"rangle",
 ## misc
 u"stackrel", u","
 ]
 
+## abbreviations taken from the style guide
 abbreviations = [[u"z", u"B"], [u"d", u"h"], [u"u", u"a"], [u"s", u"o"],
 [u"s", u"u"], [u"ca"], [u"etc"], [u"bzw"], [u"vgl"], [u"sog"], [u"o", u"Ä"],
 [u"v", u"Chr"], [u"n", u"Chr"], [u"f"], [u"ff"]]
 
-units = ["m", "s", "V"]
+
+## list of units, mostly taken from Wikipedia
+siprefix = [u"", u"k", u"m", u"μ", u"M", u"n", u"G"]
+units = [##
+## base units
+u"A", u"mol", u"K", u"m", u"s", u"g", u"cd",
+## derived units
+u"Hz", u"rad", u"sr", u"N", u"Pa", u"J", u"W", u"C", u"V", u"F", u"Ω", u"S",
+u"Wb", u"T", u"H", u"lm", u"lx", u"Bq", u"Gy", u"Sv", u"kat",
+## common products
+u"Wh", u"Ws", u"Nm",
+## other units officially accepted by SI
+u"min", u"h", u"d", u"°", u"ha", u"l", u"L", u"t", u"Np", u"B", u"dB",
+u"eV", u"u", u"ua", u"e", u"bar", u"atm", u"psi", u"Torr",
+## misc
+u"TL"]
 
 class Context:
     def __init__(self, leaf, neighbours, environ):
@@ -140,7 +161,12 @@ class Context:
         return False
 
     def checkunit(self, pos=1):
-        return self.lookleafdata(pos) in units
+        tocheck = self.lookleafdata(pos)
+        for x in siprefix:
+            for y in units:
+                if tocheck == x+y:
+                    return True
+        return False
 
 
 class TeXFormatter(BaseFormatter):
