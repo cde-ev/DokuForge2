@@ -63,7 +63,7 @@ u"dot", u"ddot", u"mathring",
 u"left", u"right", u"lfloor", u"rfloor", u"lceil", u"rceil", u"langle",
 u"rangle",
 ## misc
-u"stackrel", u",", u"binom"
+u"stackrel", u"binom"
 ]
 
 ## abbreviations taken from the style guide
