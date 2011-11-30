@@ -104,6 +104,8 @@ def testCourseName(course):
     Filter for course names.
 
     padoc.cls expects a certain format for course names.
+    @type course: str
+    @param course: internal name of course to check
     @rtype: bool
     @returns: True if the course name is compatible with padoc.cls
     """
@@ -117,18 +119,27 @@ def courseNumber(course):
 
     This works in conjunction with testCourseNames, which allows only a very
     limited set of course names.
+
+    @type course: str
+    @param course: internal name of course valid according to testCourseName
     """
     return course.name[4:]
 
 def tsubst(template, **keys):
     """
     Helper function for template substitution.
+
+    @type template: string.Template
+    @param keys: substitution parameters
     """
     return string.Template(template.safe_substitute(keys))
 
 def writefile(path, content):
     """
     Helper function for writing files.
+
+    @type path: str
+    @type content: unicode
     """
     f = file(path, mode = "w")
     f.write(content)
@@ -150,6 +161,8 @@ class Exporter:
     def __init__(self, aca):
         """
         Prepare for the export.
+
+        @type aca: Academy
         """
         self.tempdir = tempfile.mkdtemp(prefix="export")
         os.mkdir(os.path.join(self.tempdir, "%s" % aca.name))
