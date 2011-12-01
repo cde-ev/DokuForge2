@@ -10,7 +10,8 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
-from dokuforge.estimatorparser import Estimator
+from dokuforge.parser import Parser
+from dokuforge.estimateformatter import Estimator
 import dokuforge.common as common
 
 class Valuation:
@@ -30,14 +31,16 @@ class Valuation:
                     self.pagesednotes, self.blobs, self.blobpages)
 
     def doestimate(self, content, blobs):
-        self.chars = Estimator(content, ednotes = False,
-                               raw = True).parse()
-        self.charsednotes = Estimator(content, ednotes = True,
-                                      raw = True).parse()
+        parser = Parser(content)
+        tree = parser.parse()
+        self.chars = Estimator(tree, ednotes = False,
+                               raw = True).estimate()
+        self.charsednotes = Estimator(tree, ednotes = True,
+                                      raw = True).estimate()
         self.pages = common.computepages(
-            Estimator(content, ednotes = False, raw = False).parse())
+            Estimator(tree, ednotes = False, raw = False).estimate())
         self.pagesednotes = common.computepages(
-            Estimator(content, ednotes = True, raw = False).parse())
+            Estimator(tree, ednotes = True, raw = False).estimate())
         self.blobs = blobs
         self.blobpages = common.computeblobpages(blobs)
 

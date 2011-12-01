@@ -5,7 +5,7 @@ from dokuforge.parser import Parser
 from dokuforge.baseformatter import BaseFormatter
 from dokuforge.htmlformatter import HtmlFormatter
 from dokuforge.exportformatter import TeXFormatter
-from dokuforge.estimatorparser import Estimator
+from dokuforge.estimateformatter import Estimator
 
 teststring = u"""
  [Eine Ueberschrift]
@@ -92,5 +92,5 @@ print "========================================"
 
 estimator = Estimator(tree)
 print "========================================"
-print estimator.parse().encode("utf8")
+print estimator.estimate()
 print "========================================"

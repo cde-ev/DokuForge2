@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from dokuforge.baseparser import BaseParser
+from dokuforge.baseformatter import BaseFormatter
 
 class Estimate:
     """An estimate in chars. Estimates can be added and automatically coerce
@@ -29,7 +29,7 @@ class Estimate:
     def __repr__(self):
         return "%s(%d)" % (self.__class__.__name__, self.value)
 
-class Estimator(BaseParser):
+class Estimator(BaseFormatter):
     """The estimator parser computes an estimate of the length of the document
     in bytes. It thinks of a page of as lines filled with monospace characters.
     So certain structures which are known to cause a linebreak account at least
@@ -38,7 +38,7 @@ class Estimator(BaseParser):
     ## this is an empirical number, may be tuned later
     linelength = 85
 
-    def __init__(self, string, raw=False, ednotes=False):
+    def __init__(self, tree, raw=False, ednotes=False):
         """
         @param string: string to parse
         @param raw: toggles counting of single chars vs. sophisticated
@@ -49,7 +49,7 @@ class Estimator(BaseParser):
         @type raw: bool
         @type ednote: bool
         """
-        BaseParser.__init__(self, string)
+        BaseFormatter.__init__(self, tree)
         self.ednotes = ednotes
         self.raw = raw
 
@@ -81,5 +81,5 @@ class Estimator(BaseParser):
         else:
             return Estimate(0)
 
-    def result(self):
-        return int(Estimate(BaseParser.result(self)))
+    def estimate(self):
+        return int(Estimate(self.generateoutput()))
