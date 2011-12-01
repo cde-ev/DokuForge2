@@ -218,6 +218,8 @@ class BaseParser:
         close all open states.
 
         This is triggered by newpars and several other contexts.
+
+        @raises ValueError:
         """
         while not self.lookstate() == "normal":
             currentstate = self.lookstate()

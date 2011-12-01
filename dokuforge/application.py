@@ -304,12 +304,13 @@ class Application:
     def getAcademy(self, name, user=None):
         """
         look up an academy for a given name. If none is found raise a
-        werkzeug.exceptions.NotFound.
+        MalformedAdress or if not authorized raise a NotEnoughPriveleges error.
 
         @type name: unicode
         @type user: None or User
         @rtype: Academy
-        @raises werkzeug.exceptions.HTTPException:
+        @raises MalformedAdress:
+        @raises NotEnoughPriveleges:
         """
         assert isinstance(name, unicode)
         name = name.encode("utf8")
@@ -329,7 +330,8 @@ class Application:
         @type coursename: unicode
         @type user: None or User
         @rtype: Course
-        @raises werkzeug.exceptions.HTTPException:
+        @raises MalformedAdress:
+        @raises NotEnoughPriveleges:
         """
         assert isinstance(coursename, unicode)
         c = aca.getCourse(coursename) # checks name
@@ -628,6 +630,7 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None
         self.check_login(rs)
@@ -658,6 +661,7 @@ class Application:
     def do_createacademy(self, rs):
         """
         @type rs: RequestState
+        @raises MalformedPOSTRequest:
         """
         self.check_login(rs)
         if not rs.user.mayCreate():
@@ -684,6 +688,7 @@ class Application:
         """
         @type rs: RequestState
         @type topic: unicode
+        @raises MalformedAdress:
         """
         assert isinstance(topic, unicode)
         topic = topic.encode("utf8")
@@ -747,6 +752,7 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -771,6 +777,7 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -831,6 +838,7 @@ class Application:
         @type course: unicode
         @type page: int
         @type blob: int
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
@@ -939,6 +947,7 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -1032,6 +1041,7 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1075,6 +1085,7 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1112,6 +1123,7 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None
         self.check_login(rs)

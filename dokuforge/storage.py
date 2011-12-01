@@ -109,6 +109,7 @@ class LockDir:
         release it multiple times, too.
 
         @raises OSError:
+        @raises InternalError
         """
         if self.lockcount != 0:
             self.lockcount += 1
@@ -130,6 +131,7 @@ class LockDir:
     def __exit__(self, _1, _2, _3):
         """
         @raises OSError:
+        @raises InternalError
         """
         self.lockcount -= 1
         if self.lockcount == 0:
@@ -179,6 +181,7 @@ class Storage(object):
         @type message: str
         @raises OSError:
         @raises IOError:
+        @raises InternalError
         """
         ## FIXME: catch errors
         if isinstance(content, basestring):
@@ -207,6 +210,7 @@ class Storage(object):
         """
         @raises OSError:
         @raises IOError:
+        @raises InternalError
         """
         ## FIXME: catch errors
         if not os.path.exists(self.fullpath("%s,v")):
@@ -265,6 +269,7 @@ class Storage(object):
     def content(self, havelock=None):
         """
         @raises OSError:
+        @raises InternalError
         """
         ## FIXME: catch errors
         self.ensureexistence(havelock = havelock)
