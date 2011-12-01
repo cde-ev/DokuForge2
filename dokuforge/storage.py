@@ -169,7 +169,6 @@ class Storage(object):
         @type content: str or filelike
         @param content: the content of the file
         @type message: str
-        @raises subprocess.CalledProcessError:
         @raises OSError:
         @raises IOError:
         """
@@ -179,8 +178,11 @@ class Storage(object):
 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
-            subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
-                                  env=RCSENV)
+            try:
+                subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
+                                      env=RCSENV)
+            except subproccess.CalledProcessError:
+                assert False # we ensured the existence of the file, hence the call may not fail
             objfile = file(self.fullpath(), mode = "w")
             shutil.copyfileobj(content, objfile)
             objfile.close()
@@ -192,19 +194,23 @@ class Storage(object):
 
     def ensureexistence(self, havelock=None):
         """
-        @raises subprocess.CalledProcessError:
         @raises OSError:
         @raises IOError:
         """
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
                 if not os.path.exists(self.fullpath("%s,v")):
-                    subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
-                                           self.fullpath()], env=RCSENV)
-                    file(self.fullpath(), mode = "w").close()
-                    subprocess.check_call(["ci", "-q", "-f",
-                                           "-minitial, implicit, empty commit",
-                                           self.fullpath()], env=RCSENV)
+                    try:
+                        subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
+                                               self.fullpath()], env=RCSENV)
+                        file(self.fullpath(), mode = "w").close()
+                        subprocess.check_call(["ci", "-q", "-f",
+                                               "-minitial, implicit, empty commit",
+                                               self.fullpath()], env=RCSENV)
+                    except subprocess.CalledProcessError:
+                        assert False # These calls can only fail for reasons like
+                                     # disk full, permision denied -- all cases where
+                                     # dokuforge is not installed correctly
 
     def asrcs(self, havelock=None):
         """
@@ -234,22 +240,26 @@ class Storage(object):
         Obtain information about the last change made to this storage object.
         @returns: a str-str dict with information about the head commit; in particular,
                   it will contain the keys 'revision', 'author', and 'date'.
-        @raises subprocess.CalledProcessError:
-        @raises OSError:
-        @raises IndexError:
-        @raises KeyError:
         """
         self.ensureexistence(havelock=havelock)
-        return rloghead(self.fullpath("%s,v"))
+        try:
+            status = rloghead(self.fullpath("%s,v"))
+        except FileDoesNotExist:
+            assert False # we just ensured the existence
+        return status
 
     def content(self, havelock=None):
         """
         @raises OSError:
-        @raises subprocess.CalledProcessError:
         """
         self.ensureexistence(havelock = havelock)
-        return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
-                            env=RCSENV)
+        try:
+            return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
+                                env=RCSENV)
+        except subprocess.CalledProcessError:
+            assert False # We ensured the existence of the file; hence the call can only fail
+                         # if rcs is not installed properly and/or filepermissions are set
+                         # incorrectly -- in other words, if df is not installed correctly
 
     def startedit(self, havelock=None):
         """
@@ -260,9 +270,7 @@ class Storage(object):
         that version is still the head revision.
 
         @returns: an opaque version string and the contents of the file
-        @rtype: (str or None, str)
-        @raises OSError:
-        @raises subprocess.CalledProcessError:
+        @rtype: ({str : str} , str)
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
@@ -290,12 +298,10 @@ class Storage(object):
             to be done manually), and (newversion, mergedcontent) is a state
             for further editing that can be used as if obtained from
             startedit
-        @rtype: (bool, str or None, str)
+        @rtype: (bool, str, str)
         @raises OSError:
-        @raises subprocess.CalledProcessError:
         @raises IOError:
-        @raises KeyError:
-        @raises IndexError:
+        @raises RcsUserInputError
 
         @note: the newcontents are transformed to native line ending
             (assuming a Unix host).  Therefore endedit CANNOT be used to
@@ -312,6 +318,7 @@ class Storage(object):
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
             currentversion = self.status(havelock = gotlock)
+            assert currentversion is not None
             if currentversion == version:
                 self.store(newcontent, user = user, havelock = gotlock)
                 newversion = self.status(havelock = gotlock)
