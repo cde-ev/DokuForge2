@@ -8,7 +8,7 @@ import re
 
 from dokuforge.common import check_output
 from dokuforge.common import validateRcsRevision
-from dokuforge.common import RcsUserInputError
+from dokuforge.dfexceptions import RcsUserInputError
 
 from subprocess import CalledProcessError
 

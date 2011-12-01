@@ -8,6 +8,7 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
+import dokuforge.dfexceptions as dfexceptions
 import dokuforge.common as common
 
 class Outline:
@@ -153,10 +154,10 @@ class Course(StorageDir):
         """
         @type page: int
         @rtype: {str, unicode}
-        @raises common.PageOutOfBound
+        @raises dfexceptions.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise common.PageOutOfBound()
+            raise dfexceptions.PageOutOfBound()
         info = self.getstorage("page%d" % page).commitstatus()
         return dict(map(lambda (k,v):(k,v.encode("utf8")), info.iteritems()))
 
@@ -199,10 +200,10 @@ class Course(StorageDir):
         @type number: int
         @param number: the internal number of that page
         @rtype: unicode
-        @raises common.PageOutOfBound()
+        @raises dfexceptions.PageOutOfBound()
         """
         if 0 > page or page >= self.nextpage():
-            raise common.PageOutOfBound()
+            raise dfexceptions.PageOutOfBound()
         return self.getcontent("page%d" % page).decode("utf8")
 
     def getrcs(self, page):
@@ -210,10 +211,10 @@ class Course(StorageDir):
         @param page: the internal number of the page
         @returns: an rcs file describing all versions of this page
         @rtype: str
-        @raises common.PageOutOfBound()
+        @raises dfexceptions.PageOutOfBound()
         """
         if 0 > page or page >= self.nextpage():
-            raise common.PageOutOfBound()
+            raise dfexceptions.PageOutOfBound()
         return self.getstorage("page%d" % page).asrcs()
 
     def export(self):
@@ -254,10 +255,10 @@ class Course(StorageDir):
         @param number: the internal page number
         @type number: int
         @type user: None or unicode
-        @raises common.PageOutOfBound
+        @raises dfexceptions.PageOutOfBound
         """
         if 0 > number or number >= self.nextblob():
-            raise common.PageOutOfBound()
+            raise dfexceptions.PageOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -281,10 +282,10 @@ class Course(StorageDir):
         @param page: the internal page page
         @type page: int
         @type user: None or unicode
-        @raises common.PageOutOfBound
+        @raises dfexceptions.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise common.PageOutOfBound()
+            raise dfexceptions.PageOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -305,10 +306,10 @@ class Course(StorageDir):
 
         @type position: int
         @type user: None or unicode
-        @raises common.PageIndexOutOfBound
+        @raises dfexceptions.PageIndexOutOfBound
         """
         if 1 > position or position >= len(self.listpages()):
-            raise common.PageIndexOutOfBound()
+            raise dfexceptions.PageIndexOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -328,10 +329,10 @@ class Course(StorageDir):
         relink a (usually deleted) page to the index
         @type page: int
         @type user: None or unicode
-        @raises common.PageOutOfBound
+        @raises dfexceptions.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise common.PageOutOfBound()
+            raise dfexceptions.PageOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -362,10 +363,10 @@ class Course(StorageDir):
         @type number: int
         @type page: int
         @type user: None or unicode
-        @raises common.BlobOutOfBound
+        @raises dfexceptions.BlobOutOfBound
         """
         if 0 > number or number >= self.nextblob():
-            raise common.BlobOutOfBound()
+            raise dfexceptions.BlobOutOfBound()
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
@@ -399,10 +400,10 @@ class Course(StorageDir):
         @type page: int
         @returns: a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
-        @raises common.PageOutOfBound
+        @raises dfexceptions.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise common.PageOutOfBound()
+            raise dfexceptions.PageOutOfBound()
         page = self.getstorage("page%d" % page)
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
@@ -425,10 +426,10 @@ class Course(StorageDir):
                   (newversion, mergedcontent) a pair for further editing that
                   can be handled as if obtained from editpage
         @rtype: (unicode, unicode, unicode)
-        @raises common.PageOutOfBound
+        @raises dfexceptions.PageOutOfBound
         """
         if 0 > number or number >= self.nextpage():
-            raise common.PageOutOfBound()
+            raise dfexceptions.PageOutOfBound()
         assert isinstance(version, unicode)
         assert isinstance(newcontent, unicode)
         if user is not None:
@@ -457,10 +458,10 @@ class Course(StorageDir):
         @type comment: unicode
         @type user: unicode or None
         @returns: None on failure or the created blob number
-        @raises common.PageOutOfBound
+        @raises dfexceptions.PageOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise common.PageOutOfBound()
+            raise dfexceptions.PageOutOfBound()
         assert isinstance(data, FileStorage)
         assert isinstance(comment, unicode)
         assert isinstance(label, unicode)
@@ -507,10 +508,10 @@ class Course(StorageDir):
         @param page: the internal page page
         @type page: int
         @rtype: [int]
-        @raises common.BlobOutOfBound
+        @raises dfexceptions.BlobOutOfBound
         """
         if 0 > page or page >= self.nextpage():
-            raise common.BlobOutOfBound()
+            raise dfexceptions.BlobOutOfBound()
         for line in self.getcontent("Index").splitlines():
             entries = line.split()
             if int(entries[0]) == page:
@@ -527,10 +528,10 @@ class Course(StorageDir):
         @rtype: LazyView
         @returns: a mapping providing the keys: data(str), label(unicode),
                   comment(unicode), filename(unicode) and number(int)
-        @raises common.BlobOutOfBound
+        @raises dfexceptions.BlobOutOfBound
         """
         if 0 > number or number >= self.nextblob():
-            raise common.BlobOutOfBound()
+            raise dfexceptions.BlobOutOfBound()
         ldu = liftdecodeutf8
         return LazyView(dict(
             data = self.getstorage("blob%d" % number).content,
@@ -543,10 +544,10 @@ class Course(StorageDir):
         """
         modify the blob given by number with the data in the other parameters.
         @raises CheckError: if the input data is malformed
-        @raises common.BlobOutOfBound
+        @raises dfexceptions.BlobOutOfBound
         """
         if 0 > number or number >= self.nextblob():
-            raise common.BlobOutOfBound()
+            raise dfexceptions.BlobOutOfBound()
         assert isinstance(label, unicode)
         assert isinstance(comment, unicode)
         assert isinstance(filename, unicode)

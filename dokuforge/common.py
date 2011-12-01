@@ -6,7 +6,8 @@ import re
 import os
 import ConfigParser
 from cStringIO import StringIO
-from werkzeug import exceptions
+from dokuforge.dfexceptions import CheckError
+from dokuforge.dfexceptions import RcsUserInputError
 
 try:
     check_output = subprocess.check_output
@@ -39,16 +40,6 @@ def strtobool(s):
     if s == "True" or s == "true" or s == "t":
         return True
     return False
-
-class CheckError(StandardError):
-    def __init__(self, msg, exp):
-        StandardError.__init__(self, msg)
-        assert isinstance(msg, unicode)
-        assert isinstance(exp, unicode)
-        self.message = msg
-        self.explanation = exp
-    def __str__(self):
-        return self.message
 
 def validateGroupstring(groupstring, allgroups):
     """
@@ -127,9 +118,6 @@ def validateBlobComment(comment):
     if comment == u"":
         raise CheckError(u"Keine Bildunterschrift gefunden!",
                          u"Bitte eine Bildunterschrift eingeben und erneut versuchen.")
-
-class InvalidBlobFilename(CheckError):
-    pass
 
 def validateBlobFilename(filename):
     """
@@ -241,29 +229,6 @@ def validateGroupConfig(config):
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
-class MalformedUserInput(exceptions.Conflict):
-    """
-    The class of exceptions to be thrown if and when the
-    user provides invlaid input, that cannot occur by just
-    using a browser. In other words, the user hand-crafted
-    a request.
-    
-    This kind of exceptions should also fly up to the werkzeug
-    level.
-    """
-    def __init__(self,*args,**kwargs):
-        exceptions.Conflict.__init__(self,*args, **kwargs)
-
-class RcsUserInputError(CheckError, MalformedUserInput):
-    """
-    The class of exceptions to be thrown if an when the
-    user provides invalid specifications of rcs input (mainly
-    version numbers).
-    """
-    def __init__(self, msg, exp):
-        CheckError.__init__(self,msg,exp)
-        MalformedUserInput.__init__(self)
-
 
 
 def validateRcsRevision(versionnumber):
@@ -277,29 +242,4 @@ def validateRcsRevision(versionnumber):
     if re.match('^[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}(\.[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}){0,5}$', versionnumber) is None:
         raise RcsUserInputError(u"rcs version number syntactically malformed",
                                 u"can only happen in hand-crafted requests")
-
-
-class PageOutOfBound(MalformedUserInput):
-    """
-    The class of exceptions to be thrown if and when a request
-    refers to a non-existing page.
-    """
-    def __init__(self, *args, **kvargs):
-        MalformedUserInput.__init__(self, *args, **kvargs)
-
-class PageIndexOutOfBound(MalformedUserInput):
-    """
-    The class of exceptions to be thrown if and when a request
-    refers to a non-existing page index.
-    """
-    def __init__(self, *args, **kvargs):
-        MalformedUserInput.__init__(self, *args, **kvargs)
-
-class BlobOutOfBound(MalformedUserInput):
-    """
-    The class of exceptions to be thrown if and when a request
-    refers to a non-existing page.
-    """
-    def __init__(self, *args, **kvargs):
-        MalformedUserInput.__init__(self, *args, **kvargs)
 
