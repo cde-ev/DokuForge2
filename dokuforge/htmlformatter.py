@@ -14,8 +14,21 @@ class HtmlFormatter(BaseFormatter):
             ord(u"'"): u"&#39;"
         }
 
-    handle_heading = u"<h3>%s</h3>".__mod__
-    handle_subheading = u"<h4>%s</h4>".__mod__
+    def __init__(self, tree):
+        """
+        @type tree: ParseTree
+        """
+        BaseFormatter.__init__(self, tree)
+        self.headingsseen = 0
+
+    def handle_heading(self, data):
+        self.headingsseen += 1
+        return "<h3 id=\"%s\">%s</h3>" %(self.headingsseen, data)
+
+    def handle_subheading(self, data):
+        self.headingsseen += 1
+        return "<h4 id=\"%s\">%s</h4>" %(self.headingsseen, data)
+
     handle_ednote = u"<pre class=\"ednote\">%s</pre>".__mod__
     handle_authors = u"<i>%s</i>".__mod__
     handle_paragraph = "<p>%s</p>".__mod__
