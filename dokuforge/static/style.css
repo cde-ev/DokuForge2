@@ -75,10 +75,10 @@ textarea {
     text-align: center;
 }
 
-.versionstring {
-    font-size: 0.9ex;
-    text-align: center;
+.infostring {
+    text-align: right;
 }
+
 .tocpart {
     background-color: #aaaaff;
     padding: 1ex;
