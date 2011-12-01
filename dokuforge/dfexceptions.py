@@ -1,4 +1,6 @@
 from werkzeug import exceptions
+import werkzeug.routing
+
 
 class DfException():
     """
@@ -93,7 +95,7 @@ class BlobOutOfBound(MalformedAdress):
     """
     pass
 
-class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
+class TemporaryRequestRedirect(exceptions.HTTPException,
                                werkzeug.routing.RoutingException):
     """
     The class of exceptions to raise when the user is not logged in and

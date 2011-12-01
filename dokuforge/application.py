@@ -17,7 +17,6 @@ import urllib
 import urlparse
 
 import jinja2
-import werkzeug.exceptions
 import werkzeug.routing
 import werkzeug.utils
 from werkzeug.wrappers import Request, Response
