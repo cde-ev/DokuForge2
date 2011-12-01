@@ -30,9 +30,10 @@ class Valuation:
         Seiten)" % (self.chars, self.charsednotes, self.pages,
                     self.pagesednotes, self.blobs, self.blobpages)
 
-    def doestimate(self, content, blobs):
-        parser = Parser(content)
-        tree = parser.parse()
+    def doestimate(self, blobs, content=u'', tree=None):
+        if tree is None:
+            parser = Parser(content)
+            tree = parser.parse()
         self.chars = Estimator(tree, ednotes = False,
                                raw = True).estimate()
         self.charsednotes = Estimator(tree, ednotes = True,
@@ -207,11 +208,11 @@ class Course(StorageDir):
         info = self.getstorage("page%d" % page).commitstatus()
         return dict(map(lambda (k,v):(k,v.encode("utf8")), info.iteritems()))
 
-    def estimatepage(self, page):
+    def estimatepage(self, page, tree=None):
         content = self.showpage(page)
         blobs = len(self.listblobs(page))
         estimate = Valuation()
-        estimate.doestimate(content, blobs)
+        estimate.doestimate(blobs, content = content, tree = tree)
         return estimate
 
     def estimate(self):

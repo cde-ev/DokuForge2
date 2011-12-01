@@ -1443,8 +1443,7 @@ class Application:
         parser = Parser(thecourse.showpage(thepage))
         tree = parser.parse()
         html = HtmlFormatter(tree)
-        ## FIXME: pass tree on
-        estimate = thecourse.estimatepage(thepage)
+        estimate = thecourse.estimatepage(thepage, tree)
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
