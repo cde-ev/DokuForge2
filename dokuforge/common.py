@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import division
 import random
 import subprocess
 import re
@@ -254,3 +255,17 @@ def validateRcsRevision(versionnumber):
     if re.match('^[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}(\.[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}){0,5}$', versionnumber) is None:
         raise RcsUserInputError(u"rcs version number syntactically malformed",
                                 u"can only happen in hand-crafted requests")
+
+def computepages(nrchars):
+    """
+    Calculate the number of pages occupied by nrchars characters.
+    """
+    ## this is an empirical number, may be tuned later
+    return nrchars/3000
+
+def computeblobpages(nrblobs):
+    """
+    Calculate the number of pages occupied by nrblobs blobs.
+    """
+    ## this is an empirical number, may be tuned later
+    return nrblobs/4

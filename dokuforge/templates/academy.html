@@ -12,7 +12,8 @@
 	    {%- if user.allowedRead(academy, course) %}
 	    <div class="courseitem">
 	      <a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a><br>
-	      {{ "Letzte Änderung von %s am %s" | format(course.lastchange['author'], course.lastchange['date']) | e }}
+	      {{ "Letzte Änderung von %s am %s" | format(course.lastchange['author'], course.lastchange['date']) | e }}<br>
+{{ course.estimate.output() | e}}
 	    </div>
 	    {%- else -%}
 	    <div class="courseitem">{{ course.title|e }}</div>

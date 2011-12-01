@@ -1443,12 +1443,15 @@ class Application:
         parser = Parser(thecourse.showpage(thepage))
         tree = parser.parse()
         html = HtmlFormatter(tree)
+        ## FIXME: pass tree on
+        estimate = thecourse.estimatepage(thepage)
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
             commit = thecourse.getcommit(thepage),
             content=html.generateoutput(),
+            estimate=estimate,
             saved=saved,
             blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
         return self.render("show.html", rs, params)

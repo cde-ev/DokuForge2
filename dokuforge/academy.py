@@ -5,7 +5,7 @@ import datetime
 
 import werkzeug.exceptions
 
-from dokuforge.course import Course
+from dokuforge.course import Course, Valuation
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
 from dokuforge.common import CheckError
@@ -128,6 +128,12 @@ class Academy(StorageDir):
                 lastchange = info
         return lastchange
 
+    def estimate(self):
+        estimate = Valuation()
+        for c in self.listCourses():
+            estimate += c.estimate()
+        return estimate
+
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
@@ -136,6 +142,7 @@ class Academy(StorageDir):
         """
         functions = dict(courses=self.viewCourses,
                          groups=self.getgroups,
-                         lastchange=self.lastchange)
+                         lastchange=self.lastchange,
+                         estimate=self.estimate)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
