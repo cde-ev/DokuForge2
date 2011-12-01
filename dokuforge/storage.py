@@ -9,6 +9,7 @@ import re
 from dokuforge.common import check_output
 from dokuforge.common import validateRcsRevision
 from dokuforge.dfexceptions import RcsUserInputError
+from dokuforge.dfexceptions import FileDoesNotExist
 
 from subprocess import CalledProcessError
 
@@ -43,13 +44,10 @@ def rloghead(filename):
 
     @type filename: str
     @returns: a str-str dict with information about the head commit; in particular,
-              it will contain the keys 'revision', 'author', and 'date'.
-    @rtype: {str: str or None}
-    @raises subprocess.CalledProcessError: if rlog exits non-zero
-    @raises IndexError: when failing to parse rlog output
-    @raises KeyError: if one of the promised keys could not be parsed
+             it will contain the keys 'revision', 'author', and 'date'.
+    @rtype: {str: str}
+    @raises FileDoesNotExist
     """
-    # FIXME: maybe use better exception than IndexError?
     assert isinstance(filename, str)
     
     # Amzingly enough, the "official" way to obtain revision information
@@ -61,23 +59,32 @@ def rloghead(filename):
 
     revision = rlogv(filename)
     if revision is None:
-        raise KeyError("revision")
+        raise FileDoesNotExist(filename)
     answer['revision'] = revision
-    rlog = check_output(["rlog","-q","-r%s" % revision,filename], env=RCSENV)
+    try:
+        rlog = check_output(["rlog","-q","-r%s" % revision,filename], env=RCSENV)
+    except subprocess.CalledProcessError:
+        assert False # Since we know that the revision is valid, this call cannot fail
     lines = rlog.splitlines()
-    while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
+    try:
+        while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
+            lines.pop(0)
         lines.pop(0)
-    lines.pop(0)
-    lines.pop(0)
-    stateline = lines.pop(0)
-    params = stateline.split(';')
-    for param in params:
-        keyvalue = param.split(': ',1)
-        if len(keyvalue) > 1:
-            answer[keyvalue[0].lstrip()]=keyvalue[1]
-    
-    answer["author"] # raises KeyError
-    answer["date"] # raises KeyError
+        lines.pop(0)
+        stateline = lines.pop(0)
+        params = stateline.split(';')
+        for param in params:
+            keyvalue = param.split(': ',1)
+            if len(keyvalue) > 1:
+                answer[keyvalue[0].lstrip()]=keyvalue[1]
+    except IndexError:
+        assert False # as discussed above, the output format is an invariant for all rcs implementations
+
+    try:
+        answer["author"]
+        answer["date"]
+    except KeyError:
+        assert False  # The rlog we used is not the rcs tool.
     return answer
 
 
