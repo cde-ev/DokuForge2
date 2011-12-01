@@ -93,3 +93,18 @@ class BlobOutOfBound(MalformedAdress):
     """
     pass
 
+class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
+                               werkzeug.routing.RoutingException):
+    """
+    The class of exceptions to raise when the user is not logged in and
+    tried to acces something were he needs to be authenticated.
+    """
+    code = 307
+
+    def __init__(self, new_url):
+        werkzeug.routing.RoutingException.__init__(self, new_url)
+        self.new_url = new_url
+
+    def get_response(self, environ):
+        return werkzeug.utils.redirect(self.new_url, self.code)
+

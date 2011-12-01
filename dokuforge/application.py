@@ -145,17 +145,6 @@ class RequestState:
         self.user = None
         self.sessionhandler.delete()
 
-class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
-                               werkzeug.routing.RoutingException):
-    code = 307
-
-    def __init__(self, new_url):
-        werkzeug.routing.RoutingException.__init__(self, new_url)
-        self.new_url = new_url
-
-    def get_response(self, environ):
-        return werkzeug.utils.redirect(self.new_url, self.code)
-
 class IdentifierConverter(werkzeug.routing.BaseConverter):
     regex = '[a-zA-Z][-a-zA-Z0-9]{0,199}'
 
@@ -418,7 +407,7 @@ class Application:
         @raises TemporaryRequestRedirect: unless the user is logged in
         """
         if rs.user is None:
-            raise TemporaryRequestRedirect(rs.request.url_root)
+            raise dfexceptions.TemporaryRequestRedirect(rs.request.url_root)
 
     def do_file(self, rs, filestore, template, extraparams=dict()):
         """
