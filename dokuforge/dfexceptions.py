@@ -9,7 +9,7 @@ class DfException():
     pass
 
 
-class CheckError(StandardError,DfException):
+class CheckError(StandardError, DfException):
     def __init__(self, msg, exp):
         StandardError.__init__(self, msg)
         assert isinstance(msg, unicode)
@@ -25,53 +25,71 @@ class FileDoesNotExist(CheckError):
 class InvalidBlobFilename(CheckError):
     pass
 
-## Note: exceptions.Conflict serves as a placeholder for
-##       the http-error code we will finally choose; this
-##       is still in discussion by Helmut and Markus
-class MalformedUserInput(exceptions.Conflict,DfException):
+
+class MalformedAdress(exceptions.NotFound, DfException):
     """
     The class of exceptions to be thrown if and when the
-    user provides invlaid input, that cannot occur by just
-    using a browser. In other words, the user hand-crafted
-    a request.
-    
+    user asks for an invalid adress.
+
     This kind of exceptions should also fly up to the werkzeug
     level.
     """
-    def __init__(self,*args,**kwargs):
-        exceptions.Conflict.__init__(self,*args, **kwargs)
+    pass
 
-class RcsUserInputError(CheckError, MalformedUserInput):
+class NotEnoughPriveleges(exceptions.Forbidden, DfException):
+    """
+    The class of exceptions to be thrown if and when the
+    user asks for something he is not allowed to see/do.
+
+    This kind of exceptions should also fly up to the werkzeug
+    level.
+    """
+    pass
+
+class MalformedPOSTRequest(exceptions.BadRequest, DfException):
+    """
+    The class of exceptions to be thrown if and when the user provides
+    invlaid input for a POST request, that cannot occur by just using a
+    browser. In other words, the user hand-crafted a request.
+
+    This kind of exceptions should also fly up to the werkzeug
+    level.
+    """
+    pass
+
+class InternalError(exceptions.InternalServerError, DfException):
+    """
+    The class of exceptions to be thrown if and when something at the system
+    level went wrong which is not the fault of Dokuforge (like disk full).
+    """
+    pass
+
+class RcsUserInputError(MalformedPOSTRequest):
     """
     The class of exceptions to be thrown if an when the
     user provides invalid specifications of rcs input (mainly
     version numbers).
     """
-    def __init__(self, msg, exp):
-        CheckError.__init__(self,msg,exp)
-        MalformedUserInput.__init__(self)
+    pass
 
-class PageOutOfBound(MalformedUserInput):
+class PageOutOfBound(MalformedAdress):
     """
     The class of exceptions to be thrown if and when a request
     refers to a non-existing page.
     """
-    def __init__(self, *args, **kvargs):
-        MalformedUserInput.__init__(self, *args, **kvargs)
+    pass
 
-class PageIndexOutOfBound(MalformedUserInput):
+class PageIndexOutOfBound(MalformedAdress):
     """
     The class of exceptions to be thrown if and when a request
     refers to a non-existing page index.
     """
-    def __init__(self, *args, **kvargs):
-        MalformedUserInput.__init__(self, *args, **kvargs)
+    pass
 
-class BlobOutOfBound(MalformedUserInput):
+class BlobOutOfBound(MalformedAdress):
     """
     The class of exceptions to be thrown if and when a request
     refers to a non-existing page.
     """
-    def __init__(self, *args, **kvargs):
-        MalformedUserInput.__init__(self, *args, **kvargs)
+    pass
 
