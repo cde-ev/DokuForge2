@@ -22,4 +22,4 @@ class TeXFormatter(BaseFormatter):
     # inherit handle_inlinemath
     handle_list = u"\\begin{itemize}\n%s\n\end{itemize}".__mod__
     handle_item = u"\\item %s".__mod__
-    handle_Dollar = u"%.0\\$%".__mod__
+    handle_Dollar = u"%.0s\\$".__mod__

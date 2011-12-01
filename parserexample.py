@@ -38,6 +38,8 @@ dolor.
 
 Bitte Escape mich: <>&"' \\ \\\\command und das wars auch schon.
 
+Test \$ this.
+
 [[Eine weitere Unterueberschrift]]
 
 (kein Autor)

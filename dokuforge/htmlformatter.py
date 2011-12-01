@@ -25,4 +25,4 @@ class HtmlFormatter(BaseFormatter):
     handle_keyword = u"<b>%s</b>".__mod__
     # inherit handle_inlinemath
     handle_displaymath = u"<div class=\"displaymath\">$$%1s$$</div>".__mod__
-    handle_Dollar = u"%.0\\$%".__mod__
+    handle_Dollar = u"%.0s\\$".__mod__

@@ -19,7 +19,7 @@ class BaseFormatter:
     handle_keyword = u"*%s*".__mod__
     handle_inlinemath = u"$%1s$".__mod__
     handle_nestedednote = u"{%s}".__mod__
-    handle_Dollar = u"%.0\\$%".__mod__
+    handle_Dollar = u"%.0s\\$".__mod__
 
     escapemap = {}
 

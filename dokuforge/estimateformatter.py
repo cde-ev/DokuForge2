@@ -73,6 +73,11 @@ class Estimator(BaseFormatter):
     handle_authors = lambda self, line: self.nlines(line, 1)
     handle_item = lambda self, line: self.nlines(line, 1)
     handle_displaymath = lambda self, line: self.nlines(line, 3)
+    handle_Backslash = u'%.0sB'.__mod__
+    handle_Dollar = u'%.0s$'.__mod__
+    handle_emphasis = u'%s'.__mod__
+    handle_keyword = u'%s'.__mod__
+    handle_inlinemath = u'%s'.__mod__
 
     def handle_ednote(self, ednote):
         """include ednotes according to self.ednotes"""
