@@ -21,14 +21,14 @@
                  <a href="{{ buildurl('page', {'page': page.number})|e }}"> Teil&nbsp;#{{ page.number|string }}</a>
 		 </td>
 	         <td class="tocoutline">
-		{%- set i = 0 -%}
+		{%- set j = 0 -%}
                 {%- for (type, title) in page.items() -%}
-		    {%- set i = i + 1 -%}
+		    {%- set j = j + 1 -%}
 		    {# FIXME links currently link only to a page, not to a specific heading. #}
 	            {%- if type == "heading" -%}
-	                <div class="tocheading"><a href="{{ buildurl('page', {'page': page.number})|e }}#{{i|e}}" class="inconspicuous">{{title|e}}</a></div>
+	                <div class="tocheading"><a href="{{ buildurl('page', {'page': page.number})|e }}#{{j|e}}" class="inconspicuous">{{title|e}}</a></div>
 	            {%- elif type == "subheading" -%}
-	                <div class="tocsubheading"><a href="{{ buildurl('page', {'page': page.number})|e }}#{{i|e}}" class="inconspicuous">{{title|e}}</a></div>
+	                <div class="tocsubheading"><a href="{{ buildurl('page', {'page': page.number})|e }}#{{j|e}}" class="inconspicuous">{{title|e}}</a></div>
 	            {%- endif -%}
 		{%- else -%}
 	                <div class="tocempty"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">(...)</a></div>
