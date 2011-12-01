@@ -122,7 +122,10 @@ class LockDir:
                 if e.errno == errno.EEXIST:
                     time.sleep(0.2) # evertthing OK, someone else has the lock
                 else:
-                    raise # something else went wrong
+                    # something else went wrong
+                    raise dfexceptions.InternalError(
+                        description = u"The server encountered an internal error. \
+                        The error was OSError with error number %s" % e.errno)
 
     def __exit__(self, _1, _2, _3):
         """
@@ -130,7 +133,12 @@ class LockDir:
         """
         self.lockcount -= 1
         if self.lockcount == 0:
-            os.rmdir(self.path)
+            try:
+                os.rmdir(self.path)
+            except OSError:
+                raise dfexceptions.InternalError(
+                    description = u"The server encountered an internal error. \
+                    The error was OSError with error number %s" % e.errno)
 
 
 class Storage(object):
@@ -172,6 +180,7 @@ class Storage(object):
         @raises OSError:
         @raises IOError:
         """
+        ## FIXME: catch errors
         if isinstance(content, basestring):
             assert isinstance(content, str)
             content = StringIO(content)
@@ -182,7 +191,9 @@ class Storage(object):
                 subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
                                       env=RCSENV)
             except subproccess.CalledProcessError:
-                assert False # we ensured the existence of the file, hence the call may not fail
+                raise dfexceptions.InternalError(
+                    description = u"The server encountered an internal error. \
+                    The error was 'call to co failed to checkout revision'.")
             objfile = file(self.fullpath(), mode = "w")
             shutil.copyfileobj(content, objfile)
             objfile.close()
@@ -197,6 +208,7 @@ class Storage(object):
         @raises OSError:
         @raises IOError:
         """
+        ## FIXME: catch errors
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
                 if not os.path.exists(self.fullpath("%s,v")):
@@ -208,15 +220,16 @@ class Storage(object):
                                                "-minitial, implicit, empty commit",
                                                self.fullpath()], env=RCSENV)
                     except subprocess.CalledProcessError:
-                        assert False # These calls can only fail for reasons like
-                                     # disk full, permision denied -- all cases where
-                                     # dokuforge is not installed correctly
+                        raise dfexceptions.InternalError(
+                            description = u"The server encountered an internal error. \
+                            The error was 'call to rcs failed to create file'.")
 
     def asrcs(self, havelock=None):
         """
         @raises OSError:
         @raises IOError:
         """
+        ## FIXME: catch errors
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             f = file(self.fullpath("%s,v"), mode = "r")
@@ -229,6 +242,7 @@ class Storage(object):
         @rtype: str or None
         @raises OSError:
         """
+        ## FIXME: catch errors
         self.ensureexistence(havelock = havelock)
         result = rlogv(self.fullpath("%s,v"))
         if result is None:
@@ -252,14 +266,15 @@ class Storage(object):
         """
         @raises OSError:
         """
+        ## FIXME: catch errors
         self.ensureexistence(havelock = havelock)
         try:
             return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
                                 env=RCSENV)
         except subprocess.CalledProcessError:
-            assert False # We ensured the existence of the file; hence the call can only fail
-                         # if rcs is not installed properly and/or filepermissions are set
-                         # incorrectly -- in other words, if df is not installed correctly
+            raise dfexceptions.InternalError(
+                description = u"The server encountered an internal error. \
+                The error was 'call to co failed to retrieve content'.")
 
     def startedit(self, havelock=None):
         """
@@ -308,6 +323,7 @@ class Storage(object):
             store binaries (however, rcsmerge won't suggest a sensible
             merged version for binaries anyway).
         """
+        ## FIXME: catch errors
         assert isinstance(version, str)
         assert isinstance(newcontent, str)
         assert user is None or isinstance(user, str)
@@ -329,8 +345,7 @@ class Storage(object):
                 subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
                                        self.fullpath()], env=RCSENV)
             except CalledProcessError:
-                raise RcsUserInputError(u"specified rcs version does not exist",
-                                        u"can only happen in hand-crafted requests")
+                raise RcsUserInputError()
             objfile = file(self.fullpath(), mode = "w")
             objfile.write(newcontent)
             objfile.close()
@@ -378,6 +393,7 @@ class CachingStorage(Storage):
         """
         @raises OSError:
         """
+        ## FIXME: catch errors
         self.ensureexistence(havelock = havelock)
         return os.path.getmtime(self.fullpath("%s,v"))
 

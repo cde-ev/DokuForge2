@@ -8,7 +8,8 @@ import werkzeug.exceptions
 from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
-from dokuforge.common import CheckError
+import dokuforge.dfexception as dfexceptions
+from dokuforge.dfexceptions import CheckError
 
 class Academy(StorageDir):
     """
@@ -81,7 +82,7 @@ class Academy(StorageDir):
             common.validateInternalName(coursename)
             common.validateExistence(self.path, coursename)
         except CheckError:
-            raise werkzeug.exceptions.NotFound()
+            raise dfexception.MalformedAdress()
         return Course(os.path.join(self.path, coursename))
 
     def setgroups(self, groups):
