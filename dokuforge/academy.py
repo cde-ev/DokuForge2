@@ -8,7 +8,7 @@ import werkzeug.exceptions
 from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
-import dokuforge.dfexception as dfexceptions
+import dokuforge.dfexceptions as dfexceptions
 from dokuforge.dfexceptions import CheckError
 
 class Academy(StorageDir):
