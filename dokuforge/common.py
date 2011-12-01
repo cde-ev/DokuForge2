@@ -6,8 +6,7 @@ import re
 import os
 import ConfigParser
 from cStringIO import StringIO
-from dokuforge.dfexceptions import CheckError
-from dokuforge.dfexceptions import RcsUserInputError
+from dokuforge.dfexceptions import *
 
 try:
     check_output = subprocess.check_output
