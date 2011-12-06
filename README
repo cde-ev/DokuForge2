@@ -30,14 +30,14 @@ Prerequisites:
    Required: for using serve_* except serve_debug
    Homepage: http://www.subdivi.de/~helmut/wsgitools/
    Debian: not packaged
-   FreeBSD: unoffical port http://www.linta.de/~aehlig/university/wsgitools.shar
+   FreeBSD: suggested (PR ports/163100)
    Gentoo: not packaged
    Download: http://www.subdivi.de/~helmut/darcs/wsgitools/dist/wsgitools-0.2.2.tar.gz
  * mathjax
    Required: only for rendering math
    Homepage: http://www.mathjax.org/
    Debian: libjs-mathjax
-   FreeBSD: www/mathjax (pending)
+   FreeBSD: suggested (PR ports/153195)
    Gentoo: not packaged
    Download: http://github.com/mathjax/MathJax/zipball/v1.1a
  * epydoc
