@@ -30,7 +30,7 @@ Prerequisites:
    Required: for using serve_* except serve_debug
    Homepage: http://www.subdivi.de/~helmut/wsgitools/
    Debian: not packaged
-   FreeBSD: suggested (PR ports/163100)
+   FreeBSD: devel/py-wsgitools
    Gentoo: not packaged
    Download: http://www.subdivi.de/~helmut/darcs/wsgitools/dist/wsgitools-0.2.2.tar.gz
  * mathjax
@@ -49,7 +49,7 @@ Prerequisites:
 
  Short forms:
   * Debian: aptitude install python-werkzeug python-jinja2 rcs python-mechanize python-epydoc libjs-mathjax
-  * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-mechanize devel/epydoc
+  * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-mechanize devel/epydoc devel/py-wsgitools
   * Gentoo: emerge dev-python/werkzeug dev-python/jinja dev-vcs/rcs dev-python/mechanize dev-python/epydoc
 
 Configuration:
