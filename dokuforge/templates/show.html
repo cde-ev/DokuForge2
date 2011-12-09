@@ -9,10 +9,32 @@
 {% endblock %}
 {% block content %}
 <div class="contextbox">
+{%- if user.allowedWrite(academy, course) %}
+<a href="{{ buildurl("edit")|e }}">Editieren</a>
+<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
+{{ button(buildurl("delete"), "Löschen", dict()) }}
+{%- endif -%}
+<a href="{{ buildurl("rcs")|e }}">rcs</a>
+{%- if blobs %}
+<a href="{{ buildurl("listblobs")|e }}">Abbildungen</a>
+{%- endif %}
+<a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+<br>
+{%- set i = 0 -%}
+{%- for onepage in course.outlines %}
+{% set i = i + 1 -%}
+{%- if page == onepage.number -%}
+{{i|e}}
+{%- else -%}
+<a href="{{ buildurl('page', {'page': onepage.number})|e }}">{{i|e}}</a>
+{%- endif -%}
+{%- endfor -%}
+<div class="infostring">
 Teil #{{ page|string }}
 [Version {{commit['revision'] | e }}, 
  zulezt ge&auml;ndert von {{ commit['author'] | e }}
  am {{ commit['date'] | e }}] {{ estimate.output() | e}}
+</div>
 </div>
 <div class="dokucontent">
 {# content does not need to be escaped, since this is done by the parser #}
@@ -29,5 +51,21 @@ Teil #{{ page|string }}
 <a href="{{ buildurl("listblobs")|e }}">Abbildungen</a>
 {%- endif %}
 <a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+<br>
+{%- set i = 0 -%}
+{%- for onepage in course.outlines %}
+{% set i = i + 1 -%}
+{%- if page == onepage.number -%}
+{{i|e}}
+{%- else -%}
+<a href="{{ buildurl('page', {'page': onepage.number})|e }}">{{i|e}}</a>
+{%- endif -%}
+{%- endfor -%}
+<div class="infostring">
+Teil #{{ page|string }}
+[Version {{commit['revision'] | e }}, 
+ zulezt ge&auml;ndert von {{ commit['author'] | e }}
+ am {{ commit['date'] | e }}] {{ estimate.output() | e}}
+</div>
 </div>
 {% endblock %}
