@@ -202,7 +202,7 @@ class Storage(object):
                 if not os.path.exists(self.fullpath("%s,v")):
                     # These calls can only fail for reasons like
                     # disk full, permision denied -- all cases where
-                    # dokuforge is not installed correctly                   try:
+                    # dokuforge is not installed correctly
                     subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                            self.fullpath()], env=RCSENV)
                     file(self.fullpath(), mode = "w").close()
