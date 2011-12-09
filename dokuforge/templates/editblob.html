@@ -6,6 +6,7 @@
 {{ complexnavbar([("academy", {}, academy.title),
                   ("course", {}, course.title),
 	          ("page", {}, "Teil #" ~ page),
+                  ("listblobs", {}, "Liste der Abbildungen"),
 	          ("showblob", dict(blob=blob.number), "Bild #" ~ blob.number),
 	          ("editblob", dict(blob=blob.number), "Bild editieren")]) }}
 {% endblock %}

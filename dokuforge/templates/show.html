@@ -21,30 +21,13 @@ Teil #{{ page|string }}
 <div class="contextbox">
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
+<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
 {{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- endif -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
-</div>
-<div class="blobbox">
 {%- if blobs %}
-Zugeordnete Bilder:
-<ul>
-{%- for blob in blobs %}
-<li>
-  <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e }})</a>
-{%- if user.allowedWrite(academy, course) %}
-{{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
-{%- endif -%}
-</li>
-{%- endfor %}
-</ul>
-{%- else -%}
-<em>Keine Bilder zu diesem Teil gefunden.</em>
-{%- endif -%}
-
-{%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
+<a href="{{ buildurl("listblobs")|e }}">Abbildungen</a>
+{%- endif %}
 <a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
-{%- endif -%}
 </div>
 {% endblock %}

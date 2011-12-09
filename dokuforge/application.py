@@ -257,6 +257,8 @@ class Application:
                  methods=("POST",), endpoint="save"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!delete",
                  methods=("POST",), endpoint="delete"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!listblobs",
+                 methods=("GET", "HEAD"), endpoint="listblobs"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!deadblobs",
                  methods=("GET", "HEAD"), endpoint="showdeadblobs"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!relinkblob",
@@ -633,6 +635,20 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_deadpages(rs, aca, c)
 
+    def do_listblobs(self, rs, academy=None, course=None, page=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedRead(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        return self.render_listblobs(rs, aca, c, page)
+
     def do_showdeadblobs(self, rs, academy=None, course=None, page=None):
         """
         @type rs: RequestState
@@ -770,7 +786,7 @@ class Application:
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         c.delblob(blob, user=rs.user.name)
-        return self.render_show(rs, aca, c, page)
+        return self.render_listblobs(rs, aca, c, page)
 
     def do_relink(self, rs, academy=None, course=None):
         """
@@ -811,7 +827,7 @@ class Application:
         except ValueError:
             number = 0
         c.relinkblob(number, page, user=rs.user.name)
-        return self.render_show(rs, aca, c, page)
+        return self.render_listblobs(rs, aca, c, page)
 
     def do_showblob(self, rs, academy=None, course=None, page=None, blob=None):
         """
@@ -1086,7 +1102,7 @@ class Application:
         except CheckError:
             return self.render_addblob(rs, aca, c, page) # also shouldn't happen
         else:
-            return self.render_show(rs, aca, c, page)
+            return self.render_listblobs(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
         """
@@ -1479,6 +1495,25 @@ class Application:
             saved=saved,
             blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
         return self.render("show.html", rs, params)
+
+    def render_listblobs(self, rs, theacademy, thecourse, thepage):
+        """
+        @type rs: RequestState
+        @type theacademy: Academy
+        @type thecourse: Course
+        @type thepage: int
+        @type saved: bool
+        """
+        parser = Parser(thecourse.showpage(thepage))
+        tree = parser.parse()
+        html = HtmlFormatter(tree)
+        estimate = thecourse.estimatepage(thepage, tree)
+        params = dict(
+            academy=theacademy.view(),
+            course=thecourse.view(),
+            page=thepage,
+            blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
+        return self.render("blobs.html", rs, params)
 
     def render_file(self, rs, templatename, theversion, thecontent, ok=None,
                     error=None, extraparams=dict()):
