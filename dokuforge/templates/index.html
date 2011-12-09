@@ -6,21 +6,22 @@
 {{ complexnavbar([("groupindex", dict(group=group), allgroups[group]|e)]) }}
 {% endblock %}
 {% block content %}
-<ul>
+<div class="academylist">
 {%- for academy in academies -%}
   {%- if group in academy.groups -%}
     {%- if user.allowedRead(academy) %}
-    <li><a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a><br>
-{{ "Letzte Änderung von %s am %s" | format(academy.lastchange['author'], academy.lastchange['date']) | e }}&nbsp;|&nbsp;{{ academy.estimate.output() | e}}
-</li>
-    {%- else -%}
-    <li>{{ academy.title|e }}</li>
+	    <div class="academyitem">
+	      <a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a>
+	      <div class="infostring">{{ "Letzte Änderung von %s am %s" | format(academy.lastchange['author'], academy.lastchange['date']) | e }}&nbsp;|&nbsp;{{ academy.estimate.output() | e}}</div>
+	    </div>
+	    {%- else -%}
+	    <div class="academyitem">{{ academy.title|e }}</div>
     {%- endif -%}
   {%- endif -%}
 {%- else -%}
-<li><em>Keine Akademien gefunden.</em></li>
+<em>Keine Akademien gefunden.</em>
 {%- endfor -%}
-</ul>
+</div>
 <hr>
 <ul>
 {%- for onegroup in allgroups -%}

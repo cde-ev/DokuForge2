@@ -117,6 +117,13 @@ textarea {
     margin-bottom: 1ex;
 }
 
+.academyitem {
+    background-color: #aaaaff;
+    padding: 1ex;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+}
+
 a.inconspicuous {
     color: #000000;
     text-decoration: none;
