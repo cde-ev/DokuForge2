@@ -156,6 +156,17 @@ class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
     def get_response(self, environ):
         return werkzeug.utils.redirect(self.new_url, self.code)
 
+class SeeOtherRedirect(werkzeug.exceptions.HTTPException,
+                               werkzeug.routing.RoutingException):
+    code = 303
+
+    def __init__(self, new_url):
+        werkzeug.routing.RoutingException.__init__(self, new_url)
+        self.new_url = new_url
+
+    def get_response(self, environ):
+        return werkzeug.utils.redirect(self.new_url, self.code)
+
 class IdentifierConverter(werkzeug.routing.BaseConverter):
     regex = '[a-zA-Z][-a-zA-Z0-9]{0,199}'
 
@@ -191,6 +202,8 @@ class Application:
             rule("/groups/", methods=("GET", "HEAD"), endpoint="groups"),
             rule("/groups/!save", methods=("POST",),
                  endpoint="groupssave"),
+            rule("/groups/!select", methods=("POST",),
+                 endpoint="groupsselect"),
             rule("/style/", methods=("GET", "HEAD"),
                  endpoint="styleguide"),
             rule("/style/<identifier:topic>", methods=("GET", "HEAD"),
@@ -550,6 +563,17 @@ class Application:
             return rs.response
         rs.login(username)
         return self.render_index(rs)
+
+    def do_groupsselect(self, rs):
+        """
+        @type rs: RequestState
+        """
+        try:
+            group = rs.request.form["group"]
+        except KeyError:
+            ## FIXME: we want a malformedUserInputError here
+            raise
+        raise SeeOtherRedirect(self.buildurl(rs, "groupindex", {"group": group}))
 
     def do_logout(self, rs):
         """

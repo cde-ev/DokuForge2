@@ -23,13 +23,20 @@
 {%- endfor -%}
 </div>
 <hr>
-<ul>
+<form action="{{ buildurl("groupsselect")|e }}" method="post" id="selectgroup">
+<select name="group">
 {%- for onegroup in allgroups -%}
 {%- if user.allowedList(onegroup) -%}
-    <li><a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ allgroups[onegroup]|e }}</a></li>
+    {%- if onegroup == group -%}
+    <option value="{{onegroup|e}}" selected>{{ allgroups[onegroup]|e }}</option>
+    {%- else -%}
+    <option value="{{onegroup|e}}">{{ allgroups[onegroup]|e }}</option>
+    {%- endif -%}
 {%- endif -%}
 {%- endfor -%}
-</ul>
+</select>
+	<input type="submit" name="submit" value="Gruppe wechseln">
+</form>
 {% if user.mayCreate() %}
 <a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
 {% endif%}
