@@ -454,7 +454,7 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
-        self.assertTrue("Zugeordnete Bilder" in self.get_data())
+        self.assertTrue("Abbildungen" in self.get_data())
         self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
         self.is_loggedin()
 
@@ -536,9 +536,9 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
-        self.assertTrue("Zugeordnete Bilder" in self.get_data())
+        self.assertTrue("Abbildungen" in self.get_data())
         self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
-        form = list(self.br.forms())[2]
+        form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.assertTrue("Keine Bilder zu diesem Teil gefunden." in self.get_data())
         self.assertFalse("#[0] (README-rlog.txt)" in self.get_data())
@@ -558,7 +558,7 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
-        form = list(self.br.forms())[2]
+        form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.assertTrue("Keine Bilder zu diesem Teil gefunden." in self.get_data())
         self.assertFalse("#[0] (README-rlog.txt)" in self.get_data())
@@ -566,7 +566,7 @@ permissions = df_superadmin True,df_admin True
         self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
         form = list(self.br.forms())[1]
         self.br.open(form.click(label="wiederherstellen"))
-        self.assertTrue("Zugeordnete Bilder" in self.get_data())
+        self.assertTrue("Abbildungen" in self.get_data())
         self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
         self.is_loggedin()
 
