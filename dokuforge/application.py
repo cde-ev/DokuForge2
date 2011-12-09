@@ -1300,6 +1300,7 @@ class Application:
         params = dict(
             academies=[academy.view() for academy in self.listAcademies()],
             allgroups=self.listGroups(),
+            allowedgroups=filter(rs.user.allowedList, self.listGroups()),
             group=group)
         return self.render("index.html", rs, params)
 

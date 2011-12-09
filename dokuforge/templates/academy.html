@@ -35,5 +35,6 @@
 <a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
 {%- endif -%}
 </div>
+<div class="infostring">{{ "Letzte Änderung von %s am %s" | format(academy.lastchange['author'], academy.lastchange['date']) | e }}&nbsp;|&nbsp;{{ academy.estimate.output() | e}}</div>
 </div>
 {% endblock %}

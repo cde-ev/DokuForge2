@@ -22,30 +22,32 @@
 <em>Keine Akademien gefunden.</em>
 {%- endfor -%}
 </div>
+{%- if allowedgroups | length > 1 or user.mayCreate() -%}
 <div class="contextbox">
-<script type="text/javascript">
-function changegroup (select) {
-    {# FIXME this patches together the target url, not as intended with buildurl,
-       but manually since we don't know it at template construction time. #}
-    window.location = "{{buildurl("groups")|e}}" + select.options[select.options.selectedIndex].value
-}
-</script>
-<form action="{{ buildurl("groupsselect")|e }}" method="post" id="selectgroup">
-<select name="group" onchange="changegroup(this)">
-{%- for onegroup in allgroups -%}
-{%- if user.allowedList(onegroup) -%}
+  {%- if allowedgroups | length > 1 -%}
+  <script type="text/javascript">
+  function changegroup (select) {
+      {# FIXME this patches together the target url, not as intended with buildurl,
+	 but manually since we don't know it at template construction time. #}
+      window.location = "{{buildurl("groups")|e}}" + select.options[select.options.selectedIndex].value
+  }
+  </script>
+  <form action="{{ buildurl("groupsselect")|e }}" method="post" id="selectgroup">
+  <select name="group" onchange="changegroup(this)">
+  {%- for onegroup in allowedgroups -%}
     {%- if onegroup == group -%}
     <option value="{{onegroup|e}}" selected>{{ allgroups[onegroup]|e }}</option>
     {%- else -%}
     <option value="{{onegroup|e}}">{{ allgroups[onegroup]|e }}</option>
     {%- endif -%}
-{%- endif -%}
-{%- endfor -%}
-</select>
-	<input type="submit" name="submit" value="Gruppe wechseln">
-</form>
-{%- if user.mayCreate() -%}
-<a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
-{% endif%}
+  {%- endfor -%}
+  </select>
+	  <input type="submit" name="submit" value="Gruppe wechseln">
+  </form>
+  {%- endif -%}
+  {%- if user.mayCreate() -%}
+  <a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
+  {% endif %}
 </div>
+{%- endif -%}
 {% endblock %}
