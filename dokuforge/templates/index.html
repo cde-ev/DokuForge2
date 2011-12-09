@@ -22,7 +22,7 @@
 <em>Keine Akademien gefunden.</em>
 {%- endfor -%}
 </div>
-<hr>
+<div class="actionbox">
 <script type="text/javascript">
 function changegroup (select) {
     {# FIXME this patches together the target url, not as intended with buildurl,
@@ -44,7 +44,8 @@ function changegroup (select) {
 </select>
 	<input type="submit" name="submit" value="Gruppe wechseln">
 </form>
-{% if user.mayCreate() %}
+{%- if user.mayCreate() -%}
 <a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
 {% endif%}
+</div>
 {% endblock %}

@@ -5,41 +5,54 @@
     position: relative;
     min-height: 15ex;
 }
+
 #footer {
     background-color: #9999ff;
     padding: 1ex;
     text-align: right;
 }
+
 #content {
     background-color: #ccccff;
     padding: 2ex;
 }
+
 #page {
 }
+
 #dokuforgetitle {
     text-align: center;
     margin-top: 0.5ex;
     margin-bottom: 0.5ex;
 }
+
 #userinformation {
     float: right;
 }
+
 #headerlinks {
     position: absolute;
     bottom: 1ex;
     right: 1ex;
     text-align: right;
 }
+
 #subheading {
     font-size: x-large;
     font-weight: bold;
     margin-right: 12.5em;
 }
+
 #location {
     position: absolute;
     bottom: 1ex;
     margin-right: 20em;
 }
+
+#selectgroup {
+    display: inline;
+}
+
 .important {
     color: red;
     font-size: larger;
@@ -52,6 +65,7 @@ body {
 .button {
     display: inline;
 }
+
 .dokucontent {
     margin-left: 1em;
     margin-right: 1em;
@@ -122,6 +136,13 @@ textarea {
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
+}
+
+.actionbox {
+    background-color: #8888ff;
+    padding: 1ex;
+    margin-top: 2ex;
+    margin-bottom: 2ex;
 }
 
 a.inconspicuous {
