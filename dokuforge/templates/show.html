@@ -8,24 +8,24 @@
 	   ("page", "Teil #" ~ page)]) }}
 {% endblock %}
 {% block content %}
+<div class="contextbox">
 Teil #{{ page|string }}
 [Version {{commit['revision'] | e }}, 
  zulezt ge&auml;ndert von {{ commit['author'] | e }}
  am {{ commit['date'] | e }}] {{ estimate.output() | e}}
-<hr>
+</div>
 <div class="dokucontent">
 {# content does not need to be escaped, since this is done by the parser #}
 {{ content }}
 </div>
-<hr>
-
+<div class="contextbox">
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
 {{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- endif -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
-
-<hr>
+</div>
+<div class="blobbox">
 {%- if blobs %}
 Zugeordnete Bilder:
 <ul>
@@ -46,5 +46,5 @@ Zugeordnete Bilder:
 <a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
 <a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
 {%- endif -%}
-
+</div>
 {% endblock %}

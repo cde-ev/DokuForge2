@@ -138,11 +138,18 @@ textarea {
     margin-bottom: 1ex;
 }
 
-.actionbox {
+.contextbox {
     background-color: #8888ff;
     padding: 1ex;
     margin-top: 2ex;
     margin-bottom: 2ex;
+}
+
+.blobbox {
+    background-color: #8888ff;
+    padding: 1ex;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
 }
 
 a.inconspicuous {

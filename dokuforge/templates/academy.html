@@ -22,6 +22,7 @@
 {%- else -%}
 <em>Keine Kurse gefunden.</em><br>
 {%- endif -%}
+<div class="contextbox">
 <div class="academyoperations">
 {%- if user.mayExport(academy)%}
 {# 
@@ -33,5 +34,6 @@
 <a href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a>
 <a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
 {%- endif -%}
+</div>
 </div>
 {% endblock %}
