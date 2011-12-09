@@ -23,8 +23,15 @@
 {%- endfor -%}
 </div>
 <hr>
+<script type="text/javascript">
+function changegroup (select) {
+    {# FIXME this patches together the target url, not as intended with buildurl,
+       but manually since we don't know it at template construction time. #}
+    window.location = "{{buildurl("groups")|e}}" + select.options[select.options.selectedIndex].value
+}
+</script>
 <form action="{{ buildurl("groupsselect")|e }}" method="post" id="selectgroup">
-<select name="group">
+<select name="group" onchange="changegroup(this)">
 {%- for onegroup in allgroups -%}
 {%- if user.allowedList(onegroup) -%}
     {%- if onegroup == group -%}
