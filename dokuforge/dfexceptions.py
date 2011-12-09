@@ -59,15 +59,6 @@ class MalformedPOSTRequest(exceptions.BadRequest, DfException):
     """
     pass
 
-class InternalError(exceptions.InternalServerError, DfException):
-    """
-    The class of exceptions to be thrown if and when something at the system
-    level went wrong which is not the fault of Dokuforge (like disk full).
-    """
-    def __init__(self,*args,**kwargs):
-        exceptions.InternalServerError.__init__(self,*args, **kwargs)
-
-
 class RcsUserInputError(MalformedPOSTRequest):
     """
     The class of exceptions to be thrown if an when the
