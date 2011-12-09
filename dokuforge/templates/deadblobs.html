@@ -6,17 +6,16 @@
 {{ navbar([("academy", academy.title),
            ("course", course.title),
 	   ("page", "Teil #" ~ page),
+           ("listblobs", "Liste der Abbildungen"),
 	   ("showdeadblobs", "Attic")])}}
 {% endblock %}
 {% block content %}
 {%- if blobs %}
-<ul>
 	{%- for blob in blobs %}
-	<li> #[{{ blob.number|string }}] ({{ blob.filename|e  }})
+	<div class="blobitem"> #[{{ blob.number|string }}] ({{ blob.filename|e  }})
          {{ button(buildurl("relinkblob"), "wiederherstellen", dict(number=blob.number)) }}
-	</li>
+	</div>
 	{%- endfor -%}
-</ul>
 {%- else -%}
 <em>Keine gel&ouml;schten Bilder in diesem Kurs gefunden.</em>
 {%- endif -%}
