@@ -61,7 +61,7 @@ class Academy(StorageDir):
         ret = (os.path.join(self.path, entry)
                for entry in os.listdir(self.path))
         ret = filter(os.path.isdir, ret)
-        ret = map(Course, ret)
+        ret = map(lambda x:Course(x, self.valuationcache), ret)
         ret = list(ret)
         ret.sort(key=operator.attrgetter('name'))
         return ret
@@ -83,7 +83,7 @@ class Academy(StorageDir):
             common.validateExistence(self.path, coursename)
         except CheckError:
             raise werkzeug.exceptions.NotFound()
-        return Course(os.path.join(self.path, coursename))
+        return Course(os.path.join(self.path, coursename), self.valuationcache)
 
     def setgroups(self, groups):
         """
@@ -117,7 +117,8 @@ class Academy(StorageDir):
         common.validateInternalName(name)
         common.validateNonExistence(self.path, name)
         common.validateTitle(title)
-        Course(os.path.join(self.path, name)).settitle(title)
+        Course(os.path.join(self.path, name),
+               self.valuationcache).settitle(title)
 
     def lastchange(self):
         lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'1970/01/01 00:00:00'}
@@ -138,7 +139,7 @@ class Academy(StorageDir):
         return timestamp
 
     def estimate(self):
-        key = self.name
+        key = self.path
         time = self.timestamp()
         try:
             if self.valuationcache.gettimestamp(key) >= time:

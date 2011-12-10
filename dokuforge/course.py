@@ -137,7 +137,7 @@ class Course(StorageDir):
      - nextblob,v --
          contains the number of the next available blob
     """
-    def __init__(self, obj):
+    def __init__(self, obj, cache):
         """
         constructor for Course objects
 
@@ -149,6 +149,7 @@ class Course(StorageDir):
             os.makedirs(self.path)
         except os.error:
             pass
+        self.valuationcache = cache
 
     def nextpage(self, havelock=None):
         """
@@ -216,9 +217,17 @@ class Course(StorageDir):
         return estimate
 
     def estimate(self):
+        key = self.path
+        time = self.timestamp()
+        try:
+            if self.valuationcache.gettimestamp(key) >= time:
+                return self.valuationcache.getvaluation(key)
+        except KeyError:
+            pass
         estimate = Valuation()
         for p in self.listpages():
             estimate += self.estimatepage(p)
+        self.valuationcache.updatevaluation(key, time, estimate)
         return estimate
 
     def listdeadpages(self):
