@@ -6,6 +6,9 @@
 {{ navbar([("academy", academy.title)]) }}
 {% endblock %}
 {% block content %}
+<div class="locationbox">
+Kursübersicht
+</div>
 {% if academy.courses %}
 <div class="courselist">
 	{%- for course in academy.courses -%}

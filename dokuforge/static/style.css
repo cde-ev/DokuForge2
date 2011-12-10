@@ -53,6 +53,15 @@
     display: inline;
 }
 
+.locationbox {
+    font-size: large;
+    font-weight: bold;
+    background-color: #8888ff;
+    padding: 1ex;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+}
+
 .important {
     color: red;
     font-size: larger;

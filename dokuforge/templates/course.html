@@ -7,6 +7,9 @@
            ("course", course.title)]) }}
 {% endblock %}
 {% block content %}
+<div class="locationbox">
+{{course.title|e}}
+</div>
 {%- if course.pages %}
 <div class="toc">
         {%- set i = 0 -%}
