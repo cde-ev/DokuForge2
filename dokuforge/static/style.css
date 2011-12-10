@@ -1,5 +1,5 @@
 #header {
-    background-color: #9999ff;
+    background-color: #a0a0ff;
     padding: 1ex;
     margin: 0px;
     position: relative;
@@ -7,7 +7,7 @@
 }
 
 #footer {
-    background-color: #9999ff;
+    background-color: #a0a0ff;
     padding: 1ex;
     text-align: right;
 }
@@ -56,7 +56,7 @@
 .locationbox {
     font-size: large;
     font-weight: bold;
-    background-color: #aaaaff;
+    background-color: #c0c0ff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
@@ -68,7 +68,7 @@
     font-weight: bold;
 }
 body {
-    background-color: #9999ff;
+    background-color: #a0a0ff;
     margin: 0px;
 }
 .button {
@@ -103,7 +103,7 @@ textarea {
 }
 
 .tocpart {
-    background-color: #ccccff;
+    background-color: #ddddff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
@@ -134,28 +134,28 @@ textarea {
 }
 
 .courseitem {
-    background-color: #ccccff;
+    background-color: #ddddff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
 }
 
 .academyitem {
-    background-color: #ccccff;
+    background-color: #ddddff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
 }
 
 .contextbox {
-    background-color: #aaaaff;
+    background-color: #c0c0ff;
     padding: 1ex;
     margin-top: 2ex;
     margin-bottom: 2ex;
 }
 
 .blobitem {
-    background-color: #ccccff;
+    background-color: #ddddff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
