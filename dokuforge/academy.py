@@ -131,7 +131,7 @@ class Academy(StorageDir):
         return lastchange
 
     def timestamp(self):
-        timestamp = -1
+        timestamp = float(-1)
         for c in self.listCourses():
             tmp = c.timestamp()
             if tmp > timestamp:

@@ -618,7 +618,7 @@ class Course(StorageDir):
         return lastchange
 
     def timestamp(self):
-        timestamp = -1
+        timestamp = float(-1)
         for p in self.listpages():
             tmp = self.getstorage("page%d" % p).timestamp()
             if tmp > timestamp:

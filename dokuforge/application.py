@@ -23,6 +23,7 @@ import werkzeug.utils
 from werkzeug.wrappers import Request, Response
 
 from dokuforge.academy import Academy
+from dokuforge.course import Valuation
 import dokuforge.common as common
 from dokuforge.common import CheckError
 from dokuforge.parser import Parser
@@ -179,12 +180,18 @@ class ValuationCache:
         self._timestamps = {}
 
     def gettimestamp(self, key):
+        # print "cache ask", key
         return self._timestamps[key]
 
     def getvaluation(self, key):
+        # print "cache hit", key
         return self._values[key]
 
-    def updatevaluation(self, key, valuation, timestamp):
+    def updatevaluation(self, key, timestamp, valuation):
+        # print "cache update", key
+        assert isinstance(key, str)
+        assert isinstance(timestamp, float)
+        assert isinstance(valuation, Valuation)
         self._values[key] = valuation
         self._timestamps[key] = timestamp
 
