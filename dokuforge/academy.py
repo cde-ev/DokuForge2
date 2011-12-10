@@ -128,6 +128,14 @@ class Academy(StorageDir):
                 lastchange = info
         return lastchange
 
+    def timestamp(self):
+        timestamp = -1
+        for c in self.listCourses():
+            tmp = c.timestamp()
+            if tmp > timestamp:
+                timestamp = tmp
+        return timestamp
+
     def estimate(self):
         estimate = Valuation()
         for c in self.listCourses():
