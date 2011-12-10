@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block subheading %}
+{{ academy.title|e }}
+{% endblock %}
+{% block location %}
+{{ navbar([("academy", academy.title),
+           ("course", course.title),
+	   ("page", "Teil #" ~ page),
+           ("listblobs", "Liste der Abbildungen")]) }}
+{% endblock %}
+{% block content %}
+<div class="bloblist">
+{%- if blobs %}
+{%- for blob in blobs %}
+<div class="blobitem">
+  <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e }})</a>
+{%- if user.allowedWrite(academy, course) %}
+{{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
+{%- endif -%}
+</div>
+{%- endfor %}
+{%- else -%}
+<em>Keine Bilder zu diesem Teil gefunden.</em>
+{%- endif -%}
+
+<div class="contextbox">
+{%- if user.allowedWrite(academy, course) %}
+<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
+<a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+{%- endif -%}
+</div>
+</div>
+{% endblock %}
