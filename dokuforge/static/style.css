@@ -13,7 +13,7 @@
 }
 
 #content {
-    background-color: #ccccff;
+    background-color: #8888ff;
     padding: 2ex;
 }
 
@@ -56,7 +56,7 @@
 .locationbox {
     font-size: large;
     font-weight: bold;
-    background-color: #8888ff;
+    background-color: #aaaaff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
@@ -103,7 +103,7 @@ textarea {
 }
 
 .tocpart {
-    background-color: #aaaaff;
+    background-color: #ccccff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
@@ -134,28 +134,28 @@ textarea {
 }
 
 .courseitem {
-    background-color: #aaaaff;
+    background-color: #ccccff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
 }
 
 .academyitem {
-    background-color: #aaaaff;
+    background-color: #ccccff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
 }
 
 .contextbox {
-    background-color: #8888ff;
+    background-color: #aaaaff;
     padding: 1ex;
     margin-top: 2ex;
     margin-bottom: 2ex;
 }
 
 .blobitem {
-    background-color: #aaaaff;
+    background-color: #ccccff;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
