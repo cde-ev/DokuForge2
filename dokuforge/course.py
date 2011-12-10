@@ -603,7 +603,7 @@ class Course(StorageDir):
     def timestamp(self):
         timestamp = -1
         for p in self.listpages():
-            tmp = self.getstorage("page%d" % number).timestamp()
+            tmp = self.getstorage("page%d" % p).timestamp()
             if tmp > timestamp:
                 timestamp = tmp
         return timestamp

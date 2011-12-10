@@ -170,6 +170,24 @@ class SeeOtherRedirect(werkzeug.exceptions.HTTPException,
 class IdentifierConverter(werkzeug.routing.BaseConverter):
     regex = '[a-zA-Z][-a-zA-Z0-9]{0,199}'
 
+class ValuationCache:
+    """
+    Class to cache Valuations so we can reestimating all our content.
+    """
+    def __init__(self):
+        self._values = {}
+        self._timestamps = {}
+
+    def gettimestamp(self, key):
+        return self._timestamps[key]
+
+    def getvaluation(self, key):
+        return self._values[key]
+
+    def updatevaluation(self, key, valuation, timestamp):
+        self._values[key] = valuation
+        self._timestamps[key] = timestamp
+
 class Application:
     def __init__(self, pathconfig):
         """
@@ -185,6 +203,7 @@ class Application:
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader(self.templatepath))
         self.groupstore = pathconfig.groupstore
+        self.valuationcache = ValuationCache()
         self.staticservepath = pathconfig.staticservepath
         self.mathjaxuri = pathconfig.mathjaxuri
         rule = werkzeug.routing.Rule
@@ -345,7 +364,8 @@ class Application:
             common.validateExistence(self.acapath, name)
         except CheckError:
             raise werkzeug.exceptions.NotFound()
-        aca = Academy(os.path.join(self.acapath, name), self.listGroups)
+        aca = Academy(os.path.join(self.acapath, name), self.listGroups,
+                      self.valuationcache)
         if user is not None and not user.allowedRead(aca):
             raise werkzeug.exceptions.Forbidden()
         return aca
@@ -385,7 +405,7 @@ class Application:
         common.validateGroups(groups, self.listGroups())
         path = os.path.join(self.acapath, name)
         os.makedirs(path)
-        aca = Academy(path, self.listGroups)
+        aca = Academy(path, self.listGroups, self.valuationcache)
         aca.settitle(title)
         aca.setgroups(groups)
         return aca

@@ -21,13 +21,14 @@ class Academy(StorageDir):
     title,v    The title of this display name of this academy
     groups,v   The groups in which this academy is a member
     """
-    def __init__(self, obj, listAllGroups):
+    def __init__(self, obj, listAllGroups, cache):
         """
         @param obj: either a path or an Academy object
         @type obj: str or Academy
         """
         StorageDir.__init__(self, obj)
         self.listAllGroups = listAllGroups
+        self.valuationcache = cache
 
     def getgroups(self):
         """
@@ -137,9 +138,17 @@ class Academy(StorageDir):
         return timestamp
 
     def estimate(self):
+        key = self.name
+        time = self.timestamp()
+        try:
+            if self.valuationcache.gettimestamp(key) >= time:
+                return self.valuationcache.getvaluation(key)
+        except KeyError:
+            pass
         estimate = Valuation()
         for c in self.listCourses():
             estimate += c.estimate()
+        self.valuationcache.updatevaluation(key, time, estimate)
         return estimate
 
     def view(self, extrafunctions=dict()):
