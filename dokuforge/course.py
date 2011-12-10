@@ -210,10 +210,18 @@ class Course(StorageDir):
         return dict(map(lambda (k,v):(k,v.encode("utf8")), info.iteritems()))
 
     def estimatepage(self, page, tree=None):
+        key = "%s/page%d" % (self.path, page)
+        time = self.getstorage("page%d" % page).timestamp()
+        try:
+            if self.valuationcache.gettimestamp(key) >= time:
+                return self.valuationcache.getvaluation(key)
+        except KeyError:
+            pass
         content = self.showpage(page)
         blobs = len(self.listblobs(page))
         estimate = Valuation()
         estimate.doestimate(blobs, content = content, tree = tree)
+        self.valuationcache.updatevaluation(key, time, estimate)
         return estimate
 
     def estimate(self):
