@@ -89,13 +89,15 @@ def rloghead(filename):
             if len(keyvalue) > 1:
                 answer[keyvalue[0].lstrip()]=keyvalue[1]
     except IndexError:
-        assert False # as discussed above, the output format is an invariant for all rcs implementations
-
+        # as discussed above, the output format is an invariant for all rcs
+        # implementations
+        raise RcsError("failed to parse rcs-file, corrupted data: %s" % filename)
     try:
         answer["author"]
         answer["date"]
     except KeyError:
-        assert False  # The rlog we used is not the rcs tool.
+        # The rlog we used is not the rcs tool.
+        raise RcsError("failed to parse rcs-file, missing data: %s" % filename)
     return answer
 
 
@@ -262,7 +264,9 @@ class Storage(object):
         try:
             status = rloghead(self.fullpath("%s,v"))
         except FileDoesNotExist:
-            assert False # we just ensured the existence
+            # we just ensured the existence
+            raise RcsError("failed to get commitstatus, rcs-file %s vanished" %
+                           self.fullpath("%s,v"))
         return status
 
     def content(self, havelock=None):
