@@ -46,7 +46,7 @@ def rloghead(filename):
     @returns: a str-str dict with information about the head commit; in particular,
              it will contain the keys 'revision', 'author', and 'date'.
     @rtype: {str: str}
-    @raises FileDoesNotExist
+    @raises FileDoesNotExist:
     """
     assert isinstance(filename, str)
     
@@ -214,6 +214,7 @@ class Storage(object):
         """
         @raises OSError:
         @raises IOError:
+        @raises subprocess.CalledProcessError:
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
@@ -226,6 +227,8 @@ class Storage(object):
         """
         @rtype: str or None
         @raises OSError:
+        @raises IOError:
+        @raises subprocess.CalledProcessError:
         """
         self.ensureexistence(havelock = havelock)
         result = rlogv(self.fullpath("%s,v"))
@@ -238,6 +241,9 @@ class Storage(object):
         Obtain information about the last change made to this storage object.
         @returns: a str-str dict with information about the head commit; in particular,
                   it will contain the keys 'revision', 'author', and 'date'.
+        @raises OSError:
+        @raises IOError:
+        @raises subprocess.CalledProcessError:
         """
         self.ensureexistence(havelock=havelock)
         try:
@@ -249,6 +255,7 @@ class Storage(object):
     def content(self, havelock=None):
         """
         @raises OSError:
+        @raises IOError:
         @raises subprocess.CalledProcessError:
         """
         self.ensureexistence(havelock = havelock)
@@ -268,6 +275,7 @@ class Storage(object):
 
         @returns: an opaque version string and the contents of the file
         @rtype: ({str : str} , str)
+        @raises OSError:
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
