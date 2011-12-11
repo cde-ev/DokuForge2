@@ -118,7 +118,9 @@ class Academy(StorageDir):
         common.validateInternalName(name)
         common.validateNonExistence(self.path, name)
         common.validateTitle(title)
-        Course(os.path.join(self.path, name)).settitle(title)
+        c = Course(os.path.join(self.path, name))
+        c.settitle(title)
+        c.setlivingstate(True)
 
     def lastchange(self):
         return common.findlastchange([c.lastchange() for c in self.listCourses()])
