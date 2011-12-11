@@ -1,0 +1,190 @@
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesClass{parallel}[2003/07/23 JGW Parallel Environment]
+
+%
+% \startparallel 
+%     [\prependifcontains:\makelabelit,\foreignlanguage{german}]
+%   This is the first line
+%   This is the second line
+% \parallel
+%   Das ist die erste Zeile
+%   Das ist die zweite Zeile
+% \stopparallel
+%
+% \defineparallel\noindentparallel%
+%   {\bgroup\parallelmargin0pt}{\egroup} # before after
+% \defineparallel\italiandialogue%
+%   {\startpmhalign\parallelmargin0pt\parallelindent\pmwidth}%
+%   [\makelabel{#1}]%
+%   {\stoppmhalign}
+%
+
+%
+% Configuration
+%
+
+\newdimen\parallelmargin          \parallelmargin\leftmargini
+\newdimen\parallelshiftleft       \parallelshiftleft0pt
+\newdimen\parallelcolumndistance  \parallelcolumndistance1em
+\newdimen\parallelindent          \parallelindent0.5cm
+
+%
+% Some definitions to make porting from context easier
+%
+
+\def\doifemptyelse#1%
+  {\def\next{#1}%
+   \ifx\next\@empty
+     \expandafter\@firstoftwo
+   \else
+     \expandafter\@secondoftwo
+   \fi}
+
+\def\appendtoks%
+  {\doappendtoks\relax}
+\long\def\doappendtoks#1\to#2%
+  {\toks@\expandafter{\@gobble#1}%
+   \expanded{#2{\the#2\the\toks@}}}
+
+\def\expanded#1%
+  {\long\xdef\doexpanded{\noexpand#1}\doexpanded}
+
+\def\doifinstringelse#1#2#3#4%
+  {\def\next##1#1##2\doifinstringelse%
+     {\doifemptyelse{##2}}%
+   \next#2#1\doifinstringelse{#4}{#3}}
+
+%
+% The actual code
+%
+
+\newtoks\parallelaccum
+\newtoks\parallelresult
+
+\begingroup
+  \obeylines%
+  \gdef\dowithnextline#1#2^^M{#1{#2}}
+\endgroup
+
+\def\theemptied#1%
+  {\expandafter#1\expandafter{\expandafter}\the#1}
+
+  
+\def\dostartparallel#1%
+  {\let\the@stopparalleltoken#1%
+   \@ifnextchar[{\dodostartparallel}{\dodostartparallel[]}}
+\def\dodostartparallel[#1]%
+  {\bgroup
+   \def\columnstyles{#1,}%
+   \count@0%
+   \parallelaccum={\[}%
+   \obeylines\dopardispatch}
+
+\def\dopardispatch%
+  {\futurelet\nexttoken\dodopardispatch}
+\def\dodopardispatch%
+  {\ifx\nexttoken\parallel
+     \def\next##1{\doparcolumn}%
+   \else\ifx\nexttoken\the@stopparalleltoken
+     \def\next##1{\dostopparallel\the@stopparalleltoken}%
+   \else
+     \def\next{\dowithnextline\doparskipemptyrow}%
+   \fi\fi\next}
+
+\def\doparskipemptyrow#1%
+  {\doifemptyelse{#1}{\dopardispatch}{\doparprocessrow{#1}}}
+\def\doparprocessrow#1%
+  {\appendtoks{#1},\to\parallelaccum
+   \dopardispatch}
+
+\def\doparcolumn%
+  {\appendtoks\]\[\to\parallelaccum
+   \advance\count@ 1%
+   \dopardispatch}
+
+\def\doparsortrow#1\]%
+  {\doifemptyelse{#1}%
+     {\dodoparsortrow{},\]}
+     {\dodoparsortrow#1\]}}
+\def\dodoparsortrow#1#2#3\]%
+  {\appendtoks\\{#1}\to\parallelresult
+   \doifemptyelse{#3}{}{\let\doparnext\doparsortrows}%
+   \appendtoks\[#3\]\to\parallelaccum}
+
+\def\doparsortrows%
+  {\let\[\doparsortrow
+   \let\doparnext\dodostopparallel
+   \appendtoks\]\[\to\parallelresult
+   \theemptied\parallelaccum
+   \doparnext}
+
+\def\dostopparallel%
+  {\appendtoks\]\to\parallelaccum
+   \let\[\doparsortrow
+   \parallelresult={\[}%
+   \doparsortrows}
+   
+\def\dodostopparallel%
+  {\appendtoks\]\to\parallelresult
+   \par\vskip\topsep
+     \dimen@\linewidth
+     \advance\dimen@-2\parallelmargin
+     \advance\dimen@-\count@\parallelcolumndistance
+     \advance\count@\@ne
+     \divide\dimen@\count@
+     \def\[##1\]%
+       {\hbox{\hskip\parallelshiftleft\hskip\parallelmargin##1\unskip}\prevdepth\dp\strutbox}
+     \def\\##1%
+       {\dopargetnextcolumnstyle\columnstyles\applycolumnstyle
+        \vtop{\hsize\dimen@
+	      \hangindent=\parallelindent
+	      \parindent\z@
+   	      \raggedright
+	      \applycolumnstyle{##1}\par
+	      \vskip-\prevdepth\vskip\dp\strutbox}%
+	      \hskip\parallelcolumndistance}%
+     \expandafter\@gobbletwo\the\parallelresult
+   \vskip\topsep
+   \egroup}
+
+\def\dopargetnextcolumnstyle#1#2%
+  {\def\next##1,##2\next%
+     {\def#2{##1}\def#1{##2}}%
+   \expandafter\next#1,\next}
+
+%
+% Defining parallel environments
+%
+
+\def\defineparallel#1#2%
+  {\@ifnextchar[{\dodefineparallel{#1}{#2}}{\dodefineparallel{#1}{#2}[####1]}}
+\def\dodefineparallel#1%
+  {\bgroup
+   \edef\basename%
+     {\expandafter\@gobble\string#1}%
+   \edef\next%
+     {\noexpand\dododefineparallel
+      \csname start\basename \endcsname
+      \csname @tmp@\basename \endcsname
+      \csname  stop\basename \endcsname,}%
+   \next}
+\def\dododefineparallel#1#2#3,#4[#5]#6% \start \@tmp@ \stop {start} [arg] {stop}
+  {\gdef#1{#4\@ifnextchar[{#2}{#2[]}}%
+   \gdef#2[##1]{\dostartparallel#3[#5]}%
+   \gdef#3{#6}\egroup}
+ 
+\defineparallel\parallel{}{}
+\defineparallel\noindentparallel%
+  {\bgroup\parallelmargin\z@}{\egroup}
+
+%
+% Utilities
+%
+
+\def\prependifcontains#1#2#3%
+  {\doifinstringelse{#1}{#3}{{#2#3}}{{#3}}}
+
+\def\applyifcontains#1#2#3%
+  {\doifinstringelse{#1}{#3}{#2{#3}}{{#3}}}
+
+\endinput

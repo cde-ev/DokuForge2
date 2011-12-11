@@ -27,6 +27,7 @@ import dokuforge.common as common
 from dokuforge.common import CheckError
 from dokuforge.parser import Parser
 from dokuforge.htmlformatter import HtmlFormatter
+from dokuforge.exporter import Exporter
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
@@ -218,9 +219,8 @@ class Application:
                  methods=("GET", "HEAD"), endpoint="createcoursequiz"),
             rule("/docs/<identifier:academy>/!createcourse",
                  methods=("POST",), endpoint="createcourse"),
-# not yet implemented
-#            rule("/docs/<identifier:academy>/!export", methods=("GET", "HEAD"),
-#                 endpoint="export"),
+            rule("/docs/<identifier:academy>/!export", methods=("GET", "HEAD"),
+                 endpoint="export"),
             rule("/docs/<identifier:academy>/!groups", methods=("GET", "HEAD"),
                  endpoint="academygroups"),
             rule("/docs/<identifier:academy>/!groups", methods=("POST",),
@@ -971,6 +971,24 @@ class Application:
         rs.response.data = c.export()
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=%s_%s.tar.bz2" % (aca.name, c.name)
+        return rs.response
+
+
+    def do_export(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
+        assert academy is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        if not rs.user.mayExport(aca):
+            return werkzeug.exceptions.Forbidden()
+        rs.response.content_type = "application/x-bzip-compressed-tar"
+        exporter = Exporter(aca)
+        rs.response.data = exporter.export()
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=%s.tar.bz2" % (aca.name)
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):

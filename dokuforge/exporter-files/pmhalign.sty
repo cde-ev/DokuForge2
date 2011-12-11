@@ -1,0 +1,144 @@
+% Copyright (C) 2000-2005 Marc Schäfer <marc_schaefer@gmx.de>
+% All Rights Reserved.
+% Permission for use in all CdE and BuB documentations is granted.
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{pmhalign}[2003/11/05 Poor Man's Halign]
+
+%
+% \startpmhalign
+%   \pmhalign{things}
+%   \pmhalign{with different}
+%   \pmhalign{lengths}
+% \stophalign
+%
+% The second time, all the \pmhalign's will be hboxes of the same
+% width, which is accessible as \pmwidth.
+%
+
+%
+% Some auxiliary macros
+% 
+
+\let\@EA\expandafter
+
+\def\@namexdef#1%
+  {\@EA\xdef\csname#1\endcsname}
+
+\def\@nceexpand%
+  {\@EA\noexpand}
+  
+\def\pm@append#1\to#2%
+  {\@EA\def\@EA#2\@EA{#2#1}}
+
+%
+% Saving Things Per Environment
+%
+
+\newcount\pm@globalenvno
+
+% We keep a global counter but only access the environment number using
+% the locally defined macro \pm@envno. This ensures that we always have
+% the right value even in the presence of nested environments
+
+\def\pm@nextenvno%
+  {\global\advance\pm@globalenvno\@ne
+   \let\pm@restoresavedvalues\@empty
+   \edef\pm@envno{\the\pm@globalenvno}}
+
+% Unfortunately, \pmhalign will not only be used at the grouping level
+% of \starthalign and \stophalign, so we will have to modify dimens
+% like \pmwidth globally. Therefore it is necessary to manually save
+% them at the beginning and restore them at the end of the group.
+
+\def\pm@saveenvvalue#1%
+  {\@EA\pm@append\@EA\global\@EA#1\the#1\relax\to\pm@restoresavedvalues}
+
+% We also have a timing problem when it comes to the widths. We need the
+% current width at the beginning of the environment, but we can only save
+% it at the end -- simply appending widths to a macro will get the order
+% wrong when the environments are nested. We therefore only add a promise
+% (a macro) to the list at the beginning of the environment, forcing (i.e.
+% defining the macro) later. This ensures that the resulting list will be
+% as if it has been defined at the beginning of the environment. Note that
+% there is only one promise per environment.
+
+\def\@pmpm@{@pmpm@}
+
+\def\pm@appendenvpromiseto#1%
+  {\global\expandafter\pm@append
+     \csname\@pmpm@\pm@envno\endcsname
+   \to#1}
+
+\def\pm@forceenvpromise#1%
+  {\@namexdef{\@pmpm@\pm@envno}{#1}}
+
+
+%
+% Saving Things Between Runs
+%
+
+% We keep two separate lists, taking \pmwidth from the old one
+% and accumulating the changed widths in the new list. All lists
+% are global.
+
+\def\pm@oldwidths{}
+\def\pm@newwidths{}
+
+% We have to handle the fact that this time there are more environments 
+% than during the last run.
+
+\def\pm@nextwidthto#1%
+  {\ifx\pm@oldwidths\@empty
+     #1\z@
+   \else
+     \expandafter\pm@donextwidth\pm@oldwidths\pm@donextwidth#1%
+   \fi}
+
+\def\pm@donextwidth#1,#2\pm@donextwidth#3%
+  {\global#3#1\relax
+   \gdef\pm@oldwidths{#2}}
+
+
+% Now make sure our new widths will be the old ones during the
+% next run.
+
+\AtEndDocument
+  {\if@filesw\immediate\write\expandafter\@mainaux\fi%
+    {\string\gdef\string\pm@oldwidths{\pm@newwidths}}}
+
+
+%
+% The Real Thing
+% 
+
+% In the environment we keep track of two widths -- the maximum width
+% encountered so far (\pm@newwidth) and the maximum of this dimen and
+% the maximum width of the last run. We have to keep them seperate,
+% otherwise the width could not shrink (unless the aux-file is deleted
+% manually) which is a nuisance during editing.
+
+\newdimen\pmwidth
+\newdimen\pm@newwidth
+
+\def\startpmhalign%
+  {\bgroup
+   \pm@nextenvno
+   \pm@appendenvpromiseto\pm@newwidths
+   \pm@saveenvvalue\pmwidth     \pm@nextwidthto\pmwidth
+   \pm@saveenvvalue\pm@newwidth \pm@newwidth\z@}
+
+\def\pmhalign#1%
+  {\bgroup
+   \setbox\@tempboxa=\hbox{#1}%
+   \ifdim\wd\@tempboxa>\pmwidth     \global\pmwidth    \wd\@tempboxa \fi
+   \ifdim\wd\@tempboxa>\pm@newwidth \global\pm@newwidth\wd\@tempboxa \fi
+   \leavevmode\hb@xt@\pmwidth{\unhbox\@tempboxa}%
+   \egroup}
+
+\def\stoppmhalign%
+  {\pm@forceenvpromise{\the\pm@newwidth,}%
+   \pm@restoresavedvalues
+   \egroup}
+
+\endinput
