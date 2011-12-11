@@ -229,7 +229,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        form = list(self.br.forms())[2]
+        form = list(self.br.forms())[3]
         self.br.open(form.click(label=u"Neuen Teil anlegen".encode("utf8")))
         self.is_loggedin()
         self.assertTrue("Teil&nbsp;#2" in self.get_data())
