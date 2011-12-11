@@ -116,7 +116,9 @@ class Academy(StorageDir):
         common.validateInternalName(name)
         common.validateNonExistence(self.path, name)
         common.validateTitle(title)
-        Course(os.path.join(self.path, name)).settitle(title)
+        c = Course(os.path.join(self.path, name))
+        c.settitle(title)
+        c.setlivingstate(True)
 
     def lastchange(self):
         lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'1970/01/01 00:00:00'}

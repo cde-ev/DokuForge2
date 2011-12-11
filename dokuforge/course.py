@@ -116,6 +116,10 @@ class Course(StorageDir):
     other things, the following files; with each rcs file, the associated file
     and locks as described in L{Storage} can be present as well.
 
+    A course can be deleted, this is marked in livingstate,v. Being deleted
+    only means that it is no longer visible to the user, but not that
+    anything gets actually deleted.
+
      - title,v --
          The title of this course (as to be printed)
      - Index,v --
@@ -136,6 +140,8 @@ class Course(StorageDir):
          contains the number of the next available page
      - nextblob,v --
          contains the number of the next available blob
+     - livingstate,v --
+         Boolean (represented as string) which is False if the course was deleted
     """
     def __init__(self, obj):
         """
@@ -599,6 +605,16 @@ class Course(StorageDir):
             if date > compare:
                 lastchange = info
         return lastchange
+
+    def isalive(self):
+        return self.getstorage("livingstate").content().decode("utf8") in \
+            [u"True", u"true", u"t"]
+
+    def setlivingstate(self, b):
+        if b:
+            self.getstorage("livingstate").store("True")
+        else
+            self.getstorage("livingstate").store("False")
 
     def view(self, extrafunctions=dict()):
         """
