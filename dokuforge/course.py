@@ -613,7 +613,7 @@ class Course(StorageDir):
     def setlivingstate(self, b):
         if b:
             self.getstorage("livingstate").store("True")
-        else
+        else:
             self.getstorage("livingstate").store("False")
 
     def view(self, extrafunctions=dict()):
