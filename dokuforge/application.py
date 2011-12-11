@@ -364,17 +364,19 @@ class Application:
             raise dfexceptions.NotEnoughPriveleges()
         return aca
 
-    def getCourse(self, aca, coursename, user=None):
+    def getCourse(self, aca, coursename, user=None, allowdead=False):
         """
         @type aca: Academy
         @type coursename: unicode
         @type user: None or User
+        @param allowdead: allow course to be dead
+        @type allowdead: bool
         @rtype: Course
         @raises MalformedAdress:
         @raises NotEnoughPriveleges:
         """
         assert isinstance(coursename, unicode)
-        c = aca.getCourse(coursename) # checks name
+        c = aca.getCourse(coursename, allowdead=allowdead) # checks name
         if c is None:
             raise dfexceptions.MalformedAdress()
         if user is not None and not user.allowedRead(aca, c):

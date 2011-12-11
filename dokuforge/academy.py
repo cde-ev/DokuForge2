@@ -19,6 +19,8 @@ class Academy(StorageDir):
     contain the following files. All directories within this directory are
     assumed to contain a course.
 
+    Courses can either be alive or dead, were dead means deleted. All normal operations which apply to courses, 
+
     title,v    The title of this display name of this academy
     groups,v   The groups in which this academy is a member
     """
@@ -54,25 +56,30 @@ class Academy(StorageDir):
         """
         return [course.view() for course in self.listCourses()]
 
-    def listCourses(self):
+    def listCourses(self, alive=True):
         """
+        @param alive: select state of courses -- dead or alive
+        @type alive: bool
         @returns: list of Course object; all courses of this academy
         """
         ret = (os.path.join(self.path, entry)
                for entry in os.listdir(self.path))
         ret = filter(os.path.isdir, ret)
         ret = map(Course, ret)
+        ret = filter(lambda x: x.isalive() == alive, ret)
         ret = list(ret)
         ret.sort(key=operator.attrgetter('name'))
         return ret
 
-    def getCourse(self, coursename):
+    def getCourse(self, coursename, allowdead = False):
         """
         find a course of this academy to a given name. If none is found
         raise a MalformedAdress
 
         @param coursename: internal name of course
         @type coursename: unicode
+        @param allowdead: allow course to be dead
+        @type allowdead: bool
         @returns: Course object for course with name coursename
         @raises MalformedAdress: if the course does not exist
         """
@@ -83,7 +90,10 @@ class Academy(StorageDir):
             common.validateExistence(self.path, coursename)
         except dfexceptions.CheckError:
             raise dfexceptions.MalformedAdress()
-        return Course(os.path.join(self.path, coursename))
+        c = Course(os.path.join(self.path, coursename))
+        if not allowdead and not c.isalive():
+            raise dfexceptions.MalformedAdress()
+        return c
 
     def setgroups(self, groups):
         """
