@@ -119,12 +119,12 @@ class LockDir:
         Acquiring this object multiple times will succeed, but you have to
         release it multiple times, too.
 
-        @raises OSError:
+        @raises RcsError:
         """
         if self.lockcount != 0:
             self.lockcount += 1
             return self
-        while True:
+        while True: # FIXME: we should somehow timeout
             try:
                 os.mkdir(self.path)
                 self.lockcount = 1
@@ -133,15 +133,22 @@ class LockDir:
                 if e.errno == errno.EEXIST:
                     time.sleep(0.2) # evertthing OK, someone else has the lock
                 else:
-                    raise # something else went wrong
+                    errname = errno.errorcode.get(e.errno, str(e.errno))
+                    raise RcsError("failed to lock %r with mkdir giving -%s" %
+                                   (self.path, errname))
 
     def __exit__(self, _1, _2, _3):
         """
-        @raises OSError:
+        @raises RcsError:
         """
         self.lockcount -= 1
         if self.lockcount == 0:
-            os.rmdir(self.path)
+            try:
+                os.rmdir(self.path)
+            except OSError, e:
+                errname = errno.errorcode.get(e.errno, str(e.errno))
+                raise RcsError("failed to unlock %r with rmdir giving -%s" %
+                               (self.path, errname))
 
 
 class Storage(object):
@@ -180,7 +187,6 @@ class Storage(object):
         @type content: str or filelike
         @param content: the content of the file
         @type message: str
-        @raises OSError:
         @raises IOError:
         @raises RcsError:
         """
@@ -203,7 +209,6 @@ class Storage(object):
 
     def ensureexistence(self, havelock=None):
         """
-        @raises OSError:
         @raises RcsError:
         """
         if not os.path.exists(self.fullpath("%s,v")):
@@ -225,7 +230,6 @@ class Storage(object):
 
     def asrcs(self, havelock=None):
         """
-        @raises OSError:
         @raises IOError:
         @raises RcsError:
         """
@@ -239,7 +243,6 @@ class Storage(object):
     def status(self, havelock=None):
         """
         @rtype: str or None
-        @raises OSError:
         @raises RcsError:
         """
         self.ensureexistence(havelock = havelock)
@@ -253,7 +256,6 @@ class Storage(object):
         Obtain information about the last change made to this storage object.
         @returns: a str-str dict with information about the head commit; in particular,
                   it will contain the keys 'revision', 'author', and 'date'.
-        @raises OSError:
         @raises RcsError:
         """
         self.ensureexistence(havelock=havelock)
@@ -265,7 +267,6 @@ class Storage(object):
 
     def content(self, havelock=None):
         """
-        @raises OSError:
         @raises RcsError:
         """
         self.ensureexistence(havelock = havelock)
@@ -284,12 +285,13 @@ class Storage(object):
 
         @returns: an opaque version string and the contents of the file
         @rtype: ({str : str} , str)
-        @raises OSError:
+        @raises RcsError:
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
             status = self.status(havelock = gotlock)
             content = self.content(havelock = gotlock)
+            # FIXME: explain why status is not None
             return status, content
 
     def endedit(self, version, newcontent, user=None, havelock=None):
@@ -380,11 +382,15 @@ class CachingStorage(Storage):
     """
 
     def __init__(self, path, filename):
+        # inherit doc string from Storage.__init__
         Storage.__init__(self, path, filename)
         self.cachedtime = 0 # Jan 1, 1970 -- way before the first dokuforge2 installation
         self.cachedvalue = ""
 
     def content(self, havelock=None):
+        """
+        @raises RcsError:
+        """
         self.ensureexistence(havelock = havelock)
         mtime = os.path.getmtime(self.fullpath("%s,v")) 
         if mtime == self.cachedtime:
@@ -397,6 +403,7 @@ class CachingStorage(Storage):
     def lastchanged(self, havelock=None):
         """
         @raises OSError:
+        @raises RcsError:
         """
         self.ensureexistence(havelock = havelock)
         return os.path.getmtime(self.fullpath("%s,v"))
