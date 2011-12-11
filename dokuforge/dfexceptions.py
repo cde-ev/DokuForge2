@@ -2,7 +2,7 @@ from werkzeug import exceptions
 import werkzeug.routing
 
 
-class DfException():
+class DfException(Exception):
     """
     Cover class for all exceptions introduced by Dokuforge.
     Whenever a non-DfException is thrown outside a module,
