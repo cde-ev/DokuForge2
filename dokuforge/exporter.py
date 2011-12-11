@@ -6,7 +6,8 @@ import os
 import shutil
 import errno
 
-from dokuforge.exportparser import DokuforgeToTeXParser
+from dokuforge.parser import Parser
+from dokuforge.exportformatter import TeXFormatter
 from dokuforge.common import check_output
 
 ## Templates used for generating the export
@@ -151,7 +152,7 @@ class Exporter:
 
     Take an academy and build transform it into a (rather complex)
     TeX-document. Bundle everything up and provide a tar-ball. Most of the
-    magic is in the exportparser, the other steps are pretty
+    magic is in the exportformatter, the other steps are pretty
     straight-forward.
 
     Everything happens inside a temporary directory which is deleted
@@ -197,9 +198,10 @@ class Exporter:
             for p in c.listpages():
                 content = tsubst(content, COURSECONTENT = template_coursepage)
                 ## here be dragons
-                parser = DokuforgeToTeXParser(c.showpage(p))
-                parser.parse()
-                content = tsubst(content, COURSEPAGE = parser.result())
+                parser = Parser(c.showpage(p))
+                tree = parser.parse()
+                tex = TeXFormatter(tree)
+                content = tsubst(content, COURSEPAGE = tex.generateoutput())
                 for b in c.listblobs(p):
                     blob = c.viewblob(b)
                     content = tsubst(content, PAGEFIGURES = template_figure)
