@@ -15,7 +15,8 @@ teststring = u"""
 mi. Mauris feugiat erat eget quam varius eu congue lectus viverra. Ut sed
   velit dapibus eros ultricies blandit a in felis. Nam ultricies pharetra
 luctus. Nam aliquam lobortis rutrum. Phasellus quis arcu non dui pretium
-  aliquam. Phasellus id mauris mauris, quis lobortis justo.
+  aliquam. Phasellus id mauris mauris, quis lobortis justo. Es ist z.B. auch
+ weiter z. B. eine Abkuerzung vgl. dabei auch anderes.
 
 [Eine zweite Ueberschrift]
 [[Eine Unterueberschrift]](Douglas Adams)
@@ -25,7 +26,8 @@ keine ganzzahlige Loesung, auszer den trivialen, besitzt. Dies war ein
 _lange_ Zeit unbewiesenes Theorem. Hier nun eine Liste von interessanten
 Zahlen. Diese Formel steht $$e^{i\\pi}+1=0$$ im Text ist aber eigentlich abgesetzt.
 
-$$\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}$$
+$$\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}\\\\nextline  \\\\
+nextnewline$$
 
 Aber *Null* war lange Zeit gar keine Zahl. Nam ultricies pharetra
 luctus. Nam aliquam lobortis rutrum. Phasellus quis arcu non dui pretium
@@ -36,7 +38,7 @@ tortor ipsum, in rhoncus mi. Sed nec odio sem. Aenean rutrum, dui vel
 vehicula pulvinar, purus magna euismod dui, id pharetra libero mauris nec
 dolor.
 
-Bitte Escape mich: <>&"' \\ \\\\command und das wars auch schon.
+Bitte Escape mich: <>&"' \\ \\\\\\\\\\command und das wars auch schon.
 
 Test \$ this.
 
@@ -45,7 +47,7 @@ Test \$ this.
 (kein Autor)
 
 Wir packen unsere Koffer und nehmen mit
-- einen Sonnenschirm, Kapazitaet 3000000 kWh was eine sehr grosze Zahl ist,
+- einen Sonnenschirm, Kapazitaet 3124567 kWh was eine sehr grosze Zahl ist,
     aber zum Glueck noch auf diesen Absatz passt
 - Wanderschuhe, Fassungsvermoegen 2 l
 - Huepfeseil, Laenge 1 m$^2$
@@ -56,14 +58,18 @@ anders als in so mancher andrer Uebung -- nicht ums blosze wiederholen. Und
 so sagte schon Goethe "auch aus Steinen die einem in den Weg gelegt werden,
 kann man schoenes bauen", wollen wir uns also ein Beispiel nehmen. Und jetzt
 machen wir noch einen Gedankensprung -- schon sind wir auf einem anderen
-Planeten.
+Planeten. ^^Jtest
 
 _Man_ kann z.B. auch ganz viele Abkuerzungen u.a. unterbringen um lange
 Absaetze (s.o.) zu stutzen, aber das ist nur ca. halb so leserlich. Auch
 nicht besser wird es wenn man ganz viele AKRONYME verwendet ... Aber
 manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 
+Ein -- Absatz -- mit ganz -- viel Gedankenstrichen. Und hier -- ein einzelner.
+
 { Hier noch ein Hinweis in verbatim, mit <>"'& \\ Sonderzeichen
+
+\end{ednote}
 
   mit einer Leerzeile und { nested braces }. }
 
