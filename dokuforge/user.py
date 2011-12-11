@@ -42,22 +42,24 @@ class User:
             Grants the coresponding privelege for one course. Write does
             never imply read.
          - akademie_x_y --
-            x in {read, write, view}, y akademiename
+            x in {read, write, view, metadata}, y akademiename
 
             Grants the coresponding privelege for one academy, in the case
             of read and write implying the priveleges for all courses of the
-            academy. Having write priveleges for an academy enables a user
-            to create courses. The view privelege enables the user to access
-            the academy but does not grant any recursive priveleges (in
-            contrast to akademie_read_* which allows to read all courses).
+            academy. The view privelege enables the user to access the
+            academy but does not grant any recursive priveleges (in contrast
+            to akademie_read_* which allows to read all courses). The
+            metadata privelege grants the ability to modify academy/course
+            titles and in conjunction with write the ability to create new
+            courses.
          - gruppe_x_y --
-            x in {read, write, show}, y gruppenname
+            x in {read, write, show, metadata}, y gruppenname
 
             Grants the coresponding privelege for a whole group of academies
             implying the priveleges for all academies of this group and all
             courses of these academies. The privelege show controles whether
             academies of the corresponding groups are displayed.
-         - df_{read, write, show} --
+         - df_{read, write, show, metadata} --
             Grants a global version of the corresponding privelege. This is
             a global privelege and thus not affected by explicitly revoked
             permissions.
