@@ -34,6 +34,7 @@ Kursübersicht
 <a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a>
 <a href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a>
 <a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
+<a href="{{ buildurl("showdeadcourses")|e }}">gel&ouml;schte Kurse wiederherstellen</a>
 {%- endif -%}
 </div>
 <div class="infostring">{{ "Letzte Änderung von %s am %s" | format(academy.lastchange['author'], academy.lastchange['date']) | e }}&nbsp;|&nbsp;{{ academy.estimate.output() | e}}</div>

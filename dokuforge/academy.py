@@ -49,11 +49,11 @@ class Academy(StorageDir):
         """
         return self.getcontent("groups").decode("utf8")
 
-    def viewCourses(self):
+    def viewCourses(self, alive=True):
         """
         @returns: list of Course.view dicts for all courses of this academy
         """
-        return [course.view() for course in self.listCourses()]
+        return [course.view() for course in self.listCourses(alive=alive)]
 
     def listCourses(self, alive=True):
         """
@@ -153,6 +153,7 @@ class Academy(StorageDir):
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
+                         deadcourses=lambda : self.viewCourses(alive = False),
                          groups=self.getgroups,
                          lastchange=self.lastchange,
                          estimate=self.estimate)
