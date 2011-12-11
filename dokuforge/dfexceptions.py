@@ -103,3 +103,33 @@ class TemporaryRequestRedirect(exceptions.HTTPException,
     def get_response(self, environ):
         return werkzeug.utils.redirect(self.new_url, self.code)
 
+class RcsError(DfException):
+    """
+    An RcsError does not occur under normal circumstances. It can be thought
+    of as an AssertionError, except that you cannot suppress it with -O.
+    It may be raised when the disk is full or when dokuforge is lacking
+    permission to access its own files for example.
+    """
+    def __init__(self, msg, stderr="", code=0):
+        """
+        @type msg: str
+        @type stderr: str
+        @param stderr: the contents of stderr of a called provides being
+                responsible for this exception if any
+        @type code: int
+        @param code: the exit status of a called process being responsible for
+                this exception if any
+        """
+        self.msg = msg
+        self.stderr = stderr
+        self.code = code
+    def __str__(self):
+        return self.msg
+    def __repr__(self):
+        if self.code:
+            return "%s(%r, %r, %d)" % (self.__class__.__name__, self.msg,
+                                       self.stderr, self.code)
+        if self.stderr:
+            return "%s(%r, %r)" % (self.__class__.__name__, self.msg,
+                                   self.stderr)
+        return "%s(%r)" % (self.__class__.__name__, self.msg)

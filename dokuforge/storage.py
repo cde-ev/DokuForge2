@@ -6,15 +6,28 @@ import time
 import subprocess
 import re
 
-from dokuforge.common import check_output
 from dokuforge.common import validateRcsRevision
-from dokuforge.dfexceptions import RcsUserInputError
+from dokuforge.dfexceptions import RcsUserInputError, RcsError
 from dokuforge.dfexceptions import FileDoesNotExist
-
-from subprocess import CalledProcessError
 
 RCSENV = os.environ.copy()
 RCSENV["LC_ALL"] = "C"
+
+def call_rcs(cmdline):
+    """
+    @type cmdline: [str]
+    @rtype: str
+    @returns: the content received on stdout
+    @raises RcsError: if the process exits with a non-zero status
+    """
+    assert isinstance(cmdline, list)
+    process = subprocess.Popen(cmdline, env=RCSENV, stderr=subprocess.PIPE,
+                               stdout=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    if process.returncode:
+        raise RcsError("failure invoking %r" % cmdline, stderr,
+                       process.returncode)
+    return stdout
 
 def rlogv(filename):
     """
@@ -47,6 +60,7 @@ def rloghead(filename):
              it will contain the keys 'revision', 'author', and 'date'.
     @rtype: {str: str}
     @raises FileDoesNotExist:
+    @raises RcsError:
     """
     assert isinstance(filename, str)
     
@@ -61,10 +75,7 @@ def rloghead(filename):
     if revision is None:
         raise FileDoesNotExist(filename)
     answer['revision'] = revision
-    try:
-        rlog = check_output(["rlog","-q","-r%s" % revision,filename], env=RCSENV)
-    except subprocess.CalledProcessError:
-        assert False # Since we know that the revision is valid, this call cannot fail
+    rlog = call_rcs(["rlog", "-q", "-r%s" % revision, filename])
     lines = rlog.splitlines()
     try:
         while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
@@ -171,7 +182,7 @@ class Storage(object):
         @type message: str
         @raises OSError:
         @raises IOError:
-        @raises subproccess.CalledProcessError:
+        @raises RcsError:
         """
         if isinstance(content, basestring):
             assert isinstance(content, str)
@@ -180,8 +191,7 @@ class Storage(object):
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
             ## we ensured the existence of the file, hence the call may not fail
-            subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
-                                  env=RCSENV)
+            call_rcs(["co", "-f", "-q", "-l", self.fullpath()])
             objfile = file(self.fullpath(), mode = "w")
             shutil.copyfileobj(content, objfile)
             objfile.close()
@@ -189,13 +199,13 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())
-            subprocess.check_call(args, env=RCSENV)
+            call_rcs(args)
 
     def ensureexistence(self, havelock=None):
         """
         @raises OSError:
         @raises IOError:
-        @raises subprocess.CalledProcessError:
+        @raises RcsError:
         """
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
@@ -203,18 +213,18 @@ class Storage(object):
                     # These calls can only fail for reasons like
                     # disk full, permision denied -- all cases where
                     # dokuforge is not installed correctly
-                    subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
-                                           self.fullpath()], env=RCSENV)
+                    call_rcs(["rcs", "-q", "-i", "-t-created by store",
+                              self.fullpath()])
                     file(self.fullpath(), mode = "w").close()
-                    subprocess.check_call(["ci", "-q", "-f",
-                                           "-minitial, implicit, empty commit",
-                                           self.fullpath()], env=RCSENV)
+                    call_rcs(["ci", "-q", "-f",
+                              "-minitial, implicit, empty commit",
+                              self.fullpath()])
 
     def asrcs(self, havelock=None):
         """
         @raises OSError:
         @raises IOError:
-        @raises subprocess.CalledProcessError:
+        @raises RcsError:
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
@@ -228,7 +238,7 @@ class Storage(object):
         @rtype: str or None
         @raises OSError:
         @raises IOError:
-        @raises subprocess.CalledProcessError:
+        @raises RcsError:
         """
         self.ensureexistence(havelock = havelock)
         result = rlogv(self.fullpath("%s,v"))
@@ -243,7 +253,7 @@ class Storage(object):
                   it will contain the keys 'revision', 'author', and 'date'.
         @raises OSError:
         @raises IOError:
-        @raises subprocess.CalledProcessError:
+        @raises RcsError:
         """
         self.ensureexistence(havelock=havelock)
         try:
@@ -256,14 +266,13 @@ class Storage(object):
         """
         @raises OSError:
         @raises IOError:
-        @raises subprocess.CalledProcessError:
+        @raises RcsError:
         """
         self.ensureexistence(havelock = havelock)
         # We ensured the existence of the file; hence the call can only fail
         # if rcs is not installed properly and/or filepermissions are set
         # incorrectly -- in other words, if df is not installed correctly
-        return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
-                            env=RCSENV)
+        return call_rcs(["co", "-q", "-p", "-kb", self.fullpath()])
 
     def startedit(self, havelock=None):
         """
@@ -331,9 +340,12 @@ class Storage(object):
             ## conflict
             # 1.) store in a branch
             try:
-                subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
-                                       self.fullpath()], env=RCSENV)
-            except CalledProcessError:
+                call_rcs(["co", "-f", "-q", "-l%s" % version,
+                          self.fullpath()])
+            except RcsError, error:
+                # FIXME: verify that the passed revision is indeed rejected
+                # Otherwise we may be hiding real errors. Looking at
+                # error.stderr might help here.
                 raise RcsUserInputError()
             objfile = file(self.fullpath(), mode = "w")
             objfile.write(newcontent)
@@ -343,12 +355,16 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())
-            subprocess.check_call(args, env=RCSENV)
+            call_rcs(args)
             # 2.) merge in head
             os.chmod(self.fullpath(), 0600)
-            subprocess.call(["rcsmerge", "-q", "-r%s" % version,
-                             self.fullpath()]) # Note: non-zero exit status is
-                                               # OK!
+            try:
+                call_rcs(["rcsmerge", "-q", "-r%s" % version, self.fullpath()])
+            except RcsError, error:
+                # Note: non-zero exit status is OK!
+                # FIXME: can we distinguish merge conflicts from other errors
+                # using error.stderr or error.code?
+                pass
             objfile = file(self.fullpath(), mode = "r")
             mergedcontent = objfile.read()
             objfile.close()
