@@ -222,6 +222,10 @@ class Application:
                  endpoint="academy"),
             rule("/docs/<identifier:academy>/!createcourse",
                  methods=("GET", "HEAD"), endpoint="createcoursequiz"),
+            rule("/docs/<identifier:academy>/!deadcourses",
+                 methods=("GET", "HEAD"), endpoint="showdeadcourses"),
+            rule("/docs/<identifier:academy>/!relinkcourse",
+                 methods=("POST",), endpoint="relinkcourse"),
             rule("/docs/<identifier:academy>/!createcourse",
                  methods=("POST",), endpoint="createcourse"),
             rule("/docs/<identifier:academy>/!export", methods=("GET", "HEAD"),
@@ -254,6 +258,8 @@ class Application:
                  methods=("GET", "HEAD"), endpoint="coursetitle"),
             rule("/docs/<identifier:academy>/<identifier:course>/!title",
                  methods=("POST",), endpoint="coursetitlesave"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!delete",
+                 methods=("POST",), endpoint="deletecourse"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/",
                  methods=("GET", "HEAD"), endpoint="page"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!rcs",
@@ -647,6 +653,32 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_deadpages(rs, aca, c)
 
+    def do_showdeadcourses(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
+        assert academy is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        if not rs.user.allowedWrite(aca):
+            return dfexceptions.NotEnoughPrivileges()
+        return self.render_deadcourses(rs, aca)
+
+    def do_listblobs(self, rs, academy=None, course=None, page=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedRead(aca, c):
+            return dfexceptions.NotEnoughPrivileges()
+        return self.render_listblobs(rs, aca, c, page)
+
     def do_showdeadblobs(self, rs, academy=None, course=None, page=None):
         """
         @type rs: RequestState
@@ -786,6 +818,21 @@ class Application:
         c.delpage(page, user=rs.user.name)
         return self.render_course(rs, aca, c)
 
+    def do_deletecourse(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedWrite(aca, c) or not rs.user.allowedWrite(aca):
+            return werkzeug.exceptions.Forbidden()
+        c.setlivingstate(False)
+        return self.render_academy(rs, aca)
+
     def do_blobdelete(self, rs, academy=None, course=None, page=None,
                       blob=None):
         """
@@ -832,6 +879,21 @@ class Application:
             number = 0
         c.relink(number, user=rs.user.name)
         return self.render_course(rs, aca, c)
+
+    def do_relinkcourse(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
+        assert academy is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        if not rs.user.allowedWrite(aca):
+            return werkzeug.exceptions.Forbidden()
+        name = rs.request.form["name"] # FIXME: raises KeyError
+        c = self.getCourse(aca, name, rs.user, allowdead=True)
+        c.setlivingstate(True)
+        return self.render_academy(rs, aca)
 
     def do_relinkblob(self, rs, academy=None, course=None, page=None):
         """
@@ -1493,6 +1555,15 @@ class Application:
             academy=theacademy.view(),
             course=thecourse.view())
         return self.render("dead.html", rs, params)
+
+    def render_deadcourses(self, rs, theacademy):
+        """
+        @type rs: RequestState
+        @type theacademy: Academy
+        """
+        params = dict(
+            academy=theacademy.view())
+        return self.render("deadcourses.html", rs, params)
 
     def render_course(self, rs, theacademy, thecourse):
         """
