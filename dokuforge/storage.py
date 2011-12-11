@@ -204,7 +204,6 @@ class Storage(object):
     def ensureexistence(self, havelock=None):
         """
         @raises OSError:
-        @raises IOError:
         @raises RcsError:
         """
         if not os.path.exists(self.fullpath("%s,v")):
@@ -215,7 +214,11 @@ class Storage(object):
                     # dokuforge is not installed correctly
                     call_rcs(["rcs", "-q", "-i", "-t-created by store",
                               self.fullpath()])
-                    file(self.fullpath(), mode = "w").close()
+                    try:
+                        file(self.fullpath(), mode = "w").close()
+                    except IOError, err:
+                        raise RcsError("failed to touch %r: %s" %
+                                       (self.fullpath(), str(err)))
                     call_rcs(["ci", "-q", "-f",
                               "-minitial, implicit, empty commit",
                               self.fullpath()])
@@ -237,7 +240,6 @@ class Storage(object):
         """
         @rtype: str or None
         @raises OSError:
-        @raises IOError:
         @raises RcsError:
         """
         self.ensureexistence(havelock = havelock)
@@ -252,7 +254,6 @@ class Storage(object):
         @returns: a str-str dict with information about the head commit; in particular,
                   it will contain the keys 'revision', 'author', and 'date'.
         @raises OSError:
-        @raises IOError:
         @raises RcsError:
         """
         self.ensureexistence(havelock=havelock)
@@ -265,7 +266,6 @@ class Storage(object):
     def content(self, havelock=None):
         """
         @raises OSError:
-        @raises IOError:
         @raises RcsError:
         """
         self.ensureexistence(havelock = havelock)
