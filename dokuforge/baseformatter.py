@@ -26,7 +26,7 @@ class BaseFormatter:
     escapeexceptions = []
 
     def __init__(self, tree):
-    	self.tree = tree
+        self.tree = tree
 
     def generateoutput(self, tree=None, escape=True):
         """
