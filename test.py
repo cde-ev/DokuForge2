@@ -17,6 +17,7 @@ import unittest
 from urllib import addinfourl
 from urllib2 import BaseHandler
 from wsgiref.validate import validator
+import subprocess
 
 import createexample
 from dokuforge import buildapp
@@ -283,6 +284,16 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
             self.br.open(form.click(label="Speichern und Editieren"))
             self.assertTrue(outputstr.encode("utf8") in self.get_data())
         self.is_loggedin()
+
+    def testExport(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("/!export$")))
+        p = subprocess.Popen(['file', '-'], stdin = subprocess.PIPE,
+                             stdout=subprocess.PIPE)
+        self.assertTrue("bzip2 compressed data" in
+                        p.communicate(self.get_data())[0])
 
     def testAcademyGroups(self):
         self.br.open(self.url)
