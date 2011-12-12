@@ -59,7 +59,7 @@
 {%- if user.mayExport(academy) %}
 <a href="{{ buildurl("raw")|e }}">Roh-Export</a>
 {%- endif -%}
-{%- if user.allowedWrite(academy) and user.allowedWrite(academy, course) %}
+{%- if user.allowedMeta(academy) %}
 <a href="{{ buildurl("coursetitle")|e }}">Titel bearbeiten</a>
 </a>
 {%- endif -%}
