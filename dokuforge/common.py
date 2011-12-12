@@ -213,12 +213,17 @@ def validateUserConfig(config):
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
-            parser.get(name, 'permissions')
+            [(perm.strip().split(' ')[0], perm.strip().split(' ')[1])
+                for perm in parser.get(name, 'permissions').split(',')]
             parser.get(name, 'status')
             parser.get(name, 'password')
     except ConfigParser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+    except IndexError as err:
+        raise CheckError(u"Die Privilegien sind nicht wohlgeformt!",
+                         u"Es fehlt ein Teil einer Angabe")
+
 
 def validateGroupConfig(config):
     """
