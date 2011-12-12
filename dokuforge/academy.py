@@ -38,15 +38,6 @@ class Academy(StorageDir):
         """
         return self.getcontent("groups").decode("utf8").split()
 
-    def getgroupsstring(self):
-        """
-        loads the current groups from disk, string version.
-
-        @returns: the groups of which this academy is a member
-        @rtype: unicode
-        """
-        return self.getcontent("groups").decode("utf8")
-
     def viewCourses(self):
         """
         @returns: list of Course.view dicts for all courses of this academy
