@@ -221,7 +221,8 @@ class Context:
             self.lookleafdata(pos + 1) == u'.' or \
             self.lookleafdata(pos + 2) == u'.':
             return False
-        while not self.lookleafdata(pos + 2) == u'.':
+        while not self.lookleafdata(pos + 2) == u'.' and \
+            not self.lookleafdata(pos) is None:
             if self.lookleaftype(pos) == "Whitespace" and \
                 self.lookleafdata(pos + 1) == u'-' and \
                 self.lookleafdata(pos + 2) == u'-':
