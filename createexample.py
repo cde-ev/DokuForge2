@@ -95,7 +95,7 @@ $$\int_1^{\sqrt[3]{3}} z^2 dz \cdot \cos(\\frac{3\pi}{9}) = \ln(\sqrt[3]{e})$$
                          (u'course03', u"Selbstverteidigung gegen Poltergeister", 4)])
     elif size > 0:
         aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
-                        [(u'course01',u"Area51", 2)])
+                        [(u'kurs01',u"Area51", 2)])
 
 if __name__ == '__main__':
     main()

@@ -165,7 +165,7 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
         self.is_loggedin()
         self.assertTrue("Roh-Export" in self.get_data())
 
@@ -173,8 +173,8 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
         self.is_loggedin()
         self.assertTrue("neues Bild hinzuf" in self.get_data())
 
@@ -182,8 +182,8 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
         for (inputstr, outputstr) in teststrings:
             self.br.open(self.br.click_link(text="Editieren"))
             form = list(self.br.forms())[1]
@@ -196,8 +196,8 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
         self.br.open(self.br.click_link(text="Editieren"))
         form = list(self.br.forms())[1]
         form["content"] = \
@@ -220,7 +220,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Hochrücken".encode("utf8")))
         self.is_loggedin()
@@ -229,7 +229,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
         form = list(self.br.forms())[2]
         self.br.open(form.click(label=u"Neuen Teil anlegen".encode("utf8")))
         self.is_loggedin()
@@ -239,7 +239,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/!title$")))
         for (inputstr, outputstr) in teststrings:
             form = list(self.br.forms())[1]
@@ -252,8 +252,8 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.assertFalse("Teil&nbsp;#0" in self.get_data())
@@ -263,11 +263,11 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/!deadpages$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/!deadpages$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label="wiederherstellen"))
         self.assertTrue("Teil&nbsp;#0" in self.get_data())
@@ -288,6 +288,22 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testExport(self):
         self.br.open(self.url)
         self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(text="Editieren"))
+        form = list(self.br.forms())[1]
+        form["content"] = \
+"""[Section]
+(Authors)
+*keyword*, $\\sqrt{2}$ and _emphasis_
+$$\\sqrt{2}$$
+[[subsection]]
+- bullet1
+- bullet2
+chars like < > & " % to be escaped and an { ednote \\end{ednote} }
+"""
+        self.br.open(form.click(label="Speichern und Beenden"))
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("/!export$")))
         p = subprocess.Popen(['file', '-'], stdin = subprocess.PIPE,
@@ -455,9 +471,9 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -473,9 +489,9 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -483,7 +499,7 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/0/$")))
         self.assertTrue("Bildunterschrift/Kommentar: Shiny blob" in self.get_data())
         self.assertTrue("K&uuml;rzel: blob" in self.get_data())
         self.is_loggedin()
@@ -492,9 +508,9 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -502,8 +518,8 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/!md5$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/0/!md5$")))
         self.assertTrue("MD5 Summe des Bildes ist" in self.get_data())
         self.is_loggedin()
 
@@ -511,9 +527,9 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -521,8 +537,8 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/!edit$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/0/!edit$")))
         form = list(self.br.forms())[1]
         form["comment"] = "Real Shiny blob"
         form["label"] = "blub"
@@ -537,9 +553,9 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -559,9 +575,9 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -573,7 +589,7 @@ permissions = df_superadmin True,df_admin True
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.assertTrue("Keine Bilder zu diesem Teil gefunden." in self.get_data())
         self.assertFalse("#[0] (README-rlog.txt)" in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!deadblobs$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!deadblobs$")))
         self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
         form = list(self.br.forms())[1]
         self.br.open(form.click(label="wiederherstellen"))
@@ -585,9 +601,9 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/!addblob$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = ""
