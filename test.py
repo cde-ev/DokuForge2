@@ -305,12 +305,15 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form["content"] = \
 """[Section]
 (Authors)
-*keyword*, $\\sqrt{2}$ and _emphasis_
+*keyword*, $\\sqrt{2}$ and _emphasis_ -- abbreviations: z.B. vgl. s. o.
 $$\\sqrt{2}$$
 [[subsection]]
 - bullet1
 - bullet2
-chars like < > & " % to be escaped and an { ednote \\end{ednote} }
+
+text -- embraced -- and now -- end 9000000. we look -- no further
+some backslashes \\\\ and $\\\\$ and \\command $\\\\
+$ chars like < > & " to be escaped and an { ednote \\end{ednote} }
 """
         self.br.open(form.click(label="Speichern und Beenden"))
         self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
@@ -356,7 +359,7 @@ $$\\sqrt{2}$$
 [[subsection]]
 - bullet1
 - bullet2
-chars like < > & " to be escaped and an { ednote \\end{ednote} }
+chars like < > & " % to be escaped and an { ednote \\end{ednote} }
 """
         self.br.open(form.click(label="Speichern und Beenden"))
         self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!rcs$")))
