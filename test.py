@@ -216,6 +216,15 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.assertTrue("ednote \\end{ednote}" in content)
         self.is_loggedin()
 
+    def testGroupChange(self):
+        self.br.open(self.url)
+        self.do_login()
+        form = list(self.br.forms())[1]
+        form["group"] = ["qed"]
+        self.br.open(form.click(label="Gruppe wechseln"))
+        self.is_loggedin()
+        self.assertTrue("option value=\"qed\" selected" in self.get_data())
+
     def testMovePage(self):
         self.br.open(self.url)
         self.do_login()
@@ -319,6 +328,41 @@ chars like < > & " % to be escaped and an { ednote \\end{ednote} }
                              stdout=subprocess.PIPE)
         self.assertTrue("bzip2 compressed data" in
                         p.communicate(self.get_data())[0])
+
+    def testRawCourse(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/!raw$")))
+        p = subprocess.Popen(['file', '-'], stdin = subprocess.PIPE,
+                             stdout=subprocess.PIPE)
+        self.assertTrue("bzip2 compressed data" in
+                        p.communicate(self.get_data())[0])
+
+    def testRcsPage(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(text="Editieren"))
+        form = list(self.br.forms())[1]
+        form["content"] = \
+"""[Section]
+(Authors)
+*keyword*, $\\sqrt{2}$ and _emphasis_
+$$\\sqrt{2}$$
+[[subsection]]
+- bullet1
+- bullet2
+chars like < > & " to be escaped and an { ednote \\end{ednote} }
+"""
+        self.br.open(form.click(label="Speichern und Beenden"))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!rcs$")))
+        self.assertTrue("bullet1" in self.get_data())
+        self.assertTrue("head" in self.get_data())
+
 
     def testAcademyGroups(self):
         self.br.open(self.url)
@@ -513,6 +557,25 @@ permissions = df_superadmin True,df_admin True
         self.assertTrue("K&uuml;rzel: blob" in self.get_data())
         self.is_loggedin()
 
+    def testListBlobs(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!listblobs$")))
+        self.assertTrue("Liste der Abbildungen" in self.get_data())
+        self.assertTrue("Löschen" in self.get_data())
+        self.is_loggedin()
+
     def testMD5Blob(self):
         self.br.open(self.url)
         self.do_login()
@@ -531,6 +594,24 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/0/!md5$")))
         self.assertTrue("MD5 Summe des Bildes ist" in self.get_data())
         self.is_loggedin()
+
+    def testDownloadBlob(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/0/!download$")))
+        self.assertTrue("rlog, as found in FreeBSD" in self.get_data())
 
     def testEditBlob(self):
         self.br.open(self.url)
