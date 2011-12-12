@@ -42,23 +42,23 @@ class User:
             Grants the coresponding privelege for one course. Write does
             never imply read.
          - akademie_x_y --
-            x in {read, write, view, metadata}, y akademiename
+            x in {read, write, view, meta}, y akademiename
 
             Grants the coresponding privelege for one academy, in the case
             of read and write implying the priveleges for all courses of the
             academy. The view privelege enables the user to access the
             academy but does not grant any recursive priveleges (in contrast
             to akademie_read_* which allows to read all courses). The
-            metadata privelege grants the ability to modify academy/course
+            meta privelege grants the ability to modify academy/course
             titles, academy groups and the ability to create new courses.
          - gruppe_x_y --
-            x in {read, write, show, metadata}, y gruppenname
+            x in {read, write, show, meta}, y gruppenname
 
             Grants the coresponding privelege for a whole group of academies
             implying the priveleges for all academies of this group and all
             courses of these academies. The privelege show controles whether
             academies of the corresponding groups are displayed.
-         - df_{read, write, show, metadata} --
+         - df_{read, write, show, meta} --
             Grants a global version of the corresponding privelege. This is
             a global privelege and thus not affected by explicitly revoked
             permissions.
@@ -223,6 +223,34 @@ class User:
             return False
         ## at this point we ask for a write privelege of a specific course
         return self.hasPermission(u"kurs_write_%s_%s" % (aca, course))
+
+    def allowedMeta(self, aca):
+        """
+        @type aca: Academy or LazyView
+        @rtype: bool
+        """
+        ## first check global priveleges
+        if self.hasPermission(u"df_meta") or self.isSuperAdmin():
+            return True
+        ## now we need to resolve aca
+        ## a bit care has to be taken since we need the groups too
+        if isinstance(aca, LazyView):
+            groups = aca["groups"]
+            aca = aca["name"]
+        else:
+            assert isinstance(aca, Academy)
+            groups = aca.getgroups()
+            aca = aca.name
+        ## second check for explicitly revoked privilege
+        if self.revokedPermission(u"akademie_meta_%s" % aca):
+            return False
+        ## now we are done with revoked permissions and can continue
+        ## third check group level privileges
+        for g in groups:
+            if self.hasPermission(u"gruppe_meta_%s" % g):
+                return True
+        ## fourth check the academy level priveleges
+        return self.hasPermission(u"akademie_meta_%s" % aca):
 
     def mayExport(self, aca):
         """
