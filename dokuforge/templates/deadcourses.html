@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block subheading %}
+{{ academy.title|e }}
+{% endblock %}
+{% block location %}
+{{ navbar([("academy", academy.title),
+	   ("showdeadcourses", "Attic")])}}
+{% endblock %}
+{% block content %}
+{%- if academy.deadcourses %}
+<ul>
+	{%- for course in academy.deadcourses %}
+	<li> #{{ course.title|string }}
+         {{ button(buildurl("relinkcourse"), "wiederherstellen", dict(name=course.name)) }}
+	</li>
+	{%- endfor %}
+</ul>
+{%- else -%}
+<em>Keine gel&ouml;schten Kurse gefunden.</em>
+{%- endif -%}
+{% endblock %}
