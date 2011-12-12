@@ -250,7 +250,7 @@ class User:
             if self.hasPermission(u"gruppe_meta_%s" % g):
                 return True
         ## fourth check the academy level priveleges
-        return self.hasPermission(u"akademie_meta_%s" % aca):
+        return self.hasPermission(u"akademie_meta_%s" % aca)
 
     def mayExport(self, aca):
         """
