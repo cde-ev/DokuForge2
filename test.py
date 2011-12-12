@@ -479,6 +479,52 @@ permissions = df_superadmin True,df_admin True
         self.assertTrue("Es ist ein allgemeiner Parser-Fehler aufgetreten!" in self.get_data())
         self.is_loggedin()
 
+    def testPermissions(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(url_regex=re.compile("/admin/$")))
+        form = list(self.br.forms())[1]
+        form["content"] = \
+"""[bob]
+status = ueberadmin
+password = secret
+permissions = df_superadmin True,df_admin True
+
+[arthur]
+status = admin
+password = a
+permissions = df_read True,df_admin True,df_write True,df_show,df_export,df_create True
+
+[clara]
+status = user
+password = c
+permissions = gruppe_read_cde True,gruppe_write_cde True,gruppe_show_cde True
+
+[dale]
+status = user
+password = d
+permissions = akademie_read_xa2011-1 True,akademie_write_xa2011-1 True,akademie_show_xa2011 True
+
+[eric]
+status = user
+password = e
+permissions = akademie_read_xa2011-1 True,akademie_write_xa2011-1 True,akademie_show_xa2011 True
+
+[goethe]
+status = user
+password = g
+permissions = akademie_read_xa2011-1 True,akademie_write_xa2011-1 True,akademie_show_xa2011 True,kurs_write_xa2011-1_kurs01 False,kurs_read_xa2011-1_kurs01 False
+
+[fin]
+status = user
+password = f
+permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_read_xa2011-1_kurs01 True
+"""
+        self.br.open(form.click(label="Speichern und Editieren"))
+        self.do_logout()
+        self.do_login(username="arthur", password="a")
+        # FIXME: more tests
+
     def testStyleguide(self):
         self.br.open(self.url)
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
