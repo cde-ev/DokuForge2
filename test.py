@@ -304,6 +304,15 @@ $$\\sqrt{2}$$
 chars like < > & " % to be escaped and an { ednote \\end{ednote} }
 """
         self.br.open(form.click(label="Speichern und Beenden"))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        form = list(self.br.forms())[1]
+        form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
+        self.br.open(form.click(label="Bild hochladen"))
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("/!export$")))
         p = subprocess.Popen(['file', '-'], stdin = subprocess.PIPE,
