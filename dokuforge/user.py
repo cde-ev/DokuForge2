@@ -50,8 +50,7 @@ class User:
             academy but does not grant any recursive priveleges (in contrast
             to akademie_read_* which allows to read all courses). The
             metadata privelege grants the ability to modify academy/course
-            titles and in conjunction with write the ability to create new
-            courses.
+            titles and the ability to create new courses.
          - gruppe_x_y --
             x in {read, write, show, metadata}, y gruppenname
 
