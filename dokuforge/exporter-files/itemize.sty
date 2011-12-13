@@ -1,4 +1,4 @@
-% Copyright (C) 2000-2005 Marc Schäfer <marc_schaefer@gmx.de>
+% Copyright (C) 2000-2005 Marc Schaefer <marc_schaefer@gmx.de>
 % All Rights Reserved.
 % Permission for use in all CdE and BuB documentations is granted.
 
@@ -27,7 +27,7 @@
 %
 
 % The option XXX is implemented by defining macros with the
-% names `itop@XXX@start', `itop@XXX@declaration' and 
+% names `itop@XXX@start', `itop@XXX@declaration' and
 % `itop@XXX@end' which will called at the appropriate times.
 % Not all macros have to be defined.
 
@@ -56,7 +56,7 @@
 
 %
 % Processing Lists
-% 
+%
 
 % The following macro takes a comma-separated option list
 % and for each option calls the command named `itop@<OPTION>@#2'
@@ -124,5 +124,9 @@
 \let\itwr@enddescription\enddescription
 \def\description%
   {\itpr@initialise\itwr@description\itwr@enddescription\enddescription}
-  
+
+%% Spiegelstriche in Aufzaehlungen bis zweite Stufe
+\renewcommand{\labelitemi}{--}
+\renewcommand{\labelitemii}{\labelitemiii}
+
 \endinput

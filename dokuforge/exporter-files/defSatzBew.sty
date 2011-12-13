@@ -1,0 +1,38 @@
+% TODO: rename and add to dateiendieausdemexporterkommensollen
+
+% Saetze und Beweise:
+\newenvironment{definition}%
+  {\topsep0.5\topsep
+   \begin{trivlist}\item[\hskip\labelsep\textbf{Definition}\enskip]}
+  {\end{trivlist}}
+\newenvironment{lemma}%
+  {\topsep0.5\topsep
+   \begin{trivlist}\item[\hskip\labelsep\textbf{Lemma}\enskip]}
+  {\end{trivlist}}
+\newenvironment{satz}%
+  {\topsep0.5\topsep
+   \begin{trivlist}\item[\hskip\labelsep\textbf{Satz}\enskip]}
+  {\end{trivlist}}
+\newenvironment{satzarg}[1]%
+  {\topsep0.5\topsep
+   \begin{trivlist}\item[\hskip\labelsep{\textbf{Satz #1}}\enskip]}
+  {\end{trivlist}}
+\newenvironment{beweis}%
+  {\topsep0.5\topsep
+   \begin{trivlist}\item[\hskip\labelsep{\textbf{Beweis}}\enskip]}
+  {\hfill$\Box$\par\end{trivlist}}
+  \newenvironment{Kriterium}[1]%
+  {\topsep0.5\topsep
+   \begin{trivlist}\item[\hskip\labelsep{\textbf{#1}}\enskip]}
+  {\end{trivlist}}
+    \newenvironment{beispiel}%
+  {\topsep0.5\topsep
+   \begin{trivlist}\item[\hskip\labelsep{\textbf{Beispiel}}\enskip]}
+  {\end{trivlist}}
+
+
+%%aus der Verstaendlich entstanden, fuer Setzen des Induktionsbeweises im Kurs 17
+
+\newenvironment{induktionsbeweis}%
+  {\def\item##1~--{\medskip\noindent{\it##1}\enskip}}%
+  {}

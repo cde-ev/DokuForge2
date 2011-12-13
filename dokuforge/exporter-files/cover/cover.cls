@@ -5,7 +5,7 @@
 %% Basisklasse: scrbook
 \LoadClass[oneside]{scrbook}
 
-\RequirePackage[latin9]{inputenc}
+\RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
 \RequirePackage[ngerman]{babel}
 
@@ -16,7 +16,7 @@
 
 \usepackage{pst-all}
 
-\def\EV{e.\kern-0.1em V.}
+\newcommand*{\CdEeV}{CdE~e.V.}
 
 \setlength{\oddsidemargin}{-1in}
 
@@ -40,11 +40,11 @@
 \ifx\true#4%
 \rput[l]{0}(0,+#1){\psline(0,0)(1,1)\psline(29.7,0)(28.7,1)}
 \rput[l]{0}(0,-#1){\psline(0,0)(1,-1)\psline(29.7,0)(28.7,-1)}
-% Ränder
+% RÃ¤nder
 \rput[l]{0}(0,+#1){\psline(0,0)(29.7,0)}
 \rput[l]{0}(0,-#1){\psline(0,0)(29.7,0)}
 \fi
-% Eule
+% Logo
 \rput[c]{270}(2.6,-0.05){\includegraphics[width=4mm]{logo}}
 % Text
 \rput[l]{0}( 4.0,-0.05){#2}

@@ -2,7 +2,7 @@
 \ProvidesClass{parallel}[2003/07/23 JGW Parallel Environment]
 
 %
-% \startparallel 
+% \startparallel
 %     [\prependifcontains:\makelabelit,\foreignlanguage{german}]
 %   This is the first line
 %   This is the second line
@@ -69,7 +69,7 @@
 \def\theemptied#1%
   {\expandafter#1\expandafter{\expandafter}\the#1}
 
-  
+
 \def\dostartparallel#1%
   {\let\the@stopparalleltoken#1%
    \@ifnextchar[{\dodostartparallel}{\dodostartparallel[]}}
@@ -123,7 +123,7 @@
    \let\[\doparsortrow
    \parallelresult={\[}%
    \doparsortrows}
-   
+
 \def\dodostopparallel%
   {\appendtoks\]\to\parallelresult
    \par\vskip\topsep
@@ -172,7 +172,7 @@
   {\gdef#1{#4\@ifnextchar[{#2}{#2[]}}%
    \gdef#2[##1]{\dostartparallel#3[#5]}%
    \gdef#3{#6}\egroup}
- 
+
 \defineparallel\parallel{}{}
 \defineparallel\noindentparallel%
   {\bgroup\parallelmargin\z@}{\egroup}

@@ -1,0 +1,12 @@
+%%
+%% ticket for "Zweckform L7160" 
+%%
+\unitlength=1mm
+
+\hoffset=-1.82cm    %  1inch     - 0.72cm = 1.82cm (Rand ist 0.72cm)
+\voffset=-1.37cm    %  1.136inch - 1.52cm = 1.37cm (Rand ist 1.52cm)
+
+\ticketNumbers{3}{7}
+
+\ticketSize{63.5}{38.1}     % in unitlength
+\ticketDistance{2.5}{0}     % in unitlength

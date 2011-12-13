@@ -42,10 +42,10 @@
 %
 %    \begin{mathalign}
 %           a^2 + b^2 &= c^2       \\
-%      \iff       a^2 &= b^2 + b^2 
+%      \iff       a^2 &= b^2 + b^2
 %    \end{mathalign}
 %
-% By default, \Leftrightarrow, \Leftarrow, \Rightarrow and \iff are 
+% By default, \Leftrightarrow, \Leftarrow, \Rightarrow and \iff are
 % recognised, but every option given to this class which is neither
 % fleqn, *reset nor *fakelabels will be added to this list. If *reset
 % is among the options, the default list will be replaced instead of
@@ -124,7 +124,7 @@
 
 % One major problem with the way things are done here is that
 % (since we change the catcode of &) nested alignments just
-% won't work the way it should. Unfortunately, I don't know a 
+% won't work the way it should. Unfortunately, I don't know a
 % way to redefine \halign which always correctly restores
 % the catcode and undoes the change, even in the presence of
 % \edef-trickery as used in array. We can, however postulate
@@ -242,7 +242,7 @@
 
 % Now that we have \ma@curequiv, \ma@curlabel and the two sides if the
 % equation, we can start building the actual alignment. Note that the
-% template für these columns will be empty, so we have to insert all
+% template for these columns will be empty, so we have to insert all
 % the \hfils here.
 
 % In case there is no rhs, we fix the left column to be 1cm wide and

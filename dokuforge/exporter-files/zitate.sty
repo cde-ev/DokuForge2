@@ -1,0 +1,34 @@
+% zitat-Umgebung:
+%
+% \begin{zitat}
+%   blablabla \author{Ich}, irgendwo
+% \end{zitat}
+
+\makeatletter
+
+{\catcode`\"=\active% german is not yet active ... FIXME
+  \gdef\zt@checkforquote%
+    {\@ifnextchar"\zt@docheckforquote\@empty}
+  \gdef\zt@docheckforquote"%
+    {\@ifnextchar`\zt@llapquote"}
+  \gdef\zt@llapquote`%
+    {\noindent\llap{"`}}}
+
+\let\zt@end\@empty
+
+\def\zt@author#1%
+  {\unskip\nobreak\hfill\penalty50\hskip2em\null\nobreak\hfill
+   \hbox\bgroup---~\textsc{#1}\rm
+   \let\zt@end\zt@endauthor}
+\def\zt@endauthor%
+  {\unskip\egroup\finalhyphendemerits=0\par\endlist}
+
+\def\zitat%
+  {\vskip-\lastskip\vskip\topsep\vskip\partopsep\nobreak
+   \list{}{\rightmargin\leftmargin \leftmargin2\leftmargin}%
+   \let\author\zt@author
+   \item\itshape\zt@checkforquote}
+\def\endzitat%
+  {\zt@end\endlist}
+
+\makeatother

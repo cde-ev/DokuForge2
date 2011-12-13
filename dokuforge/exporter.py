@@ -12,7 +12,7 @@ from dokuforge.common import check_output
 
 ## Templates used for generating the export
 
-template_course = ur"""\course{${COURSENUMBER}}
+template_course = ur"""\course{${COURSENUMBER}}{${COURSETITLE}}
 ${COURSECONTENT}
 \endinput
 """
@@ -24,42 +24,15 @@ ${COURSECONTENT}"""
 template_master = ur"""\documentclass{padoc}
 \listfiles
 
-\makeatletter
-
-\def\ednote%
-  {\@verbatim\frenchspacing\@vobeyspaces\@xednote}
-\def\endednote%
-  {\if@newlist \leavevmode\fi\endtrivlist}
-\begingroup
-  \catcode `[= 1 \catcode`]=2
-  \catcode `\{=12 \catcode `\}=12
-  \catcode `|=0 \catcode`\\=12
-  |gdef|@xednote#1\end{ednote}[#1|end[ednote]]
-|endgroup
-
-\let\b@ckslash\backslash
-\def\backslash%
-  {\ifmmode\b@ckslash\else$\b@ckslash$\fi}
-
-\makeatother
-
-\let\@\empty
-\let\acronym\textsmaller
-
-%% Pakete und Definitionen
-
-""" + u'\\' + ur"""usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
-
-""" + u'\\' + ur"""usepackage{mathalign}
-""" + u'\\' + ur"""usepackage{amsmath}
+% da gehören zusätzliche Pakete und Kommandos rein (und nicht hierhin)
 """ + u'\\' + ur"""usepackage{misc}
-""" + u'\\' + ur"""usepackage{multicol}
 
 \begin{document}
 
 \include{fortschritt}
 
 \include{titel}
+
 \include{vorwort}
 
 \tableofcontents
@@ -78,16 +51,17 @@ ${PAGEFIGURES}
 
 template_fortschritt = ur"""\begin{ednote}
 ${COURSENOTES}Allgemeines:
-[ ] Kursfotos nachbearbeiten: 
-[ ] Orga-/Gesamtfotos nachbearbeiten:  
+Allgemeines:
+[ ] Kursfotos nachbearbeiten:
+[ ] Orga-/Gesamtfotos nachbearbeiten:
 [ ] Namenslisten-Abgleich Datenbank
-[ ] Namenslisten: KL kennzeichnen: 
+[ ] Namenslisten: KL kennzeichnen:
 [ ] Vorwort
 [ ] Titelseite (Logo, Text)
 [ ] Fuellbilder
 [ ] Fotos druckbar
 
-Bitte Namen fuer die Redaktion eintragen und, wenn fertig, 
+Bitte Namen fuer die Redaktion eintragen und, wenn fertig,
 durch Ankreuzen abhaken.
 \end{ednote}
 """

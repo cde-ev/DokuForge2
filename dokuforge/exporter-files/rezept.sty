@@ -1,0 +1,36 @@
+%% Rezeptumgebung
+%für Brüche in Mengenangaben:
+\newcommand{\rezeptfrac}[2]%
+     {\leavevmode\raise.5ex\hbox{\scriptsize #1}\kern-.1em{\footnotesize /}\hbox{\scriptsize #2}}
+
+% ist problematisch wegen statischer Breite der Zutatenliste
+% aber verschiedene Breiten sehen auch doof aus
+\newdimen\rezeptzutatenbreite \rezeptzutatenbreite .7\textwidth{}
+
+\makeatletter
+  \def\rezept#1#2%
+    {\rezeptzutatenbreite #2
+     \bgroup
+     \par\bigskip
+     \noindent\textbf{#1}\par
+     \nobreak
+     \noindent\r@zutatencol}
+  \def\r@zutatencol%
+    {\advance\textwidth -\rezeptzutatenbreite
+      \advance\textwidth -1em\relax
+     \begin{minipage}[t]{\rezeptzutatenbreite}%
+       \def\par%
+         {\futurelet\nexttoken\dopar}
+       \def\dopar%
+         {\ifx\nexttoken\par
+            \expandafter\dorezept
+          \else
+            \expandafter\endgraf
+          \fi}%
+       \it\raggedright\obeylines\leftskip=1em\parindent=-1em\relax}
+  \def\dorezept%
+    {\end{minipage}\hskip 1em\relax\begin{minipage}[t]{\textwidth}}
+  \def\endrezept%
+    {\end{minipage}\par\bigskip\egroup\@endpetrue}
+ \makeatother
+%% Ende Rezeptumgebung

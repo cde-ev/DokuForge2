@@ -1,28 +1,8 @@
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesPackage{misc}[2004/09/01 Verschiedenes ...]
+\ProvidesPackage{misc}[2011/07/03 Verschiedenes]
 
 %
-% Hier kommen alle möglichen, für den Satz von Dokus nützlichen aber
-% für ein eigenes Paket zu kleinen Definitionen hin.
+% Definitionen und zusÃ¤tzliche Pakete, die nur fÃ¼r die aktuelle Doku
+% nÃ¶tig sind.
 %
 
-% Code-Umgebung
-\def\code#1{\texttt{\small #1}}
-
-\def\codeblock%
-  {\@verbatim\small\frenchspacing\@vobeyspaces
-   \@ycodeblock{$\hookrightarrow$}\@xcodeblock}
-\def\endcodeblock%
-  {\if@newlist \leavevmode\fi\endtrivlist}
-\begingroup
-  \catcode `§=13
-  \catcode `[= 1 \catcode`]=2
-  \catcode `\{=12 \catcode `\}=12
-  \catcode `|=0 \catcode`\\=12
-  |gdef|@xcodeblock#1\end{codeblock}[#1|end[codeblock]]
-  |gdef|@ycodeblock[|catcode`§=13 |def§]
-|endgroup
-
-\newcommand*{\CdE}{CdE}
-
-\endinput

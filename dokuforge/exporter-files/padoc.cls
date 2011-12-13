@@ -1,16 +1,16 @@
-%% 
-%% LaTeX2e-Dokumentenklasse f¸r die Dokumentation der
+%%
+%% LaTeX2e-Dokumentenklasse f√ºr die Dokumentation der
 %% JGW-PfingstAkademie
-%% 
+%%
 %% Marco Kuhlmann <kuhlmann@jgw-ev.de>
-%% 
+%%
 %% Copyright: Jugendbildung in Gesellschaft und Wissenschaft e.V.
-%% 
+%%
 %% $Id: padoc.cls,v 1.1 2003/05/21 21:32:45 kuhlmann Exp $
-%% 
+%%
 
 %%
-%% Ver‰ndert 2003/07/14 von Marc Sch‰fer
+%% Ver√§ndert 2003/07/14 von Marc Sch√§fer
 %%
 %% siehe Kommentare bei der Definition von \course und alles,
 %% was mit "-- marc" markiert (ha ha. ein Wortspiel.) ist.
@@ -18,34 +18,32 @@
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 
-\ProvidesClass{padoc}[2007/01/03 LaTeX2e JGW document class]
+\ProvidesClass{padoc}[2011/07/03 LaTeX2e CdE/JGW document class]
 
 %% Konfiguration: Dateinamen. #1 ist die Kursnummer -- marc 2003/08/06
-
-%\newcommand*{\@photoname}[1]{kurs#1/fig_#1_kursfoto_web}
 \newcommand*{\@photoname}[1]{images/fig_#1_kursfoto.jpg}
 \newcommand*{\@membername}[1]{kurs#1/teilnehmer_#1}
 
 %% Basisklasse: scrreprt
 
-\LoadClass[headsepline,smallheadings]{scrbook}
+\LoadClass[headsepline,headings=small]{scrbook}
 
-%% Ver‰nderungen gegen¸ber der Basisklasse:
+%% Ver√§nderungen gegen√ºber der Basisklasse:
 
 \raggedbottom
 
-%% (1) Die ‹berschriften sollen in der Schrift f¸r den Brottext
+%% (1) Die √úberschriften sollen in der Schrift f√ºr den Brottext
 %% erscheinen.
 
 \renewcommand*{\sectfont}{%
   \normalfont\normalcolor\rmfamily\bfseries}
 
-%% (2) Formatierung der Fuﬂnoten
+%% (2) Formatierung der Fu√ünoten
 
 \deffootnote{1.5em}{1.5em}{%
   \textsuperscript{\normalfont\thefootnotemark\ }}
 
-%% (3) Das \cleardoublepage-Makro von KOMA-Script l‰sst leere
+%% (3) Das \cleardoublepage-Makro von KOMA-Script l√§sst leere
 %% Seiten zwischen Kapiteln nicht wirklich leer.
 
 \def\cleardoublepage{%
@@ -57,11 +55,9 @@
     \fi
   \fi}
 
-%% Spiegelstriche in Aufzaehlungen
-\renewcommand{\labelitemi}{--}
 
 % Kursphotos sollen auf geraden Seiten beginnen, was dieses Makro
-% f¸r uns ¸bernimmt. -- marc 2003/08/06
+% f√ºr uns √ºbernimmt. -- marc 2003/08/06
 
 \def\clearoneandahalfpage%
   {\clearpage
@@ -73,9 +69,10 @@
      \fi
    \fi}
 
-%% Standardm‰ﬂig geladene Pakete
+%% Standardm√§√üig geladene Pakete
+%% diese Liste sollte man[tm] vielleicht mal nach eigenen und Standard-Paketen sortieren, aber ohne dabei Probleme zu verursachen ...
 
-\RequirePackage[latin9]{inputenc}
+\RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
 \RequirePackage[ngerman]{babel}
 
@@ -90,14 +87,20 @@
 \RequirePackage{itemize}
 \RequirePackage{parallel}
 \RequirePackage{pmhalign}
+\RequirePackage{mathalign}
+\RequirePackage{multicol}
+\RequirePackage{textcomp} % f√ºr eine ganze Menge Sonderzeichen
+\RequirePackage{amsmath,amstext,amsthm,amssymb} % amsmath bei√üt sich eventuell subtil mit tipa
 
-%% Typewriter: Lucida Typewriter
-%\RequirePackage[seriftt]{lucidabr}
-%\RequirePackage{lucidabr}
+\RequirePackage{ucs,listings} % zum Setzen von Code
+\RequirePackage{defSatzBew}
+\RequirePackage{rezept}
+\RequirePackage{zitate}
 
-%% Serifenlose (Optima; Zapf Humanist):
-%\RequirePackage[scaled=0.9]{boptima}
+% freie Typewriter, die es auch in fett gibt
+\RequirePackage{lmodern}
 
+% freie Serifenlose
 \renewcommand{\sfdefault}{uop}
 
 %% Brotschrift: Palatino
@@ -110,15 +113,15 @@
   \SetTracking{encoding=*,shape=sc}{30}
 }{}
 
-%% Einige Layout-Maﬂe beziehen sich auf die im Folgenden
+%% Einige Layout-Ma√üe beziehen sich auf die im Folgenden
 %% definierte Einheit \padoc@hunit, die Breite eines M in
-%% normalgroﬂer Brotschrift.
+%% normalgro√üer Brotschrift.
 
 \newdimen\padoc@hunit
 \setbox\@tempboxa\hbox{\normalfont\normalsize M}%
 \padoc@hunit=\wd\@tempboxa
 
-%% Die Palatino sollte mit einem leicht hˆheren Zeilenabstand
+%% Die Palatino sollte mit einem leicht h√∂heren Zeilenabstand
 %% gesetzt werden als die Computer Modern:
 
 \setstretch{1.1}
@@ -147,11 +150,11 @@
   {\enskip$\cdot$\enskip\thecontentspage}
 
 
-%% ‹berschriften
+%% √úberschriften
 
-%% Die Abschnitts¸berschriften werden in einem eigenen, mageren Font
-%% nummeriert, eine Grˆﬂenstufe kleiner als die ‹berschrift selbst (hier
-%% sind die Grˆﬂen von smallheadings aus scrreprt.cls zu Grunde gelegt):
+%% Die Abschnitts√ºberschriften werden in einem eigenen, mageren Font
+%% nummeriert, eine Gr√∂√üenstufe kleiner als die √úberschrift selbst (hier
+%% sind die Gr√∂√üen von smallheadings aus scrreprt.cls zu Grunde gelegt):
 
 \newcommand*{\sectnumfont}%
   {\normalfont\normalcolor}
@@ -195,14 +198,14 @@
 \titlespacing*{\subsubsection}%
   {0pt}{1\baselineskip}{0pt}
 
-%% Die Breite der ‹berschriftennummerierung soll sich dynamisch
-%% der Breite der breitesten ‹berschriftennummerierung anpassen.
+%% Die Breite der √úberschriftennummerierung soll sich dynamisch
+%% der Breite der breitesten √úberschriftennummerierung anpassen.
 %% Dazu wird das titlesec-Makro \ttlh@hang aufgebohrt, das die an
-%% der Nummerierung "h‰ngenden" ‹berschriften generiert.  Die
-%% ƒnderungen sind minimal: Statt den h‰ngenden Text (#2) direkt
-%% einzuf¸gen, wird er zun‰chst durch das Makro
+%% der Nummerierung "h√§ngenden" √úberschriften generiert.  Die
+%% √Ñnderungen sind minimal: Statt den h√§ngenden Text (#2) direkt
+%% einzuf√ºgen, wird er zun√§chst durch das Makro
 %% \padoc@adjusthangwidth geschleust, welches ggf. die global
-%% g¸ltige maximale Breite ‰ndert.
+%% g√ºltige maximale Breite √§ndert.
 
 \newdimen\padoc@sectionhangwidth
 \padoc@sectionhangwidth=0pt
@@ -243,10 +246,10 @@
       \nobreak\ttl@midlongest#5\@@par}%
   \ttl@endlongest}
 
-%% Die jeweils letzte maximale ‹berschriftennummerierungsbreite
+%% Die jeweils letzte maximale √úberschriftennummerierungsbreite
 %% wird am Ende eines LaTeX-Laufes in die *.aux-Datei
-%% geschrieben, sodass sie beim n‰chsten Mal als Default
-%% verf¸gbar ist.
+%% geschrieben, sodass sie beim n√§chsten Mal als Default
+%% verf√ºgbar ist.
 
 \AtEndDocument{%
   \if@filesw\immediate\write\expandafter\@mainaux\fi%
@@ -292,26 +295,26 @@
   \@afterheading}
 
 
-%% Kurs¸berschrift
+%% Kurs√ºberschrift
 
 %
 % Die Kapitelnummer jeder Kursdokumentation soll mit der Kursnummer
-% ¸bereinstimmen. Dies wurde bis dato durch manuelles ƒndern des
+% √ºbereinstimmen. Dies wurde bis dato durch manuelles √Ñndern des
 % chapter-Counters mittels \addtocounter{chapter} erreicht, was mir
-% a) nicht gef‰llt und b) den Export erschwert. Daher nimmt \course
+% a) nicht gef√§llt und b) den Export erschwert. Daher nimmt \course
 % ab sofort die Kursnummer als Argument vor dem Kurstitel und setzt
-% die Kapitelnummer auf die Kursnummer _herauf_ - m¸ﬂte heruntergesetzt
-% werden, wird die Nummer wie gehabt um eins erhˆht. -- marc 2003/07/14
+% die Kapitelnummer auf die Kursnummer _herauf_ - m√º√üte heruntergesetzt
+% werden, wird die Nummer wie gehabt um eins erh√∂ht. -- marc 2003/07/14
 %
 
 %
-% Kursphotos werden auf geraden Seiten gesetzt, ihr Name ist hardgecoded
+% Kursphotos werden auf geraden Seiten ohne Seitenzahlen gesetzt, ihr Name ist hardgecoded
 % (siehe Konfiguration). Dabei wird die openany-Option ignoriert.
 
 \newcommand{\course}[1]{% -- marc 2003/08/06
-  % { marc 2003/08/06 
+  % { marc 2003/08/06
   \clearoneandahalfpage
-  \thispagestyle{plain}%
+  \thispagestyle{empty}%
   \c@ursephoto{#1}%
   \vfil\newpage
   % }
@@ -351,7 +354,7 @@
 
 \def\cp@readmember#1%
   {\bgroup
-   \setbox0=\hbox{}% f¸r den Fall, daﬂ die Memberlist leer ist -- marc 2004/12/06
+   \setbox0=\hbox{}% f√ºr den Fall, da√ü die Memberlist leer ist -- marc 2004/12/06
    \openin\@memberlist#1 %
    \global\let\cp@separator\cp@theseparator
    \raggedright\small\sloppypar
@@ -401,7 +404,7 @@
      \expandafter\cp@processline
    \fi}
 
-%% Einstellungen f¸r Gleitobjekte
+%% Einstellungen f√ºr Gleitobjekte
 
 \setcounter{topnumber}{1}
 \setcounter{bottomnumber}{1}
@@ -416,9 +419,112 @@
 
 \widowpenalty=\@M
 
-%% Extra-Kerning f¸r Guillemets
+%% Extra-Kerning f√ºr Guillemets
 
 \DeclareTextCommand{\glqq}{T1}{\guillemotright\kern.1ex}
 \DeclareTextCommand{\grqq}{T1}{\kern.1ex\guillemotleft}
+\DeclareTextCommand{\glq}{T1}{\guilsinglright\kern.1ex}
+\DeclareTextCommand{\grq}{T1}{\kern.1ex\guilsinglleft}
+
+% Ednotes
+
+\makeatletter
+
+\def\ednote%
+  {\@verbatim\frenchspacing\@vobeyspaces\@xednote}
+\def\endednote%
+  {\if@newlist \leavevmode\fi\endtrivlist}
+\begingroup
+  \catcode `[= 1 \catcode`]=2
+  \catcode `\{=12 \catcode `\}=12
+  \catcode `|=0 \catcode`\\=12
+  |gdef|@xednote#1\end{ednote}[#1|end[ednote]]
+|endgroup
+
+\let\b@ckslash\backslash
+\def\backslash%
+  {\ifmmode\b@ckslash\else$\b@ckslash$\fi}
+
+\makeatother
+
+\let\@\empty
+\let\acronym\textsmaller
+
+% korrektes spacing f√ºr CdE e.V.
+\newcommand*{\CdEeV}{CdE~e.V.}
+
+% d f√ºr Integrale und so
+\newcommand{\de}{\mathrm{d}}
+
+% unauffaellige pdf-Querverweise und Metadaten
+\RequirePackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black,pdfstartview=Fit,pdfpagelayout=TwoPageRight]{hyperref}
+
+% urls in sans
+\RequirePackage{url}
+\urlstyle{sf}
+
+\RequirePackage{color}
+
+% Verst√§ndlich(tm)-Aufz√§hlung
+\newenvironment{verstaendlich}%
+  {\def\item##1~--{\medskip\noindent{\it##1}\enskip}}%
+  {}
+
+
+% Literatur-Umgebung
+\newenvironment{literatur}[0]{%
+\begin{enumerate}[flushleft,joinedup]
+
+\def\labelenumi   {[\arabic{enumi}]}
+\def\bitem##1##2##3##4{\item ##1:\ \ \textit{##2}.\ \ ##3, ##4.}
+\def\jitem##1##2##3##4##5##6{\item ##1:\ \ \textit{##2}, ##3 \textbf{##4}\ (##5)\ ##6.}
+\def\urlitem{\item\url}
+\def\iitem##1##2##3##4{\item\url{##1}~-- ##2, \textit{##3}, ##4.}
+\def\mitem##1{##1}
+}%
+{
+\end{enumerate}
+}
+
+% nfrac (statt nicefrac)
+\newcommand{\nfrac}[2]%
+  {\leavevmode\kern.1em\raise.5ex\hbox{\scriptsize #1}%
+   \kern-.1em/\kern-.15em\lower.25ex\hbox{\scriptsize #2}}
+
+
+% Standard-F√ºllbild oben auf einer Seite
+\newcommand{\topFuellbild}[2]{%
+\begin{figure}[t]
+  \centering
+  \includegraphics[#1]{#2}\\[\baselineskip]
+\end{figure}
+}
+
+% Standard-F√ºllbild unten auf einer Seite
+\newcommand{\bottomFuellbild}[2]{%
+\begin{figure}[b!]
+  \centering
+  \vskip\baselineskip
+  \includegraphics[#1]{#2}
+\end{figure}
+}
+
+% Standard-F√ºllbild auf der letzten Seite mit Text eines Kursbeitrages nach 2/3 des verbleibenden Platzes
+\newcommand{\lastCoursePageFuellbild}[2]{%
+  \vspace*{\fill}
+  \vspace*{\fill}
+  \centerline{\includegraphics[#1]{#2}}
+  \vspace*{\fill}
+}
+
+% Standard-F√ºllbild alleine auf einer Seite zwischen zwei Kursen
+\newcommand{\pageFuellbild}[2]{%
+\clearpage
+\thispagestyle{empty}
+\begin{figure}[p]
+  \centering
+  \includegraphics[#1]{#2}
+\end{figure}
+}
 
 \endinput
