@@ -100,6 +100,17 @@ def courseNumber(course):
     """
     return course.name[4:]
 
+def courseTitle(course):
+    """
+    Extract and format the title of a course.
+
+    @type course: Course
+    """
+    parser = Parser(course.gettitle())
+    tree = parser.parse()
+    tex = TeXFormatter(tree)
+    return tex.generateoutput()
+
 def tsubst(template, **keys):
     """
     Helper function for template substitution.
@@ -172,7 +183,7 @@ class Exporter:
             ## content is later written to chap<coursenumber>.tex
             content = string.Template(template_course)
             content = tsubst(content, COURSENUMBER = courseNumber(c),
-                             COURSETITLE = c.gettitle())
+                             COURSETITLE = courseTitle(c))
             for p in c.listpages():
                 content = tsubst(content, COURSECONTENT = template_coursepage)
                 ## here be dragons
