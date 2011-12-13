@@ -109,7 +109,7 @@ def tsubst(template, **keys):
     """
     return string.Template(template.safe_substitute(keys))
 
-def writefile(path, content):
+def writefile(path, content, utf=False):
     """
     Helper function for writing files.
 
@@ -117,7 +117,10 @@ def writefile(path, content):
     @type content: unicode
     """
     f = file(path, mode = "w")
-    f.write(content)
+    if utf:
+        f.write(content.encode("utf8"))
+    else:
+        f.write(content)
     f.close()
 
 class Exporter:
@@ -168,7 +171,8 @@ class Exporter:
             os.mkdir(os.path.join(self.dir, c.name))
             ## content is later written to chap<coursenumber>.tex
             content = string.Template(template_course)
-            content = tsubst(content, COURSENUMBER = courseNumber(c))
+            content = tsubst(content, COURSENUMBER = courseNumber(c),
+                             COURSETITLE = c.gettitle())
             for p in c.listpages():
                 content = tsubst(content, COURSECONTENT = template_coursepage)
                 ## here be dragons
@@ -191,7 +195,8 @@ class Exporter:
             content = tsubst(content, COURSECONTENT = u'')
             content = content.safe_substitute()
             writefile(os.path.join(self.dir, c.name,
-                                  "chap%s.tex" % courseNumber(c)), content)
+                                  "chap%s.tex" % courseNumber(c)), content,
+                                  utf = True)
             ## update lists
             courselist += u'\\include{%s/chap%s.tex}\n' % (c.name, courseNumber(c))
             fortschrittlist = tsubst(fortschrittlist,
@@ -205,12 +210,13 @@ class Exporter:
         fortschritt = string.Template(template_fortschritt)
         fortschritt = tsubst(fortschritt, COURSENOTES = fortschrittlist)
         fortschritt = fortschritt.safe_substitute()
-        writefile(os.path.join(self.dir, "fortschritt.tex"), fortschritt)
+        writefile(os.path.join(self.dir, "fortschritt.tex"), fortschritt,
+                  utf = True)
         ## create master.tex
         master = string.Template(template_master)
         master = tsubst(master, COURSELIST = courselist)
         master = master.safe_substitute()
-        writefile(os.path.join(self.dir, "master.tex"), master)
+        writefile(os.path.join(self.dir, "master.tex"), master, utf = True)
         ## copy exporter-files/*
         for f in os.listdir(os.path.join(os.path.dirname(__file__),
                                          "exporter-files")):
