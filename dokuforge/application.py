@@ -17,14 +17,12 @@ import urllib
 import urlparse
 
 import jinja2
-import werkzeug.exceptions
 import werkzeug.routing
 import werkzeug.utils
 from werkzeug.wrappers import Request, Response
 
 from dokuforge.academy import Academy
 import dokuforge.common as common
-from dokuforge.common import CheckError
 from dokuforge.parser import Parser
 from dokuforge.htmlformatter import HtmlFormatter
 from dokuforge.exporter import Exporter
@@ -32,6 +30,8 @@ try:
     from dokuforge.versioninfo import commitid
 except ImportError:
     commitid = "unknown"
+import dokuforge.dfexceptions as dfexceptions
+from dokuforge.dfexceptions import CheckError
 
 sysrand = random.SystemRandom()
 
@@ -145,28 +145,6 @@ class RequestState:
     def logout(self):
         self.user = None
         self.sessionhandler.delete()
-
-class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
-                               werkzeug.routing.RoutingException):
-    code = 307
-
-    def __init__(self, new_url):
-        werkzeug.routing.RoutingException.__init__(self, new_url)
-        self.new_url = new_url
-
-    def get_response(self, environ):
-        return werkzeug.utils.redirect(self.new_url, self.code)
-
-class SeeOtherRedirect(werkzeug.exceptions.HTTPException,
-                               werkzeug.routing.RoutingException):
-    code = 303
-
-    def __init__(self, new_url):
-        werkzeug.routing.RoutingException.__init__(self, new_url)
-        self.new_url = new_url
-
-    def get_response(self, environ):
-        return werkzeug.utils.redirect(self.new_url, self.code)
 
 class IdentifierConverter(werkzeug.routing.BaseConverter):
     regex = '[a-zA-Z][-a-zA-Z0-9]{0,199}'
@@ -331,12 +309,13 @@ class Application:
     def getAcademy(self, name, user=None):
         """
         look up an academy for a given name. If none is found raise a
-        werkzeug.exceptions.NotFound.
+        MalformedAdress or if not authorized raise a NotEnoughPriveleges error.
 
         @type name: unicode
         @type user: None or User
         @rtype: Academy
-        @raises werkzeug.exceptions.HTTPException:
+        @raises MalformedAdress:
+        @raises NotEnoughPriveleges:
         """
         assert isinstance(name, unicode)
         name = name.encode("utf8")
@@ -344,10 +323,10 @@ class Application:
             common.validateInternalName(name)
             common.validateExistence(self.acapath, name)
         except CheckError:
-            raise werkzeug.exceptions.NotFound()
+            raise dfexceptions.MalformedAdress()
         aca = Academy(os.path.join(self.acapath, name), self.listGroups)
         if user is not None and not user.allowedRead(aca):
-            raise werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return aca
 
     def getCourse(self, aca, coursename, user=None):
@@ -356,14 +335,15 @@ class Application:
         @type coursename: unicode
         @type user: None or User
         @rtype: Course
-        @raises werkzeug.exceptions.HTTPException:
+        @raises MalformedAdress:
+        @raises NotEnoughPriveleges:
         """
         assert isinstance(coursename, unicode)
         c = aca.getCourse(coursename) # checks name
         if c is None:
-            raise werkzeug.exceptions.NotFound()
+            raise dfexceptions.MalformedAdress()
         if user is not None and not user.allowedRead(aca, c):
-            raise werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return c
 
     def createAcademy(self, name, title, groups):
@@ -433,7 +413,7 @@ class Application:
         @raises TemporaryRequestRedirect: unless the user is logged in
         """
         if rs.user is None:
-            raise TemporaryRequestRedirect(rs.request.url_root)
+            raise dfexceptions.TemporaryRequestRedirect(rs.request.url_root)
 
     def do_file(self, rs, filestore, template, extraparams=dict()):
         """
@@ -575,7 +555,8 @@ class Application:
         except KeyError:
             ## FIXME: we want a malformedUserInputError here
             raise
-        raise SeeOtherRedirect(self.buildurl(rs, "groupindex", {"group": group}))
+        raise dfexceptions.SeeOtherRedirect(self.buildurl(rs, "groupindex",
+                                                          {"group": group}))
 
     def do_logout(self, rs):
         """
@@ -680,14 +661,18 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        name = rs.request.form["name"] # FIXME: raises KeyError
-        title = rs.request.form["title"] # FIXME: raises KeyError
+        try:
+            name = rs.request.form["name"]
+            title = rs.request.form["title"]
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         try:
             aca.createCourse(name, title)
         except CheckError as error:
@@ -707,13 +692,17 @@ class Application:
     def do_createacademy(self, rs):
         """
         @type rs: RequestState
+        @raises MalformedPOSTRequest:
         """
         self.check_login(rs)
         if not rs.user.mayCreate():
             return werkzeug.exceptions.Forbidden()
-        name = rs.request.form["name"] # FIXME: raises KeyError
-        title = rs.request.form["title"] # FIXME: raises KeyError
-        groups = rs.request.form.getlist("groups") # FIXME: raises KeyError
+        try:
+            name = rs.request.form["name"]
+            title = rs.request.form["title"]
+            groups = rs.request.form.getlist("groups")
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         try:
             self.createAcademy(name, title, groups)
         except CheckError as error:
@@ -730,12 +719,13 @@ class Application:
         """
         @type rs: RequestState
         @type topic: unicode
+        @raises MalformedAdress:
         """
         assert isinstance(topic, unicode)
         topic = topic.encode("utf8")
         if not topic in os.listdir(os.path.join(self.templatepath,
                                                 "style")):
-            raise werkzeug.exceptions.NotFound()
+            raise dfexceptions.MalformedAdress()
         return self.render_styleguide(rs, topic)
 
     def do_createpage(self, rs, academy=None, course=None):
@@ -793,6 +783,7 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -800,7 +791,10 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        numberstr = rs.request.form["number"] # FIXME: raises KeyError
+        try:
+            numberstr = rs.request.form["number"]
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         try:
             number = int(numberstr)
         except ValueError:
@@ -814,6 +808,7 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -821,7 +816,10 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        numberstr = rs.request.form["number"] # FIXME: raises KeyError
+        try:
+            numberstr = rs.request.form["number"]
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         try:
             number = int(numberstr)
         except ValueError:
@@ -871,6 +869,7 @@ class Application:
         @type course: unicode
         @type page: int
         @type blob: int
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
@@ -879,11 +878,12 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-
-        newlabel = rs.request.form["label"] # FIXME: raises KeyError
-        newcomment = rs.request.form["comment"] # FIXME: raises KeyError
-        newname = rs.request.form["name"] # FIXME: raises KeyError
-
+        try:
+            newlabel = rs.request.form["label"]
+            newcomment = rs.request.form["comment"]
+            newname = rs.request.form["name"]
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         try:
             c.modifyblob(blob, newlabel, newcomment, newname, rs.user.name)
         except CheckError as error:
@@ -996,6 +996,7 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -1003,7 +1004,10 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-        numberstr = rs.request.form["number"] # FIXME: raises KeyError
+        try:
+            numberstr = rs.request.form["number"]
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         try:
             number = int(numberstr)
         except ValueError:
@@ -1086,6 +1090,7 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1093,12 +1098,13 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-
-        usercomment = rs.request.form["comment"] # FIXME: raises KeyError
-        userlabel = rs.request.form["label"] # FIXME: raises KeyError
-        # a FileStorage is sufficiently file-like for store
-        usercontent = rs.request.files["content"] # FIXME: raises KeyError
-
+        try:
+            usercomment = rs.request.form["comment"]
+            userlabel = rs.request.form["label"]
+            # a FileStorage is sufficiently file-like for store
+            usercontent = rs.request.files["content"]
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         ## This is a bit tedious since we don't want to drop the blob and
         ## force the user to retransmit it.
         try:
@@ -1128,6 +1134,7 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1135,10 +1142,11 @@ class Application:
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
-
-        userversion = rs.request.form["revisionstartedwith"] # FIXME: raises KeyError
-        usercontent = rs.request.form["content"] # FIXME: raises KeyError
-
+        try:
+            userversion = rs.request.form["revisionstartedwith"]
+            usercontent = rs.request.form["content"]
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         ok, version, content = c.savepage(page, userversion, usercontent,
                                           user=rs.user.name)
 
@@ -1164,13 +1172,17 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedPOSTRequest:
         """
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedWrite(aca):
             return werkzeug.exceptions.Forbidden()
-        groups = rs.request.form.getlist("groups") # FIXME: raises KeyError
+        try:
+            groups = rs.request.form.getlist("groups")
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         try:
             aca.setgroups(groups)
         except CheckError as error:

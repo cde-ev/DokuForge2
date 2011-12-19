@@ -374,6 +374,7 @@ class Parser:
 
         This is triggered by newpars and several other contexts which should
         always be toplevel in the tree.
+        @raises ValueError:
         """
         while not self.lookstate() == "root":
             currentstate = self.lookstate()
