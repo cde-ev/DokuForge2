@@ -9,6 +9,7 @@ import errno
 from dokuforge.parser import Parser
 from dokuforge.exportformatter import TeXFormatter
 from dokuforge.common import check_output
+import dokuforge.dfexceptions
 
 ## Templates used for generating the export
 
@@ -98,7 +99,10 @@ def courseNumber(course):
     @type course: str
     @param course: internal name of course valid according to testCourseName
     """
-    return course.name[4:]
+    try:
+        return course.name[4:]
+    except KeyError:
+        raise dfexceptions.ExporterError(u"Malformed course name %s." % course.name)
 
 def courseTitle(course):
     """

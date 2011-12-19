@@ -114,12 +114,15 @@ class SeeOtherRedirect(werkzeug.exceptions.HTTPException,
     def get_response(self, environ):
         return werkzeug.utils.redirect(self.new_url, self.code)
 
-class RcsError(DfException):
+class InternalError(DfException):
     """
-    An RcsError does not occur under normal circumstances. It can be thought
-    of as an AssertionError, except that you cannot suppress it with -O.
-    It may be raised when the disk is full or when dokuforge is lacking
+    An InternalError does not occur under normal circumstances. It can be
+    thought of as an AssertionError, except that you cannot suppress it with
+    -O.  It may be raised when the disk is full or when dokuforge is lacking
     permission to access its own files for example.
+
+    This is a base class to be derived from by every type of internal error
+    by site.
     """
     def __init__(self, msg, stderr="", code=0):
         """
@@ -144,3 +147,17 @@ class RcsError(DfException):
             return "%s(%r, %r)" % (self.__class__.__name__, self.msg,
                                    self.stderr)
         return "%s(%r)" % (self.__class__.__name__, self.msg)
+
+class RcsError(InternalError):
+    """
+    An RcsError is an internal error produced somewhere in the storage
+    backend.
+    """
+    pass
+
+class ExporterError(InternalError):
+    """
+    An ExporterError is an internal error produced somewhere in the exporter
+    backend.
+    """
+    pass
