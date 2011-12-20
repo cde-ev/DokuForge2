@@ -131,12 +131,15 @@ def writefile(path, content):
     @type path: str
     @type content: unicode
     """
-    f = file(path, mode = "w")
-    if isinstance(content, unicode):
-        f.write(content.encode("utf8"))
-    else:
-        f.write(content)
-    f.close()
+    try:
+        f = file(path, mode = "w")
+        if isinstance(content, unicode):
+            f.write(content.encode("utf8"))
+        else:
+            f.write(content)
+        f.close()
+    except IOError:
+        raise dfexceptions.ExporterError(u"Failed to write file %s." % path)
 
 class Exporter:
     """
@@ -158,7 +161,10 @@ class Exporter:
         @type aca: Academy
         """
         self.tempdir = tempfile.mkdtemp(prefix="export")
-        os.mkdir(os.path.join(self.tempdir, "%s" % aca.name))
+        try:
+            os.mkdir(os.path.join(self.tempdir, "%s" % aca.name))
+        except OSError:
+            raise dfexceptions.ExporterError(u"Unable to create directory %s." % os.path.join(self.tempdir, "%s" % aca.name))
         self.dir = os.path.join(self.tempdir, "%s" % aca.name)
         self.exported = False
         self.aca = aca
@@ -183,7 +189,10 @@ class Exporter:
         ## export one course
         for c in courses:
             ## each course gets it's own directory
-            os.mkdir(os.path.join(self.dir, c.name))
+            try:
+                os.mkdir(os.path.join(self.dir, c.name))
+            except OSError:
+                raise dfexceptions.ExporterError(u"Unable to create directory %s." % os.path.join(self.tempdir, "%s" % aca.name))
             ## content is later written to chap<coursenumber>.tex
             content = string.Template(template_course)
             content = tsubst(content, COURSENUMBER = courseNumber(c),
@@ -243,10 +252,16 @@ class Exporter:
                     shutil.copy(os.path.join(os.path.dirname(__file__),
                                              "exporter-files", f), self.dir)
                 else:
-                    raise
+                    raise dfexceptions.ExporterError(u"Unable to copy object %s to destination %s." % (os.path.join(os.path.dirname(__file__), "exporter-files", f), os.path.join(self.dir, f)))
         ## bundle up
-        data = check_output(["tar", "cjf", "-", "-C", self.tempdir, self.aca.name])
+        try:
+            data = check_output(["tar", "cjf", "-", "-C", self.tempdir, self.aca.name])
+        except subprocess.CalledProcessError:
+            raise dfexceptions.ExporterError("Unable to build tarball of export %s for academy %s." % (self.tempdir, self.aca.name))
         ## clean up
-        shutil.rmtree(self.tempdir)
+        try:
+            shutil.rmtree(self.tempdir)
+        except OSError:
+            raise dfexceptions.ExporterError(u"Unable to remove directory %s." % self.tempdir)
         return data
 

@@ -371,6 +371,7 @@ chars like < > & " % to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.url)
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
+        print self.get_data()
         self.br.open(self.br.click_link(text="Gruppen bearbeiten"))
         form = list(self.br.forms())[1]
         form["groups"] = ["cde"]
