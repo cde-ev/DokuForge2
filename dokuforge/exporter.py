@@ -98,6 +98,7 @@ def courseNumber(course):
 
     @type course: str
     @param course: internal name of course valid according to testCourseName
+    @raises ExporterError:
     """
     try:
         return course.name[4:]
@@ -130,6 +131,7 @@ def writefile(path, content):
 
     @type path: str
     @type content: unicode
+    @raises ExporterError:
     """
     try:
         f = file(path, mode = "w")
@@ -159,6 +161,7 @@ class Exporter:
         Prepare for the export.
 
         @type aca: Academy
+        @raises ExporterError:
         """
         self.tempdir = tempfile.mkdtemp(prefix="export")
         try:
@@ -174,6 +177,7 @@ class Exporter:
         Export.
 
         @returns: bzipped tar-ball with the export or None (if allready exported)
+        @raises ExporterError:
         """
         if self.exported:
             return None
