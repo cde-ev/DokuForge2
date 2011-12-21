@@ -81,6 +81,11 @@ class WSGIHandler(BaseHandler):
         resp.msg = msg
         return resp
 
+try:
+    mechanize_Item = mechanize.Item
+except AttributeError:
+    from ClientForm import Item as mechanize_Item
+
 class WSGIBrowser(mechanize.Browser):
     handler_classes = mechanize.Browser.handler_classes.copy()
     handler_classes["http"] = WSGIHandler
@@ -378,7 +383,7 @@ chars like < > & " % to be escaped and an { ednote \\end{ednote} }
         self.assertTrue("Gruppen erfolgreich bearbeitet." in self.get_data())
         form = list(self.br.forms())[1]
         # hack an invalid group
-        mechanize.Item(form.find_control("groups"), dict(value="spam"))
+        mechanize_Item(form.find_control("groups"), dict(value="spam"))
         form["groups"] = ["cde", "spam"]
         self.br.open(form.click(label="Speichern und Editieren"))
         self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
@@ -425,7 +430,7 @@ chars like < > & " % to be escaped and an { ednote \\end{ednote} }
         form["name"] = "foobar"
         form["title"] = "next Testakademie"
         # hack an invalid group
-        mechanize.Item(form.find_control("groups"), dict(value="spam"))
+        mechanize_Item(form.find_control("groups"), dict(value="spam"))
         form["groups"] = ["cde", "spam"]
         self.br.open(form.click(label="Akademie anlegen"))
         self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
