@@ -83,7 +83,7 @@ class Academy(StorageDir):
 
         @param groups: groups to set
         @type groups: list of unicode
-        @raises: CheckError
+        @raises CheckError:
         """
         if isinstance(groups, unicode):
             groups = groups.split()

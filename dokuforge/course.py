@@ -261,8 +261,8 @@ class Course(StorageDir):
         """
         Show the contents of a page
 
-        @type number: int
-        @param number: the internal number of that page
+        @type page: int
+        @param page: the internal number of that page
         @rtype: unicode
         @raises dfexceptions.PageOutOfBound()
         """
@@ -593,7 +593,7 @@ class Course(StorageDir):
         @rtype: LazyView
         @returns: a mapping providing the keys: data(str), label(unicode),
                   comment(unicode), filename(unicode) and number(int)
-        @raises dfexceptions.BlobOutOfBound
+        @raises dfexceptions.BlobOutOfBound:
         """
         if 0 > number or number >= self.nextblob():
             raise dfexceptions.BlobOutOfBound()

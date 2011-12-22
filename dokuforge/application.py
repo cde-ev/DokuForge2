@@ -1532,7 +1532,6 @@ class Application:
         @type theacademy: Academy
         @type thecourse: Course
         @type thepage: int
-        @type saved: bool
         """
         params = dict(
             academy=theacademy.view(),

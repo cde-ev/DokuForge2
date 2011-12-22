@@ -40,14 +40,14 @@ class Estimator(BaseFormatter):
 
     def __init__(self, tree, raw=False, ednotes=False):
         """
-        @param string: string to parse
+        @param tree: output from parser to work on
         @param raw: toggles counting of single chars vs. sophisticated
           accounting for full lines, default is the sophisticated method
-        @param ednots: toggles counting of ednotes, default is not to count
+        @param ednotes: toggles counting of ednotes, default is not to count
           them
-        @type string: unicode
+        @type tree: ParseTree
         @type raw: bool
-        @type ednote: bool
+        @type ednotes: bool
         """
         BaseFormatter.__init__(self, tree)
         self.ednotes = ednotes
