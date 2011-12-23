@@ -260,3 +260,11 @@ def computeblobpages(nrblobs):
     """
     ## this is an empirical number, may be tuned later
     return nrblobs/3
+
+def applyhandler(obj, name, data):
+    try:
+        handler = getattr(obj, name)
+    except AttributeError:
+        return data
+    else:
+        return handler(data)

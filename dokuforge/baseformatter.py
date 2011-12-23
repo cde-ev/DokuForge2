@@ -1,4 +1,5 @@
-from dokuforge.parser import ParseLeaf
+from dokuforge.parser import ParseLeaf, ParseTree
+from dokuforge.common import applyhandler
 
 class BaseFormatter:
     """
@@ -39,23 +40,13 @@ class BaseFormatter:
         """
         if tree is None:
             tree = self.tree
-        if isinstance(tree, ParseLeaf):
-            data = tree.data
-            try:
-                handler = getattr(self, "handle_%s" % tree.ident)
-            except AttributeError:
-                pass
-            else:
-                data = handler(data)
-            return data.translate(self.escapemap)
+        assert isinstance(tree, ParseTree)
         output = u""
         for x in tree.tree:
-            value = self.generateoutput(x)
-            try:
-                handler = getattr(self, "handle_%s" % x.ident)
-            except AttributeError:
-                pass
+            if isinstance(x, ParseLeaf):
+                value = x.data.translate(self.escapemap)
             else:
-                value = handler(value)
+                value = self.generateoutput(x)
+            value = applyhandler(self, "handle_%s" % x.ident, value)
             output += value
         return output
