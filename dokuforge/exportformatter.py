@@ -2,6 +2,7 @@
 
 from dokuforge.baseformatter import BaseFormatter
 from dokuforge.parser import ParseLeaf
+from dokuforge.common import applyhandler, applyadvancedhandler
 
 ## list of useful math commands mostly taken from 'A Guide To LaTeX' by Kopka
 whitelist = [##
@@ -330,12 +331,11 @@ class TeXFormatter(BaseFormatter):
 
     def handle_Newpar(self, data):
         """
-        @type leaf: ParseLeaf
-        @type context: Context
+        @type data: unicode
         """
         ## reset quotes at end of paragraph
         self.quotesseen = 0
-        return (u'\n\n', 0)
+        return u'\n\n'
 
     def advanced_handle_Token(self, leaf, context):
         """
@@ -459,59 +459,27 @@ class TeXFormatter(BaseFormatter):
             return (u' ', 0)
 
 
-    def generateoutput(self):
+    def generateoutput(self, tree=None):
         """
-        Take self.tree and generate an output string.
+        Take the tree (self.tree if not given) and generate an output string.
 
-        This method adds all the bells and whistles the exporter has. It
-        mainly calls supergenerateoutput. There do not have to be many
-        specials here, since the root ParseTree may only contain paragraph,
-        heading, subheading, authors, displaymath, list, ednote, Newline and
-        Newpar.
+        This method adds all the bells and whistles the exporter has via the
+        Context class. The work is then done by advancedformat.
+
+        @param tree: tree to transform, self.tree if none is given
+        @type tree: ParseTree
         """
-        output = u""
-        for x in self.tree.tree:
-            assert x.ident in ("paragraph", "heading", "subheading", "authors",
-                               "displaymath", "list", "ednote", "Newpar",
-                               "Newline")
-            value, _ = self.advancedgenerateoutput(x, Context(x, self.tree.tree,
-                                                              ["root"]))
-            try:
-                handler = getattr(self, "handle_%s" % x.ident)
-            except AttributeError:
-                pass
-            else:
-                value = handler(value)
-            output += value
-        return output
+        if tree is None:
+            tree = self.tree
+        return self.advancedformat(tree, Context(tree, [tree], []))
 
-    def advancedgenerateoutput(self, tree, context):
+    def advancedformat(self, tree, context):
         """
         Take tree and recursively generate an output string.
 
         This method uses handle_* and advanced_handle_* methods to generate
         the output. advanced_handle_* methods are only available for leaves.
         """
-        if isinstance(tree, ParseLeaf):
-            data = tree.data
-            skips = 0
-            handler = None
-            ## first try advanced handler
-            try:
-                handler = getattr(self, "advanced_handle_%s" % tree.ident)
-            except AttributeError:
-                pass
-            else:
-                data, skips = handler(tree, context)
-            if handler is None:
-                ## if no advanced handler, try normal handler
-                try:
-                    handler = getattr(self, "handle_%s" % tree.ident)
-                except AttributeError:
-                    pass
-                else:
-                    data = handler(data)
-            return (data, skips)
         ## now we have a ParseTree
         output = u""
         skips = 0
@@ -522,16 +490,17 @@ class TeXFormatter(BaseFormatter):
             if skips > 0:
                 skips -= 1
                 continue
-            value, skips = self.advancedgenerateoutput(x, Context(x, tree.tree,
-                                                                  context.environ))
-            ## no advanced_handle_* methods for non-leaves
-            try:
-                handler = getattr(self, "handle_%s" % x.ident)
-            except AttributeError:
-                pass
+            ## get data
+            if isinstance(x, ParseLeaf):
+                value = x.data
             else:
-                value = handler(value)
+                value = self.advancedformat(x, Context(x, tree.tree, context.environ))
+            ## apply handler
+            value, skips, check = applyadvancedhandler(self, "advanced_handle_%s" % x.ident, value, x, Context(x, tree.tree, context.environ))
+            ## if there is no advanced_handle_* try handle_*
+            if not check:
+                value = applyhandler(self, "handle_%s" % x.ident, value)
             output += value
         ## update environ
         context.environ.pop()
-        return (output, 0)
+        return output

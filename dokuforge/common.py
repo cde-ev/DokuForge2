@@ -268,3 +268,12 @@ def applyhandler(obj, name, data):
         return data
     else:
         return handler(data)
+
+def applyadvancedhandler(obj, name, data, leaf, context):
+    try:
+        handler = getattr(obj, name)
+    except AttributeError:
+        return data, 0, False
+    else:
+        value, skips = handler(leaf, context)
+        return value, skips, True
