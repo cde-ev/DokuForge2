@@ -621,7 +621,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_deadpages(rs, aca, c)
 
     def do_showdeadcourses(self, rs, academy=None):
@@ -633,7 +633,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_deadcourses(rs, aca)
 
     def do_listblobs(self, rs, academy=None, course=None, page=None):
@@ -647,7 +647,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_listblobs(rs, aca, c, page)
 
     def do_showdeadblobs(self, rs, academy=None, course=None, page=None):
@@ -662,7 +662,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_deadblobs(rs, aca, c, page)
 
     def do_createcoursequiz(self, rs, academy=None):
@@ -674,7 +674,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_createcoursequiz(rs, aca)
 
     def do_createcourse(self, rs, academy=None):
@@ -687,7 +687,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         try:
             name = rs.request.form["name"]
             title = rs.request.form["title"]
@@ -706,7 +706,7 @@ class Application:
         """
         self.check_login(rs)
         if not rs.user.mayCreate():
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_createacademyquiz(rs)
 
     def do_createacademy(self, rs):
@@ -716,7 +716,7 @@ class Application:
         """
         self.check_login(rs)
         if not rs.user.mayCreate():
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         try:
             name = rs.request.form["name"]
             title = rs.request.form["title"]
@@ -759,7 +759,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         c.newpage(user=rs.user.name)
         return self.render_course(rs, aca, c)
 
@@ -775,7 +775,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         c.delpage(page, user=rs.user.name)
         return self.render_course(rs, aca, c)
 
@@ -790,7 +790,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         c.setlivingstate(False)
         return self.render_academy(rs, aca)
 
@@ -809,7 +809,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         c.delblob(blob, user=rs.user.name)
         return self.render_listblobs(rs, aca, c, page)
 
@@ -825,7 +825,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         try:
             numberstr = rs.request.form["number"]
         except KeyError:
@@ -846,7 +846,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         name = rs.request.form["name"] # FIXME: raises KeyError
         c = self.getCourse(aca, name, rs.user, allowdead=True)
         c.setlivingstate(True)
@@ -865,7 +865,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         try:
             numberstr = rs.request.form["number"]
         except KeyError:
@@ -891,7 +891,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_showblob(rs, aca, c, page, blob)
 
     def do_editblob(self, rs, academy=None, course=None, page=None, blob=None):
@@ -908,7 +908,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_editblob(rs, aca, c, page, blob)
 
 
@@ -927,7 +927,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         try:
             newlabel = rs.request.form["label"]
             newcomment = rs.request.form["comment"]
@@ -956,7 +956,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         h = getmd5()
         theblob = c.viewblob(blob)
         h.update(theblob["data"])
@@ -978,7 +978,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         rs.response.content_type = "application/octet-stream"
         theblob = c.viewblob(blob)
         rs.response.data = theblob["data"]
@@ -998,7 +998,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         rs.response.content_type = "application/octet-stream"
         rs.response.data = c.getrcs(page)
         rs.response.headers['Content-Disposition'] = \
@@ -1016,7 +1016,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedRead(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         rs.response.content_type = "application/x-bzip-compressed-tar"
         rs.response.data = c.export()
         rs.response.headers['Content-Disposition'] = \
@@ -1033,7 +1033,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.mayExport(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         rs.response.content_type = "application/x-bzip-compressed-tar"
         exporter = Exporter(aca)
         rs.response.data = exporter.export()
@@ -1053,7 +1053,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         try:
             numberstr = rs.request.form["number"]
         except KeyError:
@@ -1090,7 +1090,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         version, content = c.editpage(page)
         return self.render_edit(rs, aca, c, page, version, content)
 
@@ -1106,7 +1106,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_addblob(rs, aca, c, page)
 
     def do_uploadblob(self, rs, academy = None, course = None, page = None):
@@ -1121,7 +1121,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
 
         usercomment = rs.request.form["comment"]
         userlabel = rs.request.form["label"]
@@ -1147,7 +1147,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         try:
             usercomment = rs.request.form["comment"]
             userlabel = rs.request.form["label"]
@@ -1191,7 +1191,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         try:
             userversion = rs.request.form["revisionstartedwith"]
             usercontent = rs.request.form["content"]
@@ -1215,7 +1215,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.render_academygroups(rs, aca)
 
     def do_academygroupssave(self, rs, academy=None):
@@ -1228,7 +1228,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         try:
             groups = rs.request.form.getlist("groups")
         except KeyError:
@@ -1249,7 +1249,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.do_property(rs, aca.gettitle,
                                 "academytitle.html",
                                 extraparams={'academy': aca.view()})
@@ -1263,7 +1263,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.do_propertysave(rs, aca.settitle,
                                     "academytitle.html",
                                     extraparams = {'academy': aca.view()})
@@ -1279,7 +1279,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.do_property(rs, c.gettitle,
                                 "coursetitle.html",
                                 extraparams={'academy': aca.view(),
@@ -1296,7 +1296,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         if not rs.user.allowedMeta(aca):
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.do_propertysave(rs, c.settitle,
                                     "coursetitle.html",
                                     extraparams={'academy': aca.view(),
@@ -1308,7 +1308,7 @@ class Application:
         """
         self.check_login(rs)
         if not rs.user.isAdmin():
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.do_file(rs, self.userdb.storage, "admin.html")
 
     def do_adminsave(self, rs):
@@ -1317,7 +1317,7 @@ class Application:
         """
         self.check_login(rs)
         if not rs.user.isAdmin():
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.do_filesave(rs, self.userdb.storage, "admin.html",
                                 checkhook = common.validateUserConfig,
                                 savehook = self.userdb.load)
@@ -1328,7 +1328,7 @@ class Application:
         """
         self.check_login(rs)
         if not rs.user.isSuperAdmin():
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.do_file(rs, self.groupstore, "groups.html")
 
     def do_groupssave(self, rs):
@@ -1337,7 +1337,7 @@ class Application:
         """
         self.check_login(rs)
         if not rs.user.isSuperAdmin():
-            return werkzeug.exceptions.Forbidden()
+            raise dfexceptions.NotEnoughPriveleges()
         return self.do_filesave(rs, self.groupstore, "groups.html",
                                 checkhook = common.validateGroupConfig)
 
