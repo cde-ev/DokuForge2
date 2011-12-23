@@ -36,7 +36,7 @@ class Estimator(BaseFormatter):
     a full line. The result of this parser is an int.
     """
     ## this is an empirical number, may be tuned later
-    linelength = 85
+    linelength = 83
 
     def __init__(self, tree, raw=False, ednotes=False):
         """

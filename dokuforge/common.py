@@ -259,4 +259,4 @@ def computeblobpages(nrblobs):
     Calculate the number of pages occupied by nrblobs blobs.
     """
     ## this is an empirical number, may be tuned later
-    return nrblobs/4
+    return nrblobs/3
