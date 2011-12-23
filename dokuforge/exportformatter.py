@@ -328,7 +328,7 @@ class TeXFormatter(BaseFormatter):
         else:
             return (leaf.data, 0)
 
-    def advanced_handle_Newpar(self, leaf, context):
+    def handle_Newpar(self, data):
         """
         @type leaf: ParseLeaf
         @type context: Context

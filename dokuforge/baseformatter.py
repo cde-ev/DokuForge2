@@ -36,7 +36,7 @@ class BaseFormatter:
         tree. The escaping is done with escapemap.
 
         @param tree: tree to transform, self.tree if none is given
-        @type tree: ParseTree or ParseLeaf
+        @type tree: ParseTree
         """
         if tree is None:
             tree = self.tree
