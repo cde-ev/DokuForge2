@@ -91,3 +91,10 @@ class StorageDir:
                 lastchange = x
                 compare = datetime.strptime(lastchange['date'], "%Y/%m/%d %H:%M:%S")
         return lastchange
+
+    def calculatetimestamp(self, timestamps):
+        timestamp = -1
+        for x in timestamps:
+            if x > timestamp:
+                timestamp = tmp
+        return timestamp

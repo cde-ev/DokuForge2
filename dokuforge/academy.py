@@ -121,12 +121,7 @@ class Academy(StorageDir):
         return self.calculatelastchange([c.lastchange() for c in self.listCourses()])
 
     def timestamp(self):
-        timestamp = -1
-        for c in self.listCourses():
-            tmp = c.timestamp()
-            if tmp > timestamp:
-                timestamp = tmp
-        return timestamp
+        return self.calculatetimestamp([c.timestamp() for c in self.listCourses()])
 
     def view(self, extrafunctions=dict()):
         """
