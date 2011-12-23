@@ -19,6 +19,8 @@ class Academy(StorageDir):
     contain the following files. All directories within this directory are
     assumed to contain a course.
 
+    Courses can either be alive or dead, were dead means deleted. All normal operations which apply to courses, 
+
     title,v    The title of this display name of this academy
     groups,v   The groups in which this academy is a member
     """
@@ -39,31 +41,36 @@ class Academy(StorageDir):
         """
         return self.getcontent("groups").decode("utf8").split()
 
-    def viewCourses(self):
+    def viewCourses(self, alive=True):
         """
         @returns: list of Course.view dicts for all courses of this academy
         """
-        return [course.view() for course in self.listCourses()]
+        return [course.view() for course in self.listCourses(alive=alive)]
 
-    def listCourses(self):
+    def listCourses(self, alive=True):
         """
+        @param alive: select state of courses -- dead or alive
+        @type alive: bool
         @returns: list of Course object; all courses of this academy
         """
         ret = (os.path.join(self.path, entry)
                for entry in os.listdir(self.path))
         ret = filter(os.path.isdir, ret)
         ret = map(Course, ret)
+        ret = filter(lambda x: x.isalive() == alive, ret)
         ret = list(ret)
         ret.sort(key=operator.attrgetter('name'))
         return ret
 
-    def getCourse(self, coursename):
+    def getCourse(self, coursename, allowdead = False):
         """
         find a course of this academy to a given name. If none is found
         raise a MalformedAdress
 
         @param coursename: internal name of course
         @type coursename: unicode
+        @param allowdead: allow course to be dead
+        @type allowdead: bool
         @returns: Course object for course with name coursename
         @raises MalformedAdress: if the course does not exist
         """
@@ -74,7 +81,10 @@ class Academy(StorageDir):
             common.validateExistence(self.path, coursename)
         except CheckError:
             raise dfexception.MalformedAdress()
-        return Course(os.path.join(self.path, coursename))
+        c = Course(os.path.join(self.path, coursename))
+        if not allowdead and not c.isalive():
+            raise dfexception.MalformedAdress()
+        return c
 
     def setgroups(self, groups):
         """
@@ -109,7 +119,9 @@ class Academy(StorageDir):
         common.validateInternalName(name)
         common.validateNonExistence(self.path, name)
         common.validateTitle(title)
-        Course(os.path.join(self.path, name)).settitle(title)
+        c = Course(os.path.join(self.path, name))
+        c.settitle(title)
+        c.setlivingstate(True)
 
     def lastchange(self):
         lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'1970/01/01 00:00:00'}
@@ -134,6 +146,7 @@ class Academy(StorageDir):
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
+                         deadcourses=lambda : self.viewCourses(alive = False),
                          groups=self.getgroups,
                          lastchange=self.lastchange,
                          estimate=self.estimate)

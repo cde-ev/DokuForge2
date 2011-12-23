@@ -61,7 +61,7 @@
 {%- endif -%}
 {%- if user.allowedMeta(academy) %}
 <a href="{{ buildurl("coursetitle")|e }}">Titel bearbeiten</a>
-</a>
+{{ button(buildurl("deletecourse"), "Löschen", dict()) }}
 {%- endif -%}
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>
