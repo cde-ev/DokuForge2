@@ -1,7 +1,6 @@
 from __future__ import with_statement
 import os
 import re
-import datetime
 
 from werkzeug.datastructures import FileStorage
 
@@ -531,14 +530,7 @@ class Course(StorageDir):
         blobname.store(filename.encode("utf8"), user = user)
 
     def lastchange(self):
-        lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'1970/01/01 00:00:00'}
-        for p in self.listpages():
-            info = self.getcommit(p)
-            date =  datetime.datetime.strptime(info['date'], "%Y/%m/%d %H:%M:%S")
-            compare = datetime.datetime.strptime(lastchange['date'], "%Y/%m/%d %H:%M:%S")
-            if date > compare:
-                lastchange = info
-        return lastchange
+        return self.calculatelastchange([self.getcommit(p) for p in self.listpages()])
 
     def view(self, extrafunctions=dict()):
         """

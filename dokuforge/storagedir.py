@@ -3,6 +3,7 @@ import os.path
 from dokuforge.storage import Storage
 from dokuforge.view import LazyView
 import dokuforge.common as common
+from datetime import datetime
 
 class StorageDir:
     """Backend for manipulating file structures within a directory. It brings
@@ -80,3 +81,13 @@ class StorageDir:
             title=self.gettitle)
         functions.update(extrafunctions)
         return LazyView(functions)
+
+    def calculatelastchange(self, infos):
+        lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'1970/01/01 00:00:00'}
+        compare = datetime.strptime(lastchange['date'], "%Y/%m/%d %H:%M:%S")
+        for x in infos:
+            date =  datetime.strptime(x['date'], "%Y/%m/%d %H:%M:%S")
+            if date > compare:
+                lastchange = x
+                compare = datetime.strptime(lastchange['date'], "%Y/%m/%d %H:%M:%S")
+        return lastchange
