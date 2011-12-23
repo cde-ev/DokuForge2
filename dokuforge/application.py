@@ -653,7 +653,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.render_createcoursequiz(rs, aca)
 
@@ -666,7 +666,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         try:
             name = rs.request.form["name"]
@@ -1164,7 +1164,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.render_academygroups(rs, aca)
 
@@ -1177,7 +1177,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         try:
             groups = rs.request.form.getlist("groups")
@@ -1198,7 +1198,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_property(rs, aca.gettitle,
                                 "academytitle.html",
@@ -1212,7 +1212,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_propertysave(rs, aca.settitle,
                                     "academytitle.html",
@@ -1228,7 +1228,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_property(rs, c.gettitle,
                                 "coursetitle.html",
@@ -1245,7 +1245,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_propertysave(rs, c.settitle,
                                     "coursetitle.html",
