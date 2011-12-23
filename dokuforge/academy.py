@@ -1,7 +1,6 @@
 
 import os
 import operator
-import datetime
 
 from dokuforge.course import Course, Valuation
 from dokuforge.storagedir import StorageDir
@@ -122,14 +121,7 @@ class Academy(StorageDir):
         c.setlivingstate(True)
 
     def lastchange(self):
-        lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'1970/01/01 00:00:00'}
-        for c in self.listCourses():
-            info = c.lastchange()
-            date =  datetime.datetime.strptime(info['date'], "%Y/%m/%d %H:%M:%S")
-            compare = datetime.datetime.strptime(lastchange['date'], "%Y/%m/%d %H:%M:%S")
-            if date > compare:
-                lastchange = info
-        return lastchange
+        return self.calculatelastchange([c.lastchange() for c in self.listCourses()])
 
     def estimate(self):
         estimate = Valuation()
