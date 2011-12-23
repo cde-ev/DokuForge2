@@ -632,7 +632,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.render_deadcourses(rs, aca)
 
@@ -789,7 +789,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedWrite(aca, c) or not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         c.setlivingstate(False)
         return self.render_academy(rs, aca)
@@ -845,7 +845,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         name = rs.request.form["name"] # FIXME: raises KeyError
         c = self.getCourse(aca, name, rs.user, allowdead=True)

@@ -3,8 +3,6 @@ import os
 import operator
 import datetime
 
-import werkzeug.exceptions
-
 from dokuforge.course import Course, Valuation
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
