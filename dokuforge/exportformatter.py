@@ -374,9 +374,6 @@ class TeXFormatter(BaseFormatter):
                     return (u'--', 1)
             else:
                 return (u'-', 0)
-        ## escape %
-        elif leaf.data == u'%':
-            return (u'\\%', 0)
         ## ' is not processed further, but should only be used were
         ## appropriate (especially not as substitute for ")
         elif leaf.data == u"'":
