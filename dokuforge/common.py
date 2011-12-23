@@ -262,6 +262,13 @@ def computeblobpages(nrblobs):
     return nrblobs/3
 
 def applyhandler(obj, name, data):
+    """
+    Check whether obj has a handler name and apply it if so.
+
+    @type obj: BaseFormatter or derived
+    @type name: str
+    @type data: unicode
+    """
     try:
         handler = getattr(obj, name)
     except AttributeError:
@@ -269,11 +276,23 @@ def applyhandler(obj, name, data):
     else:
         return handler(data)
 
-def applyadvancedhandler(obj, name, data, leaf, context):
+def applyadvancedhandler(obj, name, leaf, context):
+    """
+    Check whether obj has a handler name and apply it if so. If not simply
+    return the data of leaf.
+
+    The second return parameter is the skips value returned by the handler
+    and the third signals whether the handler existed.
+
+    @type obj: BaseFormatter or derived
+    @type name: str
+    @type leaf: ParseLeaf
+    @type context: Context
+    """
     try:
         handler = getattr(obj, name)
     except AttributeError:
-        return data, 0, False
+        return leaf.data, 0, False
     else:
         value, skips = handler(leaf, context)
         return value, skips, True

@@ -479,8 +479,10 @@ class TeXFormatter(BaseFormatter):
 
         This method uses handle_* and advanced_handle_* methods to generate
         the output. advanced_handle_* methods are only available for leaves.
+
+        @type tree: ParseTree
+        @type context: Context
         """
-        ## now we have a ParseTree
         output = u""
         skips = 0
         ## update environ
@@ -491,13 +493,14 @@ class TeXFormatter(BaseFormatter):
                 skips -= 1
                 continue
             ## get data
+            check = False
             if isinstance(x, ParseLeaf):
-                value = x.data
+                ## advanced_handle_* only exist for ParseLeafes
+                value, skips, check = applyadvancedhandler(self, "advanced_handle_%s" % x.ident, x, Context(x, tree.tree, context.environ))
             else:
                 value = self.advancedformat(x, Context(x, tree.tree, context.environ))
-            ## apply handler
-            value, skips, check = applyadvancedhandler(self, "advanced_handle_%s" % x.ident, value, x, Context(x, tree.tree, context.environ))
             ## if there is no advanced_handle_* try handle_*
+            ## this is always the case for ParseTrees
             if not check:
                 value = applyhandler(self, "handle_%s" % x.ident, value)
             output += value
