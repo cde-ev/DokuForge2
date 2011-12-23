@@ -265,6 +265,7 @@ class TeXFormatter(BaseFormatter):
     handle_list = u"\\begin{itemize}\n%s\n\end{itemize}".__mod__
     handle_item = u"\\item %s".__mod__
     handle_Dollar = u"%.0s\\$".__mod__
+    handle_Percent = u"%.0s\\%".__mod__
 
 
     def __init__(self, tree):
@@ -434,7 +435,7 @@ class TeXFormatter(BaseFormatter):
         if context.checkunit(1+skip):
             return (number + u'\\@\\,' + context.lookleafdata(skip+1), skip+1)
         ## percentage signs
-        if context.lookleafdata(1+skip) == u'%':
+        if context.lookleaftype(1+skip) == "Percent":
             return (number + u'\\@\\,\\%', skip+1)
         return (number, 0)
 

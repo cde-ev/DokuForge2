@@ -325,6 +325,12 @@ class Parser:
         """
         self.tree.insert(ParseLeaf("Dollar", u"$"))
 
+    def insertpercent(self):
+        """
+        Interface for putting newlines.
+        """
+        self.tree.insert(ParseLeaf("Percent", u"%"))
+
     def insertbackslash(self):
         """
         Interface for putting newlines.
@@ -651,6 +657,8 @@ class Parser:
                     self.insertdollar()
                 else:
                     self.insertbackslash()
+            elif token == u'%':
+                self.insertpercent()
             ### the default case for all the non-special tokens
             ### but escaping the special tokens
             else:
