@@ -648,12 +648,7 @@ class Course(StorageDir):
             self.getstorage("livingstate").store("False")
 
     def timestamp(self):
-        timestamp = -1
-        for p in self.listpages():
-            tmp = self.getstorage("page%d" % number).timestamp()
-            if tmp > timestamp:
-                timestamp = tmp
-        return timestamp
+        return self.calculatetimestamp([self.getstorage("page%d" % p).timestamp() for p in self.listpages()])
 
     def view(self, extrafunctions=dict()):
         """
