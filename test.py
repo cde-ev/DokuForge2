@@ -97,6 +97,19 @@ teststrings = [
     (u"some ' " + u'" quotes', u"some &#39; &#34; quotes")
     ]
 
+samplecontent = u"""[Section]
+(Authors)
+*keyword*, $\\sqrt{2}$ and _emphasis_ -- abbreviations: z.B. vgl. s. o.
+$$\\sqrt{2}$$
+[[subsection]]
+- bullet1
+- bullet2
+
+text -- embraced -- and now -- end 9000000. we look -- no further
+some backslashes \\\\ and $\\\\$ and \\command $\\\\
+$ chars like < > & " to be escaped and an { ednote \\end{ednote} }
+"""
+
 class DokuforgeTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
@@ -130,6 +143,17 @@ class DokuforgeTests(unittest.TestCase):
 
     def is_loggedin(self):
         self.assertTrue("/logout" in self.get_data())
+
+    def do_link(self, link):
+        components = filter(lambda x: x, link.split("/"))
+        for i in range(len(components)):
+            self.br.open(self.br.click_link(url_regex=re.compile("/".join(components[:i+1]) + "/$")))
+
+    def do_edit(self, data, formno = 1, start = "!edit", end = "Speichern und Beenden"):
+            self.br.open(self.br.click_link(url_regex=re.compile(start + "$")))
+            form = list(self.br.forms())[formno]
+            form["content"] = data.encode("utf8")
+            self.br.open(form.click(label = end))
 
     def testLogin(self):
         self.br.open(self.url)
@@ -169,53 +193,31 @@ class DokuforgeTests(unittest.TestCase):
     def testCourse(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.do_link("xa2011-1/kurs01/")
         self.is_loggedin()
         self.assertTrue("Roh-Export" in self.get_data())
 
     def testPage(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.do_link("xa2011-1/kurs01/0/")
         self.is_loggedin()
         self.assertTrue("neues Bild hinzuf" in self.get_data())
 
     def testEdit(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.do_link("xa2011-1/kurs01/0/")
         for (inputstr, outputstr) in teststrings:
-            self.br.open(self.br.click_link(text="Editieren"))
-            form = list(self.br.forms())[1]
-            form["content"] = inputstr.encode("utf8")
-            self.br.open(form.click(label="Speichern und Beenden"))
+            self.do_edit(inputstr)
             self.assertTrue(outputstr.encode("utf8") in self.get_data())
         self.is_loggedin()
 
     def testMarkup(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(text="Editieren"))
-        form = list(self.br.forms())[1]
-        form["content"] = \
-"""[Section]
-(Authors)
-*keyword*, $\\sqrt{2}$ and _emphasis_
-$$\\sqrt{2}$$
-[[subsection]]
-- bullet1
-- bullet2
-chars like < > & " to be escaped and an { ednote \\end{ednote} }
-"""
-        self.br.open(form.click(label="Speichern und Beenden"))
+        self.do_link("xa2011-1/kurs01/0/")
+        self.do_edit(samplecontent)
         content = self.get_data()
         self.assertTrue("$\\sqrt{2}$" in content)
         self.assertTrue("ednote \\end{ednote}" in content)
@@ -233,8 +235,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testMovePage(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.do_link("xa2011-1/kurs01/")
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Hochrücken".encode("utf8")))
         self.is_loggedin()
@@ -242,8 +243,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testCreatePage(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
+        self.do_link("xa2011-1/kurs01/")
         form = list(self.br.forms())[3]
         self.br.open(form.click(label=u"Neuen Teil anlegen".encode("utf8")))
         self.is_loggedin()
@@ -252,22 +252,16 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testCourseTitle(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/!title$")))
+        self.do_link("xa2011-1/kurs01/")
         for (inputstr, outputstr) in teststrings:
-            form = list(self.br.forms())[1]
-            form["content"] = inputstr.encode("utf8")
-            self.br.open(form.click(label="Speichern und Editieren"))
+            self.do_edit(inputstr, start = "!title", end = "Speichern und Editieren")
             self.assertTrue(outputstr.encode("utf8") in self.get_data())
         self.is_loggedin()
 
     def testDeletePage(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.do_link("xa2011-1/kurs01/0/")
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.assertFalse("Teil&nbsp;#0" in self.get_data())
@@ -276,9 +270,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testRestorePage(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.do_link("xa2011-1/kurs01/0/")
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.br.open(self.br.click_link(url_regex=re.compile("kurs01/!deadpages$")))
@@ -302,24 +294,10 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testExport(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.do_link("xa2011-1/kurs01/0/")
         self.br.open(self.br.click_link(text="Editieren"))
         form = list(self.br.forms())[1]
-        form["content"] = \
-"""[Section]
-(Authors)
-*keyword*, $\\sqrt{2}$ and _emphasis_ -- abbreviations: z.B. vgl. s. o.
-$$\\sqrt{2}$$
-[[subsection]]
-- bullet1
-- bullet2
-
-text -- embraced -- and now -- end 9000000. we look -- no further
-some backslashes \\\\ and $\\\\$ and \\command $\\\\
-$ chars like < > & " to be escaped and an { ednote \\end{ednote} }
-"""
+        form["content"] = samplecontent
         self.br.open(form.click(label="Speichern und Beenden"))
         self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
@@ -340,9 +318,8 @@ $ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testRawCourse(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/!raw$")))
+        self.do_link("xa2011-1/kurs01/")
+        self.br.open(self.br.click_link(url_regex=re.compile("/!raw$")))
         p = subprocess.Popen(['file', '-'], stdin = subprocess.PIPE,
                              stdout=subprocess.PIPE)
         self.assertTrue("bzip2 compressed data" in
@@ -351,21 +328,10 @@ $ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testRcsPage(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
+        self.do_link("xa2011-1/kurs01/0/")
         self.br.open(self.br.click_link(text="Editieren"))
         form = list(self.br.forms())[1]
-        form["content"] = \
-"""[Section]
-(Authors)
-*keyword*, $\\sqrt{2}$ and _emphasis_
-$$\\sqrt{2}$$
-[[subsection]]
-- bullet1
-- bullet2
-chars like < > & " % to be escaped and an { ednote \\end{ednote} }
-"""
+        form["content"] = samplecontent
         self.br.open(form.click(label="Speichern und Beenden"))
         self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!rcs$")))
         self.assertTrue("bullet1" in self.get_data())
