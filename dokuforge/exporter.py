@@ -9,7 +9,8 @@ import errno
 from dokuforge.parser import Parser
 from dokuforge.exportformatter import TeXFormatter
 from dokuforge.common import check_output
-import dokuforge.dfexceptions
+import dokuforge.dfexceptions as dfexceptions
+import subprocess
 
 ## Templates used for generating the export
 
@@ -196,7 +197,7 @@ class Exporter:
             try:
                 os.mkdir(os.path.join(self.dir, c.name))
             except OSError:
-                raise dfexceptions.ExporterError(u"Unable to create directory %s." % os.path.join(self.tempdir, "%s" % aca.name))
+                raise dfexceptions.ExporterError(u"Unable to create directory %s." % os.path.join(self.tempdir, "%s" % self.aca.name))
             ## content is later written to chap<coursenumber>.tex
             content = string.Template(template_course)
             content = tsubst(content, COURSENUMBER = courseNumber(c),

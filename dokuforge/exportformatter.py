@@ -386,7 +386,7 @@ class TeXFormatter(BaseFormatter):
             skips = 0
             while context.lookleafdata(skips+1) == u'^':
                 skips += 1
-            return (u'^', skips)
+            return (u'\@\@^', skips)
         ## handle quotes, there ar left and right ones
         ## this is locale to each paragraph, so an error does not wreck
         ## havoc for a whole part

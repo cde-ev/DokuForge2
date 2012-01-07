@@ -77,10 +77,10 @@ class Academy(StorageDir):
             common.validateInternalName(coursename)
             common.validateExistence(self.path, coursename)
         except CheckError:
-            raise dfexception.MalformedAdress()
+            raise dfexceptions.MalformedAdress()
         c = Course(os.path.join(self.path, coursename))
         if not allowdead and not c.isalive():
-            raise dfexception.MalformedAdress()
+            raise dfexceptions.MalformedAdress()
         return c
 
     def setgroups(self, groups):

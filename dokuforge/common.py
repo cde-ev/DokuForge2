@@ -245,7 +245,7 @@ def validateRcsRevision(versionnumber):
     """
     assert isinstance(versionnumber, str)
     if re.match('^[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}(\.[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}){0,5}$', versionnumber) is None:
-        raise dfexceptions.RcsUserInputError()
+        raise RcsUserInputError()
 
 def computepages(nrchars):
     """
