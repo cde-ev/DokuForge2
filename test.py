@@ -149,6 +149,12 @@ class DokuforgeTests(unittest.TestCase):
         for i in range(len(components)):
             self.br.open(self.br.click_link(url_regex=re.compile("/".join(components[:i+1]) + "/$")))
 
+    def do_active(self, link):
+        components = filter(lambda x: x, link.split("/"))
+        for i in range(len(components)-1):
+            self.br.open(self.br.click_link(url_regex=re.compile("/".join(components[:i+1]) + "/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/".join(components) + "$")))
+
     def do_edit(self, data, formno = 1, start = "!edit", end = "Speichern und Beenden"):
             self.br.open(self.br.click_link(url_regex=re.compile(start + "$")))
             form = list(self.br.forms())[formno]
@@ -318,8 +324,7 @@ class DokuforgeTests(unittest.TestCase):
     def testRawCourse(self):
         self.br.open(self.url)
         self.do_login()
-        self.do_link("xa2011-1/kurs01/")
-        self.br.open(self.br.click_link(url_regex=re.compile("/!raw$")))
+        self.do_active("xa2011-1/kurs01/!raw")
         p = subprocess.Popen(['file', '-'], stdin = subprocess.PIPE,
                              stdout=subprocess.PIPE)
         self.assertTrue("bzip2 compressed data" in
@@ -329,10 +334,7 @@ class DokuforgeTests(unittest.TestCase):
         self.br.open(self.url)
         self.do_login()
         self.do_link("xa2011-1/kurs01/0/")
-        self.br.open(self.br.click_link(text="Editieren"))
-        form = list(self.br.forms())[1]
-        form["content"] = samplecontent
-        self.br.open(form.click(label="Speichern und Beenden"))
+        self.do_edit(samplecontent)
         self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!rcs$")))
         self.assertTrue("bullet1" in self.get_data())
         self.assertTrue("head" in self.get_data())
@@ -341,8 +343,7 @@ class DokuforgeTests(unittest.TestCase):
     def testAcademyGroups(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(text="Gruppen bearbeiten"))
+        self.do_active("xa2011-1/!groups")
         form = list(self.br.forms())[1]
         form["groups"] = ["cde"]
         self.br.open(form.click(label="Speichern und Editieren"))
@@ -358,8 +359,7 @@ class DokuforgeTests(unittest.TestCase):
     def testCreateCourse(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("/!createcourse$")))
+        self.do_active("xa2011-1/!createcourse")
         form = list(self.br.forms())[1]
         form["name"] = "course03"
         form["title"] = "Testkurs"
@@ -498,55 +498,42 @@ permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_r
 
     def testStyleguide(self):
         self.br.open(self.url)
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.do_link("/style/")
         self.assertTrue("Richtlinien für die Erstellung der Dokumentation" in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/intro$")))
+        self.do_active("/style/intro")
         self.assertTrue(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge".encode("utf8") in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/hilfe$")))
+        self.do_active("/style/hilfe")
         self.assertTrue("Ein kurzer Leitfaden für die Benutzung von DokuForge" in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/grundlagen$")))
+        self.do_active("/style/grundlagen")
         self.assertTrue("Grundlagen von DokuForge" in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/abbildungen$")))
+        self.do_active("/style/abbildungen")
         self.assertTrue(u"Wie werden Abbildungen in DokuForge eingefügt?".encode("utf8") in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/mathe$")))
+        self.do_active("/style/mathe")
         self.assertTrue("Wie werden Formeln gesetzt?" in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/spezielles$")))
+        self.do_active("/style/spezielles")
         self.assertTrue(u"Sondersonderwünsche".encode("utf8") in self.get_data())
         self.br.open(self.br.click_link(text="Login"))
         self.do_login()
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
+        self.do_link("/style/")
         self.assertTrue("Richtlinien für die Erstellung der Dokumentation" in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/intro$")))
+        self.do_active("/style/intro")
         self.assertTrue(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge".encode("utf8") in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/hilfe$")))
+        self.do_active("/style/hilfe")
         self.assertTrue("Ein kurzer Leitfaden für die Benutzung von DokuForge" in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/grundlagen$")))
+        self.do_active("/style/grundlagen")
         self.assertTrue("Grundlagen von DokuForge" in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/abbildungen$")))
+        self.do_active("/style/abbildungen")
         self.assertTrue(u"Wie werden Abbildungen in DokuForge eingefügt?".encode("utf8") in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/mathe$")))
+        self.do_active("/style/mathe")
         self.assertTrue("Wie werden Formeln gesetzt?" in self.get_data())
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("/style/spezielles$")))
+        self.do_active("/style/spezielles")
         self.assertTrue(u"Sondersonderwünsche".encode("utf8") in self.get_data())
         self.is_loggedin()
 
     def testAddBlob(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        self.do_active("xa2011-1/kurs01/0/!addblob")
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -561,10 +548,7 @@ permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_r
     def testShowBlob(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        self.do_active("xa2011-1/kurs01/0/!addblob")
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -580,10 +564,7 @@ permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_r
     def testListBlobs(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        self.do_active("xa2011-1/kurs01/0/!addblob")
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -599,10 +580,7 @@ permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_r
     def testMD5Blob(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        self.do_active("xa2011-1/kurs01/0/!addblob")
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -618,10 +596,7 @@ permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_r
     def testDownloadBlob(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        self.do_active("xa2011-1/kurs01/0/!addblob")
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -636,10 +611,7 @@ permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_r
     def testEditBlob(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        self.do_active("xa2011-1/kurs01/0/!addblob")
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -662,10 +634,7 @@ permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_r
     def testDeleteBlob(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        self.do_active("xa2011-1/kurs01/0/!addblob")
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -684,10 +653,7 @@ permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_r
     def testRestoreBlob(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        self.do_active("xa2011-1/kurs01/0/!addblob")
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -710,10 +676,7 @@ permissions = akademie_view_xa2011-1 True,kurs_write_xa2011-1_kurs01 True,kurs_r
     def testAddBlobEmptyLabel(self):
         self.br.open(self.url)
         self.do_login()
-        self.br.open(self.br.click_link(text="X-Akademie"))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/$")))
-        self.br.open(self.br.click_link(url_regex=re.compile("kurs01/0/!addblob$")))
+        self.do_active("xa2011-1/kurs01/0/!addblob")
         form = list(self.br.forms())[1]
         form["comment"] = "Shiny blob"
         form["label"] = ""
