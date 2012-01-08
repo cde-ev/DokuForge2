@@ -37,6 +37,6 @@ Kursübersicht
 <a href="{{ buildurl("showdeadcourses")|e }}">gel&ouml;schte Kurse wiederherstellen</a>
 {%- endif -%}
 </div>
-<div class="infostring">{{ "Letzte Änderung von %s am %s" | format(academy.lastchange['author'], academy.lastchange['date']) | e }}&nbsp;|&nbsp;{{ academy.estimate.output() | e}}</div>
+<div class="infostring">Akademie gesamt: {{ "Letzte Änderung von %s am %s" | format(academy.lastchange['author'], academy.lastchange['date']) | e }}&nbsp;|&nbsp;{{ academy.estimate.output() | e}}</div>
 </div>
 {% endblock %}

@@ -67,6 +67,6 @@
 <a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>
 {{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
 {%- endif -%}
-<div class="infostring">{{ "Letzte Änderung von %s am %s" | format(course.lastchange['author'], course.lastchange['date']) | e }}&nbsp;|&nbsp;{{ course.estimate.output() | e}}</div>
+<div class="infostring">Kurs gesamt: {{ "Letzte Änderung von %s am %s" | format(course.lastchange['author'], course.lastchange['date']) | e }}&nbsp;|&nbsp;{{ course.estimate.output() | e}}</div>
 </div>
 {% endblock %}
