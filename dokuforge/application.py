@@ -395,8 +395,8 @@ class Application:
         try:
             config = ConfigParser.SafeConfigParser()
             config.readfp(StringIO(self.groupstore.content()))
-        except ConfigParser.ParsingError as err:
-            return {}
+        except ConfigParser.ParsingError:
+            raise dfexceptions.DataError("Group store malformed.")
         ret = {}
         for group in config.sections():
             ret[group.decode("utf8")] = config.get(group, 'title').decode("utf8")

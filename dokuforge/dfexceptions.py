@@ -161,3 +161,10 @@ class ExporterError(InternalError):
     backend.
     """
     pass
+
+class DataError(InternalError):
+    """
+    A DataError is an internal error produced by reading some invalid data
+    from disk. This may happen e.g. when reading the group store.
+    """
+    pass
