@@ -483,8 +483,7 @@ class Parser:
                     self.popstate()
                     self.pushstate("wantsnewline")
                 else:
-                    # FIXME regulate escaping
-                    # guarante no '\end{ednote}' is contained
+                    # the exporter guarantees no '\end{ednote}' is contained
                     self.put(token)
                 continue
 
