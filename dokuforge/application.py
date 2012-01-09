@@ -561,8 +561,7 @@ class Application:
         try:
             group = rs.request.form["group"]
         except KeyError:
-            ## FIXME: we want a malformedUserInputError here
-            raise
+            raise dfexceptions.MalformedPOSTRequest()
         raise dfexceptions.SeeOtherRedirect(self.buildurl(rs, "groupindex",
                                                           {"group": group}))
 
