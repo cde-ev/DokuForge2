@@ -215,7 +215,7 @@ class Course(StorageDir):
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
         info = self.getstorage("page%d" % page).commitstatus()
-        return dict(map(lambda (k,v):(k,v.encode("utf8")), info.iteritems()))
+        return dict(map(lambda (k, v):(k, v.encode("utf8")), info.iteritems()))
 
     def estimatepage(self, page, tree=None):
         content = self.showpage(page)
