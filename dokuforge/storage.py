@@ -49,7 +49,7 @@ def rlogv(filename):
     else:
         return None
 
-rcsseparator='----------------------------' 
+rcsseparator = '----------------------------'
 
 def rloghead(filename):
     """
@@ -85,7 +85,7 @@ def rloghead(filename):
         stateline = lines.pop(0)
         params = stateline.split(';')
         for param in params:
-            keyvalue = param.split(': ',1)
+            keyvalue = param.split(': ', 1)
             if len(keyvalue) > 1:
                 answer[keyvalue[0].lstrip()]=keyvalue[1]
     except IndexError:

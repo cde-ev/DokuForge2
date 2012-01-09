@@ -16,7 +16,7 @@ mathjaxuri = %(staticservepath)s/mathjax/
 
 class PathConfig(object):
     section = "path"
-    def __init__(self,config=None):
+    def __init__(self, config=None):
         if config is None:
             self.cp = ConfigParser.SafeConfigParser()
             self.cp.readfp(StringIO(default_config))
@@ -24,7 +24,7 @@ class PathConfig(object):
             self.cp = config
 
     def read(self, configfile):
-        self.cp =ConfigParser.SafeConfigParser()
+        self.cp = ConfigParser.SafeConfigParser()
         with file(configfile) as opencfg:
             self.cp.readfp(opencfg)
 
