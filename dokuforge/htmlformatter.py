@@ -23,11 +23,11 @@ class HtmlFormatter(BaseFormatter):
 
     def handle_heading(self, data):
         self.headingsseen += 1
-        return "<h3 id=\"%s\">%s</h3>" %(self.headingsseen, data)
+        return "<h3 id=\"%s\">%s</h3>" % (self.headingsseen, data)
 
     def handle_subheading(self, data):
         self.headingsseen += 1
-        return "<h4 id=\"%s\">%s</h4>" %(self.headingsseen, data)
+        return "<h4 id=\"%s\">%s</h4>" % (self.headingsseen, data)
 
     handle_ednote = u"<pre class=\"ednote\">%s</pre>".__mod__
     handle_authors = u"<i>%s</i>".__mod__

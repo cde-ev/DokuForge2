@@ -418,7 +418,7 @@ class TeXFormatter(BaseFormatter):
             pos = 0
             while 3*(pos+1) + rem <= len(leaf.data):
                 number += leaf.data[3*pos+rem:3*(pos+1)+rem] + u'\\,'
-                pos +=1
+                pos += 1
             number = number[:-2]
         ## '3. ' is always output as '3.\,'
         if context.lookleafdata() == u'.' and \
