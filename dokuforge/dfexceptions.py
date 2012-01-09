@@ -14,6 +14,7 @@ class DfException(Exception):
 class CheckError(StandardError, DfException):
     def __init__(self, msg, exp):
         StandardError.__init__(self, msg)
+        DfException.__init__(self, msg)
         assert isinstance(msg, unicode)
         assert isinstance(exp, unicode)
         self.message = msg
@@ -88,7 +89,7 @@ class BlobOutOfBound(MalformedAdress):
     """
     pass
 
-class TemporaryRequestRedirect(exceptions.HTTPException,
+class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
                                werkzeug.routing.RoutingException):
     """
     The class of exceptions to raise when the user is not logged in and
@@ -97,6 +98,7 @@ class TemporaryRequestRedirect(exceptions.HTTPException,
     code = 307
 
     def __init__(self, new_url):
+        werkzeug.exceptions.HTTPException.__init__(self)
         werkzeug.routing.RoutingException.__init__(self, new_url)
         self.new_url = new_url
 
@@ -104,10 +106,11 @@ class TemporaryRequestRedirect(exceptions.HTTPException,
         return werkzeug.utils.redirect(self.new_url, self.code)
 
 class SeeOtherRedirect(werkzeug.exceptions.HTTPException,
-                               werkzeug.routing.RoutingException):
+                       werkzeug.routing.RoutingException):
     code = 303
 
     def __init__(self, new_url):
+        werkzeug.exceptions.HTTPException.__init__(self)
         werkzeug.routing.RoutingException.__init__(self, new_url)
         self.new_url = new_url
 
@@ -134,6 +137,7 @@ class InternalError(DfException):
         @param code: the exit status of a called process being responsible for
                 this exception if any
         """
+        DfException.__init__(msg)
         self.msg = msg
         self.stderr = stderr
         self.code = code
