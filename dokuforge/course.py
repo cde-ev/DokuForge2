@@ -94,7 +94,7 @@ class Outline:
         assert 'date' in info.keys()
         assert 'author'  in info.keys()
         assert 'revision' in info.keys()
-        
+
         self.lastchange = info
     @property
     def versionstring(self):

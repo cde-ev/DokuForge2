@@ -63,11 +63,11 @@ def rloghead(filename):
     @raises RcsError:
     """
     assert isinstance(filename, str)
-    
+
     # Amzingly enough, the "official" way to obtain revision information
     # is to parse the output of rlog. This statement is obtained from
     # Thien-Thi Nguyen <ttn@gnuvola.org> (maintainer of GNU RCS) in an private
-    # email on Oct 16, 2011 that also promised that such a script will never 
+    # email on Oct 16, 2011 that also promised that such a script will never
     # be broken by any future releases.
     answer = {}
 
@@ -403,7 +403,7 @@ class CachingStorage(Storage):
         @raises RcsError:
         """
         self.ensureexistence(havelock = havelock)
-        mtime = os.path.getmtime(self.fullpath("%s,v")) 
+        mtime = os.path.getmtime(self.fullpath("%s,v"))
         if mtime == self.cachedtime:
             pass # content already up to date
         else:

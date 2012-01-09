@@ -16,7 +16,7 @@ class Academy(StorageDir):
     contain the following files. All directories within this directory are
     assumed to contain a course.
 
-    Courses can either be alive or dead, were dead means deleted. All normal operations which apply to courses, 
+    Courses can either be alive or dead, were dead means deleted. All normal operations which apply to courses,
 
     title,v    The title of this display name of this academy
     groups,v   The groups in which this academy is a member
