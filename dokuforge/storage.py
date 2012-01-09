@@ -348,7 +348,7 @@ class Storage(object):
             try:
                 call_rcs(["co", "-f", "-q", "-l%s" % version,
                           self.fullpath()])
-            except RcsError, error:
+            except RcsError:
                 # FIXME: verify that the passed revision is indeed rejected
                 # Otherwise we may be hiding real errors. Looking at
                 # error.stderr might help here.
