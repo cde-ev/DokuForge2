@@ -846,7 +846,10 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedMeta(aca):
             raise dfexceptions.NotEnoughPriveleges()
-        name = rs.request.form["name"] # FIXME: raises KeyError
+        try:
+            name = rs.request.form["name"]
+        except KeyError:
+            raise dfexceptions.MalformedPOSTRequest()
         c = self.getCourse(aca, name, rs.user, allowdead=True)
         c.setlivingstate(True)
         return self.render_academy(rs, aca)
