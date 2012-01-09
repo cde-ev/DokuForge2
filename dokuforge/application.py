@@ -546,8 +546,7 @@ class Application:
             password = rs.request.form["password"]
             rs.request.form["submit"] # just check for existence
         except KeyError:
-            rs.response.data = "missing form fields"
-            return rs.response
+            raise dfexceptions.MalformedPOSTRequest()
         if not self.userdb.checkLogin(username, password):
             rs.response.data = "wrong password"
             return rs.response
