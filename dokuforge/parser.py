@@ -26,9 +26,7 @@ class ParseLeaf:
         """
         if not verbose:
             return
-        whitespace = u""
-        for i in range(indent):
-            whitespace += u"    "
+        whitespace = indent * u"    "
         print (u"%sParseLeaf: %s (%s)" % (whitespace, self.ident, self.data)).encode("utf8")
 
 class ParseTree:
@@ -92,10 +90,8 @@ class ParseTree:
         """
         Print a representation of the ParseTree.
         """
-        whitespace = u""
+        whitespace = indent * u"    "
         marker = u""
-        for i in range(indent):
-            whitespace += u"    "
         if self.isactive():
             marker = u"*"
         print whitespace + u"ParseTree: " + self.ident + marker
