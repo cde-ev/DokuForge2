@@ -84,7 +84,7 @@ class SessionHandler:
             logger.debug("SessionHandler.get: cookie %r not found", self.sid)
             return None
         assert isinstance(results[0][0], unicode)
-        if results[0][1] + self.hit_interval < time.time():
+        if results[0][1] + self.hit_interval < now:
             self.cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
                              (now, self.sid.decode("utf8")))
             self.db.commit()
@@ -132,7 +132,7 @@ class SessionHandler:
         if self.lastexpire + self.hit_interval < now:
             logger.debug("SessionHandler.expire: taking action")
             self.cur.execute("DELETE FROM sessions WHERE updated < ?;",
-                             (time.time() - self.expire_after,))
+                             (now - self.expire_after,))
             self.db.commit()
             self.lastexpire = now
 
