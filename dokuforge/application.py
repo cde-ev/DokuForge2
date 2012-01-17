@@ -8,6 +8,7 @@ try:
     from hashlib import md5 as getmd5
 except ImportError:
     from md5 import new as getmd5
+import logging
 import operator
 import os
 import random
@@ -32,6 +33,8 @@ except ImportError:
     commitid = "unknown"
 
 sysrand = random.SystemRandom()
+
+logger = logging.getLogger(__name__)
 
 def gensid(bits=64):
     """
@@ -72,26 +75,34 @@ class SessionHandler:
         self.expire(now)
 
         if self.sid is None:
+            logger.debug("SessionHandler.get: no cookie found")
             return None
         self.cur.execute("SELECT user, updated FROM sessions WHERE sid = ?;",
                          (self.sid.decode("utf8"),))
         results = self.cur.fetchall()
         if len(results) != 1:
+            logger.debug("SessionHandler.get: cookie %r not found", self.sid)
             return None
         assert isinstance(results[0][0], unicode)
         if results[0][1] + self.hit_interval < time.time():
             self.cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
                              (now, self.sid.decode("utf8")))
             self.db.commit()
+        logger.debug("SessionHandler.get: cookie %r matches user %r", self.sid, 
+                results[0][0])
         return results[0][0]
 
     def set(self, username):
         """Initiate a user session.
         @type username: unicode
         """
+        action = "reusing"
         if self.sid is None:
             self.sid = gensid()
             self.response.set_cookie(self.cookie_name, self.sid)
+            action = "generating new"
+        logger.debug("SessionHandler.set: %s cookie %r for user %r", action,
+                    self.sid, username)
         self.cur.execute("INSERT OR REPLACE INTO sessions VALUES (?, ?, ?);",
                          (self.sid.decode("utf8"), username, time.time()))
         self.db.commit()
@@ -102,10 +113,13 @@ class SessionHandler:
         @returns: a list of headers to be sent with the http response
         """
         if self.sid is not None:
+            logger.debug("SessionHandler.delete: deleting cookie %r", self.sid)
             self.cur.execute("DELETE FROM sessions WHERE sid = ?;",
                              (self.sid.decode("utf8"),))
             self.db.commit()
             self.response.delete_cookie(self.cookie_name)
+        else:
+            logger.debug("SessionHandler.delete: no cookie to delete")
 
     def expire(self, now=None):
         """Delete old cookies unless there was active expire call within the
@@ -116,6 +130,7 @@ class SessionHandler:
         if now is None:
             now = time.time()
         if self.lastexpire + self.hit_interval < now:
+            logger.debug("SessionHandler.expire: taking action")
             self.cur.execute("DELETE FROM sessions WHERE updated < ?;",
                              (time.time() - self.expire_after,))
             self.db.commit()
