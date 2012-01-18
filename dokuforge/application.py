@@ -43,7 +43,7 @@ def gensid(bits=64):
     @rtype: str
     @returns: a random string
     """
-    return "%x" % random.getrandbits(bits)
+    return "%x" % sysrand.getrandbits(bits)
 
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database."""
