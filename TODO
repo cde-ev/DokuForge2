@@ -25,3 +25,6 @@
 * "wrong password" needs html rendering
 * extremely long course titles break layout
 * set LC_ALL=C when calling rcs (fixed in branch last-edited)
+* preview and edit (df1 feature)
+* view content of whole course on one page (df1 feature)
+* list of all blobs (so the Fuzzi can review for bad quality/missing raw data)
