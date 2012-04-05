@@ -139,7 +139,7 @@ class Parser:
 	"""
 	def __init__(self, inputdata=u""):
 		## ensure newline at the end
-		if inputdata[-1] != '\n':
+		if not inputdata.endswith("\n"):
 			self.inputdata = inputdata + '\n'
 		else:
 			self.inputdata = inputdata
