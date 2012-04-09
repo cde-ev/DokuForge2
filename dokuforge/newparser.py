@@ -4,7 +4,11 @@ class ParseNode:
 	"""
 	Abstract base class for all nodes ouf the output tree.
 	"""
-	pass
+	def display(self, indent=0, verbose=False):
+		"""
+		Print a representation of the node.
+		"""
+		raise NotImplementedError
 
 class ParseLeaf(ParseNode):
 	"""
