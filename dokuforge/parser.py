@@ -60,8 +60,30 @@ class Paragraph(Linegroup):
         if not isemptyline(line):
             Linegroup.appendline(self, line)
 
-    def startshere(self, line):
+    def startshere(self, line, after=None):
         return isemptyline(line)
+
+class Heading(Linegroup):
+    """
+    Headings, marked [As such] in dokuforge
+    """
+    def __init__(self, initialline=None):
+        Linegroup.__init__(self, initialline=initialline)
+        self.printname = "Heading"
+
+    def startshere(self, line, after=None):
+        return line.startswith('[') and not line.startswith('[[')
+
+class Author(Linegroup):
+    """
+    List of authors, marked (Some Author) in dokuforge
+    """
+    def __init__(self, initialline=None):
+        Linegroup.__init__(self, initialline=initialline)
+        self.printname = "Author"
+    
+    def startshere(self, line, after=None):
+        return line.startswith('(') and after.__class__==Heading
 
 
 def grouplines(lines, supportedgroups):
@@ -81,7 +103,7 @@ def grouplines(lines, supportedgroups):
             handled = False
             for linegroup in supportedgroups:
                 if not handled:
-                    if linegroup.startshere(line):
+                    if linegroup.startshere(line, after=current):
                         groups.append(current)
                         current = linegroup.__class__(initialline=line)
                         handled = True
@@ -105,6 +127,6 @@ Absatz.
 (Man beachte, dass diese Klammer
 keine Autorenangabe beinhaltet)
 """
-    features = [Paragraph()]
+    features = [Paragraph(), Heading(), Author()]
     groups = grouplines(example.splitlines(), features)
     print [g.debug() for g in groups]
