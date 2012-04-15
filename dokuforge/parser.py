@@ -96,6 +96,21 @@ class Author(Linegroup):
     def startshere(self, line, after=None):
         return line.startswith('(') and isinstance(after, Heading)
 
+class Item(Linegroup):
+    """
+    An entry of an itemization, marked as
+    - first
+    - second
+    - third
+    in Dokuforge.
+    """
+    def __init__(self, initialline=None):
+        Linegroup.__init__(self, initialline=initialline)
+        self.printname = "Item"
+    
+    def startshere(self, line, after=None):
+        return line.startswith('- ')
+
 
 def grouplines(lines, supportedgroups):
     """
@@ -140,7 +155,14 @@ Und ein weiterer
 Absatz.
 (Man beachte, dass diese Klammer
 keine Autorenangabe beinhaltet)
+
+Und nun noch eine Aufzaehlung.
+- erstens
+- zweitens
+- drittens
+
+Und ein weiterer Absatz.
 """
-    features = [Paragraph(), Heading(), Author(), Subheading()]
+    features = [Paragraph(), Heading(), Author(), Subheading(), Item()]
     groups = grouplines(example.splitlines(), features)
     print [g.debug() for g in groups]
