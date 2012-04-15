@@ -15,13 +15,40 @@ class Linegroup:
     """
     def __init__(self):
         self.lines = []
+        self.printname = "abstract linegroup"
+
+    def startshere(self, line, after=None):
+        """
+        Decide if this line starts a new group of the given type,
+        assuming that it occurs after the group provided in in
+        the optional argument.
+        """
+        return False
 
     def appendline(self, line):
         self.lines.append(line)
+
+    def debug(self):
+        return (self.printname, self.lines)
 
 class Paragraph(Linegroup):
     """
     A standard paragraph. This hopefully should be the most common
     line group in a document.
     """
-    pass
+
+    def __init__(self):
+        Linegroup.__init__(self)
+        self.printname = "Paragraph"
+
+
+
+def grouplines(lines, supportedgroups):
+    """
+    Given a list of lines and a list of Linegroup to support, group
+    lines accordingly.
+
+    The grouping is done based on the startshere function provided
+    by the supported linegroups.
+    """
+    pass ## FIXME: continue
