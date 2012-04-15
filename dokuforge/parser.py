@@ -1,5 +1,76 @@
 import re
 
+class PTree:
+    """
+    Abstract class where all parsed objects inherit from.
+    """
+    def debug(self):
+        return None
+
+class PSequence(PTree):
+    """
+    A piece of text formed by juxtaposition of several
+    Parse Trees (usually paragraphs).
+    """
+    def __init__(self, parts):
+        self.parts = parts
+
+    def debug(self):
+        return ('Sequence', [part.debug() for part in self.parts])
+
+class PLeaf(PTree):
+    """
+    A piece of text that contains no further substructure.
+    """
+    def __init__(self, text):
+        self.text = text
+
+    def debug(self):
+        return self.text
+
+class PParagraph(PTree):
+    def __init__(self, subtree):
+        self.it = subtree
+
+    def debug(self):
+        return ('Paragraph', self.it.debug())
+
+class PHeading(PTree):
+    def __init__(self, title, level):
+        self.title = title
+        self.level = level
+
+    def debug(self):
+        return ('Heading', self.level, self.title)
+
+class PAuthor(PTree):
+    def __init__(self, author):
+        self.author = author
+
+    def getAuthor(self):
+        return self.author
+
+    def debug(self):
+        return ('Author', self.author)
+
+class PDescription(PTree):
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+
+    def debug(self):
+        return ('Description', self.key.debug(), self.value.debug())
+
+class PItem(PTree):
+    def __init__(self, subtree):
+        self.it = subtree
+
+    def debug(self):
+        return ('Item', self.it.debug())
+
+def defaultInnerParse(lines):
+    return PLeaf('\n'.join(lines))
+
 class Linegroup:
     """
     Abstract class where all line-groups inherit from.
@@ -36,6 +107,12 @@ class Linegroup:
         """
         return False
 
+    def parse(self):
+        """
+        Return a representation of this linegroup as PTree.
+        """
+        return defaultInnerParse(self.lines)
+
     def appendline(self, line):
         self.lines.append(line)
 
@@ -63,6 +140,9 @@ class Paragraph(Linegroup):
     def startshere(self, line, after=None):
         return isemptyline(line)
 
+    def parse(self):
+        return PParagraph(defaultInnerParse(self.lines))
+
 class Heading(Linegroup):
     """
     Headings, marked [As such] in dokuforge
@@ -73,6 +153,17 @@ class Heading(Linegroup):
 
     def startshere(self, line, after=None):
         return line.startswith('[') and not line.startswith('[[')
+
+    def getTitle(self):
+        title = ' '.join(self.lines)
+        while title.startswith('['):
+            title = title[1:]
+        while title.endswith(']'):
+            title = title[:-1]
+        return title
+
+    def parse(self):
+        return PHeading(self.getTitle(), 1)
 
 class Subheading(Heading):
     """
@@ -85,6 +176,9 @@ class Subheading(Heading):
     def startshere(self, line, after=None):
         return line.startswith('[[') and not line.startswith('[[[')
 
+    def parse(self):
+        return PHeading(self.getTitle(), 2)
+
 class Author(Linegroup):
     """
     List of authors, marked (Some Author) in dokuforge
@@ -95,6 +189,14 @@ class Author(Linegroup):
     
     def startshere(self, line, after=None):
         return line.startswith('(') and isinstance(after, Heading)
+
+    def parse(self):
+        author = ' '.join(self.lines)
+        while author.startswith('('):
+            author = author[1:]
+        while author.endswith(')'):
+            author = author[:-1]
+        return PAuthor(author)
 
 class Item(Linegroup):
     """
@@ -111,6 +213,18 @@ class Item(Linegroup):
     def startshere(self, line, after=None):
         return line.startswith('- ')
 
+    def parse(self):
+        if len(self.lines) < 1:
+            return PItem(defaultInnerParse(self.lines))
+        firstline = self.lines[0]
+        while firstline.startswith('-'):
+            firstline = firstline[1:]
+        while firstline.startswith(' '):
+            firstline = firstline[1:]
+        withcleanedfirstline = [firstline]
+        withcleanedfirstline.extend(self.lines[1:])
+        return PItem(defaultInnerParse(withcleanedfirstline))
+
 class Description(Linegroup):
     """
     *Description* explain a word in a gloassary
@@ -122,6 +236,23 @@ class Description(Linegroup):
     def startshere(self, line, after=None):
         return line.startswith('*')
 
+    def parse(self):
+        if len(self.lines) < 1:
+            return PLeaf('')
+        firstline = self.lines[0]
+        while firstline.startswith('*'):
+            firstline = firstline[1:]
+        while firstline.startswith(' '):
+            firstline = firstline[1:]
+        keyrest = firstline.split('*')
+        key = keyrest[0]
+        if len(keyrest) > 1:
+            rest = keyrest[1] + '\n'
+        else:
+            rest = ''
+        body = rest + '\n'.join(self.lines[1:])
+        return PDescription(defaultInnerParse([key]),
+                            defaultInnerParse([body]));
 
 def grouplines(lines, supportedgroups):
     """
@@ -149,6 +280,11 @@ def grouplines(lines, supportedgroups):
     groups.append(current)
     return groups
 
+
+def dfLineGroupParser(text):
+    features = [Paragraph(), Heading(), Author(), Subheading(), Item(), Description()]
+    groups = grouplines(text.splitlines(), features)
+    return PSequence([g.parse() for g in groups])
 
 if __name__ == "__main__":
     example = """
@@ -180,6 +316,4 @@ diesem Ansatz der Groupierung von Zeilen.
 *Flexibilitaet fuer Erweiterungen* ist etwas,
 worauf wir wohl nicht verzichten koennen.
 """
-    features = [Paragraph(), Heading(), Author(), Subheading(), Item(), Description()]
-    groups = grouplines(example.splitlines(), features)
-    print [g.debug() for g in groups]
+    print dfLineGroupParser(example).debug()
