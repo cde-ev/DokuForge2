@@ -8,6 +8,7 @@
 
 == later and important ==
 * exporter
+* bibliography: serialize as json
 
 == not so important ==
 * nicer design
