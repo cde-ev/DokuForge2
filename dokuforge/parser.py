@@ -73,6 +73,13 @@ class PDescription(PTree):
     def debug(self):
         return ('Description', self.key.debug(), self.value.debug())
 
+class PItemize(PTree):
+    def __init__(self, items):
+        self.items = items
+
+    def debug(self):
+        return ('Itemize', [item.debug() for item in self.items])
+
 class PItem(PTree):
     def __init__(self, subtree):
         self.it = subtree
@@ -300,10 +307,31 @@ def removeEmpty(ptrees):
             result.append(ptree)
     return result
 
+def groupItems(ptrees):
+    """
+    For a given list of PTrees, return the same list, but
+    with every sequence of PItems replaced by an PItemize.
+    """
+    result = []
+    pos = 0
+    while pos < len(ptrees):
+        if isinstance(ptrees[pos], PItem):
+            i = pos
+            while i < len(ptrees) and isinstance(ptrees[i], PItem):
+                i += 1
+            result.append(PItemize(ptrees[pos:i]))
+            pos = i
+        else:
+            result.append(ptrees[pos])
+            pos += 1
+    return result
+
+
 def dfLineGroupParser(text):
     features = [Paragraph(), Heading(), Author(), Subheading(), Item(), Description()]
     groups = grouplines(text.splitlines(), features)
     ptrees = [g.parse() for g in groups]
+    ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
     return PSequence(ptrees)
 
