@@ -74,6 +74,17 @@ class Heading(Linegroup):
     def startshere(self, line, after=None):
         return line.startswith('[') and not line.startswith('[[')
 
+class Subheading(Heading):
+    """
+    Subheadings, markes [[as such]] in dokuforge
+    """
+    def __init__(self, initialline=None):
+        Linegroup.__init__(self, initialline=initialline)
+        self.printname = "SubHeading"
+
+    def startshere(self, line, after=None):
+        return line.startswith('[[') and not line.startswith('[[[')
+
 class Author(Linegroup):
     """
     List of authors, marked (Some Author) in dokuforge
@@ -83,7 +94,7 @@ class Author(Linegroup):
         self.printname = "Author"
     
     def startshere(self, line, after=None):
-        return line.startswith('(') and after.__class__==Heading
+        return line.startswith('(') and isinstance(after, Heading)
 
 
 def grouplines(lines, supportedgroups):
@@ -122,11 +133,14 @@ Hier ist ein
 Paragrpah ueber 3
 Zeilen.
 
+[[Unterueberschrift]]
+(Autor)
+
 Und ein weiterer
 Absatz.
 (Man beachte, dass diese Klammer
 keine Autorenangabe beinhaltet)
 """
-    features = [Paragraph(), Heading(), Author()]
+    features = [Paragraph(), Heading(), Author(), Subheading()]
     groups = grouplines(example.splitlines(), features)
     print [g.debug() for g in groups]
