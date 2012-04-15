@@ -1,11 +1,17 @@
 import re
 
+def isemptyline(line):
+    return re.match('^[ \t]*$', line)
+
 class PTree:
     """
     Abstract class where all parsed objects inherit from.
     """
     def debug(self):
         return None
+
+    def isEmpty(self):
+        return False
 
 class PSequence(PTree):
     """
@@ -28,12 +34,18 @@ class PLeaf(PTree):
     def debug(self):
         return self.text
 
+    def isEmpty(self):
+        return isemptyline(self.text)
+
 class PParagraph(PTree):
     def __init__(self, subtree):
         self.it = subtree
 
     def debug(self):
         return ('Paragraph', self.it.debug())
+
+    def isEmpty(self):
+        return self.it.isEmpty()
 
 class PHeading(PTree):
     def __init__(self, title, level):
@@ -119,9 +131,6 @@ class Linegroup:
     def debug(self):
         return (self.printname, self.lines)
 
-
-def isemptyline(line):
-    return re.match('^[ \t]*$', line)
 
 class Paragraph(Linegroup):
     """
@@ -280,11 +289,23 @@ def grouplines(lines, supportedgroups):
     groups.append(current)
     return groups
 
+def removeEmpty(ptrees):
+    """
+    Given a list of PTrees, return a list containing the
+    same elements but the empty ones.
+    """
+    result = []
+    for ptree in ptrees:
+        if not ptree.isEmpty():
+            result.append(ptree)
+    return result
 
 def dfLineGroupParser(text):
     features = [Paragraph(), Heading(), Author(), Subheading(), Item(), Description()]
     groups = grouplines(text.splitlines(), features)
-    return PSequence([g.parse() for g in groups])
+    ptrees = [g.parse() for g in groups]
+    ptrees = removeEmpty(ptrees)
+    return PSequence(ptrees)
 
 if __name__ == "__main__":
     example = """
