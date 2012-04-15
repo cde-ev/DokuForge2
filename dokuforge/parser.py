@@ -258,8 +258,6 @@ class Description(Linegroup):
         firstline = self.lines[0]
         while firstline.startswith('*'):
             firstline = firstline[1:]
-        while firstline.startswith(' '):
-            firstline = firstline[1:]
         keyrest = firstline.split('*')
         key = keyrest[0]
         if len(keyrest) > 1:
@@ -267,8 +265,8 @@ class Description(Linegroup):
         else:
             rest = ''
         body = rest + '\n'.join(self.lines[1:])
-        return PDescription(defaultInnerParse([key]),
-                            defaultInnerParse([body]));
+        return PDescription(defaultInnerParse([key.strip()]),
+                            defaultInnerParse([body.strip()]));
 
 def grouplines(lines, supportedgroups):
     """
