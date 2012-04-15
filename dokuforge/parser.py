@@ -111,6 +111,17 @@ class Item(Linegroup):
     def startshere(self, line, after=None):
         return line.startswith('- ')
 
+class Description(Linegroup):
+    """
+    *Description* explain a word in a gloassary
+    """
+    def __init__(self, initialline=None):
+        Linegroup.__init__(self, initialline=initialline)
+        self.printname = "Description"
+    
+    def startshere(self, line, after=None):
+        return line.startswith('*')
+
 
 def grouplines(lines, supportedgroups):
     """
@@ -162,7 +173,13 @@ Und nun noch eine Aufzaehlung.
 - drittens
 
 Und ein weiterer Absatz.
+
+*Modularitaet* ist die Wesentliche Idee hinter
+diesem Ansatz der Groupierung von Zeilen.
+
+*Flexibilitaet fuer Erweiterungen* ist etwas,
+worauf wir wohl nicht verzichten koennen.
 """
-    features = [Paragraph(), Heading(), Author(), Subheading(), Item()]
+    features = [Paragraph(), Heading(), Author(), Subheading(), Item(), Description()]
     groups = grouplines(example.splitlines(), features)
     print [g.debug() for g in groups]
