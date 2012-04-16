@@ -125,6 +125,7 @@ class Linegroup:
         if initialline is not None:
             self.appendline(initialline)
 
+    @classmethod
     def startshere(self, line, after=None):
         """
         Decide if this line starts a new group of the given type,
@@ -168,6 +169,7 @@ class Paragraph(Linegroup):
         if not isemptyline(line):
             Linegroup.appendline(self, line)
 
+    @classmethod
     def startshere(self, line, after=None):
         return isemptyline(line)
 
@@ -209,6 +211,7 @@ class Ednote(Linegroup):
         Linegroup.__init__(self, initialline=initialline)
         self.printname = "Ednote"
 
+    @classmethod
     def startshere(self, line, after=None):
         return line.startswith('{')
 
@@ -249,6 +252,7 @@ class Heading(Linegroup):
         Linegroup.__init__(self, initialline=initialline)
         self.printname = "Heading"
 
+    @classmethod
     def startshere(self, line, after=None):
         return line.startswith('[') and not line.startswith('[[')
 
@@ -271,6 +275,7 @@ class Subheading(Heading):
         Linegroup.__init__(self, initialline=initialline)
         self.printname = "SubHeading"
 
+    @classmethod
     def startshere(self, line, after=None):
         return line.startswith('[[') and not line.startswith('[[[')
 
@@ -285,6 +290,7 @@ class Author(Linegroup):
         Linegroup.__init__(self, initialline=initialline)
         self.printname = "Author"
     
+    @classmethod
     def startshere(self, line, after=None):
         return line.startswith('(') and isinstance(after, Heading)
 
@@ -308,6 +314,7 @@ class Item(Linegroup):
         Linegroup.__init__(self, initialline=initialline)
         self.printname = "Item"
     
+    @classmethod
     def startshere(self, line, after=None):
         return line.startswith('- ')
 
@@ -331,6 +338,7 @@ class Description(Linegroup):
         Linegroup.__init__(self, initialline=initialline)
         self.printname = "Description"
     
+    @classmethod
     def startshere(self, line, after=None):
         return line.startswith('*')
 
@@ -369,7 +377,7 @@ def grouplines(lines, supportedgroups):
                 if not handled:
                     if linegroup.startshere(line, after=current):
                         groups.append(current)
-                        current = linegroup.__class__(initialline=line)
+                        current = linegroup(initialline=line)
                         handled = True
             if not handled:
                 current.appendline(line)
@@ -408,7 +416,7 @@ def groupItems(ptrees):
 
 
 def dfLineGroupParser(text):
-    features = [Paragraph(), Heading(), Author(), Subheading(), Item(), Description(), Ednote()]
+    features = [Paragraph, Heading, Author, Subheading, Item, Description, Ednote]
     groups = grouplines(text.splitlines(), features)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
