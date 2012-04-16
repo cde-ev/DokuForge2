@@ -37,6 +37,21 @@ class PLeaf(PTree):
     def isEmpty(self):
         return isemptyline(self.text)
 
+class PEdnote(PTree):
+    """
+    An Ednote; contents are compeletly unchanged.
+    """
+    def __init__(self, text):
+        self.text = text
+
+    def isEmpty(self):
+        # the mere fact that there was an Ednote
+        # is already worth mentioning
+        return False
+
+    def debug(self):
+        return ('Ednote', self.text)
+
 class PParagraph(PTree):
     def __init__(self, subtree):
         self.it = subtree
@@ -158,6 +173,73 @@ class Paragraph(Linegroup):
 
     def parse(self):
         return PParagraph(defaultInnerParse(self.lines))
+
+def isMirrorBracket(firstline, lastline):
+    """
+    Return True iff lastline ends with the matching
+    bigbracket to the one the firstline starts with.
+    """
+    closing = { '{' : '}', '(' : ')', '<' : '>', '[' : ']' }
+
+    left = firstline.split(' ')[0]
+    right = lastline.rstrip().split(' ')[-1]
+
+    if len(left) < 1:
+        return False
+
+    if len(left) != len(right):
+        return False
+    
+    for i in range(len(left)):
+        c = left[i]
+        if c in closing:
+            c = closing[c]
+        if right[-1 - i] != c:
+            return False
+
+    return True
+
+class Ednote(Linegroup):
+    """
+    Notes to the editor; also used to enter text without any changes or
+    further parsing. May contain empty lines.
+    """
+
+    def __init__(self, initialline=None):
+        Linegroup.__init__(self, initialline=initialline)
+        self.printname = "Ednote"
+
+    def startshere(self, line, after=None):
+        return line.startswith('{')
+
+    def enforcecontinuation(self, line):
+        if len(self.lines) < 1:
+            return True
+        if isMirrorBracket(self.lines[0], self.lines[-1]):
+           return False
+        return not isMirrorBracket(self.lines[0], line)
+
+    def parse(self):
+        ## first and last line contain the opening and closing brackets
+        if len(self.lines) < 1:
+            return PEdnote('\n'.join(self.lines))
+        if len(self.lines) == 1:
+            line = self.lines[0]
+            splitline = line.split(' ')
+            return PEdnote(' '.join(splitline[1:-1]))
+
+        firstlinesplit = self.lines[0].split(' ', 1)
+        if len(firstlinesplit) > 1:
+            start = firstlinesplit[1] + '\n'
+        else:
+            start = ''
+        lastlinesplit = self.lines[-1].rstrip().rsplit(' ', 1)
+        if len(lastlinesplit) > 1:
+            end = '\n' + lastlinesplit[0]
+        else:
+            end = ''
+        return PEdnote(start + '\n'.join(self.lines[1:-1]) + end)
+
 
 class Heading(Linegroup):
     """
@@ -326,7 +408,7 @@ def groupItems(ptrees):
 
 
 def dfLineGroupParser(text):
-    features = [Paragraph(), Heading(), Author(), Subheading(), Item(), Description()]
+    features = [Paragraph(), Heading(), Author(), Subheading(), Item(), Description(), Ednote()]
     groups = grouplines(text.splitlines(), features)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
@@ -349,6 +431,23 @@ Und ein weiterer
 Absatz.
 (Man beachte, dass diese Klammer
 keine Autorenangabe beinhaltet)
+
+{ Ednote: short }
+
+{ Ednote:
+
+  Mit Leerzeile! }
+
+{((
+
+Fancy Ednote, containing Code
+
+for(i=0, i< 10; i++) {
+  printf("%d\n", i);
+}
+
+))}
+  
 
 Und nun noch eine Aufzaehlung.
 - erstens
