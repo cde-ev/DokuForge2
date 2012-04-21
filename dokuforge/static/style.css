@@ -1,53 +1,112 @@
-#header {
+html, body, #page {
     background-color: #9999ff;
-    padding: 1ex;
     margin: 0px;
-    position: relative;
-    min-height: 15ex;
+    height:100%;
+    overflow: hidden;
 }
-#footer {
-    background-color: #9999ff;
-    padding: 1ex;
-    text-align: right;
+
+#header {
+    top: 0ex;
+    height: 13ex;
+    padding-top: 2ex;
+    padding-left: 1em;
+    padding-right: 1em;
 }
-#content {
-    background-color: #ccccff;
-    padding: 2ex;
-}
-#page {
-}
-#dokuforgetitle {
-    text-align: center;
-    margin-top: 0.5ex;
-    margin-bottom: 0.5ex;
-}
-#userinformation {
-    float: right;
-}
-#headerlinks {
+ #headings {
     position: absolute;
-    bottom: 1ex;
-    right: 1ex;
-    text-align: right;
-}
-#subheading {
+    left: 1em;
+    right: 21em;
+    height: 9ex;
+ }
+  #dokuforgetitle {
+    text-align: center;
+    margin: 0ex;
+  }
+  #subheading {
     font-size: x-large;
     font-weight: bold;
-    margin-right: 12.5em;
-}
-#location {
+    margin: 0ex;
+    margin-top: 0.5ex;
+  }
+ #userinformation {
+    float: right;
+    height: 3ex;
+ }
+  #userinformation form {
+    padding-left: 0.5em;
+  }
+ #headerlinks {
     position: absolute;
-    bottom: 1ex;
-    margin-right: 20em;
+    top: 6ex;
+    right: 1em;
+    text-align: right;
+    height: 4ex;
+    width: 20em;
+ }
+  #headerlinks a {
+    padding-left: 1ex;
+  }
+ #location {
+    position: absolute;
+    top: 11ex;
+ }
+
+#content {
+    position: absolute;
+    background-color: #ccccff;
+    padding: 2ex;
+    bottom: 6ex;
+    top: 14ex;
+    left: 0ex;
+    right: 0ex;
+	overflow: auto;
 }
+ #saveedit {
+    position: absolute;
+    top: 1ex;
+    bottom: 1ex;
+    left: 2ex;
+    right: 2ex;
+ }
+  #saveedittext {
+    position: absolute;
+    left: 0em;
+    right: 0em;
+    top: 3ex;
+    bottom: 4.5ex;
+  }
+   #saveedittext textarea {
+    height: 100%;
+    width: 100%
+   }
+  #saveeditinput {
+    position: absolute;
+    bottom: 0ex;
+    left: 0ex;
+  }
+
+#footer {
+    position: absolute;
+    padding-top: 1ex;
+    padding-bottom: 1ex;
+    padding-left: 1em;
+    padding-right: 1em;
+    text-align: right;
+    height: 4ex;
+    bottom: 0ex;
+    right: 0em;
+}
+
+
+textarea {
+	width: 100%;
+	min-height: 10ex;
+}
+
 .important {
     color: red;
     font-size: larger;
     font-weight: bold;
-}
-body {
-    background-color: #9999ff;
-    margin: 0px;
 }
 .button {
     display: inline;
@@ -67,10 +126,6 @@ body {
     background-color: #aaddff;
 }
 
-textarea {
-	width: 100%;
-	min-height: 10em;
-}
 .dokucontent .displaymath {
     text-align: center;
 }

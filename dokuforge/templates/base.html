@@ -83,7 +83,12 @@ if (checkMathCookie() == true){
 <div id="page">
 {%- block header %}
  <div id="header">
-   <h1 id="dokuforgetitle">Dokuforge</h1>
+   <div id="headings">
+	 <h1 id="dokuforgetitle">Dokuforge</h1>
+	 <div id="subheading">
+	   {%- block subheading %}Startseite{% endblock -%}
+	 </div>
+   </div>
    <div id="userinformation">
    {%- if user is not none %}
        Hallo {{ user.name|e }}!
@@ -127,9 +132,6 @@ if (checkMathCookie() == true){
    {% endif -%}
    <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
    </div>
-   <div id="subheading">
-   {%- block subheading %}Startseite{% endblock -%}
-   </div>
    <div id="location">
    {%- block location %}{% endblock -%}
    </div>
@@ -142,7 +144,7 @@ Dies sollte nicht sichtbar sein.
 </div>
 {%- block footer %}
    <div id="footer">
-   	Kontakt: team (at) dokuforge.de<br><br>
+   	Kontakt: team (at) dokuforge.de<br>
    	Dokuforge – Ein Projekt des CdE e.V.
    </div>
 {% endblock -%}

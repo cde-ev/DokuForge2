@@ -10,22 +10,26 @@
 {% endblock %}
 {% block content %}
 
-{% if ok is none %}
-Bitte Text eingeben und mit &quot;Speichern&quot; beenden.
-{% elif ok %}
-Aenderungen erfolgreich gespeichert.
-{% else %}
-<span class=important>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</span>
-Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
-{% endif %}
-
-Teil #{{ page|string }}
 <form action="{{ buildurl("save")|e }}" method="post" id="saveedit">
+  {% if ok is none %}
+  Bitte Text eingeben und mit &quot;Speichern&quot; beenden.
+  {% elif ok %}
+  Aenderungen erfolgreich gespeichert.
+  {% else %}
+  <span class=important>Es ist ein Konflikt mit einer anderen &Auml;nderung aufgetreten!</span>
+  Bitte l&ouml;se den Konflikt auf und speichere danach erneut.
+  {% endif %}
+
+  Teil #{{ page|string }}
+  <div id="saveedittext">
 	<textarea name="content">{{ content|e }}</textarea>
+  </div>
+  <div id="saveeditinput">
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 	<input type="submit" name="saveshow" value="Speichern und Beenden">
+	<a href="{{ buildurl("page")|e }}">Abbrechen</a>
+  </div>
 </form>
-<a href="{{ buildurl("page")|e }}">Abbrechen</a>
 {% endblock %}
