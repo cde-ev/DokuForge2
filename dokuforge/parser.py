@@ -102,8 +102,106 @@ class PItem(PTree):
     def debug(self):
         return ('Item', self.it.debug())
 
+class Chargroup:
+    """
+    Abstract class where all char-groups inherit from.
+
+    A char group is a group of sucessive characters within
+    a line group, forming a logical unit within that line
+    group, like an emphasis, or a math environment.
+    """
+    def __init__(self, initial=None):
+        self.text = ''
+        self.printname = 'abstract chargroup'
+        if initial is not None:
+            self.append(initial)
+
+    def append(self, chars):
+        """
+        Append the given (possibly empty) sequence of chars to that group.
+        """
+        self.text = self.text + chars
+
+    def debug(self):
+        return (self.printname, self.text)
+
+    def parse(self):
+        return PLeaf(self.text)
+
+    @classmethod
+    def startshere(self, char, lookahead=None):
+        """
+        Return True, if a new chargroup of this type starts at the
+        given char, which itself is followed by the lookahead.
+        The lookahead is None, if the given char is the last char
+        of the line group.
+        """
+        return False
+
+    def enforcecontinuation(self, char):
+        """
+        Return True, if if this group insists in taking that next character,
+        regardless of whether other groups might start here.
+        """
+        return False
+
+    def rejectcontinuation(self, char):
+        """
+        Return True, if this group refuses to accept that next character, even
+        if that means a new Simplegroup has to be started.
+        """
+        return False
+
+class Simplegroup(Chargroup):
+    """
+    The default char group, without any special markup.
+    """
+    def __init__(self, initial=None):
+        Chargroup.__init__(self, initial=initial)
+        self.printname = 'simple chargroup'
+
+def groupchars(text, supportedgroups):
+    """
+    Given a string (considered a list of chars) and a list of
+    Chargroups to support, group the chars accordingly.
+    """
+    current = Simplegroup()
+    groups = []
+    for i in range(len(text)):
+        c = text[i]
+        if i + 1 < len(text):
+            lookahead = text[i+1]
+        else:
+            lookahead = None
+
+        if current.enforcecontinuation(c):
+            current.append(c)
+        else:
+            handled = False
+            for group in supportedgroups:
+                if not handled:
+                    if group.startshere(c, lookahead=lookahead):
+                        groups.append(current)
+                        current = group(c)
+                        handled = True
+            if not handled:
+                if not current.rejectcontinuation(c):
+                    current.append(c)
+                else:
+                    groups.append(current)
+                    current = Simplegroup(c)
+    groups.append(current)
+    return groups
+    
+
 def defaultInnerParse(lines):
-    return PLeaf('\n'.join(lines))
+    features = [Simplegroup]
+    text = '\n'.join(lines)
+    groups = groupchars(text, features)
+    if len(groups) == 1:
+        return groups[0].parse()
+    else:
+        return PSequence([g.parse for g in groups])
 
 class Linegroup:
     """
