@@ -448,7 +448,7 @@ class Ednote(Linegroup):
             return True
         if isMirrorBracket(self.lines[0], self.lines[-1]):
            return False
-        return not isMirrorBracket(self.lines[0], line)
+        return True
 
     def rejectcontinuation(self, line):
         return not self.enforcecontinuation(line)
