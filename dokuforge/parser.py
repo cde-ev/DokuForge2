@@ -13,6 +13,12 @@ class PTree:
     def isEmpty(self):
         return False
 
+    def toTex(self):
+        """
+        return a tex-representation of the parsed object.
+        """
+        return ''
+
 class PSequence(PTree):
     """
     A piece of text formed by juxtaposition of several
@@ -23,6 +29,12 @@ class PSequence(PTree):
 
     def debug(self):
         return ('Sequence', [part.debug() for part in self.parts])
+
+    def toTex(self):
+        result = ''
+        for part in self.parts:
+            result = result + part.toTex()
+        return result
 
 class PLeaf(PTree):
     """
@@ -37,6 +49,9 @@ class PLeaf(PTree):
     def isEmpty(self):
         return isemptyline(self.text)
 
+    def toTex(self):
+        return self.text
+
 class PEmph(PTree):
     """
     An emphasized piece of text.
@@ -47,6 +62,9 @@ class PEmph(PTree):
     def debug(self):
         return ('emph', self.text)
 
+    def toTex(self):
+        return '\\emph{' + self.text + '}'
+
 class PMath(PTree):
     """
     An non-display math area.
@@ -56,6 +74,9 @@ class PMath(PTree):
 
     def debug(self):
         return ('math', self.text)
+
+    def toTex(self):
+        return '$' + self.text + '$'
 
 class PEdnote(PTree):
     """
@@ -72,6 +93,9 @@ class PEdnote(PTree):
     def debug(self):
         return ('Ednote', self.text)
 
+    def toTex(self):
+        return '\n\\begin{ednote}\n' + self.text + '\n\\end{ednote}\n'
+
 class PParagraph(PTree):
     def __init__(self, subtree):
         self.it = subtree
@@ -82,6 +106,9 @@ class PParagraph(PTree):
     def isEmpty(self):
         return self.it.isEmpty()
 
+    def toTex(self):
+        return '\n' + self.it.toTex() + '\n'
+
 class PHeading(PTree):
     def __init__(self, title, level):
         self.title = title
@@ -89,6 +116,14 @@ class PHeading(PTree):
 
     def debug(self):
         return ('Heading', self.level, self.title)
+
+    def toTex(self):
+        result = '\n\\'
+        for _ in range(self.level):
+            result = result + 'sub'
+        result = result + 'section'
+        result = result + '{' + self.title + '}\n'
+        return result
 
 class PAuthor(PTree):
     def __init__(self, author):
@@ -100,6 +135,9 @@ class PAuthor(PTree):
     def debug(self):
         return ('Author', self.author)
 
+    def toTex(self):
+        return '\\authors{' + self.author + '}\n'
+
 class PDescription(PTree):
     def __init__(self, key, value):
         self.key = key
@@ -108,6 +146,9 @@ class PDescription(PTree):
     def debug(self):
         return ('Description', self.key.debug(), self.value.debug())
 
+    def toTex(self):
+        return '\n\\paragraph{' + self.key.toTex() + '} ' + self.value.toTex() + '\n'
+
 class PItemize(PTree):
     def __init__(self, items):
         self.items = items
@@ -115,12 +156,22 @@ class PItemize(PTree):
     def debug(self):
         return ('Itemize', [item.debug() for item in self.items])
 
+    def toTex(self):
+        result = '\n\\begin{itemize}'
+        for item in self.items:
+            result = result + item.toTex()
+        result = result + '\n\\end{itemize}\n'
+        return result
+
 class PItem(PTree):
     def __init__(self, subtree):
         self.it = subtree
 
     def debug(self):
         return ('Item', self.it.debug())
+
+    def toTex(self):
+        return '\n\\item ' + self.it.toTex()
 
 class Chargroup:
     """
@@ -445,7 +496,7 @@ class Heading(Linegroup):
         return title
 
     def parse(self):
-        return PHeading(self.getTitle(), 1)
+        return PHeading(self.getTitle(), 0)
 
 class Subheading(Heading):
     """
@@ -460,7 +511,7 @@ class Subheading(Heading):
         return line.startswith('[[') and not line.startswith('[[[')
 
     def parse(self):
-        return PHeading(self.getTitle(), 2)
+        return PHeading(self.getTitle(), 1)
 
 class Author(Linegroup):
     """
@@ -635,7 +686,7 @@ keine Autorenangabe beinhaltet)
 Fancy Ednote, containing Code
 
 for(i=0, i< 10; i++) {
-  printf("%d\n", i);
+  printf("%d\\n", i);
 }
 
 ))}
@@ -663,4 +714,12 @@ Text text...
 { sehr kurze, eingebunde ednote }
 Noch ein neuer Absatz.
 """
-    print dfLineGroupParser(example).debug()
+    ptree = dfLineGroupParser(example)
+    print 
+    print "Structure of the parse tree:"
+    print "============================"
+    print ptree.debug()
+    print
+    print "Output as tex:"
+    print "=============="
+    print ptree.toTex()
