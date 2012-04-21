@@ -37,6 +37,16 @@ class PLeaf(PTree):
     def isEmpty(self):
         return isemptyline(self.text)
 
+class PEmph(PTree):
+    """
+    An emphasized piece of text.
+    """
+    def __init__(self, text):
+        self.text = text
+
+    def debug(self):
+        return ('emph', self.text)
+
 class PEdnote(PTree):
     """
     An Ednote; contents are compeletly unchanged.
@@ -160,6 +170,33 @@ class Simplegroup(Chargroup):
         Chargroup.__init__(self, initial=initial)
         self.printname = 'simple chargroup'
 
+class Emphgroup(Chargroup):
+    """
+    The group for _emphasized text_.
+    """
+    def __init__(self, initial=None):
+        Chargroup.__init__(self, initial=initial)
+        self.printname = 'emph group'
+
+    @classmethod
+    def startshere(self, char, lookahead=None):
+        return char == '_'
+
+    def rejectcontinuation(self, char):
+        if len(self.text) < 2:
+            return False
+        return self.text[-1] == '_'
+
+    def enforcecontinuation(self, char):
+        ## Force to get the closing _
+        if self.rejectcontinuation(char):
+            return False
+        return char == '_'
+
+    def parse(self):
+        return PEmph(self.text[1:-1])
+
+
 def groupchars(text, supportedgroups):
     """
     Given a string (considered a list of chars) and a list of
@@ -195,13 +232,13 @@ def groupchars(text, supportedgroups):
     
 
 def defaultInnerParse(lines):
-    features = [Simplegroup]
+    features = [Simplegroup, Emphgroup]
     text = '\n'.join(lines)
     groups = groupchars(text, features)
     if len(groups) == 1:
         return groups[0].parse()
     else:
-        return PSequence([g.parse for g in groups])
+        return PSequence([g.parse() for g in groups])
 
 class Linegroup:
     """
@@ -577,6 +614,7 @@ Und nun noch eine Aufzaehlung.
 - drittens
 
 Und ein weiterer Absatz.
+Dieser enthaelt _betonten_ Text.
 
 *Modularitaet* ist die Wesentliche Idee hinter
 diesem Ansatz der Groupierung von Zeilen.
