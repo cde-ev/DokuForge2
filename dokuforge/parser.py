@@ -134,6 +134,13 @@ class Linegroup:
         """
         return False
 
+    def rejectcontinuation(self, lines):
+        """
+        Decide that this group definitely does not want any more lines,
+        and, in the worst case, a new paragraph has to be started.
+        """
+        return False
+
     def enforcecontinuation(self, line):
         """
         Decide if this group enforces that the next line belongs to
@@ -221,6 +228,9 @@ class Ednote(Linegroup):
         if isMirrorBracket(self.lines[0], self.lines[-1]):
            return False
         return not isMirrorBracket(self.lines[0], line)
+
+    def rejectcontinuation(self, line):
+        return not self.enforcecontinuation(line)
 
     def parse(self):
         ## first and last line contain the opening and closing brackets
@@ -380,7 +390,11 @@ def grouplines(lines, supportedgroups):
                         current = linegroup(initialline=line)
                         handled = True
             if not handled:
-                current.appendline(line)
+                if not current.rejectcontinuation(line):
+                    current.appendline(line)
+                else:
+                    groups.append(current)
+                    current = Paragraph(line)
     groups.append(current)
     return groups
 
@@ -469,5 +483,9 @@ diesem Ansatz der Groupierung von Zeilen.
 
 *Flexibilitaet fuer Erweiterungen* ist etwas,
 worauf wir wohl nicht verzichten koennen.
+
+Text text...
+{ sehr kurze, eingebunde ednote }
+Noch ein neuer Absatz.
 """
     print dfLineGroupParser(example).debug()
