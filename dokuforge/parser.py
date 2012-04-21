@@ -373,8 +373,8 @@ def grouplines(lines, supportedgroups):
     Given a list of lines and a list of Linegroup to support, group
     lines accordingly.
 
-    The grouping is done based on the startshere and enforcecontinuatuion
-    functions provided by the supported linegroups.
+    The grouping is done based on the startshere, enforcecontinuatuion,
+    and rejectcontinuation methods provided by the supported linegroups.
     """
     current = Paragraph()
     groups = []
