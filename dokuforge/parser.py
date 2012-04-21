@@ -47,6 +47,16 @@ class PEmph(PTree):
     def debug(self):
         return ('emph', self.text)
 
+class PMath(PTree):
+    """
+    An non-display math area.
+    """
+    def __init__(self, text):
+        self.text = text
+
+    def debug(self):
+        return ('math', self.text)
+
 class PEdnote(PTree):
     """
     An Ednote; contents are compeletly unchanged.
@@ -185,7 +195,7 @@ class Emphgroup(Chargroup):
     def rejectcontinuation(self, char):
         if len(self.text) < 2:
             return False
-        return self.text[-1] == '_'
+        return self.text.endswith('_')
 
     def enforcecontinuation(self, char):
         ## Force to get the closing _
@@ -195,6 +205,31 @@ class Emphgroup(Chargroup):
 
     def parse(self):
         return PEmph(self.text[1:-1])
+
+
+class Mathgroup(Chargroup):
+    """
+    The group for simple (non dislay) math,
+    like $a^2 + b^2$.
+    """
+    def __init__(self, initial=None):
+        Chargroup.__init__(self, initial=initial)
+        self.printname = 'math group'
+
+    @classmethod
+    def startshere(self, char, lookahead=None):
+        return char == '$' and not lookahead == '$'
+
+    def enforcecontinuation(self, char):
+        if len(self.text) < 3:
+            return True
+        return not self.text.endswith('$')
+
+    def rejectcontinuation(self, char):
+        return not self.enforcecontinuation(char)
+
+    def parse(self):
+        return PMath(self.text[1:-1])
 
 
 def groupchars(text, supportedgroups):
@@ -232,7 +267,7 @@ def groupchars(text, supportedgroups):
     
 
 def defaultInnerParse(lines):
-    features = [Simplegroup, Emphgroup]
+    features = [Simplegroup, Emphgroup, Mathgroup]
     text = '\n'.join(lines)
     groups = groupchars(text, features)
     if len(groups) == 1:
@@ -615,6 +650,8 @@ Und nun noch eine Aufzaehlung.
 
 Und ein weiterer Absatz.
 Dieser enthaelt _betonten_ Text.
+Und auch Mathematik, z.B. $x^2 + y^2$
+oder auch $x_1$.
 
 *Modularitaet* ist die Wesentliche Idee hinter
 diesem Ansatz der Groupierung von Zeilen.
