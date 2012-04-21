@@ -470,6 +470,8 @@ for(i=0, i< 10; i++) {
 
 ))}
   
+{ Ednote }
+Hier sollte eigentlich ein neuer Absatz beginnen.
 
 Und nun noch eine Aufzaehlung.
 - erstens
