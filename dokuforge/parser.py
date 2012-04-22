@@ -19,6 +19,12 @@ class PTree:
         """
         return ''
 
+    def toHtml(self):
+        """
+        return a html-representation of the parsed object.
+        """
+        return ''
+
 class PSequence(PTree):
     """
     A piece of text formed by juxtaposition of several
@@ -34,6 +40,12 @@ class PSequence(PTree):
         result = ''
         for part in self.parts:
             result = result + part.toTex()
+        return result
+
+    def toHtml(self):
+        result = ''
+        for part in self.parts:
+            result = result + part.toHtml()
         return result
 
 class PLeaf(PTree):
@@ -52,6 +64,9 @@ class PLeaf(PTree):
     def toTex(self):
         return self.text
 
+    def toHtml(self):
+        return self.text
+
 class PEmph(PTree):
     """
     An emphasized piece of text.
@@ -65,6 +80,9 @@ class PEmph(PTree):
     def toTex(self):
         return '\\emph{' + self.text + '}'
 
+    def toHtml(self):
+        return '<em>' + self.text + '</em>'
+
 class PMath(PTree):
     """
     An non-display math area.
@@ -77,6 +95,9 @@ class PMath(PTree):
 
     def toTex(self):
         return '$' + self.text + '$'
+
+    def toHtml(self):
+        return '<div id="math">$' + self.text + '$</div>'
 
 class PEdnote(PTree):
     """
@@ -96,6 +117,13 @@ class PEdnote(PTree):
     def toTex(self):
         return '\n\\begin{ednote}\n' + self.text + '\n\\end{ednote}\n'
 
+    def toHtml(self):
+        result = self.text
+        result = re.sub('&', '&amp;', result)
+        result = re.sub('<', '&lt;', result)
+        result = re.sub('>', '&gt;', result)
+        return '\n<pre>\n' + result + '\n</pre>\n'
+
 class PParagraph(PTree):
     def __init__(self, subtree):
         self.it = subtree
@@ -108,6 +136,9 @@ class PParagraph(PTree):
 
     def toTex(self):
         return '\n' + self.it.toTex() + '\n'
+
+    def toHtml(self):
+        return '\n<p>\n'  + self.it.toHtml() + '\n</p>\n'
 
 class PHeading(PTree):
     def __init__(self, title, level):
@@ -125,6 +156,9 @@ class PHeading(PTree):
         result = result + '{' + self.title + '}\n'
         return result
 
+    def toHtml(self):
+        return ('\n<h%d>' % (self.level +1)) + self.title + ('</h%d>\n' % (self.level +1))
+
 class PAuthor(PTree):
     def __init__(self, author):
         self.author = author
@@ -138,6 +172,9 @@ class PAuthor(PTree):
     def toTex(self):
         return '\\authors{' + self.author + '}\n'
 
+    def toHtml(self):
+        return '<i>' + self.author + '</i>'
+
 class PDescription(PTree):
     def __init__(self, key, value):
         self.key = key
@@ -148,6 +185,9 @@ class PDescription(PTree):
 
     def toTex(self):
         return '\n\\paragraph{' + self.key.toTex() + '} ' + self.value.toTex() + '\n'
+
+    def toHtml(self):
+        return '\n<p><b>' + self.key.toHtml() + '</b> ' + self.value.toHtml() + '\n</p>\n'
 
 class PItemize(PTree):
     def __init__(self, items):
@@ -163,6 +203,13 @@ class PItemize(PTree):
         result = result + '\n\\end{itemize}\n'
         return result
 
+    def toHtml(self):
+        result = '\n<ul>'
+        for item in self.items:
+            result = result + item.toHtml()
+        result = result + '\n</ul>\n'
+        return result
+
 class PItem(PTree):
     def __init__(self, subtree):
         self.it = subtree
@@ -172,6 +219,9 @@ class PItem(PTree):
 
     def toTex(self):
         return '\n\\item ' + self.it.toTex()
+
+    def toHtml(self):
+        return '\n<li> ' + self.it.toHtml()
 
 class Chargroup:
     """
@@ -723,3 +773,7 @@ Noch ein neuer Absatz.
     print "Output as tex:"
     print "=============="
     print ptree.toTex()
+    print
+    print "Output as html:"
+    print "==============="
+    print ptree.toHtml()
