@@ -519,9 +519,13 @@ class Ednote(Linegroup):
             start = ''
         lastlinesplit = self.lines[-1].rstrip().rsplit(' ', 1)
         if len(lastlinesplit) > 1:
-            end = '\n' + lastlinesplit[0]
+            end = lastlinesplit[0]
         else:
             end = ''
+
+        if len(self.lines) > 2 and len(end) != 0:
+            end = '\n' + end
+
         return PEdnote(start + '\n'.join(self.lines[1:-1]) + end)
 
 
@@ -752,7 +756,7 @@ Und nun noch eine Aufzaehlung.
 Und ein weiterer Absatz.
 Dieser enthaelt _betonten_ Text.
 Und auch Mathematik, z.B. $x^2 + y^2$
-oder auch $x_1$.
+oder auch $x_1 + x_2$.
 
 *Modularitaet* ist die Wesentliche Idee hinter
 diesem Ansatz der Groupierung von Zeilen.
@@ -763,6 +767,11 @@ worauf wir wohl nicht verzichten koennen.
 Text text...
 { sehr kurze, eingebunde ednote }
 Noch ein neuer Absatz.
+
+{ Ednote:
+  hiervor tauchen zwei Zeilenumbrueche auf }
+
+Und ein weiterer Absatz.
 """
     ptree = dfLineGroupParser(example)
     print 
