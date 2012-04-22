@@ -80,6 +80,7 @@ class SessionHandler:
         self.cur.execute("SELECT user, updated FROM sessions WHERE sid = ?;",
                          (self.sid.decode("utf8"),))
         results = self.cur.fetchall()
+        self.db.commit()
         if len(results) != 1:
             logger.debug("SessionHandler.get: cookie %r not found", self.sid)
             return None
