@@ -772,6 +772,15 @@ Noch ein neuer Absatz.
   hiervor tauchen zwei Zeilenumbrueche auf }
 
 Und ein weiterer Absatz.
+Danach kommen 2 getrennte Aufzaehungen.
+
+- a
+- b
+- c
+
+- x
+- y
+- z
 """
     ptree = dfLineGroupParser(example)
     print 
