@@ -390,11 +390,9 @@ class Linegroup:
     item-entries cann be grouped to an itemization environment, thus
     yielding a parse tree of the whole dokument.
     """
-    def __init__(self, initialline=None):
+    def __init__(self):
         self.lines = []
         self.printname = "abstract linegroup"
-        if initialline is not None:
-            self.appendline(initialline)
 
     @classmethod
     def startshere(self, line, after=None):
@@ -439,8 +437,8 @@ class Paragraph(Linegroup):
     line group in a document.
     """
     
-    def __init__(self, initialline=None):
-        Linegroup.__init__(self, initialline=initialline)
+    def __init__(self):
+        Linegroup.__init__(self)
         self.printname = "Paragraph"
 
     def appendline(self, line):
@@ -485,8 +483,8 @@ class Ednote(Linegroup):
     further parsing. May contain empty lines.
     """
 
-    def __init__(self, initialline=None):
-        Linegroup.__init__(self, initialline=initialline)
+    def __init__(self):
+        Linegroup.__init__(self)
         self.printname = "Ednote"
 
     @classmethod
@@ -533,8 +531,8 @@ class Heading(Linegroup):
     """
     Headings, marked [As such] in dokuforge
     """
-    def __init__(self, initialline=None):
-        Linegroup.__init__(self, initialline=initialline)
+    def __init__(self):
+        Linegroup.__init__(self)
         self.printname = "Heading"
 
     @classmethod
@@ -556,8 +554,8 @@ class Subheading(Heading):
     """
     Subheadings, markes [[as such]] in dokuforge
     """
-    def __init__(self, initialline=None):
-        Linegroup.__init__(self, initialline=initialline)
+    def __init__(self):
+        Linegroup.__init__(self)
         self.printname = "SubHeading"
 
     @classmethod
@@ -571,8 +569,8 @@ class Author(Linegroup):
     """
     List of authors, marked (Some Author) in dokuforge
     """
-    def __init__(self, initialline=None):
-        Linegroup.__init__(self, initialline=initialline)
+    def __init__(self):
+        Linegroup.__init__(self)
         self.printname = "Author"
     
     @classmethod
@@ -595,8 +593,8 @@ class Item(Linegroup):
     - third
     in Dokuforge.
     """
-    def __init__(self, initialline=None):
-        Linegroup.__init__(self, initialline=initialline)
+    def __init__(self):
+        Linegroup.__init__(self)
         self.printname = "Item"
     
     @classmethod
@@ -619,8 +617,8 @@ class Description(Linegroup):
     """
     *Description* explain a word in a gloassary
     """
-    def __init__(self, initialline=None):
-        Linegroup.__init__(self, initialline=initialline)
+    def __init__(self):
+        Linegroup.__init__(self)
         self.printname = "Description"
     
     @classmethod
@@ -662,14 +660,16 @@ def grouplines(lines, supportedgroups):
                 if not handled:
                     if linegroup.startshere(line, after=current):
                         groups.append(current)
-                        current = linegroup(initialline=line)
+                        current = linegroup()
+                        current.appendline(line)
                         handled = True
             if not handled:
                 if not current.rejectcontinuation(line):
                     current.appendline(line)
                 else:
                     groups.append(current)
-                    current = Paragraph(line)
+                    current = Paragraph()
+                    current.appendline(line)
     groups.append(current)
     return groups
 
