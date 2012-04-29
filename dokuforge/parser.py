@@ -403,7 +403,7 @@ class Linegroup:
         """
         return False
 
-    def rejectcontinuation(self, lines):
+    def rejectcontinuation(self, line):
         """
         Decide that this group definitely does not want any more lines,
         and, in the worst case, a new paragraph has to be started.
