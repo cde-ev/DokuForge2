@@ -539,6 +539,14 @@ class Heading(Linegroup):
     def startshere(self, line, after=None):
         return line.startswith('[') and not line.startswith('[[')
 
+    def enforcecontinuation(self, line):
+        if len(self.lines) < 1:
+            return True
+        return ']' not in set(self.lines[-1])
+
+    def rejectcontinuation(self, line):
+        return not self.enforcecontinuation(line)
+
     def getTitle(self):
         title = ' '.join(self.lines)
         while title.startswith('['):
@@ -752,6 +760,14 @@ Und nun noch eine Aufzaehlung.
 - erstens
 - zweitens
 - drittens
+
+[Hier eine Ueberschrift, ohne
+ Autorenangabe, ueber mehrere Zeilen
+ hinweg]
+Man beachte, dass die Ueberschrift unmittelbar
+von einem Absatz gefolgt ist -- ohne Leerzeile
+dazwischen.
+
 
 Und ein weiterer Absatz.
 Dieser enthaelt _betonten_ Text.
