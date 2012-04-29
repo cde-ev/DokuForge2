@@ -746,7 +746,7 @@ for(i=0, i< 10; i++) {
 ))}
   
 { Ednote }
-Hier sollte eigentlich ein neuer Absatz beginnen.
+Hier beginnt ein neuer Absatz.
 
 Und nun noch eine Aufzaehlung.
 - erstens
@@ -769,7 +769,7 @@ Text text...
 Noch ein neuer Absatz.
 
 { Ednote:
-  hiervor tauchen zwei Zeilenumbrueche auf }
+  hiervor tauchen keine zwei Zeilenumbrueche auf }
 
 Und ein weiterer Absatz.
 Danach kommen 2 getrennte Aufzaehungen.
