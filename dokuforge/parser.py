@@ -638,9 +638,7 @@ class Item(Linegroup):
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines))
         firstline = self.lines[0]
-        while firstline.startswith('-'):
-            firstline = firstline[1:]
-        while firstline.startswith(' '):
+        if firstline.startswith('-'):
             firstline = firstline[1:]
         withcleanedfirstline = [firstline]
         withcleanedfirstline.extend(self.lines[1:])
