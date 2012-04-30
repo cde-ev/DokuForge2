@@ -452,6 +452,36 @@ class Paragraph(Linegroup):
     def parse(self):
         return PParagraph(defaultInnerParse(self.lines))
 
+def splitleftbracket(line):
+    openings = set(['(', '[', '{'])
+    bracket, rest = '', ''
+    stillbracket = True
+    for i in range(len(line)):
+        c = line[i]
+        if c not in openings:
+            stillbracket = False
+        if stillbracket:
+            bracket = bracket + c
+        else:
+            rest = rest + c
+    return [bracket, rest]
+
+def splitrightbracket(line):
+    line = line.rstrip()
+    closings = set([')', ']', '}'])
+    bracket, rest = '', ''
+    stillbracket = True
+    for i in range(len(line)):
+        c = line[len(line)-i-1]
+        if c not in closings:
+            stillbracket = False
+        if stillbracket:
+            bracket = c + bracket
+        else:
+            rest = c + rest
+    return [rest, bracket]
+
+
 def isMirrorBracket(firstline, lastline):
     """
     Return True iff lastline ends with the matching
@@ -459,8 +489,8 @@ def isMirrorBracket(firstline, lastline):
     """
     closing = { '{' : '}', '(' : ')', '<' : '>', '[' : ']' }
 
-    left = firstline.split(' ')[0]
-    right = lastline.rstrip().split(' ')[-1]
+    left = splitleftbracket(firstline)[0]
+    right = splitrightbracket(lastline)[-1]
 
     if len(left) < 1:
         return False
@@ -507,19 +537,14 @@ class Ednote(Linegroup):
             return PEdnote('\n'.join(self.lines))
         if len(self.lines) == 1:
             line = self.lines[0]
-            splitline = line.split(' ')
-            return PEdnote(' '.join(splitline[1:-1]))
+            withoutleftbracket = splitleftbracket(line)[1]
+            withoutbracket = splitrightbracket(withoutleftbracket)[0]
+            return PEdnote(withoutbracket)
 
-        firstlinesplit = self.lines[0].split(' ', 1)
-        if len(firstlinesplit) > 1:
-            start = firstlinesplit[1] + '\n'
-        else:
-            start = ''
-        lastlinesplit = self.lines[-1].rstrip().rsplit(' ', 1)
-        if len(lastlinesplit) > 1:
-            end = lastlinesplit[0]
-        else:
-            end = ''
+        start = splitleftbracket(self.lines[0])[1]
+        if len(start) > 0:
+            start = start + '\n'
+        end = splitrightbracket(self.lines[-1])[0]
 
         if len(self.lines) > 2 and len(end) != 0:
             end = '\n' + end
@@ -738,6 +763,14 @@ Absatz.
 keine Autorenangabe beinhaltet)
 
 { Ednote: short }
+
+Und es gibt auch sehr kurze eingebundene Ednotes
+{(so wie diese hier, die eine } beinhaltet)}
+Bla bla bla...
+{(dies ist auch ueber
+zwei Zeilen -- ebenfalls mit } -- moeglich)}
+Bla bla bla...
+
 
 { Ednote:
 
