@@ -664,7 +664,7 @@ class Description(Linegroup):
         firstline = self.lines[0]
         while firstline.startswith('*'):
             firstline = firstline[1:]
-        keyrest = firstline.split('*')
+        keyrest = firstline.split('*', 1)
         key = keyrest[0]
         if len(keyrest) > 1:
             rest = keyrest[1] + '\n'
