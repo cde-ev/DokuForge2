@@ -324,7 +324,11 @@ class Mathgroup(Chargroup):
     def enforcecontinuation(self, char):
         if len(self.text) < 3:
             return True
-        return not self.text.endswith('$')
+        if not self.text.endswith('$'):
+            return True
+        beforeDollar = self.text[:-1]
+        trailingBackslash = re.split('[^\\\\]', beforeDollar)[-1]
+        return len(trailingBackslash) % 2 == 1
 
     def rejectcontinuation(self, char):
         return not self.enforcecontinuation(char)
@@ -819,6 +823,10 @@ Dieser enthaelt _betonten_ Text.
 Und auch Mathematik, z.B. $x^2 + y^2$
 oder auch $x_1 + x_2$.
 
+Und dieser Absatz enthaelt boese
+Mathematik wie $ \$ $ oder
+$ \\\\$.
+
 *Modularitaet* ist die Wesentliche Idee hinter
 diesem Ansatz der Groupierung von Zeilen.
 
@@ -868,6 +876,9 @@ Normaler Text. Bla Bla bla...
 
 """
     ptree = dfLineGroupParser(example)
+    print "Input"
+    print "======"
+    print example
     print 
     print "Structure of the parse tree:"
     print "============================"
