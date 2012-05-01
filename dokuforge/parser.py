@@ -565,6 +565,8 @@ class Heading(Linegroup):
         return line.startswith('[') and not line.startswith('[[')
 
     def enforcecontinuation(self, line):
+        if isemptyline(line):
+            return False
         if len(self.lines) < 1:
             return True
         return ']' not in set(self.lines[-1])
@@ -828,6 +830,14 @@ Danach kommen 2 getrennte Aufzaehungen.
 - x
 - y
 - z
+
+Und hier kommen noch Beispiele wie man's falsch machen kann.
+
+[Ueberschrit ueber mehrere Zeilen,
+ die aber keine Schliessende Klammern enthaelt
+
+Und weiterer neuer Text. Bla Bla bla...
+
 """
     ptree = dfLineGroupParser(example)
     print 
