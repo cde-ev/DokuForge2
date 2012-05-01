@@ -1,5 +1,30 @@
 import re
 
+## How To Read This File?
+##
+## This file demonstrates a proof-of-concept version of a parser
+## for the dokuforge mark-up language. It probably should be
+## split into several files eventually.
+##
+## Currently, everything is sorted in dependency order, but the
+## best way to understand the parsing concept is as follows.
+##
+## 1. Look at the abstract class Linegroup, then the functions
+##    grouplines and dfLineGroupParser, and then at the
+##    decendents of Linegroup. This is the outer parser.
+##
+## 2. Look at the abstract class Chargroup, then the functions
+##    groupchars and defaultInnerParser, and then at the decendents
+##    of Chargroup. This is the inner parser.
+##
+## 3. Now might be a good time, to read PTree and its decendents.
+##
+## For normal parsing, that's it.
+##
+## 4. If you're also interested in the micotypography for the TeX
+##    export, look at the abstract class MicrotypeFeature, the function
+##    defaultMicrotype and the decendents of MicrotypeFeature.
+
 class MicrotypeFeature:
     """
     Abstract class where all word-level microtypographic
