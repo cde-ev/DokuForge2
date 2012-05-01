@@ -671,18 +671,17 @@ class Description(Linegroup):
     def parse(self):
         if len(self.lines) < 1:
             return PLeaf('')
-        firstline = self.lines[0]
-        while firstline.startswith('*'):
-            firstline = firstline[1:]
-        keyrest = firstline.split('*', 1)
+        text = '\n'.join(self.lines).strip()
+        while text.startswith('*'):
+            text = text[1:]
+        keyrest = text.split('*', 1)
+        if len(keyrest) < 2:
+            # No terminating *, fall back to use the first space
+            keyrest = text.split(' ', 1)
         key = keyrest[0]
-        if len(keyrest) > 1:
-            rest = keyrest[1] + '\n'
-        else:
-            rest = ''
-        body = rest + '\n'.join(self.lines[1:])
+        rest = keyrest[1]
         return PDescription(defaultInnerParse([key.strip()]),
-                            defaultInnerParse([body.strip()]));
+                            defaultInnerParse([rest.strip()]));
 
 def grouplines(lines, supportedgroups):
     """
@@ -826,6 +825,12 @@ diesem Ansatz der Groupierung von Zeilen.
 *Flexibilitaet fuer Erweiterungen* ist etwas,
 worauf wir wohl nicht verzichten koennen.
 
+*Description
+Key
+Words*
+koennen ebenfalls ueber mehre Zeilenen
+gehen.
+
 Text text...
 { sehr kurze, eingebunde ednote }
 Noch ein neuer Absatz.
@@ -856,6 +861,10 @@ Und weiterer neuer Text. Bla Bla bla...
  Autor Bravo
 
 Normaler Text. Bla Bla bla...
+
+*Description ohne schliessenden Stern fuer das Keyword.
+
+*Keyword ist dann einfach das erste Wort.
 
 """
     ptree = dfLineGroupParser(example)
