@@ -11,7 +11,11 @@ class MicrotypeFeature:
 
     @classmethod
     def doit(self, word):
-        return word
+        """
+        return a list of processed words, that should be
+        treated separately by all following features.
+        """
+        return [word]
 
 class Acronym(MicrotypeFeature):
     """
@@ -24,7 +28,7 @@ class Acronym(MicrotypeFeature):
 
     @classmethod
     def doit(self, word):
-        return '\\acronym{%s}' % word
+        return ['\\acronym{%s}' % word]
 
 class StandardAbbreviations(MicrotypeFeature):
     """
@@ -41,7 +45,7 @@ class StandardAbbreviations(MicrotypeFeature):
 
     @classmethod
     def doit(self, word):
-        return self.abb[word]
+        return [self.abb[word]]
 
 class NaturalNumbers(MicrotypeFeature):
     """
@@ -56,35 +60,78 @@ class NaturalNumbers(MicrotypeFeature):
         value = int(word)
         if value < 10000:
             # no special typesetting for 4 digits only
-            return "%d" % value
+            return ["%d" % value]
         result = ''
         while value >= 1000:
             threedigits = value % 1000
             result = '\\,%03d%s' % (threedigits, result)
             value = value // 1000
-        return '%d%s' % (value, result)
-        
+        return ['%d%s' % (value, result)]
+
+class OpenQuotationMark(MicrotypeFeature):
+    @classmethod
+    def applies(self, word):
+        return len(word) > 1 and word.startswith('"')
+
+    @classmethod
+    def doit(self, word):
+        return ['"`', word[1:]]
+
+class CloseQuotationMark(MicrotypeFeature):
+    @classmethod
+    def applies(self, word):
+        return len(word) > 1 and word.endswith('"')
+
+    @classmethod
+    def doit(self, word):
+        return [word[:-1], '"\'']
+
+class FullStop(MicrotypeFeature):
+    @classmethod
+    def applies(self, word):
+        return len(word) > 1 and word.endswith('.')
+
+    @classmethod
+    def doit(self, word):
+        return [word[:-1], '.']
+
+def applyMicrotypefeatures(wordlist, featurelist):
+    """
+    sequentially apply (in the sense wordlist >>= feature)
+    the features to the wordlist. Return the concatenation
+    of the result.
+    """
+    for feature in featurelist:
+        newwordlist = []
+        for word in wordlist:
+            if feature.applies(word):
+                newwordlist.extend(feature.doit(word))
+            else:
+                newwordlist.append(word)
+        wordlist = newwordlist
+    return ''.join(wordlist)
 
 def doMicrotype(text, features, separators):
+    """
+    Do micro typography with the given features and
+    separators. Note that the order of the features
+    matters!
+    """
     result = ''
     word = ''
     for c in text:
         if not c in set(separators):
             word = word + c
         else:
-            for f in features:
-                if f.applies(word):
-                    word = f.doit(word)
+            word = applyMicrotypefeatures([word], features)
             result = result + word +c
             word = ''
-    for f in features:
-        if f.applies(word):
-            word = f.doit(word)
+    word = applyMicrotypefeatures([word], features)
     result = result + word
     return result
 
 def defaultMicrotype(text):
-    features = [Acronym, StandardAbbreviations, NaturalNumbers]
+    features = [StandardAbbreviations, OpenQuotationMark, CloseQuotationMark, FullStop, Acronym, NaturalNumbers]
     separators = ' ,;()-' # no point, might be in abbreviations
     return doMicrotype(text, features, separators)
 
@@ -949,6 +996,9 @@ ACRONYME sind z.B. microtypogrpahie-technisch interessant.
 Zahlen wie 1000, 9999, 10000, 10001 und 1000000000 ebenfalls.
 
 [Auch HIER in Ueberschriften und an 100000 anderen Orten!]
+Beispielsweise am Satzende, wie HIER. Oder in Anfuehrungszeichen.
+Er sagte: "10000 mal ist das schon gutgegangen. Warum diesmal
+nicht?"
 
 Und hier kommen noch Beispiele wie man's falsch machen kann.
 
