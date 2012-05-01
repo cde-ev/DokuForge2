@@ -97,7 +97,7 @@ class PMath(PTree):
         return '$' + self.text + '$'
 
     def toHtml(self):
-        return '<div id="math">$' + self.text + '$</div>'
+        return '<div class="math">$' + self.text + '$</div>'
 
 class PEdnote(PTree):
     """
