@@ -612,6 +612,16 @@ class Author(Linegroup):
     def startshere(self, line, after=None):
         return line.startswith('(') and isinstance(after, Heading)
 
+    def enforcecontinuation(self, line):
+        if isemptyline(line):
+            return False
+        if len(self.lines) < 1:
+            return True
+        return ')' not in set(self.lines[-1])
+
+    def rejectcontinuation(self, line):
+        return not self.enforcecontinuation(line)
+
     def parse(self):
         author = ' '.join(self.lines)
         while author.startswith('('):
@@ -801,6 +811,9 @@ Man beachte, dass die Ueberschrift unmittelbar
 von einem Absatz gefolgt ist -- ohne Leerzeile
 dazwischen.
 
+[Ueberschrift]
+(Autor Alpha,
+ Autor Bravo)
 
 Und ein weiterer Absatz.
 Dieser enthaelt _betonten_ Text.
@@ -837,6 +850,12 @@ Und hier kommen noch Beispiele wie man's falsch machen kann.
  die aber keine Schliessende Klammern enthaelt
 
 Und weiterer neuer Text. Bla Bla bla...
+
+[Und auch Autorenangaben kann man falsch machen]
+(Autor Alpha,
+ Autor Bravo
+
+Normaler Text. Bla Bla bla...
 
 """
     ptree = dfLineGroupParser(example)
