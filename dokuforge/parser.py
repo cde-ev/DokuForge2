@@ -1,5 +1,93 @@
 import re
 
+class MicrotypeFeature:
+    """
+    Abstract class where all word-level microtypographic
+    features inherit from.
+    """
+    @classmethod
+    def applies(self, word):
+        return False
+
+    @classmethod
+    def doit(self, word):
+        return word
+
+class Acronym(MicrotypeFeature):
+    """
+    All-capital words should be displayed in smaller font.
+    """
+    
+    @classmethod
+    def applies(self, word):
+        return len(word) > 0 and word.isupper()
+
+    @classmethod
+    def doit(self, word):
+        return '\\acronym{%s}' % word
+
+class StandardAbbreviations(MicrotypeFeature):
+    """
+    Do spacing for standard abbreviations.
+    """
+    abb = { 
+        '...' : '\\dots',
+        'd.h.' : 'd.\\,h.',
+        'z.B.' : 'z.\\,B.'}
+
+    @classmethod
+    def applies(self, word):
+        return word in self.abb
+
+    @classmethod
+    def doit(self, word):
+        return self.abb[word]
+
+class NaturalNumbers(MicrotypeFeature):
+    """
+    Special Spacing for numbers.
+    """
+    @classmethod
+    def applies(self, word):
+        return len(word) > 0 and re.match('^[0-9]*$', word)
+
+    @classmethod
+    def doit(self, word):
+        value = int(word)
+        if value < 10000:
+            # no special typesetting for 4 digits only
+            return "%d" % value
+        result = ''
+        while value >= 1000:
+            threedigits = value % 1000
+            result = '\\,%03d%s' % (threedigits, result)
+            value = value // 1000
+        return '%d%s' % (value, result)
+        
+
+def doMicrotype(text, features, separators):
+    result = ''
+    word = ''
+    for c in text:
+        if not c in set(separators):
+            word = word + c
+        else:
+            for f in features:
+                if f.applies(word):
+                    word = f.doit(word)
+            result = result + word +c
+            word = ''
+    for f in features:
+        if f.applies(word):
+            word = f.doit(word)
+    result = result + word
+    return result
+
+def defaultMicrotype(text):
+    features = [Acronym, StandardAbbreviations, NaturalNumbers]
+    separators = ' ,;()-' # no point, might be in abbreviations
+    return doMicrotype(text, features, separators)
+
 def isemptyline(line):
     return re.match('^[ \t]*$', line)
 
@@ -62,7 +150,7 @@ class PLeaf(PTree):
         return isemptyline(self.text)
 
     def toTex(self):
-        return self.text
+        return defaultMicrotype(self.text)
 
     def toHtml(self):
         return self.text
@@ -78,7 +166,7 @@ class PEmph(PTree):
         return ('emph', self.text)
 
     def toTex(self):
-        return '\\emph{' + self.text + '}'
+        return '\\emph{' + defaultMicrotype(self.text) + '}'
 
     def toHtml(self):
         return '<em>' + self.text + '</em>'
@@ -153,7 +241,7 @@ class PHeading(PTree):
         for _ in range(self.level):
             result = result + 'sub'
         result = result + 'section'
-        result = result + '{' + self.title + '}\n'
+        result = result + '{' + defaultMicrotype(self.title) + '}\n'
         return result
 
     def toHtml(self):
@@ -170,7 +258,7 @@ class PAuthor(PTree):
         return ('Author', self.author)
 
     def toTex(self):
-        return '\\authors{' + self.author + '}\n'
+        return '\\authors{' + defaultMicrotype(self.author) + '}\n'
 
     def toHtml(self):
         return '<i>' + self.author + '</i>'
@@ -779,10 +867,10 @@ keine Autorenangabe beinhaltet)
 
 Und es gibt auch sehr kurze eingebundene Ednotes
 {(so wie diese hier, die eine } beinhaltet)}
-Bla bla bla...
+Bla bla bla ...
 {(dies ist auch ueber
 zwei Zeilen -- ebenfalls mit } -- moeglich)}
-Bla bla bla...
+Bla bla bla ...
 
 
 { Ednote:
@@ -839,7 +927,7 @@ Words*
 koennen ebenfalls ueber mehre Zeilenen
 gehen.
 
-Text text...
+Text text ...
 { sehr kurze, eingebunde ednote }
 Noch ein neuer Absatz.
 
@@ -857,18 +945,23 @@ Danach kommen 2 getrennte Aufzaehungen.
 - y
 - z
 
+ACRONYME sind z.B. microtypogrpahie-technisch interessant.
+Zahlen wie 1000, 9999, 10000, 10001 und 1000000000 ebenfalls.
+
+[Auch HIER in Ueberschriften und an 100000 anderen Orten!]
+
 Und hier kommen noch Beispiele wie man's falsch machen kann.
 
 [Ueberschrit ueber mehrere Zeilen,
  die aber keine Schliessende Klammern enthaelt
 
-Und weiterer neuer Text. Bla Bla bla...
+Und weiterer neuer Text. Bla Bla bla ...
 
 [Und auch Autorenangaben kann man falsch machen]
 (Autor Alpha,
  Autor Bravo
 
-Normaler Text. Bla Bla bla...
+Normaler Text. Bla Bla bla ...
 
 *Description ohne schliessenden Stern fuer das Keyword.
 
