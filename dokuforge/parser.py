@@ -474,24 +474,34 @@ class Mathgroup(Chargroup):
     like $a^2 + b^2$.
     """
     def __init__(self, initial=None):
-        Chargroup.__init__(self, initial=initial)
+        self.trailingbackslashs = 0
+        self.done = False
+        self.count = 0
         self.printname = 'math group'
+        Chargroup.__init__(self, initial=initial)
 
     @classmethod
     def startshere(self, char, lookahead=None):
         return char == '$' and not lookahead == '$'
 
+    def append(self, chars):
+        for c in chars:
+            self.text = self.text + c
+            self.count = self.count + 1
+            if c == '$' and self.count > 2:
+                if self.trailingbackslashs % 2 == 0:
+                    self.done = True
+
+            if c == '\\':
+                self.trailingbackslashs = self.trailingbackslashs + 1
+            else:
+                self.trailingbackslashs = 0
+
     def enforcecontinuation(self, char):
-        if len(self.text) < 3:
-            return True
-        if not self.text.endswith('$'):
-            return True
-        beforeDollar = self.text[:-1]
-        trailingBackslash = re.split('[^\\\\]', beforeDollar)[-1]
-        return len(trailingBackslash) % 2 == 1
+        return not self.done
 
     def rejectcontinuation(self, char):
-        return not self.enforcecontinuation(char)
+        return self.done
 
     def parse(self):
         return PMath(self.text[1:-1])
