@@ -911,6 +911,9 @@ class Description(Linegroup):
         if len(keyrest) < 2:
             # No terminating *, fall back to use the first space
             keyrest = text.split(' ', 1)
+        if len(keyrest) < 2:
+            # No space either. Use line.
+            keyrest = (text, "")
         key = keyrest[0]
         rest = keyrest[1]
         return PDescription(defaultInnerParse([key.strip()]),
