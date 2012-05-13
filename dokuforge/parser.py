@@ -397,7 +397,7 @@ class PDescription(PTree):
         return '\n<p><b>' + self.key.toHtml() + '</b> ' + self.value.toHtml() + '\n</p>\n'
 
     def toDF(self):
-        return '\n\n*' + self.key.toDF() + '* ' + self.value.toDF()
+        return '\n\n*%1s* %s' % (self.key.toDF(), self.value.toDF())
 
 class PItemize(PTree):
     def __init__(self, items):
