@@ -279,7 +279,7 @@ class PMath(PTree):
         return '<div class="math">$' + self.text + '$</div>'
 
     def toDF(self):
-        return '$' + self.text + '$'
+        return '$%1s$' % self.text
 
 class PEdnote(PTree):
     """
