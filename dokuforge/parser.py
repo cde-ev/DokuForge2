@@ -185,6 +185,13 @@ class PTree:
         """
         return ''
 
+    def toDf(self):
+        """
+        return a canonical representation of the text in
+        dokuforge markup language.
+        """
+        return ''
+
 class PSequence(PTree):
     """
     A piece of text formed by juxtaposition of several
@@ -208,6 +215,12 @@ class PSequence(PTree):
             result = result + part.toHtml()
         return result
 
+    def toDF(self):
+        result = ''
+        for part in self.parts:
+            result = result + part.toDF()
+        return result
+
 class PLeaf(PTree):
     """
     A piece of text that contains no further substructure.
@@ -227,6 +240,9 @@ class PLeaf(PTree):
     def toHtml(self):
         return self.text
 
+    def toDF(self):
+        return self.text
+
 class PEmph(PTree):
     """
     An emphasized piece of text.
@@ -243,6 +259,9 @@ class PEmph(PTree):
     def toHtml(self):
         return '<em>' + self.text + '</em>'
 
+    def toDF(self):
+        return '_' + self.text + '_'
+
 class PMath(PTree):
     """
     An non-display math area.
@@ -258,6 +277,9 @@ class PMath(PTree):
 
     def toHtml(self):
         return '<div class="math">$' + self.text + '$</div>'
+
+    def toDF(self):
+        return '$' + self.text + '$'
 
 class PEdnote(PTree):
     """
@@ -284,6 +306,15 @@ class PEdnote(PTree):
         result = re.sub('>', '&gt;', result)
         return '\n<pre>\n' + result + '\n</pre>\n'
 
+    def toDF(self):
+        # find a bracket combination not in the text
+        openbracket = '{'
+        closebracket = '}'
+        while self.text.find(closebracket) >= 0:
+            openbracket = openbracket + '{'
+            closebracket = closebracket + '}'
+        return '\n' + openbracket + '\n' + self.text + '\n' + closebracket + '\n'
+
 class PParagraph(PTree):
     def __init__(self, subtree):
         self.it = subtree
@@ -299,6 +330,10 @@ class PParagraph(PTree):
 
     def toHtml(self):
         return '\n<p>\n'  + self.it.toHtml() + '\n</p>\n'
+
+    def toDF(self):
+        return '\n\n' + self.it.toDF() + '\n'
+
 
 class PHeading(PTree):
     def __init__(self, title, level):
@@ -319,6 +354,15 @@ class PHeading(PTree):
     def toHtml(self):
         return ('\n<h%d>' % (self.level +1)) + self.title + ('</h%d>\n' % (self.level +1))
 
+    def toDF(self):
+        result = '\n'
+        for _ in range(self.level + 1):
+            result = result + '['
+        result = result + self.title
+        for _ in range(self.level + 1):
+            result = result + ']'
+        return result
+
 class PAuthor(PTree):
     def __init__(self, author):
         self.author = author
@@ -335,6 +379,9 @@ class PAuthor(PTree):
     def toHtml(self):
         return '<i>' + self.author + '</i>'
 
+    def toDF(self):
+        return '\n(' + self.author + ')'
+
 class PDescription(PTree):
     def __init__(self, key, value):
         self.key = key
@@ -348,6 +395,9 @@ class PDescription(PTree):
 
     def toHtml(self):
         return '\n<p><b>' + self.key.toHtml() + '</b> ' + self.value.toHtml() + '\n</p>\n'
+
+    def toDF(self):
+        return '\n\n*' + self.key.toDF() + '* ' + self.value.toDF()
 
 class PItemize(PTree):
     def __init__(self, items):
@@ -370,6 +420,12 @@ class PItemize(PTree):
         result = result + '\n</ul>\n'
         return result
 
+    def toDF(self):
+        result = '\n'
+        for item in self.items:
+            result = result + item.toDF()
+        return result
+
 class PItem(PTree):
     def __init__(self, subtree):
         self.it = subtree
@@ -382,6 +438,9 @@ class PItem(PTree):
 
     def toHtml(self):
         return '\n<li> ' + self.it.toHtml()
+
+    def toDF(self):
+        return '\n-' + self.it.toDF()
 
 class Chargroup:
     """
@@ -1069,3 +1128,12 @@ Normaler Text. Bla Bla bla ...
     print "Output as html:"
     print "==============="
     print ptree.toHtml()
+    print
+    print "Canonical DF markup"
+    print ptree.toDF()
+
+    print
+    # Verify idempotence
+    canonical = dfLineGroupParser(example).toDF()
+    doublecanonical = dfLineGroupParser(canonical).toDF()
+    print "canonisation is idempotent: %s" % (canonical == doublecanonical)
