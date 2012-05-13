@@ -355,7 +355,7 @@ class PHeading(PTree):
         return ('\n<h%d>' % (self.level +1)) + self.title + ('</h%d>\n' % (self.level +1))
 
     def toDF(self):
-        result = '\n'
+        result = '\n\n'
         for _ in range(self.level + 1):
             result = result + '['
         result = result + self.title
@@ -1130,6 +1130,7 @@ Normaler Text. Bla Bla bla ...
     print ptree.toHtml()
     print
     print "Canonical DF markup"
+    print "==================="
     print ptree.toDF()
 
     print
