@@ -563,7 +563,12 @@ class Mathgroup(Chargroup):
         return self.done
 
     def parse(self):
-        return PMath(self.text[1:-1])
+        result = self.text
+        if result.startswith('$'):
+            result = result[1:]
+        if result.endswith('$'):
+            result = result[:-1]
+        return PMath(result)
 
 
 def groupchars(text, supportedgroups):
