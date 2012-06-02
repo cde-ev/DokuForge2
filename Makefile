@@ -16,6 +16,7 @@ check: test
 
 test: test.py
 	python test.py
+	python testparser.py
 
 .coverage:
 	which coverage &> /dev/null || python-coverage -x test.py
