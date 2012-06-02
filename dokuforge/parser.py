@@ -276,7 +276,7 @@ class PMath(PTree):
         return '$' + self.text + '$'
 
     def toHtml(self):
-        return '<div class="math">$' + self.text + '$</div>'
+        return '$%1s$' % self.text
 
     def toDF(self):
         return '$%1s$' % self.text
@@ -304,7 +304,7 @@ class PEdnote(PTree):
         result = re.sub('&', '&amp;', result)
         result = re.sub('<', '&lt;', result)
         result = re.sub('>', '&gt;', result)
-        return '\n<pre>\n' + result + '\n</pre>\n'
+        return '\n<pre class="ednote">\n' + result + '\n</pre>\n'
 
     def toDF(self):
         # find a bracket combination not in the text
