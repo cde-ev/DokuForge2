@@ -30,14 +30,14 @@ Prerequisites:
    Required: for using serve_* except serve_debug
    Homepage: http://www.subdivi.de/~helmut/wsgitools/
    Debian: not packaged
-   FreeBSD: not packaged
+   FreeBSD: devel/py-wsgitools
    Gentoo: not packaged
    Download: http://www.subdivi.de/~helmut/darcs/wsgitools/dist/wsgitools-0.2.2.tar.gz
  * mathjax
    Required: only for rendering math
    Homepage: http://www.mathjax.org/
-   Debian: not packaged
-   FreeBSD: www/mathjax (pending)
+   Debian: libjs-mathjax
+   FreeBSD: suggested (PR ports/153195)
    Gentoo: not packaged
    Download: http://github.com/mathjax/MathJax/zipball/v1.1a
  * epydoc
@@ -48,8 +48,8 @@ Prerequisites:
    Gentoo: dev-python/epydoc
 
  Short forms:
-  * Debian: aptitude install python-werkzeug python-jinja2 rcs python-mechanize python-epydoc
-  * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-mechanize devel/epydoc
+  * Debian: aptitude install python-werkzeug python-jinja2 rcs python-mechanize python-epydoc libjs-mathjax
+  * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-mechanize devel/epydoc devel/py-wsgitools
   * Gentoo: emerge dev-python/werkzeug dev-python/jinja dev-vcs/rcs dev-python/mechanize dev-python/epydoc
 
 Configuration:
