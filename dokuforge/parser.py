@@ -279,13 +279,32 @@ class PMath(PTree):
         return ('math', self.text)
 
     def toTex(self):
-        return '$' + self.text + '$'
+        return '$%1s$' % self.text
 
     def toHtml(self):
         return '$%1s$' % self.text
 
     def toDF(self):
         return '$%1s$' % self.text
+
+class PDisplayMath(PTree):
+    """
+    An display math area.
+    """
+    def __init__(self, text):
+        self.text = text
+
+    def debug(self):
+        return ('displaymath', self.text)
+
+    def toTex(self):
+        return '$$%1s$$' % self.text
+
+    def toHtml(self):
+        return "<div class=\"displaymath\">$$%1s$$</div>" % self.text
+
+    def toDF(self):
+        return '$$%1s$$' % self.text
 
 class PEdnote(PTree):
     """
@@ -577,6 +596,60 @@ class Mathgroup(Chargroup):
         return PMath(result)
 
 
+class DisplayMathGroup(Chargroup):
+    """
+    The group for display math
+    like $$ a^2 + b^2 = c^2$$
+    """
+    def __init__(self, initial=None):
+        self.done = False
+        self.trailingbackslashs = 0
+        self.trailingdollar = 0
+        self.count = 0
+        self.printname = 'display math group'
+        Chargroup.__init__(self, initial=initial)
+
+    @classmethod
+    def startshere(self, char, lookahead=None):
+        return char == '$' and lookahead == '$'
+
+    def append(self, chars):
+        for c in chars:
+            self.text = self.text + c
+            self.count = self.count + 1
+            if c == '$' and self.count > 2:
+                if self.trailingdollar == 1:
+                    self.done = True
+                elif self.trailingbackslashs % 2 == 0:
+                    self.trailingbackslashs=0
+                    self.trailingdollar += 1
+                else:
+                    self.trailingbackslashs = 0
+                    self.trailingdollar = 0
+            elif c == '\\':
+                self.trailingdollar = 0
+                self.trailingbackslashs += 1
+            else:
+                self.trailingdollar = 0
+                self.trailingbackslashs = 0
+                
+    def enforcecontinuation(self, char):
+        return not self.done
+
+    def rejectcontinuation(self, char):
+        return self.done
+
+    def parse(self):
+        result = self.text
+        if result.startswith('$$'):
+            result = result[2:]
+        if result.endswith('$$'):
+            result = result[:-2]
+        if result.endswith('$'):
+            result = result + ' '
+        return PDisplayMath(result)
+
+
 def groupchars(text, supportedgroups):
     """
     Given a string (considered a list of chars) and a list of
@@ -612,7 +685,7 @@ def groupchars(text, supportedgroups):
     
 
 def defaultInnerParse(lines):
-    features = [Simplegroup, Emphgroup, Mathgroup]
+    features = [Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup]
     text = '\n'.join(lines)
     groups = groupchars(text, features)
     if len(groups) == 1:
@@ -1000,4 +1073,3 @@ def dfLineGroupParser(text):
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
     return PSequence(ptrees)
-
