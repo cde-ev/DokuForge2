@@ -238,7 +238,13 @@ class PLeaf(PTree):
         return defaultMicrotype(self.text)
 
     def toHtml(self):
-        return self.text
+        result = self.text
+        result = re.sub('&', '&amp;', result)
+        result = re.sub('<', '&lt;', result)
+        result = re.sub('>', '&gt;', result)
+        result = re.sub('"', '&#34;', result)
+        result = re.sub("'", '&#39;', result)
+        return result
 
     def toDF(self):
         return self.text
