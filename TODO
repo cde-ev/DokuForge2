@@ -3,6 +3,8 @@
 
 == later and important ==
 * rework style guide recomendations for citations (e.g. include publisher)
+* exporter
+* bibliography: serialize as json
 
 == not so important ==
 * nicer design
@@ -22,3 +24,7 @@
 * "wrong password" needs html rendering
 * extremely long course titles break layout
 * create batch task form (creating an academy and all courses with one form)
+* set LC_ALL=C when calling rcs (fixed in branch last-edited)
+* preview and edit (df1 feature)
+* view content of whole course on one page (df1 feature)
+* list of all blobs (so the Fuzzi can review for bad quality/missing raw data)
