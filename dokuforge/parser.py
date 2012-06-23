@@ -2,11 +2,7 @@ import re
 
 ## How To Read This File?
 ##
-## This file demonstrates a proof-of-concept version of a parser
-## for the dokuforge mark-up language. It probably should be
-## split into several files eventually.
-##
-## Currently, everything is sorted in dependency order, but the
+## Everything is sorted in dependency order, but the
 ## best way to understand the parsing concept is as follows.
 ##
 ## 1. Look at the abstract class Linegroup, then the functions
