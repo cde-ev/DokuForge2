@@ -74,7 +74,7 @@ class NaturalNumbers(MicrotypeFeature):
     """
     @classmethod
     def applies(self, word):
-        return len(word) > 0 and re.match('^[0-9]*$', word)
+        return len(word) > 0 and re.match('^[0-9]+$', word)
 
     @classmethod
     def doit(self, word):
