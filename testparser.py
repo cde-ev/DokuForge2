@@ -6,7 +6,7 @@ import random
 def testParser():
     for i in range(100):
         for l in range(10, 100):
-            inp = "".join(random.choice("aA \n*[()]1$\\-") for _ in range(l))
+            inp = "".join(random.choice("aA \n*[()]1.$\\-") for _ in range(l))
             inp2 = dfLineGroupParser(inp).toDF()
             inp3 = dfLineGroupParser(inp2).toDF()
             if inp2 != inp3:
