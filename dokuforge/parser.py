@@ -423,22 +423,34 @@ class PDescription(PTree):
 class PItemize(PTree):
     def __init__(self, items):
         self.items = items
+        self.isEnum = False
+        if len(self.items) > 0:
+            self.isEnum = self.items[0].isEnumerate()
 
     def debug(self):
         return ('Itemize', [item.debug() for item in self.items])
 
+    def isEnumerate(self):
+        return self.isEnum
+
     def toTex(self):
-        result = '\n\\begin{itemize}'
+        itemtype =  'itemize'
+        if self.isEnumerate():
+            itemtype = 'enumerate'
+        result = '\n\\begin{%s}' % itemtype
         for item in self.items:
             result = result + item.toTex()
-        result = result + '\n\\end{itemize}\n'
+        result = result + ('\n\\end{%s}\n' % itemtype)
         return result
 
     def toHtml(self):
-        result = '\n<ul>'
+        itemtype =  'ul'
+        if self.isEnumerate():
+            itemtype = 'ol'
+        result = '\n<%s>' % itemtype
         for item in self.items:
             result = result + item.toHtml()
-        result = result + '\n</ul>\n'
+        result = result + ('\n</%s>\n' % itemtype)
         return result
 
     def toDF(self):
@@ -448,20 +460,31 @@ class PItemize(PTree):
         return result
 
 class PItem(PTree):
-    def __init__(self, subtree):
+    def __init__(self, subtree, number=None):
         self.it = subtree
+        self.number=number
 
     def debug(self):
-        return ('Item', self.it.debug())
+        return ('Item', self.it.debug(), self.number)
+
+    def isEnumerate(self):
+        return self.number is not None
 
     def toTex(self):
-        return '\n\\item ' + self.it.toTex()
+        if self.number is None:
+            return '\n\\item ' + self.it.toTex()
+        else:
+            return '\n% ' + self.numer + '\n\\item ' + self.it.toTex()
+        
 
     def toHtml(self):
         return '\n<li> ' + self.it.toHtml()
 
     def toDF(self):
-        return '\n-' + self.it.toDF()
+        if self.number is None:
+            return '\n-' + self.it.toDF()
+        else:
+            return '\n' + self.number + '.' + self.it.toDF()
 
 class Chargroup:
     """
@@ -969,6 +992,34 @@ class Item(Linegroup):
         withcleanedfirstline.extend(self.lines[1:])
         return PItem(defaultInnerParse(withcleanedfirstline))
 
+class EnumerateItem(Linegroup):
+    """
+    An entry in an enumeration, marked as
+    1. First
+    2. Second
+    3. and so on
+    in Dokuforge
+    """
+    def __init__(self):
+        Linegroup.__init__(self)
+        self.printname = "EnumerateItem"
+    
+    @classmethod
+    def startshere(self, line, after=None):
+        return re.match('^[0-9]+\. ', line)
+
+    def parse(self):
+        if len(self.lines) < 1:
+            return PItem(defaultInnerParse(self.lines), number="1")
+        firstline = self.lines[0]
+        number = "1"
+        m = re.match('^([0-9]+)\.(.*)$', firstline)
+        if m is not None:
+            number, firstline = m.group(1,2)
+        withcleanedfirstline = [firstline]
+        withcleanedfirstline.extend(self.lines[1:])
+        return PItem(defaultInnerParse(withcleanedfirstline), number=number)
+
 class Description(Linegroup):
     """
     *Description* explain a word in a gloassary
@@ -1063,7 +1114,7 @@ def groupItems(ptrees):
 
 
 def dfLineGroupParser(text):
-    features = [Paragraph, Heading, Author, Subheading, Item, Description, Ednote]
+    features = [Paragraph, Heading, Author, Subheading, Item, EnumerateItem, Description, Ednote]
     groups = grouplines(text.splitlines(), features)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
