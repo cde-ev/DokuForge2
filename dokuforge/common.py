@@ -129,6 +129,9 @@ def validateBlobComment(comment):
         raise CheckError(u"Keine Bildunterschrift gefunden!",
                          u"Bitte eine Bildunterschrift eingeben und erneut versuchen.")
 
+class InvalidBlobFilename(CheckError):
+    pass
+
 def validateBlobFilename(filename):
     """
     check whether a filename for a blob is valid. This means matching a certain
@@ -136,7 +139,7 @@ def validateBlobFilename(filename):
 
     @type filename: str
     @param filename: filename to check
-    @raises CheckError:
+    @raises InvalidBlobFilename:
     """
     assert isinstance(filename, str)
     if re.match('^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
