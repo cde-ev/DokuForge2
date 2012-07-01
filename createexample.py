@@ -100,6 +100,12 @@ Absatz.
 (Man beachte, dass diese Klammer
 keine Autorenangabe beinhaltet)
 
+{ Das ist eine ednote
+
+[und keine Ueberschrift]
+}
+
+
 { Ednote: short }
 
 Und es gibt auch sehr kurze eingebundene Ednotes

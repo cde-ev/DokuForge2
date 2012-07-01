@@ -384,6 +384,13 @@ class PHeading(PTree):
             result = result + ']'
         return result
 
+    def getLevel(self):
+        return self.level
+
+    def getTitle(self):
+        return self.title
+
+
 class PAuthor(PTree):
     def __init__(self, author):
         self.author = author
@@ -1061,11 +1068,17 @@ def groupItems(ptrees):
             pos += 1
     return result
 
+### Features used by Dokuforge
+dffeatures =  [Paragraph, Heading, Author, Subheading, Item, Description, Ednote]
 
 def dfLineGroupParser(text):
-    features = [Paragraph, Heading, Author, Subheading, Item, Description, Ednote]
-    groups = grouplines(text.splitlines(), features)
+    groups = grouplines(text.splitlines(), dffeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
     return PSequence(ptrees)
+
+def dfOverview(text):
+    groups = grouplines(text.splitlines(), dffeatures)
+    headings = [g for g in groups if isinstance(g, Heading)]
+    return [g.parse() for g in headings]
