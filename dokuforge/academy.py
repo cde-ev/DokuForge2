@@ -1,6 +1,7 @@
 
 import os
 import operator
+import datetime
 
 import werkzeug.exceptions
 
@@ -117,6 +118,16 @@ class Academy(StorageDir):
         common.validateTitle(title)
         Course(os.path.join(self.path, name)).settitle(title)
 
+    def lastchange(self):
+        lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'1970/01/01 00:00:00'}
+        for c in self.listCourses():
+            info = c.lastchange()
+            date =  datetime.datetime.strptime(info['date'], "%Y/%m/%d %H:%M:%S")
+            compare = datetime.datetime.strptime(lastchange['date'], "%Y/%m/%d %H:%M:%S")
+            if date > compare:
+                lastchange = info
+        return lastchange
+
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
@@ -124,6 +135,7 @@ class Academy(StorageDir):
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
-                         groups=self.getgroups)
+                         groups=self.getgroups,
+                         lastchange=self.lastchange)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
