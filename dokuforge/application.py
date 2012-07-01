@@ -1061,23 +1061,17 @@ class Application:
         try:
             c.attachblob(page, usercontent, comment=usercomment,
                          label=userlabel, user=rs.user.name)
-        except common.InvalidBlobFilename as error:
-            usercontent.filename = common.sanitizeBlobFilename(
-                usercontent.filename)
-            try:
+        except CheckError as error:
+            usercontent.filename = u"einedatei.dat"
+            if error.message == u"Dateiname nicht wohlgeformt!":
                 blob = c.attachblob(page, usercontent, comment=usercomment,
                                 label=userlabel, user=rs.user.name)
-            except CheckError:
-                ## this case should never happen
-                ## (except manually crafted POSTs)
-                return self.render_addblob(rs, aca, c, page)
             else:
-                return self.render_editblob(rs, aca, c, page, blob, ok=False,
-                                            error=error)
-        except CheckError:
-            return self.render_addblob(rs, aca, c, page) # also shouldn't happen
-        else:
-            return self.render_show(rs, aca, c, page)
+                blob = c.attachblob(page, usercontent, comment=u"Bildunterschrift",
+                                    label=u"somefig", user=rs.user.name)
+            return self.render_editblob(rs, aca, c, page, blob, ok=False,
+                                       error=error)
+        return self.render_show(rs, aca, c, page)
 
     def do_save(self, rs, academy = None, course = None, page = None):
         """
@@ -1206,6 +1200,22 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_file(rs, self.userdb.storage, "admin.html")
 
+    def tryConfigParser(self, content):
+        """
+        Try parsing the supplied content with ConfigParser. If this fails
+        raise a CheckError saying so.
+
+        @type content: unicode
+        """
+        assert isinstance(content, unicode)
+        try:
+            config = ConfigParser.SafeConfigParser()
+            config.readfp(StringIO(content.encode("utf8")))
+        except ConfigParser.ParsingError as err:
+            raise CheckError(u"Es ist ein Parser Error aufgetreten!",
+                             u"Der Fehler lautetete: " + err.message + \
+                             u". Bitte korrigiere ihn und speichere erneut.")
+
     def do_adminsave(self, rs):
         """
         @type rs: RequestState
@@ -1214,7 +1224,7 @@ class Application:
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.userdb.storage, "admin.html",
-                                checkhook = common.validateUserConfig,
+                                checkhook = self.tryConfigParser,
                                 savehook = self.userdb.load)
 
     def do_groups(self, rs):
@@ -1234,7 +1244,7 @@ class Application:
         if not rs.user.isSuperAdmin():
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.groupstore, "groups.html",
-                                checkhook = common.validateGroupConfig)
+                                checkhook = self.tryConfigParser)
 
     ### here come the renderer
 
