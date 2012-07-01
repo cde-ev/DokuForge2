@@ -7,6 +7,7 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
+from dokuforge.parser import dfOverview
 import dokuforge.common as common
 
 class Outline:
@@ -30,6 +31,15 @@ class Outline:
         assert isinstance(title, unicode)
         if title:
             self.content.append(("subheading", title))
+    def addParsed(self, headinglist):
+        """
+        @type headinglist: [PHeading]
+        """
+        for heading in headinglist:
+            if heading.getLevel() == 0:
+                self.addheading(heading.getTitle())
+            else:
+                self.addsubheading(heading.getTitle())
     def items(self):
         """
         @rtype: [(str, unicode)]
@@ -116,13 +126,8 @@ class Course(StorageDir):
         outlines = []
         for p in pages:
             outline = Outline(p)
-            headings = re.findall(ur'^\[.*\]$', self.showpage(p),
-                                  re.MULTILINE|re.UNICODE)
-            for h in headings:
-                if h[1] == u'[':
-                    outline.addsubheading(h[2:-2])
-                else:
-                    outline.addheading(h[1:-1])
+            headings = dfOverview(self.showpage(p))
+            outline.addParsed(headings)
             outlines.append(outline)
         return outlines
 
