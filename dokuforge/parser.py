@@ -898,6 +898,8 @@ class Heading(Linegroup):
         title = ' '.join(self.lines)
         while title.startswith('['):
             title = title[1:]
+        while title.endswith(' '):
+            title = title[:-1]
         while title.endswith(']'):
             title = title[:-1]
         return title
@@ -946,6 +948,8 @@ class Author(Linegroup):
         author = ' '.join(self.lines)
         while author.startswith('('):
             author = author[1:]
+        while author.endswith(' '):
+            author = author[:-1]
         while author.endswith(')'):
             author = author[:-1]
         return PAuthor(author)
