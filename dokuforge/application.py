@@ -958,7 +958,7 @@ class Application:
         rs.response.content_type = "application/octet-stream"
         rs.response.data = aca.texexport()
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=texeport_%s.tar" % aca.name
+                "attachment; filename=texexport_%s.tar" % aca.name
         if not rs.user.mayExport(aca):
             return werkzeug.exceptions.Forbidden()
         return rs.response
