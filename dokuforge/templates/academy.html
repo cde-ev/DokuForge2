@@ -23,9 +23,7 @@
 {%- endif -%}
 <div class="academyoperations">
 {%- if user.mayExport(academy)%}
-{# 
 <a href="{{ buildurl("export")|e }}">Exportieren</a>
-#} FIXME: this should be an "Exportieren" button
 {%- endif %}
 {%- if user.allowedWrite(academy) %}
 <a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a>

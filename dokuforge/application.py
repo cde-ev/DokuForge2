@@ -220,9 +220,8 @@ class Application:
                  methods=("GET", "HEAD"), endpoint="createcoursequiz"),
             rule("/docs/<identifier:academy>/!createcourse",
                  methods=("POST",), endpoint="createcourse"),
-# not yet implemented
-#            rule("/docs/<identifier:academy>/!export", methods=("GET", "HEAD"),
-#                 endpoint="export"),
+            rule("/docs/<identifier:academy>/!export", methods=("GET", "HEAD"),
+                 endpoint="export"),
             rule("/docs/<identifier:academy>/!groups", methods=("GET", "HEAD"),
                  endpoint="academygroups"),
             rule("/docs/<identifier:academy>/!groups", methods=("POST",),
@@ -946,6 +945,22 @@ class Application:
         rs.response.data = c.export()
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=%s_%s.tar" % (aca.name, c.name)
+        return rs.response
+
+    def do_export(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
+        assert academy is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        rs.response.content_type = "application/octet-stream"
+        rs.response.data = aca.texexport()
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=texeport_%s.tar" % aca.name
+        if not rs.user.mayExport(aca):
+            return werkzeug.exceptions.Forbidden()
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):

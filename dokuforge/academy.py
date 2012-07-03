@@ -1,6 +1,8 @@
 
 import os
 import operator
+from cStringIO import StringIO
+import tarfile
 
 import werkzeug.exceptions
 
@@ -127,3 +129,16 @@ class Academy(StorageDir):
                          groups=self.getgroups)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
+
+    def texexport(self):
+        """
+        @rtype: str
+        @returns: a tar archive containing the tex-export of the academy.
+        """
+        f = StringIO()
+        tar = tarfile.open(mode="w", fileobj=f)
+        common.tarAddString(tar, "TODO", "The static files should be added as well.\n")
+        for course in self.listCourses():
+            course.texexport(tar)
+        tar.close()
+        return f.getvalue()

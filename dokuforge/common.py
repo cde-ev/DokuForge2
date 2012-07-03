@@ -6,6 +6,7 @@ import re
 import os
 import ConfigParser
 from cStringIO import StringIO
+import tarfile
 
 try:
     check_output = subprocess.check_output
@@ -254,3 +255,20 @@ def validateRcsRevision(versionnumber):
     if re.match('^[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}(\.[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}){0,5}$', versionnumber) is None:
         raise RcsUserInputError(u"rcs version number syntactically malformed",
                                 u"can only happen in hand-crafted requests")
+
+
+def tarAddString(tar, name, content):
+    """
+    Add a file with given name and content to the TarFile object.
+    
+    @type tar: TarFile
+    @type name: str
+    @type content: str
+    """
+    assert isinstance(tar, tarfile.TarFile)
+    assert isinstance(name, str)
+    assert isinstance(content, str)
+
+    info = tarfile.TarInfo(name)
+    info.size = len(content)
+    tar.addfile(info, StringIO(content))

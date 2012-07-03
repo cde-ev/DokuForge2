@@ -1,6 +1,7 @@
 from __future__ import with_statement
 import os
 import re
+import tarfile
 
 from werkzeug.datastructures import FileStorage
 
@@ -9,6 +10,7 @@ from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
 from dokuforge.parser import dfOverview
 import dokuforge.common as common
+from dokuforge.parser import dfLineGroupParser
 
 class Outline:
     def __init__(self, number):
@@ -511,3 +513,28 @@ class Course(StorageDir):
             outlines = self.outlinepages)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
+
+    def texexport(self, tar):
+        """
+        Add the contents of the course to the given TarFile object.
+
+        @type tar: TarFile
+        """
+        assert isinstance(tar, tarfile.TarFile)
+
+        tex = u"\\course{%s}" % self.gettitle()
+        for p in self.listpages():
+            tex += "\n\n%%%%%% Part %d\n" % p
+            page = self.showpage(p)
+            tex += dfLineGroupParser(page).toTex()
+            for b in self.listblobs(p):
+                blob = self.viewblob(b)
+                tex += "\n\n%% blob %d\n" % b
+                tex += "\\begin{ednote}\n"
+                tex += "Label: %s\n" % blob['label']
+                tex += "File: %s\n" % blob['filename']
+                tex += "Comment\n%s\n" % blob['comment']
+                tex += "\\end{ednote}\n"
+                common.tarAddString(tar, "%s/%s" % (self.name, str(blob['filename'])), blob['data'])
+
+        common.tarAddString(tar, "%s/chap.tex" % self.name, tex.encode("utf8"))
