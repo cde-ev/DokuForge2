@@ -532,9 +532,9 @@ class Course(StorageDir):
                 tex += "\n\n%% blob %d\n" % b
                 tex += "\\begin{ednote}\n"
                 tex += "Label: %s\n" % blob['label']
-                tex += "File: %s\n" % blob['filename']
+                tex += "File: blob_%d_%s\n" % (b, blob['filename'])
                 tex += "Comment\n%s\n" % blob['comment']
                 tex += "\\end{ednote}\n"
-                common.tarAddString(tar, "%s/%s" % (self.name, str(blob['filename'])), blob['data'])
+                common.tarAddString(tar, "%s/blob_%d_%s" % (self.name, b, str(blob['filename'])), blob['data'])
 
         common.tarAddString(tar, "%s/chap.tex" % self.name, tex.encode("utf8"))
