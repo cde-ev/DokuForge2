@@ -292,6 +292,9 @@ class Storage(object):
             # 3) return new state
             return False, currentversion, mergedcontent
 
+    def timestamp(self, havelock=None):
+        self.ensureexistence(havelock = havelock)
+        return os.path.getmtime(self.fullpath("%s,v"))
 
 class CachingStorage(Storage):
     """
@@ -313,8 +316,3 @@ class CachingStorage(Storage):
             self.cachedtime = mtime
             self.cachedvalue = Storage.content(self)
         return self.cachedvalue
-
-    def lastchanged(self, havelock=None):
-        self.ensureexistence(havelock = havelock)
-        return os.path.getmtime(self.fullpath("%s,v"))
-
