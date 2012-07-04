@@ -120,6 +120,14 @@ class Academy(StorageDir):
     def lastchange(self):
         return self.calculatelastchange([c.lastchange() for c in self.listCourses()])
 
+    def timestamp(self):
+        timestamp = -1
+        for c in self.listCourses():
+            tmp = c.timestamp()
+            if tmp > timestamp:
+                timestamp = tmp
+        return timestamp
+
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
