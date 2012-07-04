@@ -533,6 +533,14 @@ class Course(StorageDir):
     def lastchange(self):
         return self.calculatelastchange([self.getcommit(p) for p in self.listpages()])
 
+    def timestamp(self):
+        timestamp = -1
+        for p in self.listpages():
+            tmp = self.getstorage("page%d" % number).timestamp()
+            if tmp > timestamp:
+                timestamp = tmp
+        return timestamp
+
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
