@@ -4,7 +4,8 @@
 from dokuforge.parser import dfLineGroupParser
 
 teststring = u"""
- [Eine Ueberschrift]
+[Eine Ueberschrift]
+[[Eine Unterueberschrift]]
 (Autor, Korrektor und Chef)
 
  Lorem  囲碁  ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel dui
@@ -14,8 +15,8 @@ luctus. Nam aliquam lobortis rutrum. Phasellus quis arcu non dui pretium
   aliquam. Phasellus id mauris mauris, quis lobortis justo.
 
 [Eine zweite Ueberschrift]
-[[Eine Unterueberschrift]]
-(Douglas Adams)
+ [[Keine Unterueberschrift]]
+(Kein Autor)
 
 Fermats letzter Satz sagt, dass die Gleichung $x^n+y^n = z^n$ fuer $n\\ge3$
 keine ganzzahlige Loesung, auszer den trivialen, besitzt. Dies war ein
@@ -60,9 +61,20 @@ manchmal kann es auch nuetzlich sein, so bei ABBILDUNG:zwei gesehen.
 
 { Hier noch ein Hinweis in verbatim,
 
-  mit einer Leerzeile und { nested braces }. }
+  mit einer Leerzeile. }
+
+{
+ Und hier sehen wir, das { nested braces } auch gehen sind.
+ Dabei duerfen sie wie jetzt } nicht am Zeilenende stehen.
+}
 
 Normaler Text.
+
+{[( special ednote }
+    immer noch
+)]}
+
+Und wieder ganz normaler Text.
 """
 
 parsed = dfLineGroupParser(teststring);
