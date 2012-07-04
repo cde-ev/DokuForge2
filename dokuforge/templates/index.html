@@ -10,8 +10,7 @@
 {%- for academy in academies -%}
   {%- if group in academy.groups -%}
     {%- if user.allowedRead(academy) %}
-    <li><a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a><br>
-{{ "Letzte Änderung von %s am %s" | format(academy.lastchange['author'], academy.lastchange['date']) | e }}
+    <li><a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a>
 </li>
     {%- else -%}
     <li>{{ academy.title|e }}</li>
