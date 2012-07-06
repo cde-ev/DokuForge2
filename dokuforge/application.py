@@ -956,7 +956,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         rs.response.content_type = "application/octet-stream"
-        rs.response.data = aca.texexport()
+        rs.response.data = aca.texExportIterator()
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=texexport_%s.tar" % aca.name
         if not rs.user.mayExport(aca):

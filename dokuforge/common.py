@@ -256,19 +256,31 @@ def validateRcsRevision(versionnumber):
         raise RcsUserInputError(u"rcs version number syntactically malformed",
                                 u"can only happen in hand-crafted requests")
 
-
-def tarAddString(tar, name, content):
+def tarChunk(name, content):
     """
-    Add a file with given name and content to the TarFile object.
-    
-    @type tar: TarFile
+    Return a chunk of a tar file (i.e., a tar file without the two
+    terminating 0-blocks) containing one file, with the given name
+    and content.
+
     @type name: str
     @type content: str
+    @rtype str
     """
-    assert isinstance(tar, tarfile.TarFile)
     assert isinstance(name, str)
     assert isinstance(content, str)
 
+    f = StringIO.StringIO()
+    tar = tarfile.open(mode='w', fileobj=f)
     info = tarfile.TarInfo(name)
     info.size = len(content)
-    tar.addfile(info, StringIO(content))
+    tar.addfile(info, StringIO.StringIO(content))
+    return f.getvalue()
+
+def tarFinal():
+    """
+    Return the two 0 blocks termintating a tar file.
+    """
+    f = StringIO.StringIO()
+    tar = tarfile.open(mode='w', fileobj=f)
+    tar.close()
+    return f.getvalue()

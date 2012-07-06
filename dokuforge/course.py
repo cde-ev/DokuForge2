@@ -514,14 +514,10 @@ class Course(StorageDir):
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
 
-    def texexport(self, tar):
+    def texExportIterator(self):
         """
-        Add the contents of the course to the given TarFile object.
-
-        @type tar: TarFile
+        yield the contents of the course as tex-export.
         """
-        assert isinstance(tar, tarfile.TarFile)
-
         tex = u"\\course{%s}" % self.gettitle()
         for p in self.listpages():
             tex += "\n\n%%%%%% Part %d\n" % p
@@ -535,6 +531,6 @@ class Course(StorageDir):
                 tex += "File: blob_%d_%s\n" % (b, blob['filename'])
                 tex += "Comment\n%s\n" % blob['comment']
                 tex += "\\end{ednote}\n"
-                common.tarAddString(tar, "%s/blob_%d_%s" % (self.name, b, str(blob['filename'])), blob['data'])
+                yield common.tarChunk(tar, "%s/blob_%d_%s" % (self.name, b, str(blob['filename'])), blob['data'])
 
-        common.tarAddString(tar, "%s/chap.tex" % self.name, tex.encode("utf8"))
+        yield common.tarChunk("%s/chap.tex" % self.name, tex.encode("utf8"))

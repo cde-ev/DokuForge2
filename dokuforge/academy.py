@@ -130,15 +130,13 @@ class Academy(StorageDir):
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
 
-    def texexport(self):
+    def texExportIterator(self):
         """
-        @rtype: str
-        @returns: a tar archive containing the tex-export of the academy.
+        yield a tar archive containing the tex-export of the academy.
         """
-        f = StringIO()
-        tar = tarfile.open(mode="w", fileobj=f)
-        common.tarAddString(tar, "TODO", "The static files should be added as well.\n")
+        yield common.tarChunk("TODO", "The static files should be added as well.\n")
         for course in self.listCourses():
-            course.texexport(tar)
-        tar.close()
-        return f.getvalue()
+            coursetar = course.texExportIterator()
+            for chunk in coursetar:
+                yield chunk
+        yield common.tarFinal()
