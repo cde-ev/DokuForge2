@@ -545,6 +545,7 @@ class Course(StorageDir):
             pages = self.listpages,
             deadpages = self.listdeadpages,
             outlines = self.outlinepages,
-            lastchange = self.lastchange)
+            lastchange = self.lastchange,
+            timestamp = self.timestamp)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)

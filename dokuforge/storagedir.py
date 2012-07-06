@@ -96,5 +96,5 @@ class StorageDir:
         timestamp = -1
         for x in timestamps:
             if x > timestamp:
-                timestamp = tmp
+                timestamp = x
         return timestamp

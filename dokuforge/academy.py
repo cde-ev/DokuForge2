@@ -131,6 +131,7 @@ class Academy(StorageDir):
         """
         functions = dict(courses=self.viewCourses,
                          groups=self.getgroups,
-                         lastchange=self.lastchange)
+                         lastchange=self.lastchange,
+                         timestamp=self.timestamp)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
