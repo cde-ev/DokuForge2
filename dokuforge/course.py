@@ -531,6 +531,6 @@ class Course(StorageDir):
                 tex += "File: blob_%d_%s\n" % (b, blob['filename'])
                 tex += "Comment\n%s\n" % blob['comment']
                 tex += "\\end{ednote}\n"
-                yield common.tarChunk(tar, "%s/blob_%d_%s" % (self.name, b, str(blob['filename'])), blob['data'])
+                yield common.tarChunk("%s/blob_%d_%s" % (self.name, b, str(blob['filename'])), blob['data'])
 
         yield common.tarChunk("%s/chap.tex" % self.name, tex.encode("utf8"))

@@ -269,18 +269,18 @@ def tarChunk(name, content):
     assert isinstance(name, str)
     assert isinstance(content, str)
 
-    f = StringIO.StringIO()
+    f = StringIO()
     tar = tarfile.open(mode='w', fileobj=f)
     info = tarfile.TarInfo(name)
     info.size = len(content)
-    tar.addfile(info, StringIO.StringIO(content))
+    tar.addfile(info, StringIO(content))
     return f.getvalue()
 
 def tarFinal():
     """
     Return the two 0 blocks termintating a tar file.
     """
-    f = StringIO.StringIO()
+    f = StringIO()
     tar = tarfile.open(mode='w', fileobj=f)
     tar.close()
     return f.getvalue()
