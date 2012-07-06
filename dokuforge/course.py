@@ -526,11 +526,11 @@ class Course(StorageDir):
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
                 tex += "\n\n%% blob %d\n" % b
-                tex += "\\begin{ednote}\n"
-                tex += "Label: %s\n" % blob['label']
-                tex += "File: blob_%d_%s\n" % (b, blob['filename'])
-                tex += "Comment\n%s\n" % blob['comment']
-                tex += "\\end{ednote}\n"
+                tex += "\\begin{figure}\n\centering\n"
+                tex += "\\includegraphics{%s/blob_%d_%s}\n" % (self.name, b, blob['filename'])
+                tex += "\\caption{%s}\n" % blob['comment']
+                tex += "\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
+                tex += "\\end{figure}\n"
                 yield common.tarChunk("%s/blob_%d_%s" % (self.name, b, str(blob['filename'])), blob['data'])
 
         yield common.tarChunk("%s/chap.tex" % self.name, tex.encode("utf8"))

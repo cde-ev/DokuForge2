@@ -10,6 +10,10 @@ from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
 from dokuforge.common import CheckError
+try:
+    from dokuforge.versioninfo import commitid
+except ImportError:
+    commitid = "unknown"
 
 class Academy(StorageDir):
     """
@@ -134,6 +138,12 @@ class Academy(StorageDir):
         """
         yield a tar archive containing the tex-export of the academy.
         """
+        yield common.tarChunk("WARNING", 
+                              ("The precise semantics of the exporter is still\n" +
+                               "subject to discussion and may change in future versions.\n" +
+                               "If you think you might need to reproduce an export with the\n"
+                               "same exporter semantics, keep the following version string\n" +
+                               "for your reference\n\n    %s\n") % commitid)
         yield common.tarChunk("TODO", "The static files should be added as well.\n")
         for course in self.listCourses():
             coursetar = course.texExportIterator()
