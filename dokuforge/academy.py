@@ -145,8 +145,11 @@ class Academy(StorageDir):
                                "same exporter semantics, keep the following version string\n" +
                                "for your reference\n\n    %s\n") % commitid)
         yield common.tarChunk("TODO", "The static files should be added as well.\n")
+        contents = ""
         for course in self.listCourses():
+            contents += "\\include{%s/chap}\n" % course.name
             coursetar = course.texExportIterator()
             for chunk in coursetar:
                 yield chunk
+        yield common.tarChunk("contents.tex", contents)
         yield common.tarFinal()
