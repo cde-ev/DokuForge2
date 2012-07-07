@@ -15,7 +15,8 @@
 <form action="{{ buildurl("coursetitlesave")|e }}" method="post" id="save">
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="contentreceived" value="true">
-	<input type="submit" name="saveedit" value="Speichern und Editieren">
+	<br>
+	<input class="buttonlink" type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ buildurl("course")|e }}">Abbrechen</a>
+<a class="buttonlink" href="{{ buildurl("course")|e }}">Abbrechen</a>
 {% endblock %}

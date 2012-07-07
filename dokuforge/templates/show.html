@@ -18,7 +18,7 @@ Teil #{{ page|string }}
 
 
 {%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("edit")|e }}">Editieren</a>
+<a class="buttonlink" href="{{ buildurl("edit")|e }}">Editieren</a>
 {{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- endif -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
@@ -41,8 +41,8 @@ Zugeordnete Bilder:
 {%- endif -%}
 
 {%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
-<a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+<a class="buttonlink" href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
+<a class="buttonlink" href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
 {%- endif -%}
 
 {% endblock %}

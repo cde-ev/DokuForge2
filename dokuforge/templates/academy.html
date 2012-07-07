@@ -24,13 +24,13 @@
 <div class="academyoperations">
 {%- if user.mayExport(academy)%}
 {# 
-<a href="{{ buildurl("export")|e }}">Exportieren</a>
+<a class="buttonlink" href="{{ buildurl("export")|e }}">Exportieren</a>
 #} FIXME: this should be an "Exportieren" button
 {%- endif %}
 {%- if user.allowedWrite(academy) %}
-<a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a>
-<a href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a>
-<a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
+<a class="buttonlink" href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a>
+<a class="buttonlink" href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a>
+<a class="buttonlink" href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
 {%- endif -%}
 </div>
 {% endblock %}

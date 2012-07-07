@@ -17,7 +17,8 @@ Neue Akademie
                 <option value="{{ group|e }}">{{ title|e }}</option>
             {%- endfor -%}
         </select>
-	<input type="submit" name="submit" value="Akademie anlegen">
+	<br>
+	<input class="buttonlink" type="submit" name="submit" value="Akademie anlegen">
 </form>
-<a href=" {{ buildurl("index")|e }}">Abbrechen</a>
+<a class="buttonlink" href=" {{ buildurl("index")|e }}">Abbrechen</a>
 {% endblock %}

@@ -18,7 +18,7 @@
   Bildunterschrift/Kommentar: <textarea name="comment">{{ (form.comment if form.comment is defined else blob.comment)|e }}</textarea>
   K&uuml;rzel: <textarea name="label">{{ (form.label if form.label is defined else blob.label)|e }}</textarea>
   Dateiname: <textarea name="name">{{ (form.name if form.name is defined else blob.filename)|e }}</textarea>
-	<input type="submit" name="saveshow" value="Speichern">
+	<input class="buttonlink" type="submit" name="saveshow" value="Speichern">
 </form>
 Das K&uuml;rzel darf nur Kleinbuchstaben und Ziffern enthalten.
 
