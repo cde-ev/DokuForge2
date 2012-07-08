@@ -134,7 +134,7 @@ class Academy(StorageDir):
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
 
-    def texExportIterator(self):
+    def texExportIterator(self, static=None):
         """
         yield a tar archive containing the tex-export of the academy.
         """
@@ -144,7 +144,9 @@ class Academy(StorageDir):
                                "If you think you might need to reproduce an export with the\n"
                                "same exporter semantics, keep the following version string\n" +
                                "for your reference\n\n    %s\n") % commitid)
-        yield common.tarChunk("TODO", "The static files should be added as well.\n")
+        if static is not None:
+            for chunk in common.tarDirChunk("", static):
+                yield chunk
         contents = ""
         for course in self.listCourses():
             contents += "\\include{%s/chap}\n" % course.name

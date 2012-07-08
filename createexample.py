@@ -26,6 +26,10 @@ def main(size=100, pc=PathConfig()):
         os.makedirs(pc.admindir)
     except OSError:
         pass
+    try:
+        os.makedirs(pc.staticexportdir)
+    except OSError:
+        pass
     userdb = pc.userdb
     if size > 10:
         userdb.addUser(u"arthur", u"cde_dokubeauftragter", u"mypass",

@@ -191,6 +191,7 @@ class Application:
         self.groupstore = pathconfig.groupstore
         self.staticservepath = pathconfig.staticservepath
         self.mathjaxuri = pathconfig.mathjaxuri
+        self.staticexportdir = pathconfig.staticexportdir
         rule = werkzeug.routing.Rule
         self.routingmap = werkzeug.routing.Map([
             rule("/", methods=("GET", "HEAD"), endpoint="start"),
@@ -955,7 +956,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        rs.response.response = aca.texExportIterator()
+        rs.response.response = aca.texExportIterator(static=self.staticexportdir)
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=texexport_%s.tar" % aca.name
         if not rs.user.mayExport(aca):

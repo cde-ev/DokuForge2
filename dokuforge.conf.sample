@@ -5,6 +5,7 @@ port = 4000
 rootdir = ./work/example
 dfdir = %(rootdir)s/df
 admindir = %(rootdir)s/admin
+staticexportdir = %(rootdir)s/exportstatic
 sessiondbpath = %(admindir)s/sessiondb.sqlite3
 staticservepath = static/
 mathjaxuri = %(staticservepath)s/mathjax/

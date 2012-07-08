@@ -302,13 +302,14 @@ def tarDirChunk(name, dirname, excludes=[]):
     directories where the name is included in excludes.
     """
     for entry in os.listdir(dirname):
-        fullpath = os.path.join(dirname, entry)
-        virtualpath = os.path.join(name, entry)
-        if os.path.isfile(fullpath):
-            yield tarFileChunk(virtualpath, fullpath)
-        if os.path.isdir(fullpath):
-            for chunk in tarDirChunk(virtualpath, fullpath, excludes=excludes):
-                yield chunk
+        if entry not in excludes:
+            fullpath = os.path.join(dirname, entry)
+            virtualpath = os.path.join(name, entry)
+            if os.path.isfile(fullpath):
+                yield tarFileChunk(virtualpath, fullpath)
+            if os.path.isdir(fullpath):
+                for chunk in tarDirChunk(virtualpath, fullpath, excludes=excludes):
+                    yield chunk
 
 def tarFinal():
     """

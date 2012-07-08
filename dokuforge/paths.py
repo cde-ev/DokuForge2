@@ -9,6 +9,7 @@ default_config = """
 rootdir = ./work/example
 dfdir = %(rootdir)s/df
 admindir = %(rootdir)s/admin
+staticexportdir = %(rootdir)s/exportstatic
 sessiondbpath = :memory:
 staticservepath = static/
 mathjaxuri = %(staticservepath)s/mathjax/
@@ -46,6 +47,10 @@ class PathConfig(object):
     def admindir(self):
         """path to directory containing configuration files"""
         return self.cp.get(self.section, "admindir")
+
+    @property
+    def staticexportdir(self):
+        return self.cp.get(self.section, "staticexportdir")
 
     @property
     def sessiondbpath(self):
