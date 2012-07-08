@@ -276,6 +276,40 @@ def tarChunk(name, content):
     tar.addfile(info, StringIO(content))
     return f.getvalue()
 
+def tarFileChunk(name, filename):
+    """
+    Return a chunk of a tar file (i.e., a tar file without the two
+    terminating 0-blocks) containing one file, with the given name,
+    and the contents as the named file in the file system.
+
+    @rtype: str
+    """
+    f = StringIO()
+    tar = tarfile.open(mode='w', fileobj=f)
+    infile = file(filename)
+    info = tarfile.TarInfo(name)
+    infile.seek(0,2)
+    info.size = infile.tell()
+    infile.seek(0)
+    tar.addfile(info, file(filename))
+    return f.getvalue()
+
+def tarDirChunk(name, dirname, excludes=[]):
+    """
+    yield a chunk of a tar file (i.e., a tar file without the
+    two terminating 0-blocks) containing, recursively the given
+    directory under the given name, however leaving out all files
+    directories where the name is included in excludes.
+    """
+    for entry in os.listdir(dirname):
+        fullpath = os.path.join(dirname, entry)
+        virtualpath = os.path.join(name, entry)
+        if os.path.isfile(fullpath):
+            yield tarFileChunk(virtualpath, fullpath)
+        if os.path.isdir(fullpath):
+            for chunk in tarDirChunk(virtualpath, fullpath, excludes=excludes):
+                yield chunk
+
 def tarFinal():
     """
     Return the two 0 blocks termintating a tar file.
@@ -284,3 +318,4 @@ def tarFinal():
     tar = tarfile.open(mode='w', fileobj=f)
     tar.close()
     return f.getvalue()
+
