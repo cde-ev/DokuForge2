@@ -22,6 +22,7 @@ import werkzeug.exceptions
 import werkzeug.routing
 import werkzeug.utils
 from werkzeug.wrappers import Request, Response
+from wsgitools.digest import LazyDBAPI2Opener
 
 from dokuforge.academy import Academy
 import dokuforge.common as common
@@ -179,10 +180,8 @@ class Application:
         """
         @type pathconfig: PathConfig
         """
-        self.sessiondb = sqlite3.connect(pathconfig.sessiondbpath)
-        cur = self.sessiondb.cursor()
-        cur.execute(SessionHandler.create_table)
-        self.sessiondb.commit()
+        self.sessiondbpath = pathconfig.sessiondbpath
+        self.sessiondb = LazyDBAPI2Opener(self.connectdb)
         self.userdb = pathconfig.loaduserdb()
         self.acapath = pathconfig.dfdir
         self.templatepath = os.path.join(os.path.dirname(__file__), "templates")
@@ -282,6 +281,14 @@ class Application:
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/<int:blob>/!delete",
                  methods=("POST",), endpoint="blobdelete"),
         ], converters=dict(identifier=IdentifierConverter))
+
+    def connectdb(self):
+        """Connect to the session database and create missing tables."""
+        sessiondb = sqlite3.connect(self.sessiondbpath)
+        cur = sessiondb.cursor()
+        cur.execute(SessionHandler.create_table)
+        sessiondb.commit()
+        return sessiondb
 
     def buildurl(self, rs, endpoint, args):
         """Looks up up the given endpoint in the routingmap and builds the
