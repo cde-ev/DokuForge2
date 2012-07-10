@@ -23,7 +23,7 @@ test: test.py
 	python test.py
 	python testparser.py
 
-.coverage:
+.coverage:$(wildcard dokuforge/*.py) test.py
 	${PYTHON_COVERAGE} run test.py
 coverage: .coverage
 	${PYTHON_COVERAGE} report -m -i "dokuforge/*.py"
