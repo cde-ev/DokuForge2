@@ -24,8 +24,8 @@ test: test.py
 	python testparser.py
 
 .coverage:$(wildcard dokuforge/*.py) test.py
-	${PYTHON_COVERAGE} run test.py
+	${PYTHON_COVERAGE} -x test.py
 coverage: .coverage
-	${PYTHON_COVERAGE} report -m -i "dokuforge/*.py"
+	${PYTHON_COVERAGE} -r -m -i "dokuforge/*.py"
 
 .PHONY: all doc clean setup test check
