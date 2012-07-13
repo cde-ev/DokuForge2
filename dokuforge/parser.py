@@ -1017,14 +1017,14 @@ class EnumerateItem(Linegroup):
     
     @classmethod
     def startshere(self, line, after=None):
-        return re.match('^[0-9]+\. ', line)
+        return re.match('^[0-9]+\.[ \t]', line)
 
     def parse(self):
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines), number="1")
         firstline = self.lines[0]
         number = "1"
-        m = re.match('^([0-9]+)\.(.*)$', firstline)
+        m = re.match('^([0-9]+)\.[ \t]+(.*)$', firstline)
         if m is not None:
             number, firstline = m.group(1,2)
         withcleanedfirstline = [firstline]
