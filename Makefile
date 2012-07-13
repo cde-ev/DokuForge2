@@ -1,3 +1,8 @@
+ifneq ($(shell which python-coverage),)
+PYTHON_COVERAGE ?= python-coverage
+else
+PYTHON_COVERAGE ?= coverage
+endif
 
 all: doc setup
 
@@ -18,11 +23,9 @@ test: test.py
 	python test.py
 	python testparser.py
 
-.coverage:
-	which coverage &> /dev/null || python-coverage -x test.py
-	which python-coverag &> /dev/null || coverage -x test.py
+.coverage:$(wildcard dokuforge/*.py) test.py
+	${PYTHON_COVERAGE} -x test.py
 coverage: .coverage
-	which coverage &> /dev/null || python-coverage -r -m -i "dokuforge/*.py"
-	which python-coverage &> /dev/null || coverage -r -m -i "dokuforge/*.py"
+	${PYTHON_COVERAGE} -r -m -i "dokuforge/*.py"
 
 .PHONY: all doc clean setup test check
