@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import with_statement
 import random
 import subprocess
 import re
@@ -256,67 +257,76 @@ def validateRcsRevision(versionnumber):
         raise RcsUserInputError(u"rcs version number syntactically malformed",
                                 u"can only happen in hand-crafted requests")
 
-def tarChunk(name, content):
-    """
-    Return a chunk of a tar file (i.e., a tar file without the two
-    terminating 0-blocks) containing one file, with the given name
-    and content.
+class TarWriter:
+    def __init__(self):
+        self.io = StringIO()
+        self.tar = tarfile.open(mode="w|", fileobj=self.io)
 
-    @type name: str
-    @type content: str
-    @rtype str
-    """
-    assert isinstance(name, str)
-    assert isinstance(content, str)
+    def read(self):
+        data = self.io.getvalue()
+        self.io.seek(0)
+        self.io.truncate(0)
+        return data
 
-    f = StringIO()
-    tar = tarfile.open(mode='w', fileobj=f)
-    info = tarfile.TarInfo(name)
-    info.size = len(content)
-    tar.addfile(info, StringIO(content))
-    return f.getvalue()
+    def addChunk(self, name, content):
+        """
+        Add a file with given content and return some tar content generated
+        along the way.
 
-def tarFileChunk(name, filename):
-    """
-    Return a chunk of a tar file (i.e., a tar file without the two
-    terminating 0-blocks) containing one file, with the given name,
-    and the contents as the named file in the file system.
+        @type name: str
+        @type content: bytes
+        @rtype: bytes
+        """
+        assert isinstance(name, str)
+        assert isinstance(content, str)
 
-    @rtype: str
-    """
-    f = StringIO()
-    tar = tarfile.open(mode='w', fileobj=f)
-    infile = file(filename)
-    info = tarfile.TarInfo(name)
-    infile.seek(0,2)
-    info.size = infile.tell()
-    infile.seek(0)
-    tar.addfile(info, file(filename))
-    return f.getvalue()
+        info = tarfile.TarInfo(name)
+        info.size = len(content)
+        self.tar.addfile(info, StringIO(content))
+        return self.read()
 
-def tarDirChunk(name, dirname, excludes=[]):
-    """
-    yield a chunk of a tar file (i.e., a tar file without the
-    two terminating 0-blocks) containing, recursively the given
-    directory under the given name, however leaving out all files
-    directories where the name is included in excludes.
-    """
-    for entry in os.listdir(dirname):
-        if entry not in excludes:
+    def addFileChunk(self, name, filename):
+        """
+        Add a regular file with given (tar) name and given (filesystem)
+        filename and return some tar content generated along the way.
+        @type name: str
+        @type filename: str
+        @rtype: bytes
+        """
+        info = tarfile.TarInfo(name)
+        with file(filename) as infile:
+            infile.seek(0, 2)
+            info.size = infile.tell()
+            infile.seek(0)
+            self.tar.addfile(info, infile)
+        return self.read()
+
+    def addDirChunk(self, name, dirname, excludes=[]):
+        """
+        Recursively add a filesystem directory dirname using the given name.
+        Only regular files and directories are considered. Any basename that
+        is contained in excludes is left out. The tar content generated along
+        the way is returned as a bytes iterator.
+        @type name: str
+        @type dirname: str
+        @param excludes: an object that provides __contains__
+        """
+        for entry in os.listdir(dirname):
+            if entry in excludes:
+                continue
             fullpath = os.path.join(dirname, entry)
             virtualpath = os.path.join(name, entry)
             if os.path.isfile(fullpath):
-                yield tarFileChunk(virtualpath, fullpath)
+                yield self.addFileChunk(virtualpath, fullpath)
             if os.path.isdir(fullpath):
-                for chunk in tarDirChunk(virtualpath, fullpath, excludes=excludes):
+                for chunk in self.addDirChunk(virtualpath, fullpath,
+                                              excludes=excludes):
                     yield chunk
 
-def tarFinal():
-    """
-    Return the two 0 blocks termintating a tar file.
-    """
-    f = StringIO()
-    tar = tarfile.open(mode='w', fileobj=f)
-    tar.close()
-    return f.getvalue()
-
+    def close(self):
+        """
+        Close the TarWriter and return the remaining content.
+        @rtype: str
+        """
+        self.tar.close()
+        return self.io.getvalue()

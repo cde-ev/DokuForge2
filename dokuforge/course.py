@@ -1,7 +1,5 @@
 from __future__ import with_statement
 import os
-import re
-import tarfile
 
 from werkzeug.datastructures import FileStorage
 
@@ -514,7 +512,7 @@ class Course(StorageDir):
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
 
-    def texExportIterator(self):
+    def texExportIterator(self, tarwriter):
         """
         yield the contents of the course as tex-export.
         """
@@ -531,6 +529,8 @@ class Course(StorageDir):
                 tex += "\\caption{%s}\n" % blob['comment']
                 tex += "\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += "\\end{figure}\n"
-                yield common.tarChunk("%s/blob_%d_%s" % (self.name, b, str(blob['filename'])), blob['data'])
+                yield tarwriter.addChunk("%s/blob_%d_%s" %
+                                         (self.name, b, str(blob['filename'])),
+                                         blob['data'])
 
-        yield common.tarChunk("%s/chap.tex" % self.name, tex.encode("utf8"))
+        yield tarwriter.addChunk("%s/chap.tex" % self.name, tex.encode("utf8"))

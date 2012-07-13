@@ -1,8 +1,6 @@
 
 import os
 import operator
-from cStringIO import StringIO
-import tarfile
 
 import werkzeug.exceptions
 
@@ -134,24 +132,25 @@ class Academy(StorageDir):
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
 
-    def texExportIterator(self, static=None):
+    def texExportIterator(self, tarwriter, static=None):
         """
         yield a tar archive containing the tex-export of the academy.
         """
-        yield common.tarChunk("WARNING", 
-                              ("The precise semantics of the exporter is still\n" +
-                               "subject to discussion and may change in future versions.\n" +
-                               "If you think you might need to reproduce an export with the\n"
-                               "same exporter semantics, keep the following version string\n" +
-                               "for your reference\n\n    %s\n") % commitid)
+        yield tarwriter.addChunk("WARNING", 
+"""The precise semantics of the exporter is still
+subject to discussion and may change in future versions.
+If you think you might need to reproduce an export with the
+same exporter semantics, keep the following version string
+for your reference
+
+%s
+""" % commitid)
         if static is not None:
-            for chunk in common.tarDirChunk("", static):
+            for chunk in tarwriter.addDirChunk("", static):
                 yield chunk
         contents = ""
         for course in self.listCourses():
             contents += "\\include{%s/chap}\n" % course.name
-            coursetar = course.texExportIterator()
-            for chunk in coursetar:
+            for chunk in course.texExportIterator(tarwriter):
                 yield chunk
-        yield common.tarChunk("contents.tex", contents)
-        yield common.tarFinal()
+        yield tarwriter.addChunk("contents.tex", contents)

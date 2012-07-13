@@ -956,11 +956,17 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        rs.response.response = aca.texExportIterator(static=self.staticexportdir)
-        rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=texexport_%s.tar" % aca.name
         if not rs.user.mayExport(aca):
             return werkzeug.exceptions.Forbidden()
+        def export_iterator(aca, static):
+            tarwriter = common.TarWriter()
+            for chunk in aca.texExportIterator(tarwriter,
+                                               static=static):
+                yield chunk
+            yield tarwriter.close()
+        rs.response.response = export_iterator(aca, self.staticexportdir)
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=texexport_%s.tar" % aca.name
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
