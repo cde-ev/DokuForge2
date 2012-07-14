@@ -41,10 +41,10 @@ def gensid(bits=64):
     """
     @type bits: int
     @param bits: randomness in bits of the resulting string
-    @rtype: str
+    @rtype: unicode
     @returns: a random string
     """
-    return "%x" % sysrand.getrandbits(bits)
+    return ("%x" % sysrand.getrandbits(bits)).decode("ascii")
 
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database."""
@@ -54,72 +54,83 @@ class SessionHandler:
     hit_interval = 60
     expire_after = 60 * 60 * 24 * 7 # a week
 
-    def __init__(self, db, request, response):
+    def __init__(self, db):
         """
         @param db: a DBAPI2 database that has a sessions table as described
                 in the create_table class variable
-        @type request: werkzeug.wrappers.Request
-        @type response: werkzeug.wrappers.Response
         """
         self.db = db
-        self.cur = db.cursor()
-        self.response = response
-        self.sid = request.cookies.get(self.cookie_name)
         self.lastexpire = 0
 
-    def get(self):
+    def get(self, request):
         """Find a user session.
-        @rtype: unicode or None
-        @returns: a username or None
+        @type request: werkzeug.wrappers.Request
+        @rtype: (unicode or None, unicode or None)
+        @returns: a pair (sid, username). sid is None if the cookie is missing
+                and username is None if sid cannot be found in the database
         """
         now = time.time()
         self.expire(now)
 
-        if self.sid is None:
-            logger.debug("SessionHandler.get: no cookie found")
-            return None
-        self.cur.execute("SELECT user, updated FROM sessions WHERE sid = ?;",
-                         (self.sid.decode("utf8"),))
-        results = self.cur.fetchall()
-        self.db.commit()
-        if len(results) != 1:
-            logger.debug("SessionHandler.get: cookie %r not found", self.sid)
-            return None
-        assert isinstance(results[0][0], unicode)
-        if results[0][1] + self.hit_interval < now:
-            self.cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
-                             (now, self.sid.decode("utf8")))
-            self.db.commit()
-        logger.debug("SessionHandler.get: cookie %r matches user %r", self.sid, 
-                results[0][0])
-        return results[0][0]
+        sid = request.cookies.get(self.cookie_name)
 
-    def set(self, username):
+        if sid is None:
+            logger.debug("SessionHandler.get: no cookie found")
+            return (None, None)
+        cur = self.db.cursor()
+        cur.execute("SELECT user, updated FROM sessions WHERE sid = ?;", (sid,))
+        results = cur.fetchall()
+        if len(results) != 1:
+            logger.debug("SessionHandler.get: cookie %r not found", sid)
+            self.db.commit()
+            cur.close()
+            return (sid, None)
+        username, updated = results[0]
+        assert isinstance(username, unicode)
+        if updated + self.hit_interval < now:
+            cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
+                             (now, sid))
+            self.db.commit()
+        logger.debug("SessionHandler.get: cookie %r matches user %r", sid, 
+                username)
+        self.db.commit()
+        cur.close()
+        return (sid, username)
+
+    def set(self, response, username, sid=None):
         """Initiate a user session.
+        @type response: werkzeug.wrappers.Response
         @type username: unicode
+        @type sid: unicode or None
+        @rtype: unicode
+        @returns: sid
         """
         action = "reusing"
-        if self.sid is None:
-            self.sid = gensid()
-            self.response.set_cookie(self.cookie_name, self.sid)
+        if sid is None:
+            sid = gensid()
+            response.set_cookie(self.cookie_name, sid)
             action = "generating new"
         logger.debug("SessionHandler.set: %s cookie %r for user %r", action,
-                    self.sid, username)
-        self.cur.execute("INSERT OR REPLACE INTO sessions VALUES (?, ?, ?);",
-                         (self.sid.decode("utf8"), username, time.time()))
+                    sid, username)
+        cur = self.db.cursor()
+        cur.execute("INSERT OR REPLACE INTO sessions VALUES (?, ?, ?);",
+                         (sid, username, time.time()))
         self.db.commit()
+        cur.close()
+        return sid
 
-    def delete(self):
+    def delete(self, response, sid):
         """Delete a user session.
-        @rtype: [(str, str)]
-        @returns: a list of headers to be sent with the http response
+        @type response: werkzeug.wrappers.Response
+        @type sid: str
         """
-        if self.sid is not None:
-            logger.debug("SessionHandler.delete: deleting cookie %r", self.sid)
-            self.cur.execute("DELETE FROM sessions WHERE sid = ?;",
-                             (self.sid.decode("utf8"),))
+        if sid is not None:
+            logger.debug("SessionHandler.delete: deleting cookie %r", sid)
+            cur = self.db.cursor()
+            cur.execute("DELETE FROM sessions WHERE sid = ?;", (sid,))
             self.db.commit()
-            self.response.delete_cookie(self.cookie_name)
+            cur.close()
+            response.delete_cookie(self.cookie_name)
         else:
             logger.debug("SessionHandler.delete: no cookie to delete")
 
@@ -133,9 +144,11 @@ class SessionHandler:
             now = time.time()
         if self.lastexpire + self.hit_interval < now:
             logger.debug("SessionHandler.expire: taking action")
-            self.cur.execute("DELETE FROM sessions WHERE updated < ?;",
+            cur = self.db.cursor()
+            cur.execute("DELETE FROM sessions WHERE updated < ?;",
                              (now - self.expire_after,))
             self.db.commit()
+            cur.close()
             self.lastexpire = now
 
 class RequestState:
@@ -144,22 +157,25 @@ class RequestState:
     @ivar endpoint_args: is a reference to the parameters obtained from
         werkzeug's url matcher
     """
-    def __init__(self, request, sessiondb, userdb, mapadapter):
+    def __init__(self, request, sessionhandler, userdb, mapadapter):
         self.request = request
         self.response = Response()
-        self.sessionhandler = SessionHandler(sessiondb, request, self.response)
+        self.sessionhandler = sessionhandler
         self.userdb = userdb
-        self.user = copy.deepcopy(self.userdb.db.get(self.sessionhandler.get()))
+        self.sid, username = self.sessionhandler.get(request)
+        self.user = copy.deepcopy(self.userdb.db.get(username))
         self.mapadapter = mapadapter
         self.endpoint_args = None # set later in Application.render
 
     def login(self, username):
         self.user = copy.deepcopy(self.userdb.db[username])
-        self.sessionhandler.set(self.user.name)
+        self.sid = self.sessionhandler.set(self.response, self.user.name,
+                self.sid)
 
     def logout(self):
         self.user = None
-        self.sessionhandler.delete()
+        self.sessionhandler.delete(self.response, self.sid)
+        self.sid = None
 
 class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
                                werkzeug.routing.RoutingException):
@@ -181,7 +197,8 @@ class Application:
         @type pathconfig: PathConfig
         """
         self.sessiondbpath = pathconfig.sessiondbpath
-        self.sessiondb = LazyDBAPI2Opener(self.connectdb)
+        sessiondb = LazyDBAPI2Opener(self.connectdb)
+        self.sessionhandler = SessionHandler(sessiondb)
         self.userdb = pathconfig.loaduserdb()
         self.acapath = pathconfig.dfdir
         self.templatepath = os.path.join(os.path.dirname(__file__), "templates")
@@ -425,7 +442,7 @@ class Application:
     def __call__(self, request):
         mapadapter = self.routingmap.bind_to_environ(request.environ)
         self.userdb.load()
-        rs = RequestState(request, self.sessiondb, self.userdb, mapadapter)
+        rs = RequestState(request, self.sessionhandler, self.userdb, mapadapter)
         try:
             endpoint, args = mapadapter.match()
             ## grab a copy of the parameters for url building
