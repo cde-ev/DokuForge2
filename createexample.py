@@ -138,6 +138,11 @@ Und nun noch eine Aufzaehlung.
 - zweitens
 - drittens
 
+Und eine numerierte Aufzaehlung.
+1. erstens
+2. zweitens
+3. drittens
+
 [Hier eine Ueberschrift, ohne
  Autorenangabe, ueber mehrere Zeilen
  hinweg]
