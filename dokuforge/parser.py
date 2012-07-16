@@ -491,7 +491,7 @@ class PItem(PTree):
         if self.number is None:
             return '\n-' + self.it.toDF()
         else:
-            return '\n' + self.number + '.' + self.it.toDF()
+            return '\n' + self.number + '. ' + self.it.toDF()
 
 class Chargroup:
     """
