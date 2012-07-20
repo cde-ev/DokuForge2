@@ -533,4 +533,5 @@ class Course(StorageDir):
                                          (self.name, b, str(blob['filename'])),
                                          blob['data'])
 
-        yield tarwriter.addChunk("%s/chap.tex" % self.name, tex.encode("utf8"))
+        yield tarwriter.addChunk("%s/chap.tex.untrusted" % self.name,
+                                 tex.encode("utf8"))

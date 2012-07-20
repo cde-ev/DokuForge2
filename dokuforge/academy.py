@@ -137,7 +137,14 @@ class Academy(StorageDir):
         yield a tar archive containing the tex-export of the academy.
         """
         yield tarwriter.addChunk("WARNING", 
-"""The precise semantics of the exporter is still
+"""Currently there is *NO* escaping of TeX macros in the course files.
+This is why they have an additional .untrusted extension. The extension
+is there to prevent accidental execution of untrusted code. Before using
+this export you will have to review those files and if they are harmless
+rename them from .tex.untrusted to .tex. Only then the includes in
+contents.tex can actually work.
+
+The precise semantics of the exporter is still
 subject to discussion and may change in future versions.
 If you think you might need to reproduce an export with the
 same exporter semantics, keep the following version string
