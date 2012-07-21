@@ -153,7 +153,7 @@ for your reference
 %s
 """ % commitid)
         if static is not None:
-            for chunk in tarwriter.addDirChunk("", static):
+            for chunk in tarwriter.addDirChunk("", static, excludes=[".svn"]):
                 yield chunk
         contents = ""
         for course in self.listCourses():
