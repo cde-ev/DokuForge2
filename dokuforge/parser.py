@@ -481,7 +481,7 @@ class PItem(PTree):
         if self.number is None:
             return '\n\\item ' + self.it.toTex()
         else:
-            return '\n% ' + self.numer + '\n\\item ' + self.it.toTex()
+            return '\n% ' + self.number + '\n\\item ' + self.it.toTex()
         
 
     def toHtml(self):
