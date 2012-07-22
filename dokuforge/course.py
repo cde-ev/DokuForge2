@@ -1,6 +1,5 @@
 from __future__ import with_statement
 import os
-import re
 
 from werkzeug.datastructures import FileStorage
 
@@ -9,6 +8,7 @@ from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
 from dokuforge.parser import dfOverview
 import dokuforge.common as common
+from dokuforge.parser import dfLineGroupParser
 
 class Outline:
     def __init__(self, number):
@@ -511,3 +511,27 @@ class Course(StorageDir):
             outlines = self.outlinepages)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
+
+    def texExportIterator(self, tarwriter):
+        """
+        yield the contents of the course as tex-export.
+        """
+        tex = u"\\course{%s}" % self.gettitle()
+        for p in self.listpages():
+            tex += "\n\n%%%%%% Part %d\n" % p
+            page = self.showpage(p)
+            tex += dfLineGroupParser(page).toTex()
+            for b in self.listblobs(p):
+                blob = self.viewblob(b)
+                tex += "\n\n%% blob %d\n" % b
+                tex += "\\begin{figure}\n\centering\n"
+                tex += "\\includegraphics{%s/blob_%d_%s}\n" % (self.name, b, blob['filename'])
+                tex += "\\caption{%s}\n" % blob['comment']
+                tex += "\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
+                tex += "\\end{figure}\n"
+                yield tarwriter.addChunk("%s/blob_%d_%s" %
+                                         (self.name, b, str(blob['filename'])),
+                                         blob['data'])
+
+        yield tarwriter.addChunk("%s/chap.tex.untrusted" % self.name,
+                                 tex.encode("utf8"))

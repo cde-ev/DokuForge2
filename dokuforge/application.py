@@ -190,6 +190,7 @@ class Application:
         self.groupstore = pathconfig.groupstore
         self.staticservepath = pathconfig.staticservepath
         self.mathjaxuri = pathconfig.mathjaxuri
+        self.staticexportdir = pathconfig.staticexportdir
         rule = werkzeug.routing.Rule
         self.routingmap = werkzeug.routing.Map([
             rule("/", methods=("GET", "HEAD"), endpoint="start"),
@@ -219,9 +220,8 @@ class Application:
                  methods=("GET", "HEAD"), endpoint="createcoursequiz"),
             rule("/docs/<identifier:academy>/!createcourse",
                  methods=("POST",), endpoint="createcourse"),
-# not yet implemented
-#            rule("/docs/<identifier:academy>/!export", methods=("GET", "HEAD"),
-#                 endpoint="export"),
+            rule("/docs/<identifier:academy>/!export", methods=("GET", "HEAD"),
+                 endpoint="export"),
             rule("/docs/<identifier:academy>/!groups", methods=("GET", "HEAD"),
                  endpoint="academygroups"),
             rule("/docs/<identifier:academy>/!groups", methods=("POST",),
@@ -953,6 +953,27 @@ class Application:
         rs.response.data = c.export()
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=%s_%s.tar" % (aca.name, c.name)
+        return rs.response
+
+    def do_export(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
+        assert academy is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        if not rs.user.mayExport(aca):
+            return werkzeug.exceptions.Forbidden()
+        def export_iterator(aca, static):
+            tarwriter = common.TarWriter()
+            for chunk in aca.texExportIterator(tarwriter,
+                                               static=static):
+                yield chunk
+            yield tarwriter.close()
+        rs.response.response = export_iterator(aca, self.staticexportdir)
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=texexport_%s.tar" % aca.name
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):

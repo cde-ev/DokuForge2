@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import with_statement
 import random
 import subprocess
 import re
 import os
 import ConfigParser
 from cStringIO import StringIO
+import tarfile
 
 try:
     check_output = subprocess.check_output
@@ -254,3 +256,77 @@ def validateRcsRevision(versionnumber):
     if re.match('^[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}(\.[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}){0,5}$', versionnumber) is None:
         raise RcsUserInputError(u"rcs version number syntactically malformed",
                                 u"can only happen in hand-crafted requests")
+
+class TarWriter:
+    def __init__(self):
+        self.io = StringIO()
+        self.tar = tarfile.open(mode="w|", fileobj=self.io)
+
+    def read(self):
+        data = self.io.getvalue()
+        self.io.seek(0)
+        self.io.truncate(0)
+        return data
+
+    def addChunk(self, name, content):
+        """
+        Add a file with given content and return some tar content generated
+        along the way.
+
+        @type name: str
+        @type content: bytes
+        @rtype: bytes
+        """
+        assert isinstance(name, str)
+        assert isinstance(content, str)
+
+        info = tarfile.TarInfo(name)
+        info.size = len(content)
+        self.tar.addfile(info, StringIO(content))
+        return self.read()
+
+    def addFileChunk(self, name, filename):
+        """
+        Add a regular file with given (tar) name and given (filesystem)
+        filename and return some tar content generated along the way.
+        @type name: str
+        @type filename: str
+        @rtype: bytes
+        """
+        info = tarfile.TarInfo(name)
+        with file(filename) as infile:
+            infile.seek(0, 2)
+            info.size = infile.tell()
+            infile.seek(0)
+            self.tar.addfile(info, infile)
+        return self.read()
+
+    def addDirChunk(self, name, dirname, excludes=[]):
+        """
+        Recursively add a filesystem directory dirname using the given name.
+        Only regular files and directories are considered. Any basename that
+        is contained in excludes is left out. The tar content generated along
+        the way is returned as a bytes iterator.
+        @type name: str
+        @type dirname: str
+        @param excludes: an object that provides __contains__
+        """
+        for entry in os.listdir(dirname):
+            if entry in excludes:
+                continue
+            fullpath = os.path.join(dirname, entry)
+            virtualpath = os.path.join(name, entry)
+            if os.path.isfile(fullpath):
+                yield self.addFileChunk(virtualpath, fullpath)
+            if os.path.isdir(fullpath):
+                for chunk in self.addDirChunk(virtualpath, fullpath,
+                                              excludes=excludes):
+                    yield chunk
+
+    def close(self):
+        """
+        Close the TarWriter and return the remaining content.
+        @rtype: str
+        """
+        self.tar.close()
+        return self.io.getvalue()

@@ -8,6 +8,10 @@ from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
 from dokuforge.common import CheckError
+try:
+    from dokuforge.versioninfo import commitid
+except ImportError:
+    commitid = "unknown"
 
 class Academy(StorageDir):
     """
@@ -127,3 +131,33 @@ class Academy(StorageDir):
                          groups=self.getgroups)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
+
+    def texExportIterator(self, tarwriter, static=None):
+        """
+        yield a tar archive containing the tex-export of the academy.
+        """
+        yield tarwriter.addChunk("WARNING", 
+"""Currently there is *NO* escaping of TeX macros in the course files.
+This is why they have an additional .untrusted extension. The extension
+is there to prevent accidental execution of untrusted code. Before using
+this export you will have to review those files and if they are harmless
+rename them from .tex.untrusted to .tex. Only then the includes in
+contents.tex can actually work.
+
+The precise semantics of the exporter is still
+subject to discussion and may change in future versions.
+If you think you might need to reproduce an export with the
+same exporter semantics, keep the following version string
+for your reference
+
+%s
+""" % commitid)
+        if static is not None:
+            for chunk in tarwriter.addDirChunk("", static, excludes=[".svn"]):
+                yield chunk
+        contents = ""
+        for course in self.listCourses():
+            contents += "\\include{%s/chap}\n" % course.name
+            for chunk in course.texExportIterator(tarwriter):
+                yield chunk
+        yield tarwriter.addChunk("contents.tex", contents)
