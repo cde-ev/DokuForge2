@@ -66,11 +66,11 @@ jeweiligen Kurses angelegt wird. Dort wird dann die gesamte Literatur des Kurses
 kann die Literatur auch wahlweise getrennt pro Kurskapitel angegeben werden. Das Literaturverzeichnis baut 
 ihr in der folgenden Form in eine Ednote ein: </p>
 <ul><p><pre>
-{ LITERATUR
+{({ LITERATUR
 
  Hier stehen die Literaturangaben...
 
-}
+})}
 </pre></p></ul>
 <!-- Die Literatureingabe erfolgt direkt im (zugegebenermaßen) etwas kryptischen BibLaTeX-Stil.
 (dieser sollte aber soweit verständlich sein).-->
