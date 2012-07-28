@@ -1,0 +1,135 @@
+<div class="body">
+<h2>Literatur</h2>
+
+<!-- Neue Version mit Anpassung an BibLaTeX -->
+<p>Literaturangaben</p>
+<p><em> Warum Literaturangaben?</em> Literaturangaben sind immer dann notwendig, wenn man ein wörtliches Zitat bzw. einen
+direkten Verweis auf einen Dritten in seinem Text benutzt. Zitate müssen im eigenen Text mit Anführungszeichen
+gekennzeichnet werden. </p>
+
+<p><em>In welchem Maß muss Literatur angegeben werden bzw. kann?</em> Grundsätzlich müssen Zitate und direkte Verweise
+im Text mit dem Namen des Autors, dem Erscheinungsjahr und der Seite, auf der das entsprechende Zitat auftritt, gekennzeichnet werden (Beispiel siehe unten). Alle solchermaßen im Text in Kurzzitierweise genannten Werke müssen
+mit ihren kompletten Angaben im Literaturverzeichnis aufgeführt werden. Oftmals ist es sinnvoll, die verwendete, aber
+nicht direkt zitierte Literatur in Form eines Literaturverzeichnisses anzugeben. Dies erleichtert dem Leser, die verfassten Texte nachzuvollziehen, und entspricht guter wissenschaftlicher Praxis, ist aber optional.
+</p>
+
+<h4><a name="littext">Eingabe der Literaturangaben im Text </a></h4>
+<p> Literaturangaben und Zitatnachweise im Text werden mithilfe eines eindeutig definierten Kurztitels gesetzt,
+ der Dokuforge signalisiert, welches Buch hier eingesetzt werden soll. Natürlich muss das so zitierte Buch unter 
+diesem Kurztitel in der Bibliographie (= Literaturverzeichnis) aufgeführt werden, damit es eindeutig zugeordnet
+werden kann. Typischerweise wird vor dem eigentlichen
+Verweis der Name des Autors, die Jahreszahl und die Seitenzahl des Zitates angeführt.
+Ein Verweis in Dokuforge am Ende eines Satzes sieht folgendermaßen aus:
+</p>
+<p></p>
+<ul>
+<table width="80%">
+<tbody>
+<tr>
+<td>  "Dies ist ein Zitat eines Werkes." ( Fischer 1997: 112  LITERATUR:fischer) </td>
+</tr>
+</tbody>
+</table>
+</ul>
+<p>
+Die einzelnen Bausteine der Literaturangabe sind dabei die Folgenden:
+</p>
+<table width="90%"><tbody>
+<tr>
+  <td width="10%"></td>
+  <td width="20%"> Fischer </td>
+  <td width="60%"> Nachname des Verfassers der Publikationsform. Bei mehr als zwei Autoren wird nach dem Namen des Hauptautor "et al." 
+               hinzugefügt. </td>
+</tr><tr>
+   <td></td>
+   <td>  1997 </td>
+   <td>  Jahr der Veröffentlichung. </td>
+</tr><tr>
+   <td></td>
+   <td width="20%"> 112 </td>
+   <td width="60%"> Seite, auf der das Zitat auftritt. 
+</tr><tr>
+   <td></td>
+   <td width="20%"> LITERATUR:fischer </td>
+   <td width="60%"> Kurzform der Literaturangabe 
+</td></tr></tbody></table>
+
+
+<p>Alle so zitierten Werke müssen auf jeden Fall mit vollständigen Angaben (siehe Auflistung unten) an das Ende des
+jeweiligen Teils gestellt werden. Wir werden später je Kurs ein Gesamtverzeichnis erstellen, das am Schluss der
+entsprechenden Kursdoku stehen wird.
+</p>
+
+<h4><a name="litsatz">Eingabe der Literaturdaten </a></h4>
+<p> Die Angaben für das Literaturverzeichnis werden in eine Ednote gesetzt, wobei dafür idealerweise eine Seite am Ende des
+jeweiligen Kurses angelegt wird. Dort wird dann die gesamte Literatur des Kurses gesammelt. Im Literaturverzeichnis 
+kann die Literatur auch wahlweise getrennt pro Kurskapitel angegeben werden. Das Literaturverzeichnis baut 
+ihr in der folgenden Form in eine Ednote ein: </p>
+<ul><p><pre>
+{ LITERATUR
+
+ Hier stehen die Literaturangaben...
+
+}
+</pre></p></ul>
+<!-- Die Literatureingabe erfolgt direkt im (zugegebenermaßen) etwas kryptischen BibLaTeX-Stil.
+(dieser sollte aber soweit verständlich sein).-->
+<p>
+Die entsprechenden Literaturangaben werden folgendermaßen umgesetzt, hier am Beispiel von verschiedenen häufig vorkommenden
+Publikationsformen. Dazu ein kleiner technischer Hinweis: Zum Satz verwenden wir das Programm BibLaTeX. <!--Für viele Referenzen
+gibt es bereits vorgefertigte Vorlagen, die man natürlich verwenden kann.--> Die Angabe in der ersten Zeile ist eine eindeutige
+Kurzform, die für Verweise im Text verwendet werden kann (z.B. für die Angabe nach direkten Zitaten).</p>
+
+<ul><li><p> Im Fall einer Monographie/Buch lautet die Syntax:</p>
+<p><pre>
+@BOOK{fischer,								"Kurzform"
+  title		= "Lineare Algebra",					"Vollständiger Titel der Monographie"
+  author	= "Gerd Fischer",					"Name der Autoren"	
+  year		= "1997",						"Veröffentlichungsjahr"
+  address	= "Berlin"						""Ort der Veröffentlichung"
+  publisher	= "Vieweg Studium",    %% optional %%			"Verlag"	
+}
+</pre></p></li></ul>
+
+<ul><li><p> Im Fall eines Artikels in einer Zeitschrift/Journal lautet die Syntax (bei Zeitungsartikeln bitte das 
+vollständige Datum angeben):</p>
+<p><pre>
+@ARTICLE{heisenberg,							"Kurzform"
+  author	= "Werner Heisenberg",					"Name der Autoren"
+  title		= "Die Kopenhagener Deutung der Quantentheorie",	"Vollständiger Titel des Artikels"
+  journal	= "Physik und Philosophie",				"Name des Journals, in dem der Artikel veröffentlicht wurde"
+  volume	= "12"							"Nummer des Jahrgangs"
+  year		= "1990",						"Veröffentlichungsjahr"
+  pages		= "27--42",						"Seitenumfang im Journal"
+}
+</pre></p></li></ul>
+
+<ul><li><p> Im Fall eines Aufsatzes in einem Sammelwerk (hierunter fallen auch Artikel in Lexika)
+lautet die Syntax:</p>
+<p><pre>
+@INCOLLECTION{brodersen,						"Kurzform"
+  author	= "Brodersen, Kai",					"Name der Autoren"
+  title		= "Gebet und Fluch, Zeichen und Traum.",		"Titel des Aufsatzes"
+  editor	= "Brodersen, Kai"					"Name der Herausgeber"
+  booktitle	= "Briefe in die Unterwelt.",				"Name des Sammelwerkes/Lexikons"
+  address	= "Münster",						"Ort der Veröffentlichung"
+  year		= "2001",						"Jahr der Veröffentlichung"
+  pages		= "57--68",						"Seitenumfang im Sammelwerk"
+}
+</pre></p></li></ul>
+
+<ul><li><p> Im Fall einer URL bzw. Internetreferenz lautet die Syntax:</p>
+<p><pre>
+@BOOKLET{wikipedia,							"Kurzform"
+  url 		= "http://www.mpg.de/180882/Jahresbericht"		"Internetadresse"
+  lastchecked	= "02.07.2012"						"Datum des Abrufes"
+  title		= "Jahresbericht der Max-Planck-Gesellschaft 2010"	"Titel der Internetreferenz"
+  author	= "Max-Planck-Gesellschaft	%% optional %%		"Name des Autors
+}
+</pre></p></li></ul>
+
+<p> Die obigen Beispiele dienen zur Illustration der Verwendung der Literaturangaben. In der Kürze ist es natürlich
+nicht möglich, alle Spezialfälle abzudecken. Wenn ihr eine Literaturangabe habt, die ihr in keines der oben genannten
+Schemata packen könnt, dann schreibt die fertig formatierte Literaturangabe in eine eigene Ednote. Um die endgültige
+Formatierung kümmern wir uns dann in der Redaktion.</p>
+</div>

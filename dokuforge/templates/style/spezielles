@@ -62,27 +62,6 @@ drittletzte Silbe &  x   &   --   &    --  \\
 
 </li>
 
-<h3><a name="lit">Literaturangaben</a></h3>
-
-<p>Literaturangaben und Quellenangaben (z.B. URLs) stellt bitte nach folgendem Schema in eine ednote:</p>
-
-<p><pre>
-\begin{literatur}
-
-\bitem%
- {Verfassername, Vorname}%
- {Titel}%
- {Ort}%
- {Jahr, Seiten}%
-
-\urlitem{URL}\\
- {gegebenenfalls: Titel}%
-
-\end{literatur}
-</pre></p>
-
-<p>Wenn etwas nicht in das Schema passt, steckt es bitte mit einer entsprechenden Anmerkung in eine ednote.</p>
-
 <h3><a name="ged">Gedichte, Dialoge, Parallelitäten</a></h3>
 
 <p>Auch in diesen Fällen ist es nötig, die entsprechenden Texte in eine ednote
