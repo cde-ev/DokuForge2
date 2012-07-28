@@ -30,14 +30,15 @@
         <p>Über die Geschichte, den Sinn und die Philosophie von DokuForge.</p>
   </li>
   <li>
-    <p><a href="/style/hilfe">Hilfe</a></p>
+    <p><a href="/style/hilfe">Leitfaden</a></p>
         <p>Kurzer Leitfaden für die Benutzung von DokuForge.</p>
   </li>
   <li>
     <p><a href="/style/grundlagen">Grundlagen im Umgang mit DokuForge</a></p>
-        <p>Hier findet ihr eine Einleitung in die Benutzung von DokuForge und
-       Hinweise, was beim Schreiben der Dokus unbedingt zu beachten ist. Diese
-       Seite sollte von <em>jedem</em> gelesen werden.</p>
+        <p>Hier werden die wichtigsten Aspekte zur Bedienung von DokuForge
+       erklärt und Hinweise, was beim Schreiben der Dokus unbedingt zu
+       beachten ist gegeben. Diese Seite sollte von <em>jedem</em> gelesen
+       werden.</p>
   </li>
   <li>
     <p><a href="/style/abbildungen">Abbildungen</a></p>
@@ -50,14 +51,14 @@
   </li>
   <li>
     <p><a href="/style/literatur">Literatur</a></p>
-        <p>Wer Literaturangaben einfügen möchte, sollte sich zur Formatierung diese Seite zur Hand nehmen. </p>
-
+        <p>Für das komplexe Thema der Literaturangaben gibt es hier die
+        entsprechenden Hinweise.</p>
   </li>
   <li>
     <p><a href="/style/spezielles">Sonstiges</a></p>
-        <p>Auf dieser Seite haben wir das Meiste von dem zusammengetragen, was wiederholt
-       vorkommt, aber nicht in das normale Eingabeschema passt: Gedichte, Literaturangaben,        Tabellen, Fremdsprachen, ...
-    </p>
+        <p>Auf dieser Seite haben wir das Meiste von dem zusammengetragen,
+       was wiederholt vorkommt, aber nicht in das normale Eingabeschema
+       passt: Gedichte, Tabellen, Fremdsprachen, ...  </p>
   </li></ol>
 
     </div>
