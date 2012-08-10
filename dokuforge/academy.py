@@ -122,10 +122,10 @@ class Academy(StorageDir):
         Course(os.path.join(self.path, name)).settitle(title)
 
     def lastchange(self):
-        return self.calculatelastchange([c.lastchange() for c in self.listCourses()])
+        return common.findlastchange([c.lastchange() for c in self.listCourses()])
 
     def timestamp(self):
-        return self.calculatetimestamp([c.timestamp() for c in self.listCourses()])
+        return max([c.timestamp() for c in self.listCourses()] + [-1])
 
     def view(self, extrafunctions=dict()):
         """

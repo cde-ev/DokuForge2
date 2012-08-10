@@ -330,3 +330,8 @@ class TarWriter:
         """
         self.tar.close()
         return self.io.getvalue()
+
+def findlastchange(changes):
+    return max(changes + [{'author': u'unkown', 'revision' : u'?',
+                           'date' : u'1970/01/01 00:00:00'}],
+               key = lambda x: datetime.strptime(x['date'], "%Y/%m/%d %H:%M:%S"))

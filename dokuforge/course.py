@@ -531,10 +531,11 @@ class Course(StorageDir):
         blobname.store(filename.encode("utf8"), user = user)
 
     def lastchange(self):
-        return self.calculatelastchange([self.getcommit(p) for p in self.listpages()])
+        return common.findlastchange([self.getcommit(p) for p in self.listpages()])
 
     def timestamp(self):
-        return self.calculatetimestamp([self.getstorage("page%d" % p).timestamp() for p in self.listpages()])
+        return max([self.getstorage("page%d" % p).timestamp()
+                    for p in self.listpages()] + [-1])
 
     def view(self, extrafunctions=dict()):
         """

@@ -81,20 +81,3 @@ class StorageDir:
             title=self.gettitle)
         functions.update(extrafunctions)
         return LazyView(functions)
-
-    def calculatelastchange(self, infos):
-        lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'1970/01/01 00:00:00'}
-        compare = datetime.strptime(lastchange['date'], "%Y/%m/%d %H:%M:%S")
-        for x in infos:
-            date =  datetime.strptime(x['date'], "%Y/%m/%d %H:%M:%S")
-            if date > compare:
-                lastchange = x
-                compare = datetime.strptime(lastchange['date'], "%Y/%m/%d %H:%M:%S")
-        return lastchange
-
-    def calculatetimestamp(self, timestamps):
-        timestamp = -1
-        for x in timestamps:
-            if x > timestamp:
-                timestamp = x
-        return timestamp
