@@ -124,6 +124,9 @@ class Academy(StorageDir):
     def lastchange(self):
         return common.findlastchange([c.lastchange() for c in self.listCourses()])
 
+    def timestamp(self):
+        return max([c.timestamp() for c in self.listCourses()] + [-1])
+
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView

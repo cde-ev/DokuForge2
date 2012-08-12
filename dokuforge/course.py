@@ -532,6 +532,10 @@ class Course(StorageDir):
     def lastchange(self):
         return common.findlastchange([self.getcommit(p) for p in self.listpages()])
 
+    def timestamp(self):
+        return max([self.getstorage("page%d" % p).timestamp()
+                    for p in self.listpages()] + [-1])
+
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
