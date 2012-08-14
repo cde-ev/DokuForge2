@@ -181,7 +181,7 @@ class PTree:
         """
         raise NotImplementedError
 
-    def toDf(self):
+    def toDF(self):
         """
         return a canonical representation of the text in
         dokuforge markup language.
