@@ -173,20 +173,20 @@ class PTree:
         """
         return a tex-representation of the parsed object.
         """
-        return ''
+        raise NotImplementedError
 
     def toHtml(self):
         """
         return a html-representation of the parsed object.
         """
-        return ''
+        raise NotImplementedError
 
     def toDf(self):
         """
         return a canonical representation of the text in
         dokuforge markup language.
         """
-        return ''
+        raise NotImplementedError
 
 class PSequence(PTree):
     """
