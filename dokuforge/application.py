@@ -950,7 +950,12 @@ class Application:
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
-        rs.response.data = c.export()
+        def export_iterator(course):
+            tarwriter = common.TarWriter()
+            for chunk in course.rawExportIterator(tarwriter):
+                yield chunk
+            yield tarwriter.close()
+        rs.response.response = export_iterator(c)
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=%s_%s.tar" % (aca.name, c.name)
         return rs.response
