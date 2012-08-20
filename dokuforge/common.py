@@ -261,6 +261,29 @@ class TarWriter:
     def __init__(self):
         self.io = StringIO()
         self.tar = tarfile.open(mode="w|", fileobj=self.io)
+        self.dirs = []
+
+    @property
+    def prefix(self):
+        return "".join(map("%s/".__mod__, self.dirs))
+
+    def pushd(self, dirname):
+        """Push a new directory on the directory stack. Further add* calls will
+        place their files into this directory. The operation must be reverted
+        using popd before close is called. The directory name must not contain
+        a slash.
+        @type dirname: str
+        """
+        assert "/" not in dirname
+        self.dirs.append(dirname)
+
+    def popd(self):
+        """Pop the topmost directory off the directory stack.
+        @rtype: str
+        @returns: the basename popped
+        """
+        assert self.dirs
+        return self.dirs.pop()
 
     def read(self):
         data = self.io.getvalue()
@@ -280,7 +303,7 @@ class TarWriter:
         assert isinstance(name, str)
         assert isinstance(content, str)
 
-        info = tarfile.TarInfo(name)
+        info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
         self.tar.addfile(info, StringIO(content))
         return self.read()
@@ -293,7 +316,7 @@ class TarWriter:
         @type filename: str
         @rtype: bytes
         """
-        info = tarfile.TarInfo(name)
+        info = tarfile.TarInfo(self.prefix + name)
         with file(filename) as infile:
             infile.seek(0, 2)
             info.size = infile.tell()
@@ -311,22 +334,26 @@ class TarWriter:
         @type dirname: str
         @param excludes: an object that provides __contains__
         """
-        for entry in os.listdir(dirname):
-            if entry in excludes:
-                continue
-            fullpath = os.path.join(dirname, entry)
-            virtualpath = os.path.join(name, entry)
-            if os.path.isfile(fullpath):
-                yield self.addFileChunk(virtualpath, fullpath)
-            if os.path.isdir(fullpath):
-                for chunk in self.addDirChunk(virtualpath, fullpath,
-                                              excludes=excludes):
-                    yield chunk
+        self.pushd(name)
+        try:
+            for entry in os.listdir(dirname):
+                if entry in excludes:
+                    continue
+                fullpath = os.path.join(dirname, entry)
+                if os.path.isfile(fullpath):
+                    yield self.addFileChunk(entry, fullpath)
+                elif os.path.isdir(fullpath):
+                    for chunk in self.addDirChunk(entry, fullpath,
+                                                  excludes=excludes):
+                        yield chunk
+        finally:
+            self.popd()
 
     def close(self):
         """
         Close the TarWriter and return the remaining content.
         @rtype: str
         """
+        assert not self.dirs
         self.tar.close()
         return self.io.getvalue()
