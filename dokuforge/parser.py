@@ -934,7 +934,7 @@ class Subheading(Heading):
     """
     printname = "SubHeading"
     def __init__(self):
-        Linegroup.__init__(self)
+        Heading.__init__(self)
 
     @classmethod
     def startshere(self, line, after=None):
