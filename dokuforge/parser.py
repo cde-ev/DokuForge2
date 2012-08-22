@@ -501,9 +501,9 @@ class Chargroup:
     a line group, forming a logical unit within that line
     group, like an emphasis, or a math environment.
     """
+    printname = 'abstract chargroup'
     def __init__(self, initial=None):
         self.text = ''
-        self.printname = 'abstract chargroup'
         if initial is not None:
             self.append(initial)
 
@@ -547,17 +547,17 @@ class Simplegroup(Chargroup):
     """
     The default char group, without any special markup.
     """
+    printname = 'simple chargroup'
     def __init__(self, initial=None):
         Chargroup.__init__(self, initial=initial)
-        self.printname = 'simple chargroup'
 
 class Emphgroup(Chargroup):
     """
     The group for _emphasized text_.
     """
+    printname = 'emph group'
     def __init__(self, initial=None):
         Chargroup.__init__(self, initial=initial)
-        self.printname = 'emph group'
 
     @classmethod
     def startshere(self, char, lookahead=None):
@@ -583,11 +583,11 @@ class Mathgroup(Chargroup):
     The group for simple (non dislay) math,
     like $a^2 + b^2$.
     """
+    printname = 'math group'
     def __init__(self, initial=None):
         self.trailingbackslashs = 0
         self.done = False
         self.count = 0
-        self.printname = 'math group'
         Chargroup.__init__(self, initial=initial)
 
     @classmethod
@@ -627,12 +627,12 @@ class DisplayMathGroup(Chargroup):
     The group for display math
     like $$ a^2 + b^2 = c^2$$
     """
+    printname = 'display math group'
     def __init__(self, initial=None):
         self.done = False
         self.trailingbackslashs = 0
         self.trailingdollar = 0
         self.count = 0
-        self.printname = 'display math group'
         Chargroup.__init__(self, initial=initial)
 
     @classmethod
@@ -733,9 +733,9 @@ class Linegroup:
     item-entries cann be grouped to an itemization environment, thus
     yielding a parse tree of the whole dokument.
     """
+    printname = "abstract linegroup"
     def __init__(self):
         self.lines = []
-        self.printname = "abstract linegroup"
 
     @classmethod
     def startshere(self, line, after=None):
@@ -779,10 +779,9 @@ class Paragraph(Linegroup):
     A standard paragraph. This hopefully should be the most common
     line group in a document.
     """
-    
+    printname = "Paragraph"
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Paragraph"
 
     def appendline(self, line):
         if not isemptyline(line):
@@ -855,10 +854,9 @@ class Ednote(Linegroup):
     Notes to the editor; also used to enter text without any changes or
     further parsing. May contain empty lines.
     """
-
+    printname = "Ednote"
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Ednote"
 
     @classmethod
     def startshere(self, line, after=None):
@@ -899,9 +897,9 @@ class Heading(Linegroup):
     """
     Headings, marked [As such] in dokuforge
     """
+    printname = "Heading"
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Heading"
 
     @classmethod
     def startshere(self, line, after=None):
@@ -934,9 +932,9 @@ class Subheading(Heading):
     """
     Subheadings, markes [[as such]] in dokuforge
     """
+    printname = "SubHeading"
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "SubHeading"
 
     @classmethod
     def startshere(self, line, after=None):
@@ -949,9 +947,9 @@ class Author(Linegroup):
     """
     List of authors, marked (Some Author) in dokuforge
     """
+    printname = "Author"
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Author"
     
     @classmethod
     def startshere(self, line, after=None):
@@ -985,9 +983,9 @@ class Item(Linegroup):
     - third
     in Dokuforge.
     """
+    printname = "Item"
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Item"
     
     @classmethod
     def startshere(self, line, after=None):
@@ -1011,9 +1009,9 @@ class EnumerateItem(Linegroup):
     3. and so on
     in Dokuforge
     """
+    printname = "EnumerateItem"
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "EnumerateItem"
     
     @classmethod
     def startshere(self, line, after=None):
@@ -1035,9 +1033,9 @@ class Description(Linegroup):
     """
     *Description* explain a word in a gloassary
     """
+    printname = "Description"
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Description"
     
     @classmethod
     def startshere(self, line, after=None):
