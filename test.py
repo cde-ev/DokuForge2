@@ -22,8 +22,6 @@ import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 
-theapplication = None
-
 class WSGIHandler(BaseHandler):
     environ_base = {
         "wsgi.multithread": False,
@@ -34,6 +32,16 @@ class WSGIHandler(BaseHandler):
         "wsgi.url_scheme": "http",
         "SERVER_PROTOCOL": "HTTP/1.1",
     }
+
+    def __init__(self, application):
+        self.application = application
+
+    @classmethod
+    def creator(cls, application):
+        def create():
+            return cls(application)
+        return create
+
     def http_request(self, request):
         return request
 
@@ -67,7 +75,7 @@ class WSGIHandler(BaseHandler):
                 fp.write("%s: %s\r\n" % item)
             fp.write("\r\n")
             return fp.write
-        iterator = theapplication(environ, start_response)
+        iterator = self.application(environ, start_response)
         for data in iterator:
             fp.write(data)
         if hasattr(iterator, "close"):
@@ -85,9 +93,11 @@ try:
 except AttributeError:
     from ClientForm import Item as mechanize_Item
 
-class WSGIBrowser(mechanize.Browser):
-    handler_classes = mechanize.Browser.handler_classes.copy()
-    handler_classes["http"] = WSGIHandler
+def browser_class(application):
+    class WSGIBrowser(mechanize.Browser):
+        handler_classes = mechanize.Browser.handler_classes.copy()
+        handler_classes["http"] = WSGIHandler.creator(application)
+    return WSGIBrowser
 
 teststrings = [
     (u"simple string", u"simple string"),
@@ -99,14 +109,13 @@ teststrings = [
 class DokuforgeTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
-        global theapplication
         self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
         self.pathconfig = PathConfig()
         self.pathconfig.rootdir = self.tmpdir
         createexample.main(size=1, pc=self.pathconfig)
         app = buildapp(self.pathconfig)
-        theapplication = validator(app)
-        self.br = WSGIBrowser()
+        app = validator(app)
+        self.br = browser_class(app)()
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
