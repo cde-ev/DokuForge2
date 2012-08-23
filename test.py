@@ -616,7 +616,7 @@ class DokuforgeMockTests(unittest.TestCase):
                               for _ in range(l))
                 inp2 = dfLineGroupParser(inp).toDF()
                 inp3 = dfLineGroupParser(inp2).toDF()
-                self.assertEqual(inp2, inp3)
+                self.assertEqual(inp2, inp3, "original input was %r" % inp)
 
 if __name__ == '__main__':
     unittest.main()
