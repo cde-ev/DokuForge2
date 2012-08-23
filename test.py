@@ -618,5 +618,11 @@ class DokuforgeMockTests(unittest.TestCase):
                 inp3 = dfLineGroupParser(inp2).toDF()
                 self.assertEqual(inp2, inp3, "original input was %r" % inp)
 
+    def testParserIdempotency1(self):
+        inp = '_a\n[[[\n\n"'
+        inp2 = dfLineGroupParser(inp).toDF()
+        inp3 = dfLineGroupParser(inp2).toDF()
+        self.assertEqual(inp2, inp3)
+
 if __name__ == '__main__':
     unittest.main()
