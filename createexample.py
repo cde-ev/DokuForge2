@@ -86,9 +86,22 @@ $$\int_1^{\sqrt[3]{3}} z^2 dz \cdot \cos(\\frac{3\pi}{9}) = \ln(\sqrt[3]{e})$$
         aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "academy.py", stream=file("./dokuforge/academy.py",mode="r")), u"Ein lustiges Bild", u"myx", user=u"init")
         aca.getCourse(u'course01').attachblob(1, FileStorage(filename = "storage.py", stream=file("./dokuforge/storage.py", mode="r")), u"Ein anderes lustiges Bild", u"somey", user=u"init")
         aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "course.py", stream=file("./dokuforge/course.py", mode="r")), u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
-        if size > 75:
-            (version, cont) = aca.getCourse(u'course01').editpage(1)
-            aca.getCourse(u'course01').savepage(1, version, u"""
+    if size > 25:
+        aca = createaca(app, u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
+                        [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),
+                         (u'course02',u"Die Hedonistische Internationale", 3),
+                         (u'course03', u"Orgateams und ihre Geschichte", 4)])
+
+    if size > 10:
+        aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
+                        [(u'course01',u"Area51", 2),
+                         (u'course02',u"Fox Mulders Biographie", 3),
+                         (u'course03', u"Selbstverteidigung gegen Poltergeister", 4)])
+    elif size > 0:
+        aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
+                        [(u'course01', u"Area51", 2), (u"course02", u"Markup test", 3)])
+        (version, cont) = aca.getCourse(u'course02').editpage(1)
+        aca.getCourse(u'course02').savepage(1, version, u"""
 [Ueberschrift]
 (Autor)
 
@@ -224,20 +237,6 @@ Normaler Text. Bla Bla bla ...
 
 """,
         u"init")
-    if size > 25:
-        aca = createaca(app, u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
-                        [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),
-                         (u'course02',u"Die Hedonistische Internationale", 3),
-                         (u'course03', u"Orgateams und ihre Geschichte", 4)])
-
-    if size > 10:
-        aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
-                        [(u'course01',u"Area51", 2),
-                         (u'course02',u"Fox Mulders Biographie", 3),
-                         (u'course03', u"Selbstverteidigung gegen Poltergeister", 4)])
-    elif size > 0:
-        aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
-                        [(u'course01',u"Area51", 2)])
 
 if __name__ == '__main__':
     main()
