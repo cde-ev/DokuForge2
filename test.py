@@ -609,8 +609,7 @@ permissions = df_superadmin True,df_admin True
 
 class DokuforgeMockTests(unittest.TestCase):
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
-        chars = "\\aA0-()[]{}*_\"<>&$ \n"
-        for i in range(rounds):
+        for _ in range(rounds):
             for l in range(minlength, maxlength):
                 inp = "".join(random.choice("aA \n*[()]1.$<>&\"{}_\\-")
                               for _ in range(l))
