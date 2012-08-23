@@ -575,8 +575,11 @@ class Emphgroup(Chargroup):
         return char == '_'
 
     def parse(self):
-        return PEmph(self.text[1:-1])
-
+        assert self.text.startswith("_")
+        if self.text.endswith("_"):
+            return PEmph(self.text[1:-1])
+        else:
+            return PEmph(self.text[1:])
 
 class Mathgroup(Chargroup):
     """
