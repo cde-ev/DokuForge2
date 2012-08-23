@@ -607,6 +607,16 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.br.click_link(text="Roh-Export"))
         self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in self.get_data())
 
+    def testRawPageExport(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(text="rcs"))
+        # FIXME: find a better check for a rcs file
+        self.assertTrue(self.get_data().startswith("head"))
+
 class DokuforgeMockTests(unittest.TestCase):
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
         for _ in range(rounds):
