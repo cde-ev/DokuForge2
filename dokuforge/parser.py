@@ -501,7 +501,6 @@ class Chargroup:
     a line group, forming a logical unit within that line
     group, like an emphasis, or a math environment.
     """
-    printname = 'abstract chargroup'
     def __init__(self, initial=None):
         self.text = ''
         if initial is not None:
@@ -514,7 +513,7 @@ class Chargroup:
         self.text = self.text + chars
 
     def debug(self):
-        return (self.printname, self.text)
+        return (self.__class__.__name__, self.text)
 
     def parse(self):
         return PLeaf(self.text)
@@ -547,7 +546,6 @@ class Simplegroup(Chargroup):
     """
     The default char group, without any special markup.
     """
-    printname = 'simple chargroup'
     def __init__(self, initial=None):
         Chargroup.__init__(self, initial=initial)
 
@@ -555,7 +553,6 @@ class Emphgroup(Chargroup):
     """
     The group for _emphasized text_.
     """
-    printname = 'emph group'
     def __init__(self, initial=None):
         Chargroup.__init__(self, initial=initial)
 
@@ -583,7 +580,6 @@ class Mathgroup(Chargroup):
     The group for simple (non dislay) math,
     like $a^2 + b^2$.
     """
-    printname = 'math group'
     def __init__(self, initial=None):
         self.trailingbackslashs = 0
         self.done = False
@@ -627,7 +623,6 @@ class DisplayMathGroup(Chargroup):
     The group for display math
     like $$ a^2 + b^2 = c^2$$
     """
-    printname = 'display math group'
     def __init__(self, initial=None):
         self.done = False
         self.trailingbackslashs = 0
@@ -733,7 +728,6 @@ class Linegroup:
     item-entries cann be grouped to an itemization environment, thus
     yielding a parse tree of the whole dokument.
     """
-    printname = "abstract linegroup"
     def __init__(self):
         self.lines = []
 
@@ -771,7 +765,7 @@ class Linegroup:
         self.lines.append(line)
 
     def debug(self):
-        return (self.printname, self.lines)
+        return (self.__class__.__name__, self.lines)
 
 
 class Paragraph(Linegroup):
@@ -779,7 +773,6 @@ class Paragraph(Linegroup):
     A standard paragraph. This hopefully should be the most common
     line group in a document.
     """
-    printname = "Paragraph"
     def __init__(self):
         Linegroup.__init__(self)
 
@@ -854,7 +847,6 @@ class Ednote(Linegroup):
     Notes to the editor; also used to enter text without any changes or
     further parsing. May contain empty lines.
     """
-    printname = "Ednote"
     def __init__(self):
         Linegroup.__init__(self)
 
@@ -897,7 +889,6 @@ class Heading(Linegroup):
     """
     Headings, marked [As such] in dokuforge
     """
-    printname = "Heading"
     def __init__(self):
         Linegroup.__init__(self)
 
@@ -932,7 +923,6 @@ class Subheading(Heading):
     """
     Subheadings, markes [[as such]] in dokuforge
     """
-    printname = "SubHeading"
     def __init__(self):
         Heading.__init__(self)
 
@@ -947,7 +937,6 @@ class Author(Linegroup):
     """
     List of authors, marked (Some Author) in dokuforge
     """
-    printname = "Author"
     def __init__(self):
         Linegroup.__init__(self)
     
@@ -983,7 +972,6 @@ class Item(Linegroup):
     - third
     in Dokuforge.
     """
-    printname = "Item"
     def __init__(self):
         Linegroup.__init__(self)
     
@@ -1009,7 +997,6 @@ class EnumerateItem(Linegroup):
     3. and so on
     in Dokuforge
     """
-    printname = "EnumerateItem"
     def __init__(self):
         Linegroup.__init__(self)
     
@@ -1033,7 +1020,6 @@ class Description(Linegroup):
     """
     *Description* explain a word in a gloassary
     """
-    printname = "Description"
     def __init__(self):
         Linegroup.__init__(self)
     
