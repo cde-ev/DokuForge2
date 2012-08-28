@@ -63,9 +63,9 @@ class Outline:
         """
         @rtype: unicode
         """
-        return u"%s/%s (%s)" % (self.lastchange['revision'],
-                                self.lastchange['author'],
-                                self.lastchange['date'])
+        return u"%s/%s (%s UTC)" % (self.lastchange['revision'],
+                                    self.lastchange['author'],
+                                    self.lastchange['date'])
 
 class Course(StorageDir):
     """
