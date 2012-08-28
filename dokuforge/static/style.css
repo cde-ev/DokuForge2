@@ -130,6 +130,10 @@ textarea {
     text-align: center;
 }
 
+.versionstring {
+    font-size: 0.9ex;
+    text-align: center;
+}
 .tocpart {
     background-color: #aaaaff;
     padding: 1ex;

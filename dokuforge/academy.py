@@ -121,6 +121,12 @@ class Academy(StorageDir):
         common.validateTitle(title)
         Course(os.path.join(self.path, name)).settitle(title)
 
+    def lastchange(self):
+        return common.findlastchange([c.lastchange() for c in self.listCourses()])
+
+    def timestamp(self):
+        return max([c.timestamp() for c in self.listCourses()] + [-1])
+
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
@@ -128,7 +134,9 @@ class Academy(StorageDir):
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
-                         groups=self.getgroups)
+                         groups=self.getgroups,
+                         lastchange=self.lastchange,
+                         timestamp=self.timestamp)
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
 

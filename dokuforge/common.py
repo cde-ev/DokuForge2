@@ -8,12 +8,13 @@ import os
 import ConfigParser
 from cStringIO import StringIO
 import tarfile
+import datetime
 
 try:
     check_output = subprocess.check_output
 except AttributeError:
-    def check_output(cmdline):
-        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
+    def check_output(cmdline, **kwargs):
+        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE, **kwargs)
         output, _ = proc.communicate()
         if proc.returncode:
             raise subprocess.CalledProcessError()
@@ -330,3 +331,17 @@ class TarWriter:
         """
         self.tar.close()
         return self.io.getvalue()
+
+def findlastchange(changes):
+    """
+    Given a list of rcs revision informations find the newest change.
+
+    @param changes: list of dictionary containing the keys 'author',
+                    'revision' and 'date'
+    @type changes: [{str:object}]
+    @rtype: {str:object}
+    @returns: returns the dictionary with the latest date
+    """
+    return max(changes + [{'author': u'unkown', 'revision' : u'?',
+                           'date' : u'1970/01/01 00:00:00'}],
+               key = lambda x: datetime.datetime.strptime(x['date'], "%Y/%m/%d %H:%M:%S"))
