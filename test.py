@@ -12,6 +12,7 @@ import mechanize
 import re
 import shutil
 import sys
+import random
 import tempfile
 import unittest
 from urllib import addinfourl, unquote
@@ -21,6 +22,7 @@ from wsgiref.validate import validator
 import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
+from dokuforge.parser import dfLineGroupParser
 
 theapplication = None
 
@@ -96,7 +98,7 @@ teststrings = [
     (u"some ' " + u'" quotes', u"some &#39; &#34; quotes")
     ]
 
-class DokuforgeTests(unittest.TestCase):
+class DokuforgeWebTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
         global theapplication
@@ -589,6 +591,47 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         self.assertTrue(u"Kürzel nicht wohlgeformt!".encode("utf8") in self.get_data())
         self.is_loggedin()
+
+    def testAcademyExport(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(text="Exportieren"))
+        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in self.get_data())
+
+    def testRawCourseExport(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course02/$")))
+        self.br.open(self.br.click_link(text="Roh-Export"))
+        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in self.get_data())
+
+    def testRawPageExport(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(text="rcs"))
+        # FIXME: find a better check for a rcs file
+        self.assertTrue(self.get_data().startswith("head"))
+
+class DokuforgeMockTests(unittest.TestCase):
+    def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
+        for _ in range(rounds):
+            for l in range(minlength, maxlength):
+                inp = "".join(random.choice("aA \n*[()]1.$<>&\"{}_\\-")
+                              for _ in range(l))
+                inp2 = dfLineGroupParser(inp).toDF()
+                inp3 = dfLineGroupParser(inp2).toDF()
+                self.assertEqual(inp2, inp3, "original input was %r" % inp)
+
+    def testParserIdempotency1(self):
+        inp = '_a\n[[[\n\n"'
+        inp2 = dfLineGroupParser(inp).toDF()
+        inp3 = dfLineGroupParser(inp2).toDF()
+        self.assertEqual(inp2, inp3)
 
 if __name__ == '__main__':
     unittest.main()

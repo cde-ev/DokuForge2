@@ -21,7 +21,6 @@ check: test
 
 test: test.py
 	python test.py
-	python testparser.py
 
 .coverage:$(wildcard dokuforge/*.py) test.py
 	${PYTHON_COVERAGE} -x test.py
