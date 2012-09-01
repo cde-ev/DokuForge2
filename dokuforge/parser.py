@@ -503,7 +503,6 @@ class Chargroup:
     """
     def __init__(self, initial=None):
         self.text = ''
-        self.printname = 'abstract chargroup'
         if initial is not None:
             self.append(initial)
 
@@ -514,7 +513,7 @@ class Chargroup:
         self.text = self.text + chars
 
     def debug(self):
-        return (self.printname, self.text)
+        return (self.__class__.__name__, self.text)
 
     def parse(self):
         return PLeaf(self.text)
@@ -549,7 +548,6 @@ class Simplegroup(Chargroup):
     """
     def __init__(self, initial=None):
         Chargroup.__init__(self, initial=initial)
-        self.printname = 'simple chargroup'
 
 class Emphgroup(Chargroup):
     """
@@ -557,7 +555,6 @@ class Emphgroup(Chargroup):
     """
     def __init__(self, initial=None):
         Chargroup.__init__(self, initial=initial)
-        self.printname = 'emph group'
 
     @classmethod
     def startshere(self, char, lookahead=None):
@@ -590,7 +587,6 @@ class Mathgroup(Chargroup):
         self.trailingbackslashs = 0
         self.done = False
         self.count = 0
-        self.printname = 'math group'
         Chargroup.__init__(self, initial=initial)
 
     @classmethod
@@ -635,7 +631,6 @@ class DisplayMathGroup(Chargroup):
         self.trailingbackslashs = 0
         self.trailingdollar = 0
         self.count = 0
-        self.printname = 'display math group'
         Chargroup.__init__(self, initial=initial)
 
     @classmethod
@@ -738,7 +733,6 @@ class Linegroup:
     """
     def __init__(self):
         self.lines = []
-        self.printname = "abstract linegroup"
 
     @classmethod
     def startshere(self, line, after=None):
@@ -774,7 +768,7 @@ class Linegroup:
         self.lines.append(line)
 
     def debug(self):
-        return (self.printname, self.lines)
+        return (self.__class__.__name__, self.lines)
 
 
 class Paragraph(Linegroup):
@@ -782,10 +776,8 @@ class Paragraph(Linegroup):
     A standard paragraph. This hopefully should be the most common
     line group in a document.
     """
-    
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Paragraph"
 
     def appendline(self, line):
         if not isemptyline(line):
@@ -858,10 +850,8 @@ class Ednote(Linegroup):
     Notes to the editor; also used to enter text without any changes or
     further parsing. May contain empty lines.
     """
-
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Ednote"
 
     @classmethod
     def startshere(self, line, after=None):
@@ -904,7 +894,6 @@ class Heading(Linegroup):
     """
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Heading"
 
     @classmethod
     def startshere(self, line, after=None):
@@ -938,8 +927,7 @@ class Subheading(Heading):
     Subheadings, markes [[as such]] in dokuforge
     """
     def __init__(self):
-        Linegroup.__init__(self)
-        self.printname = "SubHeading"
+        Heading.__init__(self)
 
     @classmethod
     def startshere(self, line, after=None):
@@ -954,7 +942,6 @@ class Author(Linegroup):
     """
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Author"
     
     @classmethod
     def startshere(self, line, after=None):
@@ -990,7 +977,6 @@ class Item(Linegroup):
     """
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Item"
     
     @classmethod
     def startshere(self, line, after=None):
@@ -1016,7 +1002,6 @@ class EnumerateItem(Linegroup):
     """
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "EnumerateItem"
     
     @classmethod
     def startshere(self, line, after=None):
@@ -1040,7 +1025,6 @@ class Description(Linegroup):
     """
     def __init__(self):
         Linegroup.__init__(self)
-        self.printname = "Description"
     
     @classmethod
     def startshere(self, line, after=None):
