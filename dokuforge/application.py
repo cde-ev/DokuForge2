@@ -992,15 +992,19 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.mayExport(aca):
             return werkzeug.exceptions.Forbidden()
-        def export_iterator(aca, static):
+        prefix = "texexport_%s" % aca.name
+        def export_iterator(aca, static, prefix):
             tarwriter = common.TarWriter()
+            tarwriter.pushd(prefix)
             for chunk in aca.texExportIterator(tarwriter,
                                                static=static):
                 yield chunk
+            tarwriter.popd()
             yield tarwriter.close()
-        rs.response.response = export_iterator(aca, self.staticexportdir)
+        rs.response.response = export_iterator(aca, self.staticexportdir,
+                                               prefix)
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=texexport_%s.tar" % aca.name
+                "attachment; filename=%s.tar" % prefix
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
