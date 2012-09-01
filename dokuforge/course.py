@@ -266,6 +266,8 @@ class Course(StorageDir):
             newlines = []
             for line in lines:
                 entries = line.split()
+                if not entries:
+                    continue
                 newentries = [entries[0]]
                 newentries.extend([x for x in entries[1:] if int(x) != number])
                 newlines.append(" ".join(newentries))
@@ -289,7 +291,8 @@ class Course(StorageDir):
             lines = index.splitlines()
             newlines = []
             for line in lines:
-                if int(line.split()[0]) != number:
+                entries = line.split()
+                if entries and int(entries[0]) != number:
                     newlines.append(line)
             newindex = "\n".join(newlines) + "\n"
             indexstore.store(newindex, havelock = gotlock, user = user)
@@ -368,7 +371,7 @@ class Course(StorageDir):
                 lines = index.splitlines()
                 for i in range(len(lines)):
                     lineparts = lines[i].split()
-                    if int(lineparts[0]) == page:
+                    if lineparts and int(lineparts[0]) == page:
                         if number in [int(x) for x in lineparts[1:]]:
                             pass # want a set-like semantics
                         else:
@@ -462,7 +465,8 @@ class Course(StorageDir):
                 index = indexstore.content()
                 lines = index.splitlines()
                 for i in range(len(lines)):
-                    if int(lines[i].split()[0]) == number:
+                    entries = lines[i].split()
+                    if entries and int(entries[0]) == number:
                         lines[i] += " %d" % newnumber
                         newindex = "\n".join(lines) + "\n"
                         indexstore.store(newindex, havelock = gotlockindex)
@@ -487,7 +491,7 @@ class Course(StorageDir):
         """
         for line in self.getcontent("Index").splitlines():
             entries = line.split()
-            if int(entries[0]) == number:
+            if entries and int(entries[0]) == number:
                 entries.pop(0)
                 return [int(x) for x in entries]
         return []
