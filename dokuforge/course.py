@@ -215,13 +215,15 @@ class Course(StorageDir):
             return ""
         return self.getstorage("page%d" % page).asrcs()
 
-    def export(self):
+    def rawExportIterator(self, tarwriter):
         """
+        @type tarwriter: TarWriter
         @returns: a tar ball containing the full internal information about
                 this course
-        @rtype: str
+        @rtype: iter(str)
         """
-        return check_output(["tar", "cf", "-", self.path])
+        for chunk in tarwriter.addDirChunk(self.name, self.path):
+            yield chunk
 
     def newpage(self, user=None):
         """

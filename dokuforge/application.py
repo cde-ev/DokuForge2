@@ -249,6 +249,8 @@ class Application:
                  methods=("POST",), endpoint="createcourse"),
             rule("/docs/<identifier:academy>/!export", methods=("GET", "HEAD"),
                  endpoint="export"),
+            rule("/docs/<identifier:academy>/!raw", methods=("GET", "HEAD"),
+                 endpoint="rawacademy"),
             rule("/docs/<identifier:academy>/!groups", methods=("GET", "HEAD"),
                  endpoint="academygroups"),
             rule("/docs/<identifier:academy>/!groups", methods=("POST",),
@@ -977,9 +979,37 @@ class Application:
         if not rs.user.allowedRead(aca, c):
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
-        rs.response.data = c.export()
+        def export_iterator(course):
+            tarwriter = common.TarWriter()
+            for chunk in course.rawExportIterator(tarwriter):
+                yield chunk
+            yield tarwriter.close()
+        rs.response.response = export_iterator(c)
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=%s_%s.tar" % (aca.name, c.name)
+        return rs.response
+
+    def do_rawacademy(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
+        assert academy is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        if not rs.user.allowedRead(aca):
+            return werkzeug.exceptions.Forbidden()
+        if not rs.user.mayExport(aca):
+            return werkzeug.exceptions.Forbidden()
+        rs.response.content_type = "application/octet-stream"
+        def export_iterator(academy):
+            tarwriter = common.TarWriter()
+            for chunk in academy.rawExportIterator(tarwriter):
+                yield chunk
+            yield tarwriter.close()
+        rs.response.response = export_iterator(aca)
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=%s.tar" % (aca.name,)
         return rs.response
 
     def do_export(self, rs, academy=None):

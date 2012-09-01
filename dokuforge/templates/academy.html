@@ -25,6 +25,7 @@
 <div class="academyoperations">
 {%- if user.mayExport(academy)%}
 <a href="{{ buildurl("export")|e }}">Exportieren</a>
+<a href="{{ buildurl("rawacademy")|e }}">Roh-Export</a>
 {%- endif %}
 {%- if user.allowedWrite(academy) %}
 <a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a>
