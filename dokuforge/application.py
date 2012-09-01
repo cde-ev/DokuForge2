@@ -18,6 +18,8 @@ import time
 import urllib
 import urlparse
 
+import pytz
+
 import jinja2
 import werkzeug.exceptions
 import werkzeug.routing
@@ -92,7 +94,7 @@ class SessionHandler:
             cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
                              (now, sid))
             self.db.commit()
-        logger.debug("SessionHandler.get: cookie %r matches user %r", sid, 
+        logger.debug("SessionHandler.get: cookie %r matches user %r", sid,
                 username)
         self.db.commit()
         cur.close()
@@ -198,7 +200,7 @@ def timestampToString(timestamp, formatstring='%Y/%m/%d %H:%M:%S'):
     the templates dealing with timestamps and thus will put into the jinja
     environment.
     """
-    return datetime.datetime.fromtimestamp(timestamp).strftime(formatstring)
+    return datetime.datetime.fromtimestamp(timestamp, pytz.utc).strftime(formatstring)
 
 class Application:
     def __init__(self, pathconfig):
