@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (c) 2012, Klaus Aehlig, Helmut Grohne, Markus Oehme
 #
 # This program is free software: you can redistribute it and/or modify
@@ -10,7 +12,6 @@
 # You should have received a copy of the Three-Clause BSD License
 # along with this program in the file COPYING.
 # If not, see <http://opensource.org/licenses/bsd-3-clause>
-#!/usr/bin/env python
 """
 Moderate server listening on scgi://localhost:4000/ with an asynchronous worker.
 """
