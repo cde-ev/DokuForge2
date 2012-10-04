@@ -52,6 +52,19 @@ class CheckError(StandardError):
     def __str__(self):
         return self.message
 
+class UTC(datetime.tzinfo):
+    """UTC implementation taken from the Python documentation"""
+    def utcoffset(self, dt):
+        return datetime.timedelta(0)
+
+    def tzname(self, dt):
+        return "UTC"
+
+    def dst(self, dt):
+        return datetime.timedelta(0)
+utc = UTC()
+epoch = datetime.datetime(1970, 1, 1, tzinfo=utc)
+
 def validateGroupstring(groupstring, allgroups):
     """
     check whether groupstring contains a valid set of groups. This means
@@ -343,5 +356,4 @@ def findlastchange(changes):
     @returns: returns the dictionary with the latest date
     """
     return max(changes + [{'author': u'unkown', 'revision' : u'?',
-                           'date' : u'1970/01/01 00:00:00'}],
-               key = lambda x: datetime.datetime.strptime(x['date'], "%Y/%m/%d %H:%M:%S"))
+                           'date' : epoch}], key=lambda x: x["date"])
