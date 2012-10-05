@@ -17,7 +17,7 @@ class Outline:
         """
         self.number = number
         self.content = []
-        self.lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'?'}
+        self.lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : common.epoch}
     def addheading(self, title):
         """
         @type title: unicode
@@ -51,7 +51,7 @@ class Outline:
         Add information about the last commit. Must contain at
         least revision, date, and author
 
-        @type info: {(str,unicode)}
+        @type info: {str: unicode or datetime}
         """
         assert 'date' in info.keys()
         assert 'author'  in info.keys()
