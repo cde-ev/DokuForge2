@@ -93,3 +93,7 @@ print "========================================"
 
 print parsed.toTex().encode("utf8")
 
+print "========================================"
+
+print parsed.toEstimate()
+

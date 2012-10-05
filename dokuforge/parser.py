@@ -1,3 +1,5 @@
+import collections
+import math
 import re
 
 ## How To Read This File?
@@ -21,6 +23,61 @@ import re
 ##    export, look at the abstract class MicrotypeFeature, the function
 ##    defaultMicrotype and the decendents of MicrotypeFeature.
 
+class Estimate(collections.namedtuple("Estimate",
+            "chars ednotechars weightedchars blobs")):
+    """
+    @type chars: int
+    @type ednotechars: int
+    @type weightedchars: float
+    @type blobs: int
+    """
+    charsperpage = 3000
+    charsperline = 80
+
+    @classmethod
+    def fromText(cls, s):
+        n = len(s)
+        return cls(n, 0, n, 0)
+
+    @classmethod
+    def fromParagraph(cls, s):
+        return cls.fromText(s).fullline()
+
+    @classmethod
+    def fromTitle(cls, s):
+        n = len(s)
+        wc = math.ceil(float(n) / cls.charsperline) * cls.charsperline * 2
+        return cls(n, 0, wc, 0)
+
+    @classmethod
+    def fromEdnote(cls, s):
+        return cls(0, len(s), 0, 0)
+
+    @classmethod
+    def fromNothing(cls):
+        return cls(0, 0, 0, 0)
+
+    @classmethod
+    def emptyLines(cls, linecount=1):
+        return cls(0, 0, cls.charsperline * linecount, 0)
+
+    @property
+    def pages(self):
+        return float(self.weightedchars) / self.charsperpage
+
+    def fullline(self):
+        weightedchars = math.ceil(self.weightedchars / self.charsperline) \
+                * self.charsperline
+        return Estimate(self.chars, self.ednotechars, weightedchars, self.blobs)
+
+    def __add__(self, other):
+        return Estimate(*[a + b for a, b in zip(self, other)])
+
+    def __mul__(self, num):
+        return Estimate(*map(num.__mul__, self))
+
+    __rmul__ = __mul__
+
 class MicrotypeFeature:
     """
     Abstract class where all word-level microtypographic
@@ -42,7 +99,7 @@ class Acronym(MicrotypeFeature):
     """
     All-capital words should be displayed in smaller font.
     """
-    
+
     @classmethod
     def applies(self, word):
         return len(word) > 0 and word.isupper()
@@ -55,7 +112,7 @@ class StandardAbbreviations(MicrotypeFeature):
     """
     Do spacing for standard abbreviations.
     """
-    abb = { 
+    abb = {
         '...' : '\\dots',
         'd.h.' : 'd.\\,h.',
         'z.B.' : 'z.\\,B.'}
@@ -188,6 +245,12 @@ class PTree:
         """
         raise NotImplementedError
 
+    def toEstimate(self):
+        """
+        @rtype: Estimate
+        """
+        raise NotImplementedError
+
 class PSequence(PTree):
     """
     A piece of text formed by juxtaposition of several
@@ -217,6 +280,11 @@ class PSequence(PTree):
             result = result + part.toDF()
         return result
 
+    def toEstimate(self):
+        return reduce(lambda a, b: a + b,
+                      (part.toEstimate() for part in self.parts),
+                      Estimate.fromNothing())
+
 class PLeaf(PTree):
     """
     A piece of text that contains no further substructure.
@@ -245,6 +313,9 @@ class PLeaf(PTree):
     def toDF(self):
         return self.text
 
+    def toEstimate(self):
+        return Estimate.fromText(self.text)
+
 class PEmph(PTree):
     """
     An emphasized piece of text.
@@ -263,6 +334,9 @@ class PEmph(PTree):
 
     def toDF(self):
         return '_' + self.text + '_'
+
+    def toEstimate(self):
+        return Estimate.fromText(self.text)
 
 class PMath(PTree):
     """
@@ -283,6 +357,9 @@ class PMath(PTree):
     def toDF(self):
         return '$%1s$' % self.text
 
+    def toEstimate(self):
+        return Estimate.fromText(self.text)
+
 class PDisplayMath(PTree):
     """
     An display math area.
@@ -301,6 +378,10 @@ class PDisplayMath(PTree):
 
     def toDF(self):
         return '$$%1s$$' % self.text
+
+    def toEstimate(self):
+        return Estimate.fromText(self.text).fullline() + \
+                Estimate.emptyLines(2)
 
 class PEdnote(PTree):
     """
@@ -336,6 +417,9 @@ class PEdnote(PTree):
             closebracket = closebracket + '}'
         return '\n' + openbracket + '\n' + self.text + '\n' + closebracket + '\n'
 
+    def toEstimate(self):
+        return Estimate.fromEdnote(self.text)
+
 class PParagraph(PTree):
     def __init__(self, subtree):
         self.it = subtree
@@ -355,6 +439,8 @@ class PParagraph(PTree):
     def toDF(self):
         return '\n\n' + self.it.toDF() + '\n'
 
+    def toEstimate(self):
+        return self.it.toEstimate().fullline()
 
 class PHeading(PTree):
     def __init__(self, title, level):
@@ -390,6 +476,8 @@ class PHeading(PTree):
     def getTitle(self):
         return self.title
 
+    def toEstimate(self):
+        return Estimate.fromTitle(self.title)
 
 class PAuthor(PTree):
     def __init__(self, author):
@@ -410,6 +498,9 @@ class PAuthor(PTree):
     def toDF(self):
         return '\n(' + self.author + ')'
 
+    def toEstimate(self):
+        return Estimate.fromParagraph(self.author)
+
 class PDescription(PTree):
     def __init__(self, key, value):
         self.key = key
@@ -426,6 +517,9 @@ class PDescription(PTree):
 
     def toDF(self):
         return '\n\n*%1s* %s' % (self.key.toDF(), self.value.toDF())
+
+    def toEstimate(self):
+        return self.key.toEstimate() + self.value.toEstimate()
 
 class PItemize(PTree):
     def __init__(self, items):
@@ -466,6 +560,12 @@ class PItemize(PTree):
             result = result + item.toDF()
         return result
 
+    def toEstimate(self):
+        return reduce(lambda a, b: a + b + Estimate.emptyLines(0.5),
+                      [item.toEstimate() for item in self.items],
+                      Estimate.fromNothing()) + \
+                Estimate.emptyLines(2)
+
 class PItem(PTree):
     def __init__(self, subtree, number=None):
         self.it = subtree
@@ -482,7 +582,7 @@ class PItem(PTree):
             return '\n\\item ' + self.it.toTex()
         else:
             return '\n% ' + self.number + '\n\\item ' + self.it.toTex()
-        
+
 
     def toHtml(self):
         return '\n<li> ' + self.it.toHtml()
@@ -492,6 +592,9 @@ class PItem(PTree):
             return '\n-' + self.it.toDF()
         else:
             return '\n' + self.number + '. ' + self.it.toDF()
+
+    def toEstimate(self):
+        return self.it.toEstimate()
 
 class Chargroup:
     """
@@ -656,7 +759,7 @@ class DisplayMathGroup(Chargroup):
             else:
                 self.trailingdollar = 0
                 self.trailingbackslashs = 0
-                
+
     def enforcecontinuation(self, char):
         return not self.done
 
@@ -706,7 +809,7 @@ def groupchars(text, supportedgroups):
                     current = Simplegroup(c)
     groups.append(current)
     return groups
-    
+
 
 def defaultInnerParse(lines):
     features = [Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup]
@@ -835,7 +938,7 @@ def isMirrorBracket(firstline, lastline):
 
     if len(left) != len(right):
         return False
-    
+
     for i in range(len(left)):
         c = left[i]
         if c in closing:
@@ -942,7 +1045,7 @@ class Author(Linegroup):
     """
     def __init__(self):
         Linegroup.__init__(self)
-    
+
     @classmethod
     def startshere(self, line, after=None):
         return line.startswith('(') and isinstance(after, Heading)
@@ -977,7 +1080,7 @@ class Item(Linegroup):
     """
     def __init__(self):
         Linegroup.__init__(self)
-    
+
     @classmethod
     def startshere(self, line, after=None):
         return line.startswith('- ')
@@ -1002,7 +1105,7 @@ class EnumerateItem(Linegroup):
     """
     def __init__(self):
         Linegroup.__init__(self)
-    
+
     @classmethod
     def startshere(self, line, after=None):
         return re.match('^[0-9]+\.[ \t]', line)
@@ -1025,7 +1128,7 @@ class Description(Linegroup):
     """
     def __init__(self):
         Linegroup.__init__(self)
-    
+
     @classmethod
     def startshere(self, line, after=None):
         return line.startswith('*')
