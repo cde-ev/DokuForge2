@@ -1231,8 +1231,3 @@ def dfLineGroupParser(text):
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
     return PSequence(ptrees)
-
-def dfOverview(text):
-    groups = grouplines(text.splitlines(), dffeatures)
-    headings = [g for g in groups if isinstance(g, Heading)]
-    return [g.parse() for g in headings]
