@@ -1545,14 +1545,18 @@ class Application:
         @type saved: bool
         """
         parsed = dfLineGroupParser(thecourse.showpage(thepage))
+        theblobs = [thecourse.viewblob(i) for i in thecourse.listblobs(thepage)]
+        theestimate = parsed.toEstimate();
+        theestimate = theestimate._replace(blobs=len(theblobs))
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
             page=thepage,
             commit = thecourse.getcommit(thepage),
             content=parsed.toHtml(),
+            estimate=theestimate,
             saved=saved,
-            blobs=[thecourse.viewblob(i) for i in thecourse.listblobs(thepage)])
+            blobs=theblobs)
         return self.render("show.html", rs, params)
 
     def render_file(self, rs, templatename, theversion, thecontent, ok=None,
