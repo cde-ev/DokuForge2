@@ -33,6 +33,7 @@ class Estimate(collections.namedtuple("Estimate",
     """
     charsperpage = 3000
     charsperline = 80
+    blobsperpage = 3
 
     @classmethod
     def fromText(cls, s):
@@ -64,6 +65,14 @@ class Estimate(collections.namedtuple("Estimate",
     @property
     def pages(self):
         return float(self.weightedchars) / self.charsperpage
+
+    @property
+    def ednotepages(self):
+        return float(self.ednotechars) / self.charsperpage
+
+    @property
+    def blobpages(self):
+        return float(self.blobs) / self.blobsperpage
 
     def fullline(self):
         weightedchars = math.ceil(self.weightedchars / self.charsperline) \
