@@ -28,7 +28,7 @@ from wsgitools.digest import LazyDBAPI2Opener
 from dokuforge.academy import Academy
 import dokuforge.common as common
 from dokuforge.common import CheckError
-from dokuforge.parser import dfLineGroupParser
+from dokuforge.parser import dfLineGroupParser, Estimate
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
@@ -1422,9 +1422,14 @@ class Application:
         @type theacademy: Academy
         @type thecourse: Course
         """
+        courseview = thecourse.view()
+        theestimate = Estimate.fromNothing()
+        for x in courseview['outlines']:
+            theestimate += x.estimate
         params = dict(
             academy=theacademy.view(),
-            course=thecourse.view())
+            course=courseview,
+            estimate=theestimate)
         return self.render("course.html", rs, params)
 
     def render_addblob(self, rs, theacademy, thecourse, thepage, ok=None,

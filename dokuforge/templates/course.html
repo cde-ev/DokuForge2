@@ -7,6 +7,9 @@
            ("course", {}, course.title)]) }}
 {% endblock %}
 {% block content %}
+Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
+{{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
+{{estimate.ednotepages | round(2) | e}} Seiten Ednotes
 {%- if course.pages %}
 <div class="toc">
         {%- set i = 0 -%}
@@ -42,7 +45,9 @@
 		</td>
 	      </tr>
 	   </table>
-           <div class="versionstring">{{ page.versionstring|e }}</div>
+           <div class="versionstring">{{ page.versionstring|e }} ({{page.estimate.pages | round(2) | e}} Seiten,
+{{page.estimate.blobs | e}} Abbildungen [{{page.estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
+{{page.estimate.ednotepages | round(2) | e}} Seiten Ednotes)</div>
 	</div>
 	
 	{%- endfor %}
