@@ -648,5 +648,11 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('... und "am Ende".',
                              '\\dots{} und "`am Ende"\'.')
 
+    def testAbbrev(self):
+        self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                             'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
+        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter...',
+                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter\\dots{}')
+
 if __name__ == '__main__':
     unittest.main()
