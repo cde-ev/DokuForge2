@@ -137,6 +137,21 @@ class FullStop(MicrotypeFeature):
     def doit(self, word):
         return [word[:-1], '.']
 
+class Percent(MicrotypeFeature):
+    percent = re.compile('%')
+    escaped = re.compile('(\\\\%)')
+    
+    @classmethod
+    def applies(self, word):
+        if self.percent.search(word) is not None:
+            return True
+        return  False
+
+    @classmethod
+    def doit(self, word):
+        substitued = self.percent.sub('\\%', word)
+        return self.escaped.split(substitued)
+
 class EscapeCommands(MicrotypeFeature):
     """
     Mark all controll sequence tokens as forbidden, except
@@ -249,7 +264,7 @@ def doMicrotype(text, features, separators):
     return result
 
 def defaultMicrotype(text):
-    features = [SplitEllipsis, StandardAbbreviations, FullStop,
+    features = [SplitEllipsis, Percent, StandardAbbreviations, FullStop,
                 OpenQuotationMark, CloseQuotationMark, Acronym,
                 NaturalNumbers, EscapeCommands]
     separators = ' ,;()-' # no point, might be in abbreviations
