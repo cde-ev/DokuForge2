@@ -270,6 +270,11 @@ def defaultMicrotype(text):
     separators = ' ,;()-' # no point, might be in abbreviations
     return doMicrotype(text, features, separators)
 
+def mathMicrotype(text):
+    features = [EscapeCommands]
+    separators = ''
+    return doMicrotype(text, features, separators)
+
 def isemptyline(line):
     return re.match('^[ \t]*$', line)
 
@@ -389,7 +394,7 @@ class PMath(PTree):
         return ('math', self.text)
 
     def toTex(self):
-        return '$%1s$' % self.text
+        return '$%1s$' % mathMicrotype(self.text)
 
     def toHtml(self):
         return '$%1s$' % self.text
@@ -408,7 +413,7 @@ class PDisplayMath(PTree):
         return ('displaymath', self.text)
 
     def toTex(self):
-        return '$$%1s$$' % self.text
+        return '$$%1s$$' % mathMicrotype(self.text)
 
     def toHtml(self):
         return "<div class=\"displaymath\">$$%1s$$</div>" % self.text
