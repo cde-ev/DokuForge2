@@ -137,6 +137,82 @@ class FullStop(MicrotypeFeature):
     def doit(self, word):
         return [word[:-1], '.']
 
+class EscapeCommands(MicrotypeFeature):
+    """
+    Mark all controll sequence tokens as forbidden, except
+    a list of known good commands.
+    """
+    allowed = [
+        # produced by our own microtypography or otherwise essential
+        '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"',
+        # other allowed commands; FIXME: complete and put to a separate file
+        '\\mathbb'
+        ]
+
+    @classmethod
+    def isOK(self, word):
+        return word in self.allowed
+
+    @classmethod
+    def forbid(self, word):
+        return '\\forbidden' + word + '{}'
+
+    @classmethod
+    def isEscapeChar(self, c):
+        return c == '\\'
+
+    @classmethod
+    def isLetter(self, c):
+        return ('a' <= c and c <= 'z') or ('A' <= c and c <= 'Z')
+
+    @classmethod
+    def scanControlSequence(self, sofar, unlexed):
+        if len(sofar) == 1:
+            if len(unlexed) == 0:
+                # Oh, a backslash at end of input;
+                # maybe we broke into words incorrectly,
+                # so just return something safe.
+                return ['\\ ']
+            if self.isLetter(unlexed[0]):
+                return self.scanControlSequence(sofar + unlexed[0], unlexed[1:])
+            else:
+                word = sofar + unlexed[0]
+                if self.isOK(word):
+                    return [word] + self.doit(unlexed[1:])
+                else:
+                    return [self.forbid(word)] + self.doit(unlexed[1:])
+        else:
+            if len(unlexed) == 0:
+                if self.isOK(sofar):
+                    return [sofar]
+                else:
+                    return [self.forbid(sofar)]
+            if self.isLetter(unlexed[0]):
+                return self.scanControlSequence(sofar + unlexed[0], unlexed[1:])
+            else:
+                if self.isOK(sofar):
+                    return [sofar] + self.doit(unlexed)
+                else:
+                    return [self.forbid(sofar)] + self.doit(unlexed)
+
+    @classmethod
+    def escape(self, sofar, unlexed):
+        if len(unlexed) == 0:
+            return [sofar]
+        if self.isEscapeChar(unlexed[0]):
+            return [sofar] + self.scanControlSequence(unlexed[0], unlexed[1:])
+        return self.escape(sofar + unlexed[0], unlexed[1:])
+            
+
+    @classmethod
+    def applies(self, work):
+        # overapproximate
+        return True
+
+    @classmethod
+    def doit(self, word):
+        return self.escape('', word)
+
 def applyMicrotypefeatures(wordlist, featurelist):
     """
     sequentially apply (in the sense wordlist >>= feature)
@@ -173,7 +249,9 @@ def doMicrotype(text, features, separators):
     return result
 
 def defaultMicrotype(text):
-    features = [SplitEllipsis, StandardAbbreviations, FullStop, OpenQuotationMark, CloseQuotationMark, Acronym, NaturalNumbers]
+    features = [SplitEllipsis, StandardAbbreviations, FullStop,
+                OpenQuotationMark, CloseQuotationMark, Acronym,
+                NaturalNumbers, EscapeCommands]
     separators = ' ,;()-' # no point, might be in abbreviations
     return doMicrotype(text, features, separators)
 
