@@ -58,6 +58,11 @@ class StandardAbbreviations(MicrotypeFeature):
     abb = { 
         '...' : '\\dots{}',
         'd.h.' : 'd.\\,h.',
+        'n.Chr.' : 'n.\\,Chr.',
+        's.o.' : 's.\\,o.',
+        's.u.' : 's.\\,u.',
+        'u.a.' : 'u.\\,a.',
+        'v.Chr.' : 'v.\\,Chr.',
         'z.B.' : 'z.\\,B.'}
 
     @classmethod
