@@ -641,7 +641,7 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
     def testQuotes(self):
         self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                              'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
-        self.verifyExportsTo('"An Anfang" ...',
+        self.verifyExportsTo('"Am Anfang" ...',
                              '"`Am Anfang"\' \\dots{}')
         self.verifyExportsTo('... "vor Kommata", ...',
                              '\\dots{} "`vor Kommata"\', \\dots{}')
