@@ -633,5 +633,20 @@ class DokuforgeMockTests(unittest.TestCase):
         inp3 = dfLineGroupParser(inp2).toDF()
         self.assertEqual(inp2, inp3)
 
+class DokuforgeMicrotypeUnitTests(unittest.TestCase):
+    def verifyExportsTo(self, df, tex):
+        obtained = dfLineGroupParser(df).toTex().strip()
+        self.assertEquals(obtained, tex)
+
+    def testQuotes(self):
+        self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
+                             'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
+        self.verifyExportsTo('"An Anfang" ...',
+                             '"`Am Anfang"\' \\dots{}')
+        self.verifyExportsTo('... "vor Kommata", ...',
+                             '\\dots{} "`vor Kommata"\', \\dots{}')
+        self.verifyExportsTo('... und "am Ende".',
+                             '\\dots{} und "`am Ende"\'.')
+
 if __name__ == '__main__':
     unittest.main()
