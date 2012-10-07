@@ -152,7 +152,7 @@ def doMicrotype(text, features, separators):
     return result
 
 def defaultMicrotype(text):
-    features = [StandardAbbreviations, OpenQuotationMark, CloseQuotationMark, FullStop, Acronym, NaturalNumbers]
+    features = [StandardAbbreviations, FullStop, OpenQuotationMark, CloseQuotationMark, Acronym, NaturalNumbers]
     separators = ' ,;()-' # no point, might be in abbreviations
     return doMicrotype(text, features, separators)
 
