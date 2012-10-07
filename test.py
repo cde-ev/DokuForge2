@@ -663,6 +663,8 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
                              '\\\\\\forbidden\\bad{}')
         self.verifyExportsTo('10% sind ein Zehntel',
                              '10\\% sind ein Zehntel')
+        self.verifyExportsTo('Escaping should also happen in math, like $\\evilmath$, but not $\\mathbb C$',
+                             'Escaping should also happen in math, like $\\forbidden\\evilmath{}$, but not $\\mathbb C$')
 
 if __name__ == '__main__':
     unittest.main()
