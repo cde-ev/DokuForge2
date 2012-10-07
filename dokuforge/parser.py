@@ -159,7 +159,7 @@ class EscapeCommands(MicrotypeFeature):
     """
     allowed = [
         # produced by our own microtypography or otherwise essential
-        '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"',
+        '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym',
         # other allowed commands; FIXME: complete and put to a separate file
         '\\mathbb'
         ]

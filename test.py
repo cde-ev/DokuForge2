@@ -654,6 +654,10 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter...',
                              'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter\\dots{}')
 
+    def testAcronym(self):
+        self.verifyExportsTo('Bitte ACRONYME anders setzen.',
+                             'Bitte \\acronym{ACRONYME} anders setzen.')
+
     def testEscaping(self):
         self.verifyExportsTo('Do not allow \\dangerous commands!',
                              'Do not allow \\forbidden\\dangerous{} commands!')
