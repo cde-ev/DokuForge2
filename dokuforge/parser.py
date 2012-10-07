@@ -56,7 +56,7 @@ class StandardAbbreviations(MicrotypeFeature):
     Do spacing for standard abbreviations.
     """
     abb = { 
-        '...' : '\\dots',
+        '...' : '\\dots{}',
         'd.h.' : 'd.\\,h.',
         'z.B.' : 'z.\\,B.'}
 
