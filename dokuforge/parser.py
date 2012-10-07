@@ -73,6 +73,22 @@ class StandardAbbreviations(MicrotypeFeature):
     def doit(self, word):
         return [self.abb[word]]
 
+class SplitEllipsis(MicrotypeFeature):
+    """
+    Replace the ellipsis symbol ... by \dots
+    """
+    dots = re.compile('(\\.\\.\\.)')
+
+    @classmethod
+    def applies(self, word):
+        if self.dots.search(word) is not None:
+            return True
+        return  False
+
+    @classmethod
+    def doit(self, word):
+        return self.dots.split(word)
+
 class NaturalNumbers(MicrotypeFeature):
     """
     Special Spacing for numbers.
@@ -157,7 +173,7 @@ def doMicrotype(text, features, separators):
     return result
 
 def defaultMicrotype(text):
-    features = [StandardAbbreviations, FullStop, OpenQuotationMark, CloseQuotationMark, Acronym, NaturalNumbers]
+    features = [SplitEllipsis, StandardAbbreviations, FullStop, OpenQuotationMark, CloseQuotationMark, Acronym, NaturalNumbers]
     separators = ' ,;()-' # no point, might be in abbreviations
     return doMicrotype(text, features, separators)
 
