@@ -670,5 +670,30 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('Escaping should also happen in math, like $\\evilmath$, but not $\\mathbb C$',
                              'Escaping should also happen in math, like $\\forbidden\\evilmath{}$, but not $\\mathbb C$')
 
+    def testEdnoteEscape(self):
+        self.verifyExportsTo(
+"""
+
+{{
+
+Bobby Tables...
+
+\\end{ednote}
+
+\\herebedragons
+
+}}
+
+""",
+"""\\begin{ednote}
+
+Bobby Tables...
+
+|end{ednote}
+
+\\herebedragons
+
+\\end{ednote}""")
+
 if __name__ == '__main__':
     unittest.main()

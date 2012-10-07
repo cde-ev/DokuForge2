@@ -228,6 +228,24 @@ class EscapeCommands(MicrotypeFeature):
     def doit(self, word):
         return self.escape('', word)
 
+class EscapeEndEdnote(MicrotypeFeature):
+    """
+    Escpage the string \\end{ednote}, so that ednotes end
+    where we expect them to end.
+    """
+    endednote = re.compile('\\\\end{ednote}')
+    
+    @classmethod
+    def applies(self, word):
+        if self.endednote.search(word) is not None:
+            return True
+        return  False
+
+    @classmethod
+    def doit(self, word):
+        return self.endednote.sub('|end{ednote}', word)
+    
+
 def applyMicrotypefeatures(wordlist, featurelist):
     """
     sequentially apply (in the sense wordlist >>= feature)
@@ -272,6 +290,11 @@ def defaultMicrotype(text):
 
 def mathMicrotype(text):
     features = [EscapeCommands]
+    separators = ''
+    return doMicrotype(text, features, separators)
+
+def ednoteMicrotype(text):
+    features = [EscapeEndEdnote]
     separators = ''
     return doMicrotype(text, features, separators)
 
@@ -437,7 +460,7 @@ class PEdnote(PTree):
         return ('Ednote', self.text)
 
     def toTex(self):
-        return '\n\\begin{ednote}\n' + self.text + '\n\\end{ednote}\n'
+        return '\n\\begin{ednote}\n' + ednoteMicrotype(self.text) + '\n\\end{ednote}\n'
 
     def toHtml(self):
         result = self.text
