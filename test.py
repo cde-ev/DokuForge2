@@ -654,5 +654,15 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter...',
                              'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter\\dots{}')
 
+    def testEscaping(self):
+        self.verifyExportsTo('Do not allow \\dangerous commands!',
+                             'Do not allow \\forbidden\\dangerous{} commands!')
+        self.verifyExportsTo('\\\\ok',
+                             '\\\\ok')
+        self.verifyExportsTo('\\\\\\bad',
+                             '\\\\\\forbidden\\bad{}')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '10\\% sind ein Zehntel')
+
 if __name__ == '__main__':
     unittest.main()
