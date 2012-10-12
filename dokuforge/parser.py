@@ -285,7 +285,7 @@ def defaultMicrotype(text):
     features = [SplitEllipsis, Percent, StandardAbbreviations, FullStop,
                 OpenQuotationMark, CloseQuotationMark, Acronym,
                 NaturalNumbers, EscapeCommands]
-    separators = ' ,;()-' # no point, might be in abbreviations
+    separators = ' \t,;()-' # no point, might be in abbreviations
     return doMicrotype(text, features, separators)
 
 def mathMicrotype(text):
