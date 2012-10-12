@@ -272,7 +272,7 @@ class EscapeCommands(MicrotypeFeature):
     '\\left', '\\right', '\\lfloor', '\\rfloor', '\\lceil', '\\rceil',
     '\\langle', '\\rangle',
     ## misc
-    '\\stackrel', '\\binom'
+    '\\stackrel', '\\binom', '\\mathbb'
     # FIXME think about including environments, these can come up in complex
     # mathematical formulas, but they could also be abused (more in the "we
     # don't want users to make typesetting decisions" style of misuse, than
