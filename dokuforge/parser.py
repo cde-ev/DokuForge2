@@ -140,7 +140,7 @@ class FullStop(MicrotypeFeature):
 class Percent(MicrotypeFeature):
     percent = re.compile('%')
     escaped = re.compile('(\\\\%)')
-    
+
     @classmethod
     def applies(self, word):
         if self.percent.search(word) is not None:
@@ -155,7 +155,7 @@ class Percent(MicrotypeFeature):
 class Ampersand(MicrotypeFeature):
     ampersand = re.compile('&')
     escaped = re.compile('(\\\\&)')
-    
+
     @classmethod
     def applies(self, word):
         if self.ampersand.search(word) is not None:
@@ -167,6 +167,36 @@ class Ampersand(MicrotypeFeature):
         substitued = self.ampersand.sub('\\&', word)
         return self.escaped.split(substitued)
 
+class Hashmark(MicrotypeFeature):
+    hashmark = re.compile('#')
+    escaped = re.compile('(\\\\#)')
+
+    @classmethod
+    def applies(self, word):
+        if self.hashmark.search(word) is not None:
+            return True
+        return  False
+
+    @classmethod
+    def doit(self, word):
+        substitued = self.hashmark.sub('\\#', word)
+        return self.escaped.split(substitued)
+
+class Caret(MicrotypeFeature):
+    caret = re.compile('\\^')
+    escaped = re.compile('(\\\\caret{})')
+
+    @classmethod
+    def applies(self, word):
+        if self.caret.search(word) is not None:
+            return True
+        return  False
+
+    @classmethod
+    def doit(self, word):
+        substitued = self.caret.sub('\\caret{}', word)
+        return self.escaped.split(substitued)
+
 class EscapeCommands(MicrotypeFeature):
     """
     Mark all controll sequence tokens as forbidden, except
@@ -175,6 +205,7 @@ class EscapeCommands(MicrotypeFeature):
     allowed = [
         # produced by our own microtypography or otherwise essential
         '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym', '\\&',
+        '\\#', '\\caret',
         # other allowed commands; FIXME: complete and put to a separate file
         '\\mathbb'
         ]
@@ -297,7 +328,7 @@ def doMicrotype(text, features, separators):
     return result
 
 def defaultMicrotype(text):
-    features = [SplitEllipsis, Percent, Ampersand, StandardAbbreviations, FullStop,
+    features = [SplitEllipsis, Percent, Ampersand, Caret, Hashmark, StandardAbbreviations, FullStop,
                 OpenQuotationMark, CloseQuotationMark, Acronym,
                 NaturalNumbers, EscapeCommands]
     separators = ' \t,;()-' # no point, might be in abbreviations
