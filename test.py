@@ -660,15 +660,21 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
 
     def testEscaping(self):
         self.verifyExportsTo('Do not allow \\dangerous commands!',
-                             'Do not allow \\forbidden\\dangerous{} commands!')
+                             'Do not allow \\forbidden\\dangerous commands!')
         self.verifyExportsTo('\\\\ok',
                              '\\\\ok')
         self.verifyExportsTo('\\\\\\bad',
-                             '\\\\\\forbidden\\bad{}')
+                             '\\\\\\forbidden\\bad')
         self.verifyExportsTo('10% sind ein Zehntel',
                              '10\\% sind ein Zehntel')
+        self.verifyExportsTo('f# ist eine Note',
+                             'f\# ist eine Note')
+        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
+                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
+                             'Heinemann\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('Escaping should also happen in math, like $\\evilmath$, but not $\\mathbb C$',
-                             'Escaping should also happen in math, like $\\forbidden\\evilmath{}$, but not $\\mathbb C$')
+                             'Escaping should also happen in math, like $\\forbidden\\evilmath$, but not $\\mathbb C$')
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
