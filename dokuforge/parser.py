@@ -152,6 +152,21 @@ class Percent(MicrotypeFeature):
         substitued = self.percent.sub('\\%', word)
         return self.escaped.split(substitued)
 
+class Ampersand(MicrotypeFeature):
+    ampersand = re.compile('&')
+    escaped = re.compile('(\\\\&)')
+    
+    @classmethod
+    def applies(self, word):
+        if self.ampersand.search(word) is not None:
+            return True
+        return  False
+
+    @classmethod
+    def doit(self, word):
+        substitued = self.ampersand.sub('\\&', word)
+        return self.escaped.split(substitued)
+
 class EscapeCommands(MicrotypeFeature):
     """
     Mark all controll sequence tokens as forbidden, except
@@ -159,7 +174,7 @@ class EscapeCommands(MicrotypeFeature):
     """
     allowed = [
         # produced by our own microtypography or otherwise essential
-        '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym',
+        '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym', '\\&',
         # other allowed commands; FIXME: complete and put to a separate file
         '\\mathbb'
         ]
@@ -282,7 +297,7 @@ def doMicrotype(text, features, separators):
     return result
 
 def defaultMicrotype(text):
-    features = [SplitEllipsis, Percent, StandardAbbreviations, FullStop,
+    features = [SplitEllipsis, Percent, Ampersand, StandardAbbreviations, FullStop,
                 OpenQuotationMark, CloseQuotationMark, Acronym,
                 NaturalNumbers, EscapeCommands]
     separators = ' \t,;()-' # no point, might be in abbreviations
