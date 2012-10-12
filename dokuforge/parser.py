@@ -216,7 +216,7 @@ class EscapeCommands(MicrotypeFeature):
 
     @classmethod
     def forbid(self, word):
-        return '\\forbidden' + word + '{}'
+        return '\\forbidden' + word
 
     @classmethod
     def isEscapeChar(self, c):
