@@ -52,14 +52,14 @@
 {%- endif -%}
 <div class="courseoperations">
 {%- if user.mayExport(academy) %}
-<a href="{{ buildurl("raw")|e }}">Roh-Export</a>
+<a href="{{ buildurl("raw")|e }}" class="yui3-button darkshade">Roh-Export</a>
 {%- endif -%}
 {%- if user.allowedWrite(academy) and user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("coursetitle")|e }}">Titel bearbeiten</a>
+<a href="{{ buildurl("coursetitle")|e }}" class="yui3-button darkshade">Titel bearbeiten</a>
 </a>
 {%- endif -%}
 {%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>
+<a href="{{ buildurl("showdeadpages")|e }}" class="yui3-button darkshade">gel&ouml;schte Teile wiederherstellen</a>
 {{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
 {%- endif -%}
 </div>

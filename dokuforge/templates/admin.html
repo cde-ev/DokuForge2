@@ -15,7 +15,7 @@ Nutzeradministration
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
-	<input type="submit" name="saveedit" value="Speichern und Editieren">
+	<input type="submit" name="saveedit" value="Speichern und Editieren" class="yui3-button darkshade">
 </form>
-<a href="{{ buildurl("admin")|e }}">Abbrechen</a>
+<a href="{{ buildurl("admin")|e }}" class="yui3-button darkshade">Abbrechen</a>
 {% endblock %}

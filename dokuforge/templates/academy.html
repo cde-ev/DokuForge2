@@ -24,13 +24,13 @@
 {%- endif -%}
 <div class="academyoperations">
 {%- if user.mayExport(academy)%}
-<a href="{{ buildurl("export")|e }}">Exportieren</a>
-<a href="{{ buildurl("rawacademy")|e }}">Roh-Export</a>
+<a href="{{ buildurl("export")|e }}" class="yui3-button darkshade">Exportieren</a>
+<a href="{{ buildurl("rawacademy")|e }}" class="yui3-button darkshade">Roh-Export</a>
 {%- endif %}
 {%- if user.allowedWrite(academy) %}
-<a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a>
-<a href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a>
-<a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
+<a href="{{ buildurl("academytitle")|e }}" class="yui3-button darkshade">Titel bearbeiten</a>
+<a href="{{ buildurl("academygroups")|e }}" class="yui3-button darkshade">Gruppen bearbeiten</a>
+<a href="{{ buildurl("createcoursequiz")|e }}" class="yui3-button darkshade">Kurs hinzuf&uuml;gen</a>
 {%- endif -%}
 </div>
 {% endblock %}

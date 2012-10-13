@@ -1,9 +1,9 @@
-{% macro button(action, label, params={}) -%}
+{% macro button(action, label, params={}, shade="dark") -%}
 <form action="{{ action|e }}" method="post" class="button">
 	{%- for key, value in params.items() -%}
 	<input type="hidden" name="{{ key|e }}" value="{{ value|e }}">
 	{%- endfor -%}
-	<input type="submit" name="submit" value="{{ label|e }}">
+	<input type="submit" name="submit" value="{{ label|e }}" class="yui3-button {{shade|e}}shade">
 </form>
 {%- endmacro -%}
 
@@ -33,6 +33,7 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 <html lang="de">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="{{ staticjoin("cssbutton.css")|e }}" media="all">
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("style.css")|e }}" media="all">
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("print.css")|e }}" media="print">
 	<title>Dokuforge2</title>
@@ -92,7 +93,7 @@ if (checkMathCookie() == true){
    <div id="userinformation">
    {%- if user is not none %}
        Hallo {{ user.name|e }}!
-       {{ button(buildurl("logout"), "Logout") }}
+       {{ button(buildurl("logout"), "Logout", shade="light") }}
    {%- else -%}
    <a href="{{ buildurl("start")|e }}">Login</a>
    {%- endif %}
@@ -110,24 +111,24 @@ if (checkMathCookie() == true){
    {%- if allowMathChange %}
        <script type="text/javascript">
 	 if (checkMathCookie() == true) {
-	   document.write('<a href="" onClick="disableMathCookie()">Mathe: an</a>')
+	   document.write('<a href="" onClick="disableMathCookie()" class="yui3-button lightshade">Mathe: an</a>')
 	 } else {
-	   document.write('<a href="" onClick="enableMathCookie()">Mathe: aus</a>')
+	   document.write('<a href="" onClick="enableMathCookie()"  class="yui3-button lightshade">Mathe: aus</a>')
 	 }
        </script>
        <noscript>
-	 Mathe: aus
+	 <button disabled="disabled" class="yui3-button lightshade">Mathe: aus</button>
        </noscript>
        {% else %}
        <script type="text/javascript">
 	 if (checkMathCookie() == true) {
-	   document.write('Mathe: an')
+	   document.write('<a href="" onClick="disableMathCookie()" class="yui3-button lightshade" disabled="disabled">Mathe: an</a>')
 	 } else {
-	   document.write('Mathe: aus')
+	   document.write('<a href="" onClick="enableMathCookie()"  class="yui3-button lightshade" disabled="disabled">Mathe: aus</a>')
 	 }
        </script>
        <noscript>
-	 Mathe: aus
+	 <button disabled="disabled" class="yui3-button lightshade">Mathe: aus</button>
        </noscript>
    {% endif -%}
    <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>

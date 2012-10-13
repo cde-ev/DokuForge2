@@ -29,6 +29,6 @@
 {%- endfor -%}
 </ul>
 {% if user.mayCreate() %}
-<a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
+<a href="{{ buildurl("createacademy")|e }}" class="yui3-button darkshade">Neue Akademie anlegen</a>
 {% endif%}
 {% endblock %}

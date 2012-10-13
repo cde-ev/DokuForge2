@@ -226,4 +226,14 @@ a:active {
     color: #880088;
 }
 
+.yui3-button {
+    margin: 2px;
+}
 
+.lightshade {
+    background-color: #ccccff;
+}
+
+.darkshade {
+    background-color: #9999ff;
+}

@@ -27,9 +27,9 @@
   <div id="saveeditinput">
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
-	<input type="submit" name="saveedit" value="Speichern und Editieren">
-	<input type="submit" name="saveshow" value="Speichern und Beenden">
-	<a href="{{ buildurl("page")|e }}">Abbrechen</a>
+	<input type="submit" name="saveedit" class="yui3-button darkshade" value="Speichern und Editieren">
+	<input type="submit" name="saveshow" class="yui3-button darkshade" value="Speichern und Beenden">
+	<a href="{{ buildurl("page")|e }}" class="yui3-button darkshade">Abbrechen</a>
   </div>
 </form>
 {% endblock %}

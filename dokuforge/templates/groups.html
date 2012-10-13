@@ -15,7 +15,7 @@ Gruppenverwaltung
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
-	<input type="submit" name="saveedit" value="Speichern und Editieren">
+	<input type="submit" name="saveedit"  class="yui3-button darkshade"value="Speichern und Editieren">
 </form>
-<a href="{{ buildurl("groups")|e }}">Abbrechen</a>
+<a href="{{ buildurl("groups")|e }}" class="yui3-button darkshade">Abbrechen</a>
 {% endblock %}
