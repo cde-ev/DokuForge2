@@ -23,6 +23,9 @@ import re
 ##    export, look at the abstract class MicrotypeFeature, the function
 ##    defaultMicrotype and the decendents of MicrotypeFeature.
 
+# FIXME add \@ in the appropriate places of the TeX export
+#       i.e. whenever the exporter encountered something special
+
 class MicrotypeFeature:
     """
     Abstract class where all word-level microtypographic
@@ -105,6 +108,10 @@ class NaturalNumbers(MicrotypeFeature):
     Special Spacing for numbers.
     """
     # FIXME negative numbers only work because '-' currently is a separator
+    # FIXME we want some special spacing around numbers:
+    #       - a number followed by a dot wants a thin space: '21.\,regiment'
+    #       - a number followed by a unit wants a thin space: 'weight 67\,kg'
+    #       - a number followed by a percent sign wants a thin space: '51\,\%'
     @classmethod
     def applies(self, word):
         return len(word) > 0 and re.match('^[0-9]+$', word)
@@ -434,6 +441,7 @@ def defaultMicrotype(text):
     return doMicrotype(text, features, separators)
 
 def mathMicrotype(text):
+    # FIXME we want to substitute '...' -> '\dots{}' in math mode too
     features = [Percent, Hashmark, NaturalNumbers, EscapeCommands]
     separators = ''
     return doMicrotype(text, features, separators)
