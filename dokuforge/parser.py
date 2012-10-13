@@ -58,6 +58,7 @@ class StandardAbbreviations(MicrotypeFeature):
     Do spacing for standard abbreviations.
     """
     abb = { 
+    # FIXME we want '~\dots{}' in nearly every case
         '...' : '\\dots{}',
         'bzw.' : 'bzw.',
         'ca.' : 'ca.',
@@ -103,6 +104,7 @@ class NaturalNumbers(MicrotypeFeature):
     """
     Special Spacing for numbers.
     """
+    # FIXME negative numbers only work because '-' currently is a separator
     @classmethod
     def applies(self, word):
         return len(word) > 0 and re.match('^[0-9]+$', word)
@@ -205,6 +207,21 @@ class Caret(MicrotypeFeature):
     @classmethod
     def doit(self, word):
         substitued = self.caret.sub('\\caret{}', word)
+        return self.escaped.split(substitued)
+
+class Quote(MicrotypeFeature):
+    quote = re.compile('\'')
+    escaped = re.compile('(\')')
+
+    @classmethod
+    def applies(self, word):
+        if self.quote.search(word) is not None:
+            return True
+        return  False
+
+    @classmethod
+    def doit(self, word):
+        substitued = self.quote.sub('\'', word)
         return self.escaped.split(substitued)
 
 class EscapeCommands(MicrotypeFeature):
@@ -344,7 +361,6 @@ class EscapeCommands(MicrotypeFeature):
         if self.isEscapeChar(unlexed[0]):
             return [sofar] + self.scanControlSequence(unlexed[0], unlexed[1:])
         return self.escape(sofar + unlexed[0], unlexed[1:])
-            
 
     @classmethod
     def applies(self, work):
@@ -371,7 +387,6 @@ class EscapeEndEdnote(MicrotypeFeature):
     @classmethod
     def doit(self, word):
         return self.endednote.sub('|end{ednote}', word)
-    
 
 def applyMicrotypefeatures(wordlist, featurelist):
     """
@@ -409,14 +424,17 @@ def doMicrotype(text, features, separators):
     return result
 
 def defaultMicrotype(text):
-    features = [SplitEllipsis, Percent, Ampersand, Caret, Hashmark, StandardAbbreviations, FullStop,
-                OpenQuotationMark, CloseQuotationMark, Acronym,
-                NaturalNumbers, EscapeCommands]
+    
+    features = [SplitEllipsis, Percent, Ampersand, Caret, Hashmark, Quote,
+                StandardAbbreviations, FullStop, OpenQuotationMark,
+                CloseQuotationMark, Acronym, NaturalNumbers, EscapeCommands]
+    # FIXME '-' should not be a separator so we are able to detect dashes '--'
+    #       however this will break NaturalNumbers for negative inputs
     separators = ' \t,;()-' # no point, might be in abbreviations
     return doMicrotype(text, features, separators)
 
 def mathMicrotype(text):
-    features = [EscapeCommands]
+    features = [Percent, Hashmark, NaturalNumbers, EscapeCommands]
     separators = ''
     return doMicrotype(text, features, separators)
 
