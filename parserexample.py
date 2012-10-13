@@ -31,7 +31,7 @@ aliquam. Phasellus id mauris mauris, quis lobortis justo.
 
 *ZweiundvierzigSchlagwort* ist eine Zahl die als Antwort sehr beliebt ist. Nullam eget
 tortor ipsum, in rhoncus mi. Sed nec odio sem. Aenean rutrum, dui vel
-vehicula pulvinar, purus magna euismod dui, id pharetra libero mauris nec
+vehicula pulvinar, purus magna euismod dui, id pharetra o.Ä. libero mauris nec
 dolor.
 
 Bitte Escape mich: <>&"'\\ und das wars auch schon.

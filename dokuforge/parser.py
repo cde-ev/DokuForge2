@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 
 ## How To Read This File?
@@ -57,12 +59,20 @@ class StandardAbbreviations(MicrotypeFeature):
     """
     abb = { 
         '...' : '\\dots{}',
+        'bzw.' : 'bzw.',
+        'ca.' : 'ca.',
         'd.h.' : 'd.\\,h.',
+        'etc.' : 'etc.',
+        'f.' : 'f.',
+        'ff.' : 'ff.',
         'n.Chr.' : 'n.\\,Chr.',
+        u'o.Ä.' : u'o.\,Ä.',
         's.o.' : 's.\\,o.',
+        'sog.' : 'sog.',
         's.u.' : 's.\\,u.',
         'u.a.' : 'u.\\,a.',
         'v.Chr.' : 'v.\\,Chr.',
+        'vgl.' : 'vgl.',
         'z.B.' : 'z.\\,B.'}
 
     @classmethod
