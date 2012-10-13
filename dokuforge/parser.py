@@ -103,6 +103,46 @@ class SplitEllipsis(MicrotypeFeature):
     def doit(self, word):
         return self.dots.split(word)
 
+class SplitSpaces(MicrotypeFeature):
+    """
+    Split at all spaces.
+    """
+    space = re.compile('( )')
+
+    @classmethod
+    def applies(self, word):
+        if self.space.search(word) is not None:
+            return True
+        return False
+
+    @classmethod
+    def doit(self, word):
+        return self.space.split(word)
+
+class ThinSpaceAfterNumber(MicrotypeFeature):
+    """
+    Replace all spaces after numbers by \\, and split there.
+    """
+    numberspace = re.compile('([0-9]+ )')
+    allnumberspace = re.compile('^[0-9]+ $')
+
+    @classmethod
+    def applies(self, word):
+        if self.numberspace.search(word) is not None:
+            return True
+        return False
+
+    @classmethod
+    def doit(self, word):
+        tokens = self.numberspace.split(word)
+        splitted = []
+        for token in tokens:
+            if self.allnumberspace.match(token) is not None:
+                splitted = splitted + [token[0:-1], '\\,']
+            else:
+                splitted = splitted + [token]
+        return splitted
+
 class NaturalNumbers(MicrotypeFeature):
     """
     Special Spacing for numbers.
@@ -432,12 +472,14 @@ def doMicrotype(text, features, separators):
 
 def defaultMicrotype(text):
     
-    features = [SplitEllipsis, Percent, Ampersand, Caret, Hashmark, Quote,
+    features = [ThinSpaceAfterNumber, SplitSpaces, SplitEllipsis, Percent,
+                Ampersand, Caret, Hashmark, Quote,
                 StandardAbbreviations, FullStop, OpenQuotationMark,
                 CloseQuotationMark, Acronym, NaturalNumbers, EscapeCommands]
     # FIXME '-' should not be a separator so we are able to detect dashes '--'
     #       however this will break NaturalNumbers for negative inputs
-    separators = ' \t,;()-' # no point, might be in abbreviations
+    separators = '\t,;()-' # no point, might be in abbreviations;
+                           # spaces will be changed after numbers
     return doMicrotype(text, features, separators)
 
 def mathMicrotype(text):
