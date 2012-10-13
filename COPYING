@@ -1,13 +1,15 @@
-Main authors:
+== Main authors ==
 
 Copyright (C) 2011-2012 Klaus Aehlig <aehlig@linta.de>
 Copyright (C) 2011-2012 Helmut Grohne <helmut@subdivi.de>
 Copyright (C) 2011-2012 Markus Oehme <oehme.markus@gmx.de>
 
-Contributors:
+== Contributors ==
 
 Copyright (C) 2012 Matthias Winter (dokuforge/static/style.css)
 Copyright (C) 2012 Stefan Fechter (dokuforge/templates/style/literatur)
+
+== License (3-clause BSD licensce) ==
 
 All rights reserved.
 
@@ -37,3 +39,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
+
+== Bundled libraries ==
+
+Copyright (C) 2012 Yahoo! Inc.
+
+This software bundles a copy of the YUI cssbuttons style in the file
+'dokuforge/static/cssbutton.css'. The library can be found at
+'http://yuilibrary.com/yui/docs/button/'. It is published under the 3-clause
+BSD licensce (just like dokuforge2).
