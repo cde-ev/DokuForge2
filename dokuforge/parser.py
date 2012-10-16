@@ -297,7 +297,7 @@ class PDisplayMath(PTree):
         return '$$%1s$$' % self.text
 
     def toHtml(self):
-        return "<div class=\"displaymath\">$$%1s$$</div>" % self.text
+        return "<span class=\"displaymath\">$$%1s$$</span>" % self.text
 
     def toDF(self):
         return '$$%1s$$' % self.text

@@ -1,13 +1,13 @@
 {% macro button(action, label, params={}) -%}
-<form action="{{ action|e }}" method="post" class="button">
+<form action="{{ action|e }}" method="post" class="button"><div>
 	{%- for key, value in params.items() -%}
 	<input type="hidden" name="{{ key|e }}" value="{{ value|e }}">
 	{%- endfor -%}
 	<button type="submit" name="submit">{{ label|e }}</button>
-</form>
+</div></form>
 {%- endmacro -%}
 {% macro fakebutton(action, label) -%}
-<form action="{{ action|e }}" method="get" class="button"><button type="submit">{{ label|e }}</button></form>
+<form action="{{ action|e }}" method="get" class="button"><div><button type="submit">{{ label|e }}</button></div></form>
 {%- endmacro -%}
 
 {%- macro navbar(entries) -%}
@@ -119,7 +119,7 @@ if (checkMathCookie() == true){
 	 }
        </script>
        <noscript>
-	 Mathe: aus
+	 <div>Mathe: aus</div>
        </noscript>
        {% else %}
        <script type="text/javascript">
