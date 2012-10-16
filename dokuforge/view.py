@@ -1,5 +1,6 @@
 from collections import Mapping
 import logging
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,7 @@ class LazyView(Mapping):
                 # So log them here to see them.
                 logger.warn("Proecessing absent key %r of a LazyView. "
                             "Received exception %r." % (key, exc))
+                logger.info(traceback.format_exc())
                 raise
             self._values[key] = value
             return value
