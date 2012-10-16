@@ -43,6 +43,27 @@ class MicrotypeFeature:
         """
         return [word]
 
+def intersperse(iterable, delimiter):
+    it = iter(iterable)
+    for x in it:
+        yield x
+        break
+    for x in it:
+        yield delimiter
+        yield x
+
+class Escaper(MicrotypeFeature):
+    sequence = None
+    escaped = None
+
+    @classmethod
+    def applies(cls, word):
+        return cls.sequence in word
+
+    @classmethod
+    def doit(cls, word):
+        return list(intersperse(word.split(cls.sequence), cls.escaped))
+
 class Acronym(MicrotypeFeature):
     """
     All-capital words should be displayed in smaller font.
@@ -87,21 +108,12 @@ class StandardAbbreviations(MicrotypeFeature):
     def doit(self, word):
         return [self.abb[word]]
 
-class SplitEllipsis(MicrotypeFeature):
+class SplitEllipsis(Escaper):
     """
     Replace the ellipsis symbol ... by \dots
     """
-    dots = re.compile('(\\.\\.\\.)')
-
-    @classmethod
-    def applies(self, word):
-        if self.dots.search(word) is not None:
-            return True
-        return  False
-
-    @classmethod
-    def doit(self, word):
-        return self.dots.split(word)
+    sequence = "..."
+    escaped = "..."
 
 class NaturalNumbers(MicrotypeFeature):
     """
@@ -156,80 +168,25 @@ class FullStop(MicrotypeFeature):
     def doit(self, word):
         return [word[:-1], '.']
 
-class Percent(MicrotypeFeature):
-    percent = re.compile('%')
-    escaped = re.compile('(\\\\%)')
+class Percent(Escaper):
+    sequence = "%"
+    escaped = r"\%"
 
-    @classmethod
-    def applies(self, word):
-        if self.percent.search(word) is not None:
-            return True
-        return  False
+class Ampersand(Escaper):
+    sequence = "&"
+    escaped = r"\&"
 
-    @classmethod
-    def doit(self, word):
-        substitued = self.percent.sub('\\%', word)
-        return self.escaped.split(substitued)
+class Hashmark(Escaper):
+    sequence = "#"
+    escaped = r"\#"
 
-class Ampersand(MicrotypeFeature):
-    ampersand = re.compile('&')
-    escaped = re.compile('(\\\\&)')
+class Caret(Escaper):
+    sequence = "^"
+    escaped = r"\caret{}"
 
-    @classmethod
-    def applies(self, word):
-        if self.ampersand.search(word) is not None:
-            return True
-        return  False
-
-    @classmethod
-    def doit(self, word):
-        substitued = self.ampersand.sub('\\&', word)
-        return self.escaped.split(substitued)
-
-class Hashmark(MicrotypeFeature):
-    hashmark = re.compile('#')
-    escaped = re.compile('(\\\\#)')
-
-    @classmethod
-    def applies(self, word):
-        if self.hashmark.search(word) is not None:
-            return True
-        return  False
-
-    @classmethod
-    def doit(self, word):
-        substitued = self.hashmark.sub('\\#', word)
-        return self.escaped.split(substitued)
-
-class Caret(MicrotypeFeature):
-    caret = re.compile('\\^')
-    escaped = re.compile('(\\\\caret{})')
-
-    @classmethod
-    def applies(self, word):
-        if self.caret.search(word) is not None:
-            return True
-        return  False
-
-    @classmethod
-    def doit(self, word):
-        substitued = self.caret.sub('\\caret{}', word)
-        return self.escaped.split(substitued)
-
-class Quote(MicrotypeFeature):
-    quote = re.compile('\'')
-    escaped = re.compile('(\')')
-
-    @classmethod
-    def applies(self, word):
-        if self.quote.search(word) is not None:
-            return True
-        return  False
-
-    @classmethod
-    def doit(self, word):
-        substitued = self.quote.sub('\'', word)
-        return self.escaped.split(substitued)
+class Quote(Escaper):
+    sequence = "'"
+    escaped = "'"
 
 class EscapeCommands(MicrotypeFeature):
     """
@@ -378,23 +335,14 @@ class EscapeCommands(MicrotypeFeature):
     def doit(self, word):
         return self.escape('', word)
 
-class EscapeEndEdnote(MicrotypeFeature):
+class EscapeEndEdnote(Escaper):
     """
     Escpage the string \\end{ednote}, so that ednotes end
     where we expect them to end.
     """
-    endednote = re.compile('\\\\end{ednote}')
+    sequence = r"\end{ednote}"
+    escaped = "|end{ednote}"
     
-    @classmethod
-    def applies(self, word):
-        if self.endednote.search(word) is not None:
-            return True
-        return  False
-
-    @classmethod
-    def doit(self, word):
-        return self.endednote.sub('|end{ednote}', word)
-
 def applyMicrotypefeatures(wordlist, featurelist):
     """
     sequentially apply (in the sense wordlist >>= feature)
