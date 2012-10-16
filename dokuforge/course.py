@@ -17,7 +17,7 @@ class Outline:
         """
         self.number = number
         self.content = []
-        self.lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : u'?'}
+        self.lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : common.epoch}
     def addheading(self, title):
         """
         @type title: unicode
@@ -51,7 +51,7 @@ class Outline:
         Add information about the last commit. Must contain at
         least revision, date, and author
 
-        @type info: {(str,unicode)}
+        @type info: {str: unicode or datetime}
         """
         assert 'date' in info.keys()
         assert 'author'  in info.keys()
@@ -65,7 +65,7 @@ class Outline:
         """
         return u"%s/%s (%s)" % (self.lastchange['revision'],
                                 self.lastchange['author'],
-                                self.lastchange['date'])
+                                self.lastchange['date'].strftime("%Y/%m/%d %H:%M:%S %Z"))
 
 class Course(StorageDir):
     """
@@ -156,10 +156,11 @@ class Course(StorageDir):
     def getcommit(self, page):
         """
         @type page: int
-        @rtype: {str, unicode}
+        @rtype: {str: unicode or datetime}
         """
         info = self.getstorage("page%d" % page).commitstatus()
-        return dict(map(lambda (k,v):(k,v.encode("utf8")), info.iteritems()))
+        return dict((k, v) if k == "date" else (k, v.encode("utf8"))
+                    for k, v in info.items())
 
     def listdeadpages(self):
         """
@@ -540,7 +541,7 @@ class Course(StorageDir):
 
     def timestamp(self):
         return max([self.getstorage("page%d" % p).timestamp()
-                    for p in self.listpages()] + [-1])
+                    for p in self.listpages()] + [common.epoch])
 
     def view(self, extrafunctions=dict()):
         """

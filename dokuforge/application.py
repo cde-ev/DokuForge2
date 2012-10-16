@@ -192,14 +192,6 @@ class TemporaryRequestRedirect(werkzeug.exceptions.HTTPException,
 class IdentifierConverter(werkzeug.routing.BaseConverter):
     regex = '[a-zA-Z][-a-zA-Z0-9]{0,199}'
 
-def timestampToString(timestamp, formatstring='%Y/%m/%d %H:%M:%S'):
-    """
-    Convert a unix timestamp into a readable string. This shall be used by
-    the templates dealing with timestamps and thus will put into the jinja
-    environment.
-    """
-    return datetime.datetime.fromtimestamp(timestamp).strftime(formatstring)
-
 class Application:
     def __init__(self, pathconfig):
         """
@@ -213,7 +205,6 @@ class Application:
         self.templatepath = os.path.join(os.path.dirname(__file__), "templates")
         self.jinjaenv = jinja2.Environment(
                 loader=jinja2.FileSystemLoader(self.templatepath))
-        self.jinjaenv.filters['timestampToString'] = timestampToString
         self.groupstore = pathconfig.groupstore
         self.staticservepath = pathconfig.staticservepath
         self.mathjaxuri = pathconfig.mathjaxuri

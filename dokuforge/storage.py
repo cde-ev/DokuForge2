@@ -1,12 +1,13 @@
 from __future__ import with_statement
 from cStringIO import StringIO
+import datetime
 import os, errno
 import shutil
 import time
 import subprocess
 import re
 
-from dokuforge.common import check_output
+from dokuforge.common import check_output, utc, epoch
 from dokuforge.common import validateRcsRevision
 from dokuforge.common import RcsUserInputError
 
@@ -39,8 +40,10 @@ def rloghead(filename):
     Get relevant information for the head revision of the given rcs file
 
     @type filename: str
-    @returns: a str-str dict with information about the head commit; in particular,
+    @returns: a str-object dict with information about the head commit; in particular,
               it will contain the keys 'revision', 'author', and 'date'.
+              All values are str, except for the 'date' key which has a
+              datetime object associated.
     """
     assert isinstance(filename, str)
     
@@ -66,8 +69,9 @@ def rloghead(filename):
         if len(keyvalue) > 1:
             answer[keyvalue[0].lstrip()]=keyvalue[1]
 
+    date = datetime.datetime.strptime(answer["date"], "%Y/%m/%d %H:%M:%S")
+    answer["date"] = date.replace(tzinfo=utc)
     return answer
-
 
 class LockDir:
     def __init__(self, path):
@@ -195,8 +199,10 @@ class Storage(object):
     def commitstatus(self, havelock=None):
         """
         Obtain information about the last change made to this storage object.
-        @returns: a str-str dict with information about the head commit; in particular,
-                  it will contain the keys 'revision', 'author', and 'date'.
+        @returns: a str-object dict with information about the head commit;
+                  in particular, it will contain the keys 'revision', 'author',
+                  and 'date'. All values are str, except for the 'date' key
+                  which has a datetime object associated.
         """
         self.ensureexistence(havelock=havelock)
         return rloghead(self.fullpath("%s,v"))
@@ -293,8 +299,13 @@ class Storage(object):
             return False, currentversion, mergedcontent
 
     def timestamp(self, havelock=None):
+        """
+        @rtype: datetime
+        """
         self.ensureexistence(havelock = havelock)
-        return os.path.getmtime(self.fullpath("%s,v"))
+        ts = os.path.getmtime(self.fullpath("%s,v"))
+        ts = datetime.datetime.utcfromtimestamp(ts)
+        return ts.replace(tzinfo=utc)
 
 class CachingStorage(Storage):
     """
@@ -304,12 +315,11 @@ class CachingStorage(Storage):
 
     def __init__(self, path, filename):
         Storage.__init__(self, path, filename)
-        self.cachedtime = 0 # Jan 1, 1970 -- way before the first dokuforge2 installation
+        self.cachedtime = epoch # Jan 1, 1970 -- way before the first dokuforge2 installation
         self.cachedvalue = ""
 
     def content(self, havelock=None):
-        self.ensureexistence(havelock = havelock)
-        mtime = os.path.getmtime(self.fullpath("%s,v")) 
+        mtime = self.timestamp()
         if mtime == self.cachedtime:
             pass # content already up to date
         else:

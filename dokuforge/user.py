@@ -4,7 +4,7 @@ from cStringIO import StringIO
 
 sysrand = random.SystemRandom()
 
-from dokuforge.common import strtobool
+from dokuforge.common import strtobool, epoch
 from dokuforge.course import Course
 from dokuforge.academy import Academy
 from dokuforge.view import LazyView
@@ -246,7 +246,7 @@ class UserDB:
         """
         self.db = dict()
         self.storage = storage
-        self.timestamp = -1
+        self.timestamp = epoch
 
     def addUser(self, name, status, password, permissions):
         """
