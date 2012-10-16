@@ -1551,8 +1551,7 @@ class Application:
         """
         parsed = dfLineGroupParser(thecourse.showpage(thepage))
         theblobs = [thecourse.viewblob(i) for i in thecourse.listblobs(thepage)]
-        theestimate = parsed.toEstimate();
-        theestimate = theestimate._replace(blobs=len(theblobs))
+        theestimate = parsed.toEstimate() + Estimate.fromBlobs(theblobs)
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),

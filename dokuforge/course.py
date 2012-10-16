@@ -158,7 +158,7 @@ class Course(StorageDir):
             headings =  [x for x in parsed.parts if isinstance(x, PHeading)]
             outline.addParsed(headings)
             theestimate = parsed.toEstimate()
-            theestimate = theestimate._replace(blobs=len(self.listblobs(p)))
+            theestimate += Estimate.fromBlobs(self.listblobs(p))
             outline.addEstimate(theestimate)
             outlines.append(outline)
         return outlines

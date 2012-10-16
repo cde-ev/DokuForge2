@@ -55,6 +55,10 @@ class Estimate(collections.namedtuple("Estimate",
         return cls(0, len(s), 0, 0)
 
     @classmethod
+    def fromBlobs(cls, blobs):
+        return cls(0, 0, 0, len(blobs))
+
+    @classmethod
     def fromNothing(cls):
         return cls(0, 0, 0, 0)
 
