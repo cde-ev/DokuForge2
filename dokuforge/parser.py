@@ -83,7 +83,7 @@ class Estimate(collections.namedtuple("Estimate",
         return Estimate(*[a + b for a, b in zip(self, other)])
 
     def __mul__(self, num):
-        return Estimate(*map(num.__mul__, self))
+        return Estimate(*[num * field for field in self])
 
     __rmul__ = __mul__
 
