@@ -21,10 +21,10 @@ Teil #{{ page|string }}
 
 
 {%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("edit")|e }}">Editieren</a>
+{{ fakebutton(buildurl("edit"), "Editieren") }}
 {{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- endif -%}
-<a href="{{ buildurl("rcs")|e }}">rcs</a>
+{{ fakebutton(buildurl("rcs"), "rcs") }}
 
 <hr>
 {%- if blobs %}
@@ -44,8 +44,8 @@ Zugeordnete Bilder:
 {%- endif -%}
 
 {%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
-<a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
+{{ fakebutton(buildurl("addblob"), "neues Bild hinzufügen") }}
+{{ fakebutton(buildurl("showdeadblobs"), "gelöschte Bilder hier wieder einfügen") }}
 {%- endif -%}
 
 {% endblock %}

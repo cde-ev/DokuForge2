@@ -17,5 +17,5 @@ Gruppenverwaltung
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ buildurl("groups")|e }}">Abbrechen</a>
+{{ fakebutton(buildurl("groups"), "Abbrechen") }}
 {% endblock %}

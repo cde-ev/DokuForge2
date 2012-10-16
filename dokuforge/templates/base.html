@@ -6,6 +6,9 @@
 	<input type="submit" name="submit" value="{{ label|e }}">
 </form>
 {%- endmacro -%}
+{% macro fakebutton(action, label) -%}
+<form action="{{ action|e }}" method="get" class="button"><button type="submit">{{ label|e }}</button></form>
+{%- endmacro -%}
 
 {%- macro navbar(entries) -%}
 Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
@@ -94,7 +97,7 @@ if (checkMathCookie() == true){
        Hallo {{ user.name|e }}!
        {{ button(buildurl("logout"), "Logout") }}
    {%- else -%}
-   <a href="{{ buildurl("start")|e }}">Login</a>
+   {{ fakebutton(buildurl("start"), "Login") }}
    {%- endif %}
    </div>
    <div id="headerlinks">

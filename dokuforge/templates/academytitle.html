@@ -16,5 +16,5 @@
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ buildurl("academy")|e }}">Abbrechen</a>
+{{ fakebutton(buildurl("academy"), "Abbrechen") }}
 {% endblock %}

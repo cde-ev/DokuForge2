@@ -29,7 +29,7 @@
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 	<input type="submit" name="saveshow" value="Speichern und Beenden">
-	<a href="{{ buildurl("page")|e }}">Abbrechen</a>
   </div>
 </form>
+{{ fakebutton(buildurl("page"), "Abbrechen") }}
 {% endblock %}

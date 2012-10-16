@@ -29,6 +29,6 @@
 {%- endfor -%}
 </ul>
 {% if user.mayCreate() %}
-<a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
+{{ fakebutton(buildurl("createacademy"), "Neue Akademie anlegen") }}
 {% endif%}
 {% endblock %}

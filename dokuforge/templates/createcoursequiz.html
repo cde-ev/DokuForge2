@@ -15,5 +15,5 @@
 	Titel: <input name="title" type="text" value="{{ form.get("title", "")|e }}"><br>
 	<input type="submit" name="submit" value="Kurs hinzuf&uuml;gen">
 </form>
-<a href="{{ buildurl("academy")|e }}">Abbrechen</a>
+{{ fakebutton(buildurl("academy"), "Abbrechen") }}
 {% endblock %}

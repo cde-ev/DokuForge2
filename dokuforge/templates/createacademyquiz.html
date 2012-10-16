@@ -19,5 +19,5 @@ Neue Akademie
         </select>
 	<input type="submit" name="submit" value="Akademie anlegen">
 </form>
-<a href=" {{ buildurl("index")|e }}">Abbrechen</a>
+{{ fakebutton(buildurl("index"), "Abbrechen") }}
 {% endblock %}
