@@ -13,7 +13,7 @@
 <form action="{{ buildurl("createcourse")|e }}" method="post" id="createcourse">
 	Interner Name: <input name="name" type="text" value="{{ form.get("name", "")|e }}"><br>
 	Titel: <input name="title" type="text" value="{{ form.get("title", "")|e }}"><br>
-	<input type="submit" name="submit" value="Kurs hinzuf&uuml;gen">
+	<button type="submit" name="submit">Kurs hinzuf&uuml;gen</button>
 </form>
 {{ fakebutton(buildurl("academy"), "Abbrechen") }}
 {% endblock %}

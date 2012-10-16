@@ -15,7 +15,7 @@ Nutzeradministration
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
-	<input type="submit" name="saveedit" value="Speichern und Editieren">
+	<button type="submit" name="saveedit">Speichern und Editieren</button>
 </form>
 {{ fakebutton(buildurl("admin"), "Abbrechen") }}
 {% endblock %}

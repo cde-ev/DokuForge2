@@ -27,8 +27,8 @@
   <div id="saveeditinput">
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
-	<input type="submit" name="saveedit" value="Speichern und Editieren">
-	<input type="submit" name="saveshow" value="Speichern und Beenden">
+	<button type="submit" name="saveedit">Speichern und Editieren</button>
+	<button type="submit" name="saveshow">Speichern und Beenden</button>
   </div>
 </form>
 {{ fakebutton(buildurl("page"), "Abbrechen") }}

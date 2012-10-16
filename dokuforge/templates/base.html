@@ -3,7 +3,7 @@
 	{%- for key, value in params.items() -%}
 	<input type="hidden" name="{{ key|e }}" value="{{ value|e }}">
 	{%- endfor -%}
-	<input type="submit" name="submit" value="{{ label|e }}">
+	<button type="submit" name="submit">{{ label|e }}</button>
 </form>
 {%- endmacro -%}
 {% macro fakebutton(action, label) -%}
