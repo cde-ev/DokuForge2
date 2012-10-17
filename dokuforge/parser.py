@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import itertools
 import re
 
 ## How To Read This File?
@@ -26,23 +27,6 @@ import re
 # FIXME add \@ in the appropriate places of the TeX export
 #       i.e. whenever the exporter encountered something special
 
-class MicrotypeFeature:
-    """
-    Abstract class where all word-level microtypographic
-    features inherit from.
-    """
-    @classmethod
-    def applies(self, word):
-        return False
-
-    @classmethod
-    def doit(self, word):
-        """
-        return a list of processed words, that should be
-        treated separately by all following features.
-        """
-        return [word]
-
 def intersperse(iterable, delimiter):
     it = iter(iterable)
     for x in it:
@@ -52,32 +36,23 @@ def intersperse(iterable, delimiter):
         yield delimiter
         yield x
 
-class Escaper(MicrotypeFeature):
-    sequence = None
-    escaped = None
+class Escaper:
+    def __init__(self, sequence, escaped):
+        self.sequence = sequence
+        self.escaped = escaped
 
-    @classmethod
-    def applies(cls, word):
-        return cls.sequence in word
+    def __call__(self, word):
+        return intersperse(word.split(self.sequence), self.escaped)
 
-    @classmethod
-    def doit(cls, word):
-        return list(intersperse(word.split(cls.sequence), cls.escaped))
-
-class Acronym(MicrotypeFeature):
+def acronym(word):
     """
     All-capital words should be displayed in smaller font.
     """
-    
-    @classmethod
-    def applies(self, word):
-        return len(word) > 0 and word.isupper()
+    if len(word) > 0 and word.isupper():
+        word = '\\acronym{%s}' % word
+    yield word
 
-    @classmethod
-    def doit(self, word):
-        return ['\\acronym{%s}' % word]
-
-class StandardAbbreviations(MicrotypeFeature):
+def  standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
     """
@@ -100,22 +75,12 @@ class StandardAbbreviations(MicrotypeFeature):
         'vgl.' : 'vgl.',
         'z.B.' : 'z.\\,B.'}
 
-    @classmethod
-    def applies(self, word):
-        return word in self.abb
+    yield abb.get(word, word)
 
-    @classmethod
-    def doit(self, word):
-        return [self.abb[word]]
+splitEllipsis = Escaper("...", "...")
+# Replace the ellipsis symbol ... by \dots
 
-class SplitEllipsis(Escaper):
-    """
-    Replace the ellipsis symbol ... by \dots
-    """
-    sequence = "..."
-    escaped = "..."
-
-class NaturalNumbers(MicrotypeFeature):
+def naturalNumbers(word):
     """
     Special Spacing for numbers.
     """
@@ -124,71 +89,52 @@ class NaturalNumbers(MicrotypeFeature):
     #       - a number followed by a dot wants a thin space: '21.\,regiment'
     #       - a number followed by a unit wants a thin space: 'weight 67\,kg'
     #       - a number followed by a percent sign wants a thin space: '51\,\%'
-    @classmethod
-    def applies(self, word):
-        return len(word) > 0 and re.match('^[0-9]+$', word)
-
-    @classmethod
-    def doit(self, word):
+    if not word.isdigit():
+        yield word
+    else:
         value = int(word)
         if value < 10000:
             # no special typesetting for 4 digits only
-            return ["%d" % value]
-        result = ''
-        while value >= 1000:
-            threedigits = value % 1000
-            result = '\\,%03d%s' % (threedigits, result)
-            value = value // 1000
-        return ['%d%s' % (value, result)]
+            yield ["%d" % value]
+        else:
+            result = ''
+            while value >= 1000:
+                threedigits = value % 1000
+                result = '\\,%03d%s' % (threedigits, result)
+                value = value // 1000
+            yield '%d%s' % (value, result)
 
-class OpenQuotationMark(MicrotypeFeature):
-    @classmethod
-    def applies(self, word):
-        return len(word) > 1 and word.startswith('"')
+def openQuotationMark(word):
+    if len(word) > 1 and word.startswith('"'):
+        yield '"`'
+        word = word[1:]
+    yield word
 
-    @classmethod
-    def doit(self, word):
-        return ['"`', word[1:]]
+def closeQuotationMark(word):
+    if len(word) > 1 and word.endswith('"'):
+        yield word[:-1]
+        yield '"\''
+    else:
+        yield word
 
-class CloseQuotationMark(MicrotypeFeature):
-    @classmethod
-    def applies(self, word):
-        return len(word) > 1 and word.endswith('"')
+def fullStop(word):
+    if len(word) > 1 and word.endswith('.'):
+        yield word[:-1]
+        yield '.'
+    else:
+        yield word
 
-    @classmethod
-    def doit(self, word):
-        return [word[:-1], '"\'']
+percent = Escaper("%", r"\%")
 
-class FullStop(MicrotypeFeature):
-    @classmethod
-    def applies(self, word):
-        return len(word) > 1 and word.endswith('.')
+ampersand = Escaper("&", r"\&")
 
-    @classmethod
-    def doit(self, word):
-        return [word[:-1], '.']
+hashmark = Escaper("#", r"\#")
 
-class Percent(Escaper):
-    sequence = "%"
-    escaped = r"\%"
+caret = Escaper("^", r"\caret{}")
 
-class Ampersand(Escaper):
-    sequence = "&"
-    escaped = r"\&"
+quote = Escaper("'", "'")
 
-class Hashmark(Escaper):
-    sequence = "#"
-    escaped = r"\#"
-
-class Caret(Escaper):
-    sequence = "^"
-    escaped = r"\caret{}"
-
-class Quote(Escaper):
-    sequence = "'"
-    escaped = "'"
-
-class EscapeCommands(MicrotypeFeature):
+class EscapeCommands:
     """
     Mark all controll sequence tokens as forbidden, except
     a list of known good commands.
@@ -272,23 +218,18 @@ class EscapeCommands(MicrotypeFeature):
     # '\\begin', '\\end',
     ]
 
-    @classmethod
     def isOK(self, word):
         return word in self.allowed
 
-    @classmethod
     def forbid(self, word):
         return '\\forbidden' + word
 
-    @classmethod
     def isEscapeChar(self, c):
         return c == '\\'
 
-    @classmethod
     def isLetter(self, c):
         return ('a' <= c and c <= 'z') or ('A' <= c and c <= 'Z')
 
-    @classmethod
     def scanControlSequence(self, sofar, unlexed):
         if len(sofar) == 1:
             if len(unlexed) == 0:
@@ -301,9 +242,9 @@ class EscapeCommands(MicrotypeFeature):
             else:
                 word = sofar + unlexed[0]
                 if self.isOK(word):
-                    return [word] + self.doit(unlexed[1:])
+                    return [word] + self(unlexed[1:])
                 else:
-                    return [self.forbid(word)] + self.doit(unlexed[1:])
+                    return [self.forbid(word)] + self(unlexed[1:])
         else:
             if len(unlexed) == 0:
                 if self.isOK(sofar):
@@ -314,11 +255,10 @@ class EscapeCommands(MicrotypeFeature):
                 return self.scanControlSequence(sofar + unlexed[0], unlexed[1:])
             else:
                 if self.isOK(sofar):
-                    return [sofar] + self.doit(unlexed)
+                    return [sofar] + self(unlexed)
                 else:
-                    return [self.forbid(sofar)] + self.doit(unlexed)
+                    return [self.forbid(sofar)] + self(unlexed)
 
-    @classmethod
     def escape(self, sofar, unlexed):
         if len(unlexed) == 0:
             return [sofar]
@@ -326,23 +266,22 @@ class EscapeCommands(MicrotypeFeature):
             return [sofar] + self.scanControlSequence(unlexed[0], unlexed[1:])
         return self.escape(sofar + unlexed[0], unlexed[1:])
 
-    @classmethod
-    def applies(self, work):
-        # overapproximate
-        return True
-
-    @classmethod
-    def doit(self, word):
+    def __call__(self, word):
         return self.escape('', word)
 
-class EscapeEndEdnote(Escaper):
-    """
-    Escpage the string \\end{ednote}, so that ednotes end
-    where we expect them to end.
-    """
-    sequence = r"\end{ednote}"
-    escaped = "|end{ednote}"
-    
+escapeCommands = EscapeCommands()
+
+escapeEndEdnote = Escaper(r"\end{ednote}", "|end{ednote}")
+# Escpage the string \\end{ednote}, so that ednotes end
+# where we expect them to end.
+
+class SplitSeparators:
+    def __init__(self, separators):
+        self.splitre = re.compile("([%s])" % re.escape(separators))
+
+    def __call__(self, word):
+        return self.splitre.split(word)
+
 def applyMicrotypefeatures(wordlist, featurelist):
     """
     sequentially apply (in the sense wordlist >>= feature)
@@ -350,54 +289,29 @@ def applyMicrotypefeatures(wordlist, featurelist):
     of the result.
     """
     for feature in featurelist:
-        newwordlist = []
+        wordlistlist = []
         for word in wordlist:
-            if feature.applies(word):
-                newwordlist.extend(feature.doit(word))
-            else:
-                newwordlist.append(word)
-        wordlist = newwordlist
+            wordlistlist.append(feature(word))
+        wordlist = itertools.chain(*wordlistlist)
     return ''.join(wordlist)
 
-def doMicrotype(text, features, separators):
-    """
-    Do micro typography with the given features and
-    separators. Note that the order of the features
-    matters!
-    """
-    result = ''
-    word = ''
-    for c in text:
-        if not c in set(separators):
-            word = word + c
-        else:
-            word = applyMicrotypefeatures([word], features)
-            result = result + word +c
-            word = ''
-    word = applyMicrotypefeatures([word], features)
-    result = result + word
-    return result
-
 def defaultMicrotype(text):
-    
-    features = [SplitEllipsis, Percent, Ampersand, Caret, Hashmark, Quote,
-                StandardAbbreviations, FullStop, OpenQuotationMark,
-                CloseQuotationMark, Acronym, NaturalNumbers, EscapeCommands]
     # FIXME '-' should not be a separator so we are able to detect dashes '--'
     #       however this will break NaturalNumbers for negative inputs
     separators = ' \t,;()-' # no point, might be in abbreviations
-    return doMicrotype(text, features, separators)
+    features = [SplitSeparators(separators),
+                splitEllipsis, percent, ampersand, caret, hashmark, quote,
+                standardAbbreviations, fullStop, openQuotationMark,
+                closeQuotationMark, acronym, naturalNumbers, escapeCommands]
+    return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text):
     # FIXME we want to substitute '...' -> '\dots{}' in math mode too
-    features = [Percent, Hashmark, NaturalNumbers, EscapeCommands]
-    separators = ''
-    return doMicrotype(text, features, separators)
+    features = [percent, hashmark, naturalNumbers, escapeCommands]
+    return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
-    features = [EscapeEndEdnote]
-    separators = ''
-    return doMicrotype(text, features, separators)
+    return applyMicrotypefeatures([text], [escapeEndEdnote])
 
 def isemptyline(line):
     return re.match('^[ \t]*$', line)
