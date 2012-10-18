@@ -139,6 +139,7 @@ class EscapeCommands:
     Mark all controll sequence tokens as forbidden, except
     a list of known good commands.
     """
+    escapechar = "\\"
     allowed = [
     # produced by our own microtypography or otherwise essential
     '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym', '\\&',
@@ -224,9 +225,6 @@ class EscapeCommands:
     def forbid(self, word):
         return '\\forbidden' + word
 
-    def isEscapeChar(self, c):
-        return c == '\\'
-
     def isLetter(self, c):
         return ('a' <= c and c <= 'z') or ('A' <= c and c <= 'Z')
 
@@ -260,11 +258,10 @@ class EscapeCommands:
                     return [self.forbid(sofar)] + self(unlexed)
 
     def escape(self, sofar, unlexed):
-        if len(unlexed) == 0:
-            return [sofar]
-        if self.isEscapeChar(unlexed[0]):
-            return [sofar] + self.scanControlSequence(unlexed[0], unlexed[1:])
-        return self.escape(sofar + unlexed[0], unlexed[1:])
+        before, escape, after = unlexed.partition(self.escapechar)
+        if escape:
+            return [sofar + before] + self.scanControlSequence(escape, after)
+        return [sofar + before]
 
     def __call__(self, word):
         return self.escape('', word)
