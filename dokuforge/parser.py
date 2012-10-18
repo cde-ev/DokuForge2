@@ -257,14 +257,11 @@ class EscapeCommands:
                 else:
                     return [self.forbid(sofar)] + self(unlexed)
 
-    def escape(self, sofar, unlexed):
-        before, escape, after = unlexed.partition(self.escapechar)
-        if escape:
-            return [sofar + before] + self.scanControlSequence(escape, after)
-        return [sofar + before]
-
     def __call__(self, word):
-        return self.escape('', word)
+        before, escape, after = word.partition(self.escapechar)
+        if escape:
+            return [before] + self.scanControlSequence(escape, after)
+        return [before]
 
 escapeCommands = EscapeCommands()
 
