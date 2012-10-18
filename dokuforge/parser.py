@@ -95,7 +95,7 @@ def naturalNumbers(word):
         value = int(word)
         if value < 10000:
             # no special typesetting for 4 digits only
-            yield ["%d" % value]
+            yield "%d" % value
         else:
             result = ''
             while value >= 1000:
