@@ -221,6 +221,9 @@ class EscapeCommands:
 
     command_re = re.compile("(%s(?:[a-zA-Z]+|.))" % re.escape(escapechar))
 
+    def forbid(self, word):
+        return '\\forbidden' + word
+
     def __call__(self, word):
         for part in self.command_re.split(word):
             if part.startswith(self.escapechar):
