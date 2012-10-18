@@ -219,49 +219,22 @@ class EscapeCommands:
     # '\\begin', '\\end',
     ]
 
-    def isOK(self, word):
-        return word in self.allowed
-
-    def forbid(self, word):
-        return '\\forbidden' + word
-
-    def isLetter(self, c):
-        return ('a' <= c and c <= 'z') or ('A' <= c and c <= 'Z')
-
-    def scanControlSequence(self, sofar, unlexed):
-        if len(sofar) == 1:
-            if len(unlexed) == 0:
-                # Oh, a backslash at end of input;
-                # maybe we broke into words incorrectly,
-                # so just return something safe.
-                return ['\\ ']
-            if self.isLetter(unlexed[0]):
-                return self.scanControlSequence(sofar + unlexed[0], unlexed[1:])
-            else:
-                word = sofar + unlexed[0]
-                if self.isOK(word):
-                    return [word] + self(unlexed[1:])
-                else:
-                    return [self.forbid(word)] + self(unlexed[1:])
-        else:
-            if len(unlexed) == 0:
-                if self.isOK(sofar):
-                    return [sofar]
-                else:
-                    return [self.forbid(sofar)]
-            if self.isLetter(unlexed[0]):
-                return self.scanControlSequence(sofar + unlexed[0], unlexed[1:])
-            else:
-                if self.isOK(sofar):
-                    return [sofar] + self(unlexed)
-                else:
-                    return [self.forbid(sofar)] + self(unlexed)
+    command_re = re.compile("(%s(?:[a-zA-Z]+|.))" % re.escape(escapechar))
 
     def __call__(self, word):
-        before, escape, after = word.partition(self.escapechar)
-        if escape:
-            return [before] + self.scanControlSequence(escape, after)
-        return [before]
+        for part in self.command_re.split(word):
+            if part.startswith(self.escapechar):
+                if part in self.allowed:
+                    yield part
+                elif part == self.escapechar:
+                    # Oh, a backslash at end of input;
+                    # maybe we broke into words incorrectly,
+                    # so just return something safe.
+                    yield '\\ '
+                else:
+                    yield self.forbid(part)
+            else:
+                yield part
 
 escapeCommands = EscapeCommands()
 
