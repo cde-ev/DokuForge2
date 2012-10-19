@@ -47,8 +47,10 @@ class Escaper:
 def acronym(word):
     """
     All-capital words should be displayed in smaller font.
+
+    But don't mangle things like 'T-Shirt' or 'E-Mail'.
     """
-    if len(word) > 0 and word.isupper():
+    if len(word) > 1 and word.isupper():
         word = '\\acronym{%s}' % word
     yield word
 
