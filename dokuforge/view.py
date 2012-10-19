@@ -46,7 +46,7 @@ class LazyView(Mapping):
                 # So log them here to see them.
                 logger.warn("Proecessing absent key %r of a LazyView. "
                             "Received exception %r." % (key, exc))
-                logger.info(traceback.format_exc())
+                logger.info("\n".join(traceback.format_exc().splitlines()[-3:]))
                 raise
             self._values[key] = value
             return value
