@@ -641,40 +641,83 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
     def testQuotes(self):
         self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                              'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
-        self.verifyExportsTo('"Am Anfang" ...',
-                             '"`Am Anfang"\' \\dots{}')
-        self.verifyExportsTo('... "vor Kommata", ...',
-                             '\\dots{} "`vor Kommata"\', \\dots{}')
-        self.verifyExportsTo('... und "am Ende".',
-                             '\\dots{} und "`am Ende"\'.')
+        self.verifyExportsTo('"Am Anfang" des Texts',
+                             '"`Am Anfang"\' des Texts')
+        self.verifyExportsTo('in der Mitter "vor Kommata", im Text',
+                             'in der Mitte "`vor Kommata"\', im Text')
+        self.verifyExportsTo('und "am Ende".',
+                             'und "`am Ende"\'.')
+        self.verifyExportsTo('Markus\' single quote',
+                             'Markus\@\' single quote')
 
     def testAbbrev(self):
         self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                             'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
-        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter...',
-                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter\\dots{}')
+                             'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
+        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter',
+                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h., der Exporter')
+        self.verifyExportsTo('Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
+                             'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
+        self.verifyExportsTo('Es ist z. B. so, s. o., s. u., etc., dass wir, d. h., der Exporter bzw. oder ca. oder so.',
+                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h., der Exporter \@bzw oder \@ca. oder so.')
+        self.verifyExportsTo('Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
+                             'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.')
+        self.verifyExportsTo('Dots in math $a_1,...,a_n$ should work without spacing.',
+                             'Dots in math $a_1,\dots{},a_n$ should work without spacing.')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
-                             'Bitte \\acronym{ACRONYME} anders setzen.')
+                             'Bitte \\@\\acronym{ACRONYME} anders setzen.')
+        self.verifyExportsTo('Aber T-Shirts in Ruhe lassen.',
+                             'Aber T-Shirts in Ruhe lassen.')
 
     def testEscaping(self):
-        self.verifyExportsTo('Do not allow \\dangerous commands!',
-                             'Do not allow \\forbidden\\dangerous commands!')
-        self.verifyExportsTo('\\\\ok',
-                             '\\\\ok')
-        self.verifyExportsTo('\\\\\\bad',
-                             '\\\\\\forbidden\\bad')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\% sind ein Zehntel')
-        self.verifyExportsTo('f# ist eine Note',
-                             'f\# ist eine Note')
-        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
-                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
-        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo('Outside math everything (for example \\mathbb and \\dangerous) should be forbidden.',
+                             'Outside math everything (for example \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous) should be forbidden.')
+        self.verifyExportsTo('Do not allow $a \\dangerous{b}$ commands!',
+                             'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
+        self.verifyExportsTo('$\\\\ok$',
+                             '$\\\\ok$')
+        self.verifyExportsTo('$\\\\\\bad$',
+                             '$\\\\\\@\\forbidden\\bad$')
         self.verifyExportsTo('Escaping should also happen in math, like $\\evilmath$, but not $\\mathbb C$',
-                             'Escaping should also happen in math, like $\\forbidden\\evilmath$, but not $\\mathbb C$')
+                             'Escaping should also happen in math, like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo('$Trailing \\$',
+                             '$Trailing \\@\\ $')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '\\@10\,\\% sind ein Zehntel')
+        self.verifyExportsTo('f# ist eine Note',
+                             'f\\@\# ist eine Note')
+        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
+                             '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
+        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
+                             'Heinemann\\@\&Co. ist vielleicht eine Firma')
+
+    def testSpacing(self)
+        self.verifyExportsTo('A number range 6--9 is nice.',
+                             'A number range 6--9 is nice.')
+        self.verifyExportsTo('A number range 6 -- 9 is nice.',
+                             'A number range 6--9 is nice.')
+        self.verifyExportsTo('Now we do -- with all due respect -- an intersperse. Followed by an afterthougt -- here it comes. And another afterthought -- here you go. And a third afterthought -- again here we go. And a final -- even ultimate -- interjection.',
+                             'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by an afterthougt\\@~-- here it comes. And another afterthought\\@~-- here you go. And a third afterthought\\@~-- again here we go. And a final \\@--~even ultimate\\@~-- interjection.')
+        self.verifyExportsTo('Now we do--with all due respect--an intersperse. Followed by an afterthougt--here it comes. And another afterthought--here you go. And a third afterthought--again here we go. And a final--even ultimate--interjection.',
+                             'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by an afterthougt\\@~-- here it comes. And another afterthought\\@~-- here you go. And a third afterthought\\@~-- again here we go. And a final \\@--~even ultimate\\@~-- interjection.')
+        self.verifyExportsTo('Here come some dots ...',
+                             'Here come some dots\\@~\\ldots{}')
+        self.verifyExportsTo('Here come some dots...',
+                             'Here come some dots\\@~\\ldots{}')
+        self.verifyExportsTo('And dots ... in the middle.',
+                             'And dots\\@~\\ldots{} in the middle.')
+        self.verifyExportsTo('And dots...in the middle.',
+                             'And dots\\@~\\ldots{} in the middle.')
+
+    def testNumbers(self)
+        self.verifyExportsTo('We have 10000 and 2000 and 3000000 and -40000 and -5000.',
+                             'We have 10\\,000 and 2000 and 3\\,000\\,000 and -40\\,000 and -5000.')
+        self.verifyExportsTo('We are in the 21. regiment. And again we are in the 21.regiment. The date is 19.10.2012 or 19. 10. 2012 for good.',
+                             'We are in the \\@21.\\,regiment. And again we are in the \\@21.\\,regiment. The date is \\@19.\\,\\@10.\\,2012 or \\@19.\\,\\@10.\\,2012 for good.')
+        self.verifyExportsTo('Here come some units: 21kg and 4MW or 21 kg and 4 MW are nice examples.',
+                             'Here come some units: \\@21\\,kg and \\@4\\,MW or \\@21\\,kg and \\@4\\,MW are nice examples.')
+        self.verifyExportsTo('Fractional stuff like 5% should be handled nicely as with 5 % too.',
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
@@ -695,7 +738,7 @@ Bobby Tables...
 
 Bobby Tables...
 
-|end{ednote}
+\\@|end{ednote}
 
 \\herebedragons
 
