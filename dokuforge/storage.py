@@ -1,6 +1,7 @@
 from __future__ import with_statement
 from cStringIO import StringIO
 import datetime
+import logging
 import os, errno
 import shutil
 import time
@@ -13,6 +14,8 @@ from dokuforge.common import RcsUserInputError
 
 from subprocess import CalledProcessError
 
+logger = logging.getLogger(__name__)
+
 RCSENV = os.environ.copy()
 RCSENV["LC_ALL"] = "C"
 
@@ -24,6 +27,7 @@ def rlogv(filename):
     @type filename: str
     """
     assert isinstance(filename, str)
+    logger.debug("rlogv: looking up revision for %r" % filename)
     f = file(filename, mode = "r")
     content = f.read()
     f.close()
@@ -46,6 +50,7 @@ def rloghead(filename):
               datetime object associated.
     """
     assert isinstance(filename, str)
+    logger.debug("rloghead: looking up head revision info for %r" % filename)
     
     # Amzingly enough, the "official" way to obtain revision information
     # is to parse the output of rlog. This statement is obtained from
@@ -103,6 +108,7 @@ class LockDir:
                 return self
             except OSError, e:
                 if e.errno == errno.EEXIST:
+                    logger.debug("lock %r is busy" % self.path)
                     time.sleep(0.2) # evertthing OK, someone else has the lock
                 else:
                     raise # something else went wrong
@@ -153,6 +159,7 @@ class Storage(object):
         if isinstance(content, basestring):
             assert isinstance(content, str)
             content = StringIO(content)
+        logger.debug("storing %r" % self.fullpath())
 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
@@ -171,6 +178,7 @@ class Storage(object):
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
                 if not os.path.exists(self.fullpath("%s,v")):
+                    logger.debug("creating rcs file %r" % self.fullpath())
                     subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                            self.fullpath()], env=RCSENV)
                     file(self.fullpath(), mode = "w").close()
@@ -209,6 +217,7 @@ class Storage(object):
 
     def content(self, havelock=None):
         self.ensureexistence(havelock = havelock)
+        logger.debug("retrieving content for %r" % self.fullpath())
         return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
                             env=RCSENV)
 
@@ -271,6 +280,8 @@ class Storage(object):
                 return True, newversion, newcontent
             ## conflict
             # 1.) store in a branch
+            logger.debug("storing conflict %r current=%r vs edited=%r" %
+                         (self.fullpath(), currentversion, version))
             try:
                 subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
                                        self.fullpath()], env=RCSENV)
