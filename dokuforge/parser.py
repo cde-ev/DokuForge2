@@ -51,7 +51,7 @@ def acronym(word):
     But don't mangle things like 'T-Shirt' or 'E-Mail'.
     """
     if len(word) > 1 and word.isupper():
-        word = '\\acronym{%s}' % word
+        word = '\\@\\acronym{%s}' % word
     yield word
 
 def  standardAbbreviations(word):
@@ -61,21 +61,21 @@ def  standardAbbreviations(word):
     abb = { 
     # FIXME we want '~\dots{}' in nearly every case
         '...' : '\\dots{}',
-        'bzw.' : 'bzw.',
-        'ca.' : 'ca.',
-        'd.h.' : 'd.\\,h.',
-        'etc.' : 'etc.',
-        'f.' : 'f.',
-        'ff.' : 'ff.',
-        'n.Chr.' : 'n.\\,Chr.',
-        u'o.Ä.' : u'o.\,Ä.',
-        's.o.' : 's.\\,o.',
-        'sog.' : 'sog.',
-        's.u.' : 's.\\,u.',
-        'u.a.' : 'u.\\,a.',
-        'v.Chr.' : 'v.\\,Chr.',
-        'vgl.' : 'vgl.',
-        'z.B.' : 'z.\\,B.'}
+        'bzw.' : '\\@bzw.',
+        'ca.' : '\\@ca.',
+        'd.h.' : '\\@d.\\,h.',
+        'etc.' : '\\@etc.',
+        'f.' : '\\@f.',
+        'ff.' : '\\@ff.',
+        'n.Chr.' : '\\@n.\\,Chr.',
+        u'o.Ä.' : u'\\@o.\,Ä.',
+        's.o.' : '\\@s.\\,o.',
+        'sog.' : '\\@sog.',
+        's.u.' : '\\@s.\\,u.',
+        'u.a.' : '\\@u.\\,a.',
+        'v.Chr.' : '\\@v.\\,Chr.',
+        'vgl.' : '\\@vgl.',
+        'z.B.' : '\\@z.\\,B.'}
 
     yield abb.get(word, word)
 
@@ -126,15 +126,15 @@ def fullStop(word):
     else:
         yield word
 
-percent = Escaper("%", r"\%")
+percent = Escaper("%", r"\@\%")
 
-ampersand = Escaper("&", r"\&")
+ampersand = Escaper("&", r"\@\&")
 
-hashmark = Escaper("#", r"\#")
+hashmark = Escaper("#", r"\@\#")
 
-caret = Escaper("^", r"\caret{}")
+caret = Escaper("^", r"\@\caret{}")
 
-quote = Escaper("'", "'")
+quote = Escaper("'", "\@'")
 
 class EscapeCommands:
     """
@@ -142,7 +142,38 @@ class EscapeCommands:
     a list of known good commands.
     """
     escapechar = "\\"
-    allowed = [
+    command_re = re.compile("(%s(?:[a-zA-Z]+|.|$))" % re.escape(escapechar))
+
+    def forbid(self, word):
+        return '\\@\\forbidden' + word
+
+    def __init__(self, allowed = ['\\ ', '\\,', '\\%', '\\dots', '\\ldots',
+                                  '\\\\', '\\"', '\\acronym', '\\&', '\\#',
+                                  '\\caret', '\\@']):
+        """
+        Initialize with the set of allowed commands. The default value
+        represents those commands that are produced by the exporter itself.
+        """
+        self.allowed = allowed
+
+    def __call__(self, word):
+        for part in self.command_re.split(word):
+            if part.startswith(self.escapechar):
+                if part in self.allowed:
+                    yield part
+                elif part == self.escapechar:
+                    # Oh, a backslash at end of input;
+                    # maybe we broke into words incorrectly,
+                    # so just return something safe.
+                    yield '\\@\\ '
+                else:
+                    yield self.forbid(part)
+            else:
+                yield part
+
+escapeCommands = EscapeCommands()
+escapeMathCommands = EscapeCommands(
+    [
     # produced by our own microtypography or otherwise essential
     '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym', '\\&',
     '\\#', '\\caret',
@@ -219,31 +250,9 @@ class EscapeCommands:
     # anything critical).
     # ## environments
     # '\\begin', '\\end',
-    ]
+    ])
 
-    command_re = re.compile("(%s(?:[a-zA-Z]+|.))" % re.escape(escapechar))
-
-    def forbid(self, word):
-        return '\\forbidden' + word
-
-    def __call__(self, word):
-        for part in self.command_re.split(word):
-            if part.startswith(self.escapechar):
-                if part in self.allowed:
-                    yield part
-                elif part == self.escapechar:
-                    # Oh, a backslash at end of input;
-                    # maybe we broke into words incorrectly,
-                    # so just return something safe.
-                    yield '\\ '
-                else:
-                    yield self.forbid(part)
-            else:
-                yield part
-
-escapeCommands = EscapeCommands()
-
-escapeEndEdnote = Escaper(r"\end{ednote}", "|end{ednote}")
+escapeEndEdnote = Escaper(r"\end{ednote}", "\\@|end{ednote}")
 # Escpage the string \\end{ednote}, so that ednotes end
 # where we expect them to end.
 
@@ -279,7 +288,7 @@ def defaultMicrotype(text):
 
 def mathMicrotype(text):
     # FIXME we want to substitute '...' -> '\dots{}' in math mode too
-    features = [percent, hashmark, naturalNumbers, escapeCommands]
+    features = [percent, hashmark, naturalNumbers, escapeMathCommands]
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):

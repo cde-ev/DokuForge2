@@ -643,7 +643,7 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
                              'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
         self.verifyExportsTo('"Am Anfang" des Texts',
                              '"`Am Anfang"\' des Texts')
-        self.verifyExportsTo('in der Mitter "vor Kommata", im Text',
+        self.verifyExportsTo('in der Mitte "vor Kommata", im Text',
                              'in der Mitte "`vor Kommata"\', im Text')
         self.verifyExportsTo('und "am Ende".',
                              'und "`am Ende"\'.')
@@ -655,14 +655,14 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
                              'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
         self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter',
                              'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h., der Exporter')
-        self.verifyExportsTo('Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
-                             'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
-        self.verifyExportsTo('Es ist z. B. so, s. o., s. u., etc., dass wir, d. h., der Exporter bzw. oder ca. oder so.',
-                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h., der Exporter \@bzw oder \@ca. oder so.')
         self.verifyExportsTo('Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
                              'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.')
         self.verifyExportsTo('Dots in math $a_1,...,a_n$ should work without spacing.',
                              'Dots in math $a_1,\dots{},a_n$ should work without spacing.')
+        self.verifyExportsTo('Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
+                             'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
+        self.verifyExportsTo('Es ist z. B. so, s. o., s. u., etc., dass wir, d. h., der Exporter bzw. oder ca. oder so.',
+                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h., der Exporter \@bzw oder \@ca. oder so.')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
@@ -683,20 +683,20 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
                              'Escaping should also happen in math, like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
         self.verifyExportsTo('$Trailing \\$',
                              '$Trailing \\@\\ $')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '\\@10\,\\% sind ein Zehntel')
         self.verifyExportsTo('f# ist eine Note',
                              'f\\@\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
                              '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
                              'Heinemann\\@\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '\\@10\,\\% sind ein Zehntel')
 
     def testSpacing(self):
         self.verifyExportsTo('A number range 6--9 is nice.',
-                             'A number range 6--9 is nice.')
+                             'A number range 6\@--9 is nice.')
         self.verifyExportsTo('A number range 6 -- 9 is nice.',
-                             'A number range 6--9 is nice.')
+                             'A number range 6\@--9 is nice.')
         self.verifyExportsTo('Now we do -- with all due respect -- an intersperse. Followed by an afterthougt -- here it comes. And another afterthought -- here you go. And a third afterthought -- again here we go. And a final -- even ultimate -- interjection.',
                              'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by an afterthougt\\@~-- here it comes. And another afterthought\\@~-- here you go. And a third afterthought\\@~-- again here we go. And a final \\@--~even ultimate\\@~-- interjection.')
         self.verifyExportsTo('Now we do--with all due respect--an intersperse. Followed by an afterthougt--here it comes. And another afterthought--here you go. And a third afterthought--again here we go. And a final--even ultimate--interjection.',
