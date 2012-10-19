@@ -692,7 +692,7 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
                              'Heinemann\\@\&Co. ist vielleicht eine Firma')
 
-    def testSpacing(self)
+    def testSpacing(self):
         self.verifyExportsTo('A number range 6--9 is nice.',
                              'A number range 6--9 is nice.')
         self.verifyExportsTo('A number range 6 -- 9 is nice.',
@@ -710,7 +710,7 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('And dots...in the middle.',
                              'And dots\\@~\\ldots{} in the middle.')
 
-    def testNumbers(self)
+    def testNumbers(self):
         self.verifyExportsTo('We have 10000 and 2000 and 3000000 and -40000 and -5000.',
                              'We have 10\\,000 and 2000 and 3\\,000\\,000 and -40\\,000 and -5000.')
         self.verifyExportsTo('We are in the 21. regiment. And again we are in the 21.regiment. The date is 19.10.2012 or 19. 10. 2012 for good.',
@@ -718,6 +718,7 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('Here come some units: 21kg and 4MW or 21 kg and 4 MW are nice examples.',
                              'Here come some units: \\@21\\,kg and \\@4\\,MW or \\@21\\,kg and \\@4\\,MW are nice examples.')
         self.verifyExportsTo('Fractional stuff like 5% should be handled nicely as with 5 % too.',
+                             'Fractional stuff like \\@5\\,\\% should be handled nicely as with \\@5\\,\\% too.')
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
