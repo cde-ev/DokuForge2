@@ -9,6 +9,9 @@
 {% macro fakebutton(action, label) -%}
 <form action="{{ action|e }}" method="get" class="button"><div style="display: inline"><button type="submit">{{ label|e }}</button></div></form>
 {%- endmacro -%}
+{% macro mathbutton(label, method, disabled) -%}
+<form action="" method="" class="button"> <div style="display: inline"> <button type="submit" onClick="{{ method|e }}" {% if disabled %} disabled="disabled"{% endif %}>{{ label|e }}</button> </div> </form>
+{%- endmacro -%}
 
 {%- macro navbar(entries) -%}
 Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
@@ -113,24 +116,24 @@ if (checkMathCookie() == true){
    {%- if allowMathChange %}
        <script type="text/javascript">
 	 if (checkMathCookie() == true) {
-	   document.write('<a href="" onClick="disableMathCookie()">Mathe: an</a>')
+	   document.write('{{ mathbutton("Mathe: an", "disableMathCookie()", False) }}')
 	 } else {
-	   document.write('<a href="" onClick="enableMathCookie()">Mathe: aus</a>')
+	   document.write('{{ mathbutton("Mathe: aus", "enableMathCookie()", False) }}')
 	 }
        </script>
        <noscript>
-	 <div>Mathe: aus</div>
+	 {{ mathbutton("Mathe: kein Javascript", "enableMathCookie()", True) }}
        </noscript>
    {% else %}
        <script type="text/javascript">
 	 if (checkMathCookie() == true) {
-	   document.write('Mathe: an')
+	   document.write('{{ mathbutton("Mathe: an", "disableMathCookie()", True) }}')
 	 } else {
-	   document.write('Mathe: aus')
+	   document.write('{{ mathbutton("Mathe: aus", "enableMathCookie()", True) }}')
 	 }
        </script>
        <noscript>
-	 Mathe: aus
+	 {{ mathbutton("Mathe: kein Javascript", "enableMathCookie()", True) }}
        </noscript>
    {% endif -%}
    <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
