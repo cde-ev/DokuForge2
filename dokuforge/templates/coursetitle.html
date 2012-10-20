@@ -16,6 +16,6 @@
 	<textarea name="content">{{ content|e }}</textarea>
 	<input type="hidden" name="contentreceived" value="true">
 	<button type="submit" name="saveedit">Speichern und Editieren</button>
+	{{ fakebutton(buildurl("course"), "Abbrechen") }}
 </form>
-{{ fakebutton(buildurl("course"), "Abbrechen") }}
 {% endblock %}

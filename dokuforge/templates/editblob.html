@@ -19,6 +19,7 @@
   K&uuml;rzel: <textarea name="label">{{ (form.label if form.label is defined else blob.label)|e }}</textarea>
   Dateiname: <textarea name="name">{{ (form.name if form.name is defined else blob.filename)|e }}</textarea>
 	<button type="submit" name="saveshow">Speichern</button>
+	{{ fakebutton(buildurl("showblob", dict(blob=blob.number)), "Abbrechen") }}
 </form>
 Das K&uuml;rzel darf nur Kleinbuchstaben und Ziffern enthalten.
 

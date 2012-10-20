@@ -16,6 +16,6 @@ Nutzeradministration
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<button type="submit" name="saveedit">Speichern und Editieren</button>
+	{{ fakebutton(buildurl("admin"), "Abbrechen") }}
 </form>
-{{ fakebutton(buildurl("admin"), "Abbrechen") }}
 {% endblock %}

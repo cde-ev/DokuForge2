@@ -16,6 +16,6 @@ Gruppenverwaltung
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<button type="submit" name="saveedit">Speichern und Editieren</button>
+	{{ fakebutton(buildurl("groups"), "Abbrechen") }}
 </form>
-{{ fakebutton(buildurl("groups"), "Abbrechen") }}
 {% endblock %}
