@@ -11,7 +11,7 @@ class LazyView(Mapping):
 
     In this case lazy means that the functions are only called when the values
     are actually requested and in addition the returned values are cached. An
-    additional difference to normal dicts is that attemping to write to a
+    additional difference to normal dicts is that attempting to write to a
     LazyView will fail with a TypeError (as defined by collections.Mapping).
     """
     def __init__(self, functions):
@@ -44,7 +44,7 @@ class LazyView(Mapping):
             except Exception, exc:
                 # Jinja2 swallows some exceptions such as KeyErrors.
                 # So log them here to see them.
-                logger.warn("Proecessing absent key %r of a LazyView. "
+                logger.warn("Processing absent key %r of a LazyView. "
                             "Received exception %r." % (key, exc))
                 for line in traceback.format_exc().splitlines():
                     logger.info(line)
