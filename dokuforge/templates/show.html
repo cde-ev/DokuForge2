@@ -19,7 +19,6 @@ Teil #{{ page|string }}
 </div>
 <hr>
 
-
 {%- if user.allowedWrite(academy, course) %}
 {{ fakebutton(buildurl("edit"), "Editieren") }}
 {{ button(buildurl("delete"), "Löschen", dict()) }}
