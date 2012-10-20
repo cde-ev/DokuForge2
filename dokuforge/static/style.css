@@ -110,6 +110,7 @@ textarea {
 }
 .button {
     display: inline;
+    text-decoration: none;
 }
 .dokucontent {
     margin-left: 1em;

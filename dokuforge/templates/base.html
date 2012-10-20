@@ -10,7 +10,7 @@
 <a href="{{ action|e }}" class="button"><button type="button">{{ label|e }}</button></a>
 {%- endmacro -%}
 {% macro mathbutton(label, method, disabled) -%}
-<form action="" method="" class="button"> <div style="display: inline"> <button type="submit" onClick="{{ method|e }}" {% if disabled %} disabled="disabled"{% endif %}>{{ label|e }}</button> </div> </form>
+<a href="" class="button"><button type="button" onClick="{{ method|e }}" {% if disabled %} disabled="disabled"{% endif %}>{{ label|e }}</button></a>
 {%- endmacro -%}
 
 {%- macro navbar(entries) -%}
