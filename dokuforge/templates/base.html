@@ -10,7 +10,7 @@
 <a href="{{ action|e }}" class="button"><button type="button">{{ label|e }}</button></a>
 {%- endmacro -%}
 {% macro mathbutton(label, method, disabled) -%}
-<a href="" class="button"><button type="button" onClick="{{ method|e }}" {% if disabled %} disabled="disabled"{% endif %}>{{ label|e }}</button></a>
+<a href="" class="button"><button type="button" {% if method is not none %} onClick="{{ method|e }}" {% endif %} {% if disabled %} disabled="disabled"{% endif %}>{{ label|e }}</button></a>
 {%- endmacro -%}
 
 {%- macro navbar(entries) -%}
@@ -122,7 +122,7 @@ if (checkMathCookie() == true){
 	 }
        </script>
        <noscript>
-	 {{ mathbutton("Mathe: kein Javascript", "enableMathCookie()", True) }}
+	 {{ mathbutton("Mathe: kein Javascript", none, True) }}
        </noscript>
    {% else %}
        <script type="text/javascript">
@@ -133,7 +133,7 @@ if (checkMathCookie() == true){
 	 }
        </script>
        <noscript>
-	 {{ mathbutton("Mathe: kein Javascript", "enableMathCookie()", True) }}
+	 {{ mathbutton("Mathe: kein Javascript", none, True) }}
        </noscript>
    {% endif -%}
    <a href="{{ buildurl("styleguide")|e }}">Style-Guide</a>
