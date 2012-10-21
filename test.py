@@ -657,6 +657,8 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
                              'Bitte \\acronym{ACRONYME} anders setzen.')
+        self.verifyExportsTo('Unterscheide T-shirt und DNA-Sequenz.',
+                             'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
 
     def testEscaping(self):
         self.verifyExportsTo('Do not allow \\dangerous commands!',
