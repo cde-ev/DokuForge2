@@ -21,11 +21,15 @@ import re
 ## For normal parsing, that's it.
 ##
 ## 4. If you're also interested in the micotypography for the TeX
-##    export, look at the abstract class MicrotypeFeature, the function
-##    defaultMicrotype and the decendents of MicrotypeFeature.
-
-# FIXME add \@ in the appropriate places of the TeX export
-#       i.e. whenever the exporter encountered something special
+##    export, the story is as follows. A microtype feature is a
+##    function str -> [str] taking a textual unit and returning
+##    a list of textual units after the feature is applied, splitting
+##    the original unit where approprate. A microtype is given
+##    by a list of features and has the semantics of sucessively
+##    applying these features (in the sense of the list monad), and
+##    finally concatenating the obtained tokens. In other words, the
+##    seamantics is given by
+##    \w -> ((foldl (>>=) (return w) features) >>= id)
 
 def intersperse(iterable, delimiter):
     it = iter(iterable)
