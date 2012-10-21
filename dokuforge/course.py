@@ -6,9 +6,8 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
-from dokuforge.parser import dfOverview
+from dokuforge.parser import dfLineGroupParser, Estimate, PHeading
 import dokuforge.common as common
-from dokuforge.parser import dfLineGroupParser
 
 class Outline:
     def __init__(self, number):
@@ -18,6 +17,7 @@ class Outline:
         self.number = number
         self.content = []
         self.lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : common.epoch}
+        self.estimate = Estimate.fromNothing()
     def addheading(self, title):
         """
         @type title: unicode
@@ -46,6 +46,12 @@ class Outline:
         @rtype: [(str, unicode)]
         """
         return self.content
+    def addEstimate(self, estimate):
+        """
+        @type estimate: Estimate
+        """
+        assert isinstance(estimate, Estimate)
+        self.estimate = estimate
     def addcommitinfo(self, info):
         """
         Add information about the last commit. Must contain at
@@ -56,7 +62,7 @@ class Outline:
         assert 'date' in info.keys()
         assert 'author'  in info.keys()
         assert 'revision' in info.keys()
-        
+
         self.lastchange = info
     @property
     def versionstring(self):
@@ -148,8 +154,12 @@ class Course(StorageDir):
         for p in pages:
             outline = Outline(p)
             outline.addcommitinfo(self.getcommit(p))
-            headings = dfOverview(self.showpage(p))
+            parsed = dfLineGroupParser(self.showpage(p))
+            headings =  [x for x in parsed.parts if isinstance(x, PHeading)]
             outline.addParsed(headings)
+            theestimate = parsed.toEstimate()
+            theestimate += Estimate.fromBlobs(self.listblobs(p))
+            outline.addEstimate(theestimate)
             outlines.append(outline)
         return outlines
 

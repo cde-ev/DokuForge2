@@ -12,6 +12,9 @@ Teil #{{ page|string }}
 [Version {{commit['revision'] | e }}, 
  zuletzt ge&auml;ndert von {{ commit['author'] | e }}
  am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
+({{estimate.pages | round(2) | e}} Seiten,
+{{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
+{{estimate.ednotepages | round(2) | e}} Seiten Ednotes)
 <hr>
 <div class="dokucontent">
 {# content does not need to be escaped, since this is done by the parser #}
