@@ -23,6 +23,7 @@ import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
+from dokuforge.dfexceptions import CheckError
 
 theapplication = None
 
@@ -304,9 +305,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         # hack an invalid group
         mechanize_Item(form.find_control("groups"), dict(value="spam"))
         form["groups"] = ["cde", "spam"]
-        self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
-        self.is_loggedin()
+        self.assertRaises(CheckError, lambda: self.br.open(form.click(label="Speichern und Editieren")))
 
     def testCreateCourse(self):
         self.br.open(self.url)
