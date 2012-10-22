@@ -1,13 +1,15 @@
 
 import os
 import operator
+import datetime
 
 import werkzeug.exceptions
 
 from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
-from dokuforge.common import CheckError
+import dokuforge.dfexceptions as dfexceptions
+from dokuforge.dfexceptions import CheckError
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
@@ -71,12 +73,12 @@ class Academy(StorageDir):
     def getCourse(self, coursename):
         """
         find a course of this academy to a given name. If none is found
-        raise a werkzeug.exceptions.NotFound.
+        raise a MalformedAdress
 
         @param coursename: internal name of course
         @type coursename: unicode
         @returns: Course object for course with name coursename
-        @raises werkzeug.exceptions.NotFound: if the course does not exist
+        @raises MalformedAdress: if the course does not exist
         """
         assert isinstance(coursename, unicode)
         coursename = coursename.encode("utf8")
@@ -84,7 +86,7 @@ class Academy(StorageDir):
             common.validateInternalName(coursename)
             common.validateExistence(self.path, coursename)
         except CheckError:
-            raise werkzeug.exceptions.NotFound()
+            raise dfexception.MalformedAdress()
         return Course(os.path.join(self.path, coursename))
 
     def setgroups(self, groups):
@@ -94,6 +96,7 @@ class Academy(StorageDir):
 
         @param groups: groups to set
         @type groups: list of unicode
+        @raises: CheckError
         """
         if isinstance(groups, unicode):
             groups = groups.split()

@@ -7,6 +7,7 @@ import re
 import os
 import ConfigParser
 from cStringIO import StringIO
+from dokuforge.dfexceptions import *
 import tarfile
 import datetime
 
@@ -143,9 +144,6 @@ def validateBlobComment(comment):
         raise CheckError(u"Keine Bildunterschrift gefunden!",
                          u"Bitte eine Bildunterschrift eingeben und erneut versuchen.")
 
-class InvalidBlobFilename(CheckError):
-    pass
-
 def validateBlobFilename(filename):
     """
     check whether a filename for a blob is valid. This means matching a certain
@@ -256,8 +254,7 @@ def validateGroupConfig(config):
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
-class RcsUserInputError(CheckError):
-    pass
+
 
 def validateRcsRevision(versionnumber):
     """
@@ -268,8 +265,7 @@ def validateRcsRevision(versionnumber):
     """
     assert isinstance(versionnumber, str)
     if re.match('^[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}(\.[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}){0,5}$', versionnumber) is None:
-        raise RcsUserInputError(u"rcs version number syntactically malformed",
-                                u"can only happen in hand-crafted requests")
+        raise dfexceptions.RcsUserInputError()
 
 class TarWriter:
     def __init__(self):

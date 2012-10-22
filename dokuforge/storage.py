@@ -10,27 +10,45 @@ import re
 
 from dokuforge.common import check_output, utc, epoch
 from dokuforge.common import validateRcsRevision
-from dokuforge.common import RcsUserInputError
-
-from subprocess import CalledProcessError
+from dokuforge.dfexceptions import RcsUserInputError, RcsError
+from dokuforge.dfexceptions import FileDoesNotExist
 
 logger = logging.getLogger(__name__)
 
 RCSENV = os.environ.copy()
 RCSENV["LC_ALL"] = "C"
 
+def call_rcs(cmdline):
+    """
+    @type cmdline: [str]
+    @rtype: str
+    @returns: the content received on stdout
+    @raises RcsError: if the process exits with a non-zero status
+    """
+    assert isinstance(cmdline, list)
+    process = subprocess.Popen(cmdline, env=RCSENV, stderr=subprocess.PIPE,
+                               stdout=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    if process.returncode:
+        raise RcsError("failure invoking %r" % cmdline, stderr,
+                       process.returncode)
+    return stdout
+
 def rlogv(filename):
     """
     Return the head revision of an rcs file
 
     (needed, as rlog -v is a FreeBSD extension)
-    @type filename: str
+    @type filename: str or None
     """
+    # FIXME: maybe use proper exceptions to differentiate errors?
     assert isinstance(filename, str)
     logger.debug("rlogv: looking up revision for %r" % filename)
-    f = file(filename, mode = "r")
-    content = f.read()
-    f.close()
+    try:
+        with file(filename) as rcsfile:
+            content = rcsfile.read()
+    except IOError:
+        return None
     m = re.match(r'^\s*head\s*([0-9.]+)\s*;', content)
     if m:
         return m.groups()[0]
@@ -48,6 +66,9 @@ def rloghead(filename):
               it will contain the keys 'revision', 'author', and 'date'.
               All values are str, except for the 'date' key which has a
               datetime object associated.
+    @rtype: {str: object}
+    @raises FileDoesNotExist:
+    @raises RcsError:
     """
     assert isinstance(filename, str)
     logger.debug("rloghead: looking up head revision info for %r" % filename)
@@ -60,19 +81,32 @@ def rloghead(filename):
     answer = {}
 
     revision = rlogv(filename)
+    if revision is None:
+        raise FileDoesNotExist(filename)
     answer['revision'] = revision
-    rlog = check_output(["rlog","-q","-r%s" % revision,filename], env=RCSENV)
+    rlog = call_rcs(["rlog", "-q", "-r%s" % revision, filename])
     lines = rlog.splitlines()
-    while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
+    try:
+        while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
+            lines.pop(0)
         lines.pop(0)
-    lines.pop(0)
-    lines.pop(0)
-    stateline = lines.pop(0)
-    params = stateline.split(';')
-    for param in params:
-        keyvalue = param.split(': ',1)
-        if len(keyvalue) > 1:
-            answer[keyvalue[0].lstrip()]=keyvalue[1]
+        lines.pop(0)
+        stateline = lines.pop(0)
+        params = stateline.split(';')
+        for param in params:
+            keyvalue = param.split(': ',1)
+            if len(keyvalue) > 1:
+                answer[keyvalue[0].lstrip()]=keyvalue[1]
+    except IndexError:
+        # as discussed above, the output format is an invariant for all rcs
+        # implementations
+        raise RcsError("failed to parse rcs-file, corrupted data: %s" % filename)
+    try:
+        answer["author"]
+        answer["date"]
+    except KeyError:
+        # The rlog we used is not the rcs tool.
+        raise RcsError("failed to parse rcs-file, missing data: %s" % filename)
 
     date = datetime.datetime.strptime(answer["date"], "%Y/%m/%d %H:%M:%S")
     answer["date"] = date.replace(tzinfo=utc)
@@ -97,11 +131,13 @@ class LockDir:
 
         Acquiring this object multiple times will succeed, but you have to
         release it multiple times, too.
+
+        @raises RcsError:
         """
         if self.lockcount != 0:
             self.lockcount += 1
             return self
-        while True:
+        while True: # FIXME: we should somehow timeout
             try:
                 os.mkdir(self.path)
                 self.lockcount = 1
@@ -111,12 +147,22 @@ class LockDir:
                     logger.debug("lock %r is busy" % self.path)
                     time.sleep(0.2) # evertthing OK, someone else has the lock
                 else:
-                    raise # something else went wrong
+                    errname = errno.errorcode.get(e.errno, str(e.errno))
+                    raise RcsError("failed to lock %r with mkdir giving -%s" %
+                                   (self.path, errname))
 
     def __exit__(self, _1, _2, _3):
+        """
+        @raises RcsError:
+        """
         self.lockcount -= 1
         if self.lockcount == 0:
-            os.rmdir(self.path)
+            try:
+                os.rmdir(self.path)
+            except OSError, e:
+                errname = errno.errorcode.get(e.errno, str(e.errno))
+                raise RcsError("failed to unlock %r with rmdir giving -%s" %
+                               (self.path, errname))
 
 
 class Storage(object):
@@ -155,6 +201,8 @@ class Storage(object):
         @type content: str or filelike
         @param content: the content of the file
         @type message: str
+        @raises IOError:
+        @raises RcsError:
         """
         if isinstance(content, basestring):
             assert isinstance(content, str)
@@ -163,8 +211,8 @@ class Storage(object):
 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
-            subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
-                                  env=RCSENV)
+            ## we ensured the existence of the file, hence the call may not fail
+            call_rcs(["co", "-f", "-q", "-l", self.fullpath()])
             objfile = file(self.fullpath(), mode = "w")
             shutil.copyfileobj(content, objfile)
             objfile.close()
@@ -172,21 +220,35 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())
-            subprocess.check_call(args, env=RCSENV)
+            call_rcs(args)
 
     def ensureexistence(self, havelock=None):
+        """
+        @raises RcsError:
+        """
         if not os.path.exists(self.fullpath("%s,v")):
             with havelock or self.lock:
                 if not os.path.exists(self.fullpath("%s,v")):
                     logger.debug("creating rcs file %r" % self.fullpath())
-                    subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
-                                           self.fullpath()], env=RCSENV)
-                    file(self.fullpath(), mode = "w").close()
-                    subprocess.check_call(["ci", "-q", "-f",
-                                           "-minitial, implicit, empty commit",
-                                           self.fullpath()], env=RCSENV)
+                    # These calls can only fail for reasons like
+                    # disk full, permision denied -- all cases where
+                    # dokuforge is not installed correctly
+                    call_rcs(["rcs", "-q", "-i", "-t-created by store",
+                              self.fullpath()])
+                    try:
+                        file(self.fullpath(), mode = "w").close()
+                    except IOError, err:
+                        raise RcsError("failed to touch %r: %s" %
+                                       (self.fullpath(), str(err)))
+                    call_rcs(["ci", "-q", "-f",
+                              "-minitial, implicit, empty commit",
+                              self.fullpath()])
 
     def asrcs(self, havelock=None):
+        """
+        @raises IOError:
+        @raises RcsError:
+        """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
             f = file(self.fullpath("%s,v"), mode = "r")
@@ -196,7 +258,8 @@ class Storage(object):
 
     def status(self, havelock=None):
         """
-        @rtype: str
+        @rtype: str or None
+        @raises RcsError:
         """
         self.ensureexistence(havelock = havelock)
         result = rlogv(self.fullpath("%s,v"))
@@ -211,15 +274,27 @@ class Storage(object):
                   in particular, it will contain the keys 'revision', 'author',
                   and 'date'. All values are str, except for the 'date' key
                   which has a datetime object associated.
+        @raises RcsError:
         """
         self.ensureexistence(havelock=havelock)
-        return rloghead(self.fullpath("%s,v"))
+        try:
+            status = rloghead(self.fullpath("%s,v"))
+        except FileDoesNotExist:
+            # we just ensured the existence
+            raise RcsError("failed to get commitstatus, rcs-file %s vanished" %
+                           self.fullpath("%s,v"))
+        return status
 
     def content(self, havelock=None):
+        """
+        @raises RcsError:
+        """
         self.ensureexistence(havelock = havelock)
         logger.debug("retrieving content for %r" % self.fullpath())
-        return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
-                            env=RCSENV)
+        # We ensured the existence of the file; hence the call can only fail
+        # if rcs is not installed properly and/or filepermissions are set
+        # incorrectly -- in other words, if df is not installed correctly
+        return call_rcs(["co", "-q", "-p", "-kb", self.fullpath()])
 
     def startedit(self, havelock=None):
         """
@@ -231,11 +306,13 @@ class Storage(object):
 
         @returns: an opaque version string and the contents of the file
         @rtype: (str, str)
+        @raises RcsError:
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
             status = self.status(havelock = gotlock)
             content = self.content(havelock = gotlock)
+            # FIXME: explain why status is not None
             return status, content
 
     def endedit(self, version, newcontent, user=None, havelock=None):
@@ -258,6 +335,10 @@ class Storage(object):
             to be done manually), and (newversion, mergedcontent) is a state
             for further editing that can be used as if obtained from
             startedit
+        @rtype: (bool, str, str)
+        @raises OSError:
+        @raises IOError:
+        @raises RcsUserInputError
 
         @note: the newcontents are transformed to native line ending
             (assuming a Unix host).  Therefore endedit CANNOT be used to
@@ -274,6 +355,7 @@ class Storage(object):
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
             currentversion = self.status(havelock = gotlock)
+            assert currentversion is not None
             if currentversion == version:
                 self.store(newcontent, user = user, havelock = gotlock)
                 newversion = self.status(havelock = gotlock)
@@ -283,11 +365,13 @@ class Storage(object):
             logger.debug("storing conflict %r current=%r vs edited=%r" %
                          (self.fullpath(), currentversion, version))
             try:
-                subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
-                                       self.fullpath()], env=RCSENV)
-            except CalledProcessError:
-                raise RcsUserInputError(u"specified rcs version does not exist",
-                                        u"can only happen in hand-crafted requests")
+                call_rcs(["co", "-f", "-q", "-l%s" % version,
+                          self.fullpath()])
+            except RcsError, error:
+                # FIXME: verify that the passed revision is indeed rejected
+                # Otherwise we may be hiding real errors. Looking at
+                # error.stderr might help here.
+                raise RcsUserInputError()
             objfile = file(self.fullpath(), mode = "w")
             objfile.write(newcontent)
             objfile.close()
@@ -296,12 +380,16 @@ class Storage(object):
             if user is not None:
                 args.append("-w%s" % user)
             args.append(self.fullpath())
-            subprocess.check_call(args, env=RCSENV)
+            call_rcs(args)
             # 2.) merge in head
             os.chmod(self.fullpath(), 0600)
-            subprocess.call(["rcsmerge", "-q", "-r%s" % version,
-                             self.fullpath()]) # Note: non-zero exit status is
-                                               # OK!
+            try:
+                call_rcs(["rcsmerge", "-q", "-r%s" % version, self.fullpath()])
+            except RcsError, error:
+                # Note: non-zero exit status is OK!
+                # FIXME: can we distinguish merge conflicts from other errors
+                # using error.stderr or error.code?
+                pass
             objfile = file(self.fullpath(), mode = "r")
             mergedcontent = objfile.read()
             objfile.close()
@@ -325,11 +413,16 @@ class CachingStorage(Storage):
     """
 
     def __init__(self, path, filename):
+        # inherit doc string from Storage.__init__
         Storage.__init__(self, path, filename)
         self.cachedtime = epoch # Jan 1, 1970 -- way before the first dokuforge2 installation
         self.cachedvalue = ""
 
     def content(self, havelock=None):
+        """
+        @raises RcsError:
+        """
+        self.ensureexistence(havelock = havelock)
         mtime = self.timestamp()
         if mtime == self.cachedtime:
             pass # content already up to date
