@@ -54,7 +54,7 @@ def acronym(word):
 
     But don't mangle things like 'T-Shirt' or 'E-Mail'.
     """
-    if len(word) > 1 and word.isupper():
+    if len(word) > 1 and word.isalpha() and word.isupper():
         word = '\\acronym{%s}' % word
     yield word
 
