@@ -180,16 +180,16 @@ def validateNonExistence(path, name):
     check whether a name is already in use as internal representation, if so
     raise a CheckError. This also checks for additional rcs file extensions.
 
-    @type name: str
-    @type path: str
+    @type name: bytes
+    @type path: bytes
     @param name: name to check for existence
     @param path: base path in which to check for the name
     @raises CheckError:
     """
-    assert isinstance(name, str)
-    assert isinstance(path, str)
+    assert isinstance(name, bytes)
+    assert isinstance(path, bytes)
     if os.path.exists(os.path.join(path, name)) or \
-           os.path.exists(os.path.join(path, name + ",v")):
+           os.path.exists(os.path.join(path, name + b",v")):
         raise CheckError(u"Interner Name bereits vergeben!",
                          u"Wähle einen anderen Namen.")
 
@@ -279,16 +279,16 @@ class TarWriter:
 
     @property
     def prefix(self):
-        return "".join(map("%s/".__mod__, self.dirs))
+        return b"".join(map(lambda s: s + b"/", self.dirs))
 
     def pushd(self, dirname):
         """Push a new directory on the directory stack. Further add* calls will
         place their files into this directory. The operation must be reverted
         using popd before close is called. The directory name must not contain
         a slash.
-        @type dirname: str
+        @type dirname: bytes
         """
-        assert "/" not in dirname
+        assert b"/" not in dirname
         self.dirs.append(dirname)
 
     def popd(self):
@@ -310,12 +310,12 @@ class TarWriter:
         Add a file with given content and return some tar content generated
         along the way.
 
-        @type name: str
+        @type name: bytes
         @type content: bytes
         @rtype: bytes
         """
-        assert isinstance(name, str)
-        assert isinstance(content, str)
+        assert isinstance(name, bytes)
+        assert isinstance(content, bytes)
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
@@ -326,8 +326,8 @@ class TarWriter:
         """
         Add a regular file with given (tar) name and given (filesystem)
         filename and return some tar content generated along the way.
-        @type name: str
-        @type filename: str
+        @type name: bytes
+        @type filename: bytes
         @rtype: bytes
         """
         info = tarfile.TarInfo(self.prefix + name)
@@ -344,8 +344,8 @@ class TarWriter:
         Only regular files and directories are considered. Any basename that
         is contained in excludes is left out. The tar content generated along
         the way is returned as a bytes iterator.
-        @type name: str
-        @type dirname: str
+        @type name: bytes
+        @type dirname: bytes
         @param excludes: an object that provides __contains__
         """
         self.pushd(name)
@@ -366,7 +366,7 @@ class TarWriter:
     def close(self):
         """
         Close the TarWriter and return the remaining content.
-        @rtype: str
+        @rtype: bytes
         """
         assert not self.dirs
         self.tar.close()

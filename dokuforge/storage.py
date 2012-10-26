@@ -24,9 +24,9 @@ def rlogv(filename):
     Return the head revision of an rcs file
 
     (needed, as rlog -v is a FreeBSD extension)
-    @type filename: str
+    @type filename: bytes
     """
-    assert isinstance(filename, str)
+    assert isinstance(filename, bytes)
     logger.debug("rlogv: looking up revision for %r" % filename)
     f = file(filename, mode = "r")
     content = f.read()
@@ -43,13 +43,13 @@ def rloghead(filename):
     """
     Get relevant information for the head revision of the given rcs file
 
-    @type filename: str
+    @type filename: bytes
     @returns: a str-object dict with information about the head commit; in particular,
               it will contain the keys 'revision', 'author', and 'date'.
               All values are str, except for the 'date' key which has a
               datetime object associated.
     """
-    assert isinstance(filename, str)
+    assert isinstance(filename, bytes)
     logger.debug("rloghead: looking up head revision info for %r" % filename)
     
     # Amzingly enough, the "official" way to obtain revision information
@@ -81,9 +81,9 @@ def rloghead(filename):
 class LockDir:
     def __init__(self, path):
         """
-        @type path: str"
+        @type path: bytes"
         """
-        assert isinstance(path, str)
+        assert isinstance(path, bytes)
         self.path = path
         self.lockcount = 0
 
@@ -126,38 +126,41 @@ class Storage(object):
         of a file in this direcotry. With the filename is also associated
         #lock.filename and filename,v as well as any rcs internal locks
         associated with it.
-        @type path: str
-        @type filename: str
+        @type path: bytes
+        @type filename: bytes
         """
-        assert isinstance(path, str)
-        assert isinstance(filename, str)
+        assert isinstance(path, bytes)
+        assert isinstance(filename, bytes)
         self.path = path
         self.filename = filename
 
-    def fullpath(self, formatstr="%s"):
-        """Join self.path with formatstr % self.filename.
-        @type formatstr: str
-        @param formatstr: format string that takes exactly one %s
-        @rtype: str
+    def fullpath(self, prefix=b"", postfix=b""):
+        """Construct a derived path based on the storage. The passed prefix is
+        inserted between the base directory and the filename. The postfix is
+        appended to the filename.
+        @type prefix: bytes
+        @type postfix: bytes
+        @rtype: bytes
         """
-        assert isinstance(formatstr, str)
-        return os.path.join(self.path, formatstr % self.filename)
+        assert isinstance(prefix, bytes)
+        assert isinstance(postfix, bytes)
+        return os.path.join(self.path, prefix + self.filename + postfix)
 
     @property
     def lock(self):
-        return LockDir(self.fullpath("#lock.%s"))
+        return LockDir(self.fullpath(prefix=b"#lock."))
 
     def store(self, content, user=None, message="store called", havelock=None):
         """
         Store the given contents; rcs file is create if it does not
         exist already.
 
-        @type content: str or filelike
+        @type content: bytes or filelike
         @param content: the content of the file
         @type message: str
         """
         if isinstance(content, basestring):
-            assert isinstance(content, str)
+            assert isinstance(content, bytes)
             content = StringIO(content)
         logger.debug("storing %r" % self.fullpath())
 
@@ -175,9 +178,9 @@ class Storage(object):
             subprocess.check_call(args, env=RCSENV)
 
     def ensureexistence(self, havelock=None):
-        if not os.path.exists(self.fullpath("%s,v")):
+        if not os.path.exists(self.fullpath(postfix=b",v")):
             with havelock or self.lock:
-                if not os.path.exists(self.fullpath("%s,v")):
+                if not os.path.exists(self.fullpath(postfix=b",v")):
                     logger.debug("creating rcs file %r" % self.fullpath())
                     subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                            self.fullpath()], env=RCSENV)
@@ -189,7 +192,7 @@ class Storage(object):
     def asrcs(self, havelock=None):
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
-            f = file(self.fullpath("%s,v"), mode = "r")
+            f = file(self.fullpath(postfix=b",v"), mode="r")
             content = f.read()
             f.close()
             return content
@@ -199,9 +202,9 @@ class Storage(object):
         @rtype: str
         """
         self.ensureexistence(havelock = havelock)
-        result = rlogv(self.fullpath("%s,v"))
+        result = rlogv(self.fullpath(postfix=b",v"))
         if result is None:
-            result = rlogv(self.fullpath("RCS/%s,v"))
+            result = rlogv(self.fullpath(prefix=b"RCS/", postfix=b",v"))
         return result
 
     def commitstatus(self, havelock=None):
@@ -213,7 +216,7 @@ class Storage(object):
                   which has a datetime object associated.
         """
         self.ensureexistence(havelock=havelock)
-        return rloghead(self.fullpath("%s,v"))
+        return rloghead(self.fullpath(postfix=b",v"))
 
     def content(self, havelock=None):
         self.ensureexistence(havelock = havelock)
@@ -246,13 +249,13 @@ class Storage(object):
         store it as new head revision. If not, store it to a branch,
         merge with new head revision and return new version content pair.
 
-        @type version: str
+        @type version: bytes
         @param version: the opaque version string optained from startedit
                         when the user started editing the file
-        @type newcontent: str
+        @type newcontent: bytes
         @param newcontent: the new content, produced by the user starting from
                            the content at the provided version
-        @type user: None or str
+        @type user: None or bytes
         @returns: a triple (ok, newversion, mergedcontent) where ok is boolen
             with value True if the save was sucessfull (if not, a merge has
             to be done manually), and (newversion, mergedcontent) is a state
@@ -264,13 +267,13 @@ class Storage(object):
             store binaries (however, rcsmerge won't suggest a sensible
             merged version for binaries anyway).
         """
-        assert isinstance(version, str)
-        assert isinstance(newcontent, str)
-        assert user is None or isinstance(user, str)
+        assert isinstance(version, bytes)
+        assert isinstance(newcontent, bytes)
+        assert user is None or isinstance(user, bytes)
         validateRcsRevision(version)
 
         ## Transform text to Unix line ending
-        newcontent = "\n".join(newcontent.splitlines()) + "\n"
+        newcontent = b"\n".join(newcontent.splitlines()) + b"\n"
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
             currentversion = self.status(havelock = gotlock)
@@ -314,7 +317,7 @@ class Storage(object):
         @rtype: datetime
         """
         self.ensureexistence(havelock = havelock)
-        ts = os.path.getmtime(self.fullpath("%s,v"))
+        ts = os.path.getmtime(self.fullpath(postfix=b",v"))
         ts = datetime.datetime.utcfromtimestamp(ts)
         return ts.replace(tzinfo=utc)
 

@@ -27,7 +27,7 @@ class Academy(StorageDir):
     def __init__(self, obj, listAllGroups):
         """
         @param obj: either a path or an Academy object
-        @type obj: str or Academy
+        @type obj: bytes or Academy
         """
         StorageDir.__init__(self, obj)
         self.listAllGroups = listAllGroups
@@ -39,7 +39,7 @@ class Academy(StorageDir):
         @returns: the groups of which this academy is a member
         @rtype: [unicode]
         """
-        return self.getcontent("groups").decode("utf8").split()
+        return self.getcontent(b"groups").decode("utf8").split()
 
     def getgroupsstring(self):
         """
@@ -48,7 +48,7 @@ class Academy(StorageDir):
         @returns: the groups of which this academy is a member
         @rtype: unicode
         """
-        return self.getcontent("groups").decode("utf8")
+        return self.getcontent(b"groups").decode("utf8")
 
     def viewCourses(self):
         """
@@ -100,7 +100,7 @@ class Academy(StorageDir):
         assert all(isinstance(group, unicode) for group in groups)
         common.validateGroups(groups, self.listAllGroups())
         content = u" ".join(groups)
-        self.getstorage("groups").store(content.encode("utf8"))
+        self.getstorage(b"groups").store(content.encode("utf8"))
 
     def createCourse(self, name, title):
         """
@@ -109,7 +109,7 @@ class Academy(StorageDir):
 
         @param name: internal name of the course
         @param title: displayed name of the course
-        @type name: str (restricted char-set)
+        @type name: unicode (restricted char-set)
         @type title: unicode
         @raises CheckError:
         """
@@ -149,8 +149,8 @@ class Academy(StorageDir):
         """
         yield a tar archive containing the tex-export of the academy.
         """
-        yield tarwriter.addChunk("WARNING", 
-"""Currently there is *NO* escaping of TeX macros in the course files.
+        yield tarwriter.addChunk(b"WARNING", 
+(u"""Currently there is *NO* escaping of TeX macros in the course files.
 This is why they have an additional .untrusted extension. The extension
 is there to prevent accidental execution of untrusted code. Before using
 this export you will have to review those files and if they are harmless
@@ -164,13 +164,13 @@ same exporter semantics, keep the following version string
 for your reference
 
 %s
-""" % commitid)
+""" % commitid).encode("ascii"))
         if static is not None:
-            for chunk in tarwriter.addDirChunk("", static, excludes=[".svn"]):
+            for chunk in tarwriter.addDirChunk(b"", static, excludes=[b".svn"]):
                 yield chunk
-        contents = ""
+        contents = u""
         for course in self.listCourses():
-            contents += "\\include{%s/chap}\n" % course.name
+            contents += u"\\include{%s/chap}\n" % course.name
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
-        yield tarwriter.addChunk("contents.tex", contents)
+        yield tarwriter.addChunk(b"contents.tex", contents.encode("utf8"))
