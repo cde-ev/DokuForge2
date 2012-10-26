@@ -633,5 +633,75 @@ class DokuforgeMockTests(unittest.TestCase):
         inp3 = dfLineGroupParser(inp2).toDF()
         self.assertEqual(inp2, inp3)
 
+class DokuforgeMicrotypeUnitTests(unittest.TestCase):
+    def verifyExportsTo(self, df, tex):
+        obtained = dfLineGroupParser(df).toTex().strip()
+        self.assertEquals(obtained, tex)
+
+    def testQuotes(self):
+        self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
+                             'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
+        self.verifyExportsTo('"Am Anfang" ...',
+                             '"`Am Anfang"\' \\dots{}')
+        self.verifyExportsTo('... "vor Kommata", ...',
+                             '\\dots{} "`vor Kommata"\', \\dots{}')
+        self.verifyExportsTo('... und "am Ende".',
+                             '\\dots{} und "`am Ende"\'.')
+
+    def testAbbrev(self):
+        self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                             'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
+        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter...',
+                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter\\dots{}')
+
+    def testAcronym(self):
+        self.verifyExportsTo('Bitte ACRONYME anders setzen.',
+                             'Bitte \\acronym{ACRONYME} anders setzen.')
+        self.verifyExportsTo('Unterscheide T-shirt und DNA-Sequenz.',
+                             'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
+
+    def testEscaping(self):
+        self.verifyExportsTo('Do not allow \\dangerous commands!',
+                             'Do not allow \\forbidden\\dangerous commands!')
+        self.verifyExportsTo('\\\\ok',
+                             '\\\\ok')
+        self.verifyExportsTo('\\\\\\bad',
+                             '\\\\\\forbidden\\bad')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '10\\% sind ein Zehntel')
+        self.verifyExportsTo('f# ist eine Note',
+                             'f\# ist eine Note')
+        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
+                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
+                             'Heinemann\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo('Escaping should also happen in math, like $\\evilmath$, but not $\\mathbb C$',
+                             'Escaping should also happen in math, like $\\forbidden\\evilmath$, but not $\\mathbb C$')
+
+    def testEdnoteEscape(self):
+        self.verifyExportsTo(
+"""
+
+{{
+
+Bobby Tables...
+
+\\end{ednote}
+
+\\herebedragons
+
+}}
+
+""",
+"""\\begin{ednote}
+
+Bobby Tables...
+
+|end{ednote}
+
+\\herebedragons
+
+\\end{ednote}""")
+
 if __name__ == '__main__':
     unittest.main()

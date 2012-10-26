@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 import collections
+import itertools
 import math
 import re
+
 
 ## How To Read This File?
 ##
@@ -20,8 +23,15 @@ import re
 ## For normal parsing, that's it.
 ##
 ## 4. If you're also interested in the micotypography for the TeX
-##    export, look at the abstract class MicrotypeFeature, the function
-##    defaultMicrotype and the decendents of MicrotypeFeature.
+##    export, the story is as follows. A microtype feature is a
+##    function str -> [str] taking a textual unit and returning
+##    a list of textual units after the feature is applied, splitting
+##    the original unit where approprate. A microtype is given
+##    by a list of features and has the semantics of sucessively
+##    applying these features (in the sense of the list monad), and
+##    finally concatenating the obtained tokens. In other words, the
+##    seamantics is given by
+##    \w -> ((foldl (>>=) (return w) features) >>= id)
 
 class Estimate(collections.namedtuple("Estimate",
             "chars ednotechars weightedchars blobs")):
@@ -91,100 +101,232 @@ class Estimate(collections.namedtuple("Estimate",
 
     __rmul__ = __mul__
 
-class MicrotypeFeature:
-    """
-    Abstract class where all word-level microtypographic
-    features inherit from.
-    """
-    @classmethod
-    def applies(self, word):
-        return False
 
-    @classmethod
-    def doit(self, word):
-        """
-        return a list of processed words, that should be
-        treated separately by all following features.
-        """
-        return [word]
+def intersperse(iterable, delimiter):
+    it = iter(iterable)
+    for x in it:
+        yield x
+        break
+    for x in it:
+        yield delimiter
+        yield x
 
-class Acronym(MicrotypeFeature):
+class Escaper:
+    def __init__(self, sequence, escaped):
+        self.sequence = sequence
+        self.escaped = escaped
+
+    def __call__(self, word):
+        return intersperse(word.split(self.sequence), self.escaped)
+
+def acronym(word):
     """
     All-capital words should be displayed in smaller font.
+    But don't mangle things like 'T-Shirt' or 'E-Mail'.
     """
+    if len(word) > 1 and word.isalpha() and word.isupper():
+        word = '\\acronym{%s}' % word
+    yield word
 
-    @classmethod
-    def applies(self, word):
-        return len(word) > 0 and word.isupper()
-
-    @classmethod
-    def doit(self, word):
-        return ['\\acronym{%s}' % word]
-
-class StandardAbbreviations(MicrotypeFeature):
+def  standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
     """
-    abb = {
-        '...' : '\\dots',
+    abb = { 
+    # FIXME we want '~\dots{}' in nearly every case
+        '...' : '\\dots{}',
+        'bzw.' : 'bzw.',
+        'ca.' : 'ca.',
         'd.h.' : 'd.\\,h.',
+        'etc.' : 'etc.',
+        'f.' : 'f.',
+        'ff.' : 'ff.',
+        'n.Chr.' : 'n.\\,Chr.',
+        u'o.Ä.' : u'o.\,Ä.',
+        's.o.' : 's.\\,o.',
+        'sog.' : 'sog.',
+        's.u.' : 's.\\,u.',
+        'u.a.' : 'u.\\,a.',
+        'v.Chr.' : 'v.\\,Chr.',
+        'vgl.' : 'vgl.',
         'z.B.' : 'z.\\,B.'}
 
-    @classmethod
-    def applies(self, word):
-        return word in self.abb
+    yield abb.get(word, word)
 
-    @classmethod
-    def doit(self, word):
-        return [self.abb[word]]
+splitEllipsis = Escaper("...", "...")
+# Replace the ellipsis symbol ... by \dots
 
-class NaturalNumbers(MicrotypeFeature):
+def naturalNumbers(word):
     """
     Special Spacing for numbers.
     """
-    @classmethod
-    def applies(self, word):
-        return len(word) > 0 and re.match('^[0-9]+$', word)
-
-    @classmethod
-    def doit(self, word):
+    # FIXME negative numbers only work because '-' currently is a separator
+    # FIXME we want some special spacing around numbers:
+    #       - a number followed by a dot wants a thin space: '21.\,regiment'
+    #       - a number followed by a unit wants a thin space: 'weight 67\,kg'
+    #       - a number followed by a percent sign wants a thin space: '51\,\%'
+    if not word.isdigit():
+        yield word
+    else:
         value = int(word)
         if value < 10000:
             # no special typesetting for 4 digits only
-            return ["%d" % value]
-        result = ''
-        while value >= 1000:
-            threedigits = value % 1000
-            result = '\\,%03d%s' % (threedigits, result)
-            value = value // 1000
-        return ['%d%s' % (value, result)]
+            yield "%d" % value
+        else:
+            result = ''
+            while value >= 1000:
+                threedigits = value % 1000
+                result = '\\,%03d%s' % (threedigits, result)
+                value = value // 1000
+            yield '%d%s' % (value, result)
 
-class OpenQuotationMark(MicrotypeFeature):
-    @classmethod
-    def applies(self, word):
-        return len(word) > 1 and word.startswith('"')
+def openQuotationMark(word):
+    if len(word) > 1 and word.startswith('"'):
+        yield '"`'
+        word = word[1:]
+    yield word
 
-    @classmethod
-    def doit(self, word):
-        return ['"`', word[1:]]
+def closeQuotationMark(word):
+    if len(word) > 1 and word.endswith('"'):
+        yield word[:-1]
+        yield '"\''
+    else:
+        yield word
 
-class CloseQuotationMark(MicrotypeFeature):
-    @classmethod
-    def applies(self, word):
-        return len(word) > 1 and word.endswith('"')
+def fullStop(word):
+    if len(word) > 1 and word.endswith('.'):
+        yield word[:-1]
+        yield '.'
+    else:
+        yield word
 
-    @classmethod
-    def doit(self, word):
-        return [word[:-1], '"\'']
+percent = Escaper("%", r"\%")
 
-class FullStop(MicrotypeFeature):
-    @classmethod
-    def applies(self, word):
-        return len(word) > 1 and word.endswith('.')
+ampersand = Escaper("&", r"\&")
 
-    @classmethod
-    def doit(self, word):
-        return [word[:-1], '.']
+hashmark = Escaper("#", r"\#")
+
+caret = Escaper("^", r"\caret{}")
+
+quote = Escaper("'", "'")
+
+class EscapeCommands:
+    """
+    Mark all controll sequence tokens as forbidden, except
+    a list of known good commands.
+    """
+    escapechar = "\\"
+    allowed = [
+    # produced by our own microtypography or otherwise essential
+    '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym', '\\&',
+    '\\#', '\\caret',
+    # other allowed commands; FIXME: complete and put to a separate file
+    ## list of useful math commands mostly taken
+    ## from 'A Guide To LaTeX' by Kopka
+    ## greek letters
+    '\\alpha', '\\beta', '\\gamma', '\\delta', '\\epsilon', '\\zeta',
+    '\\eta', '\\theta', '\\iota', '\\kappa', '\\lambda', '\\mu',
+    '\\nu', '\\xi', '\\pi', '\\rho', '\\sigma', '\\tau', '\\upsilon',
+    '\\phi', '\\chi', '\\psi', '\\omega', '\\Gamma', '\\Delta',
+    '\\Theta', '\\Lambda', '\\Xi', '\\Pi', '\\Sigma', '\\Phi', '\\Psi',
+    '\\Omega', '\\varepsilon', '\\vartheta', '\\varpi', '\\varrho',
+    '\\varsigma', '\\varphi',
+    ## math layout
+    '\\frac', '\\sqrt', '\\sum', '\\int', '\\ldots', '\\cdots',
+    '\\vdots', '\\ddots', '\\oint', '\\prod', '\\coprod'
+    ## math symbols
+    '\\pm', '\\cap', '\\circ', '\\bigcirc' '\\mp', '\\cup', '\\bullet',
+    '\\Box' '\\times', '\\uplus', '\\diamond', '\\Diamond', '\\div',
+    '\\sqcap', '\\bigtriangleup', '\\cdot', '\\sqcup',
+    '\\bigtriangledown', '\\ast', '\\vee', '\\unlhd', '\\triangleleft',
+    '\\star', '\\wedge', '\\unrhd', '\\triangleright', '\\dagger',
+    '\\oplus', '\\oslash', '\\setminus', '\\ddagger', '\\ominus',
+    '\\odot', '\\wr', '\\amalg', '\\otimes',
+    ## math relations
+    '\\le', '\\leq', '\\ge', '\\geq', '\\neq', '\\sim', '\\ll', '\\gg',
+    '\\doteq', '\\simeq', '\\subset', '\\supset', '\\approx', '\\asymp',
+    '\\subseteq', '\\supseteq', '\\cong', '\\smile', '\\sqsubset',
+    '\\sqsupset', '\\equiv', '\\frown', '\\sqsubseteq', '\\sqsupseteq',
+    '\\propto', '\\bowtie', '\\in', '\\ni', '\\prec', '\\succ',
+    '\\vdash', '\\dashv', '\\preceq', '\\succeq', '\\models', '\\perp',
+    '\\parallel', '\\mid',
+    ## negations
+    '\\not', '\\notin',
+    ## arrows
+    '\\leftarrow', '\\gets', '\\longleftarrow', '\\uparrow',
+    '\\Leftarrow', '\\Longleftarrow', '\\Uparrow', '\\rightarrow',
+    '\\to', '\\longrightarrow', '\\downarrow', '\\Rightarrow',
+    '\\Longrightarrow', '\\Downarrow', '\\leftrightarrow',
+    '\\longleftrightarrow', '\\updownarrow', '\\Leftrightarrow',
+    '\\Longleftrightarrow', '\\Updownarrow', '\\mapsto', '\\longmapsto',
+    '\\nearrow', '\\hookleftarrow', '\\hookrightarrow', '\\searrow',
+    '\\leftharpoonup', '\\rightharpoonup', '\\swarrow',
+    '\\leftharpoondown', '\\rightharpoondown', '\\nwarrow',
+    '\\rightleftharpoons', '\\leadsto',
+    ## various symbols
+    '\\aleph', '\\prime', '\\forall', '\\hbar', '\\emptyset',
+    '\\exists', '\\imath', '\\nablaa', '\\neg', '\\triangle', '\\jmath',
+    '\\surd', '\\flat', '\\clubsuit', '\\ell', '\\partial', '\\natural',
+    '\\diamondsuit', '\\wp', '\\top', '\\sharp', '\\heartsuit', '\\Re',
+    '\\bot', '\\spadesuit', '\\Im', '\\vdash', '\\angle', '\\Join',
+    '\\mho', '\\dashv', '\\backslash', '\\infty',
+    ## big symbols
+    '\\bigcap', '\\bigodot', '\\bigcup', '\\bigotimes', '\\bigsqcup',
+    '\\bigoplus', '\\bigvee', '\\biguplus', '\\bigwedge',
+    ## function names
+    '\\arccos', '\\cosh', '\\det', '\\inf' '\\limsup', '\\Pr', '\\tan',
+    '\\arcsin', '\\cot', '\\dim', '\\ker', '\\ln', '\\sec', '\\tanh',
+    '\\arctan', '\\coth', '\\exp', '\\lg', '\\log', '\\sin', '\\arg',
+    '\\csc', '\\gcd', '\\lim', '\\max', '\\sinh', '\\cos', '\\deg',
+    '\\hom', '\\liminf', '\\min', '\\sup',
+    ## accents
+    '\\hat', '\\breve', '\\grave', '\\bar', '\\check', '\\acute',
+    '\\ti1de', '\\vec', '\\dot', '\\ddot', '\\mathring',
+    ## parens
+    '\\left', '\\right', '\\lfloor', '\\rfloor', '\\lceil', '\\rceil',
+    '\\langle', '\\rangle',
+    ## misc
+    '\\stackrel', '\\binom', '\\mathbb'
+    # FIXME think about including environments, these can come up in complex
+    # mathematical formulas, but they could also be abused (more in the "we
+    # don't want users to make typesetting decisions" style of misuse, than
+    # anything critical).
+    # ## environments
+    # '\\begin', '\\end',
+    ]
+
+    command_re = re.compile("(%s(?:[a-zA-Z]+|.))" % re.escape(escapechar))
+
+    def forbid(self, word):
+        return '\\forbidden' + word
+
+    def __call__(self, word):
+        for part in self.command_re.split(word):
+            if part.startswith(self.escapechar):
+                if part in self.allowed:
+                    yield part
+                elif part == self.escapechar:
+                    # Oh, a backslash at end of input;
+                    # maybe we broke into words incorrectly,
+                    # so just return something safe.
+                    yield '\\@\\ '
+                else:
+                    yield self.forbid(part)
+            else:
+                yield part
+
+escapeCommands = EscapeCommands()
+
+escapeEndEdnote = Escaper(r"\end{ednote}", "|end{ednote}")
+# Escpage the string \\end{ednote}, so that ednotes end
+# where we expect them to end.
+
+class SplitSeparators:
+    def __init__(self, separators):
+        self.splitre = re.compile("([%s])" % re.escape(separators))
+
+    def __call__(self, word):
+        return self.splitre.split(word)
 
 def applyMicrotypefeatures(wordlist, featurelist):
     """
@@ -193,38 +335,29 @@ def applyMicrotypefeatures(wordlist, featurelist):
     of the result.
     """
     for feature in featurelist:
-        newwordlist = []
+        wordlistlist = []
         for word in wordlist:
-            if feature.applies(word):
-                newwordlist.extend(feature.doit(word))
-            else:
-                newwordlist.append(word)
-        wordlist = newwordlist
+            wordlistlist.append(feature(word))
+        wordlist = itertools.chain(*wordlistlist)
     return ''.join(wordlist)
 
-def doMicrotype(text, features, separators):
-    """
-    Do micro typography with the given features and
-    separators. Note that the order of the features
-    matters!
-    """
-    result = ''
-    word = ''
-    for c in text:
-        if not c in set(separators):
-            word = word + c
-        else:
-            word = applyMicrotypefeatures([word], features)
-            result = result + word +c
-            word = ''
-    word = applyMicrotypefeatures([word], features)
-    result = result + word
-    return result
-
 def defaultMicrotype(text):
-    features = [StandardAbbreviations, OpenQuotationMark, CloseQuotationMark, FullStop, Acronym, NaturalNumbers]
-    separators = ' ,;()-' # no point, might be in abbreviations
-    return doMicrotype(text, features, separators)
+    # FIXME '-' should not be a separator so we are able to detect dashes '--'
+    #       however this will break NaturalNumbers for negative inputs
+    separators = ' \t,;()-' # no point, might be in abbreviations
+    features = [SplitSeparators(separators),
+                splitEllipsis, percent, ampersand, caret, hashmark, quote,
+                standardAbbreviations, fullStop, openQuotationMark,
+                closeQuotationMark, acronym, naturalNumbers, escapeCommands]
+    return applyMicrotypefeatures([text], features)
+
+def mathMicrotype(text):
+    # FIXME we want to substitute '...' -> '\dots{}' in math mode too
+    features = [percent, hashmark, naturalNumbers, escapeCommands]
+    return applyMicrotypefeatures([text], features)
+
+def ednoteMicrotype(text):
+    return applyMicrotypefeatures([text], [escapeEndEdnote])
 
 def isemptyline(line):
     return re.match('^[ \t]*$', line)
@@ -362,7 +495,7 @@ class PMath(PTree):
         return ('math', self.text)
 
     def toTex(self):
-        return '$%1s$' % self.text
+        return '$%1s$' % mathMicrotype(self.text)
 
     def toHtml(self):
         return '$%1s$' % self.text
@@ -384,7 +517,7 @@ class PDisplayMath(PTree):
         return ('displaymath', self.text)
 
     def toTex(self):
-        return '$$%1s$$' % self.text
+        return '$$%1s$$' % mathMicrotype(self.text)
 
     def toHtml(self):
         return "<div class=\"displaymath\">$$%1s$$</div>" % self.text
@@ -412,7 +545,7 @@ class PEdnote(PTree):
         return ('Ednote', self.text)
 
     def toTex(self):
-        return '\n\\begin{ednote}\n' + self.text + '\n\\end{ednote}\n'
+        return '\n\\begin{ednote}\n' + ednoteMicrotype(self.text) + '\n\\end{ednote}\n'
 
     def toHtml(self):
         result = self.text
