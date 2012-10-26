@@ -298,7 +298,7 @@ class Storage(object):
             args.append(self.fullpath())
             subprocess.check_call(args, env=RCSENV)
             # 2.) merge in head
-            os.chmod(self.fullpath(), 0600)
+            os.chmod(self.fullpath(), 0o600)
             subprocess.call(["rcsmerge", "-q", "-r%s" % version,
                              self.fullpath()]) # Note: non-zero exit status is
                                                # OK!
