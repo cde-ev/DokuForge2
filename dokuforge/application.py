@@ -451,7 +451,7 @@ class Application:
             ## grab a copy of the parameters for url building
             rs.endpoint_args = args
             return getattr(self, "do_%s" % endpoint)(rs, **args)
-        except werkzeug.routing.HTTPException, e:
+        except werkzeug.routing.HTTPException as e:
             return e
 
     def check_login(self, rs):

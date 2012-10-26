@@ -106,7 +106,7 @@ class LockDir:
                 os.mkdir(self.path)
                 self.lockcount = 1
                 return self
-            except OSError, e:
+            except OSError as e:
                 if e.errno == errno.EEXIST:
                     logger.debug("lock %r is busy" % self.path)
                     time.sleep(0.2) # evertthing OK, someone else has the lock
