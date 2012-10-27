@@ -45,7 +45,7 @@ def gensid(bits=64):
     @rtype: unicode
     @returns: a random string
     """
-    return ("%x" % sysrand.getrandbits(bits)).decode("ascii")
+    return u"%x" % sysrand.getrandbits(bits)
 
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database."""

@@ -111,7 +111,7 @@ def validateTitle(title):
     if title == u"":
         raise CheckError(u"Leerer Titel!",
                          u"Der Titel darf nicht leer sein.")
-    if re.match('^[ \t]*$', title) is not None:
+    if re.match(u'^[ \t]*$', title) is not None:
         raise CheckError(u"Leerer Titel!",
                          u"Der Titel darf nicht nur aus Leerzeichen bestehen.")
 
@@ -125,7 +125,7 @@ def validateBlobLabel(label):
     @raises CheckError:
     """
     assert isinstance(label, unicode)
-    if re.match('^[a-z0-9]{1,200}$', label) is None:
+    if re.match(u'^[a-z0-9]{1,200}$', label) is None:
         raise CheckError(u"Kürzel nicht wohlgeformt!",
                          u"Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten, nicht leer sein und nicht mehr als 200 Zeichen enthalten.")
 
@@ -197,14 +197,14 @@ def validateExistence(path, name):
     """
     check whether a name exsits. If not raise a CheckError.
 
-    @type name: str
-    @type path: str
+    @type name: bytes
+    @type path: bytes
     @param name: name to check for existence
     @param path: base path in which to check for the name
     @raises CheckError:
     """
-    assert isinstance(name, str)
-    assert isinstance(path, str)
+    assert isinstance(name, bytes)
+    assert isinstance(path, bytes)
     if not os.path.exists(os.path.join(path, name)):
         raise CheckError(u"Interner Name existiert nicht!",
                          u"Bitte den Namen korrigieren.")
