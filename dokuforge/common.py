@@ -7,9 +7,11 @@ import re
 import os
 import ConfigParser
 from cStringIO import StringIO
-from dokuforge.dfexceptions import *
 import tarfile
 import datetime
+
+from dokuforge.dfexceptions import CheckError, InvalidBlobFilename, \
+        RcsUserInputError
 
 try:
     check_output = subprocess.check_output

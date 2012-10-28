@@ -1,7 +1,6 @@
 
 import os
 import operator
-import datetime
 
 import werkzeug.exceptions
 
@@ -9,7 +8,6 @@ from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
 import dokuforge.dfexceptions as dfexceptions
-from dokuforge.dfexceptions import CheckError
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
@@ -85,7 +83,7 @@ class Academy(StorageDir):
         try:
             common.validateInternalName(coursename)
             common.validateExistence(self.path, coursename)
-        except CheckError:
+        except dfexceptions.CheckError:
             raise dfexceptions.MalformedAdress()
         return Course(os.path.join(self.path, coursename))
 
