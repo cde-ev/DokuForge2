@@ -43,16 +43,6 @@ def strtobool(s):
         return True
     return False
 
-class CheckError(StandardError):
-    def __init__(self, msg, exp):
-        StandardError.__init__(self, msg)
-        assert isinstance(msg, unicode)
-        assert isinstance(exp, unicode)
-        self.message = msg
-        self.explanation = exp
-    def __str__(self):
-        return self.message
-
 class UTC(datetime.tzinfo):
     """UTC implementation taken from the Python documentation"""
     def utcoffset(self, dt):
