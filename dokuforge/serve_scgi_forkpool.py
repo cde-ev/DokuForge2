@@ -12,6 +12,7 @@ from dokuforge.paths import PathConfig
 import ConfigParser
 import sys
 import syslog
+import resource
 import traceback
 
 def do_syslog(msg):
@@ -31,10 +32,29 @@ class ExceptionsToSyslog:
                 do_syslog(line)
             raise # will get 503 from apache
 
+def parsesize(s):
+    f = 1
+    if s.lower().endswith('k'):
+        s = s[:-1]
+        f = 1024
+    elif s.lower().endswith('m'):
+        s = s[:-1]
+        f = 1024*1024
+    return int(float(s) * f)
+
 def main(configfile):
     config = ConfigParser.SafeConfigParser()
     config.read(configfile)
     port = int(config.get('scgi','port'))
+    limitas = parsesize(config.get('scgi', 'limitas'))
+    limitdata = parsesize(config.get('scgi', 'limitdata'))
+    maxworkers = int(config.get('scgi', 'maxworkers'))
+    limitnprocoffset = int(config.get('scgi', 'limitnprocoffset'))
+    # one rcs process per worker + one spawner from wsgitools
+    limitnproc = 2 * maxworkers + 1 + limitnprocoffset
+    resource.setrlimit(resource.RLIMIT_AS, (limitas, limitas))
+    resource.setrlimit(resource.RLIMIT_DATA, (limitdata, limitdata))
+    resource.setrlimit(resource.RLIMIT_NPROC, (limitnproc, limitnproc))
     pc = PathConfig(config)
     app = buildapp(pc)
     app = ExceptionsToSyslog(app)
