@@ -1,5 +1,5 @@
 {% macro button(action, label, params={}) -%}
-<form action="{{ action|e }}" method="post" class="button"><div style="display: inline">
+<form action="{{ action|e }}" method="post" class="button"><div class="inline">
 	{%- for key, value in params.items() -%}
 	<input type="hidden" name="{{ key|e }}" value="{{ value|e }}">
 	{%- endfor -%}

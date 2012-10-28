@@ -173,6 +173,10 @@ textarea {
     margin-bottom: 1ex;
 }
 
+.inline {
+    display: inline;
+}
+
 a.inconspicuous {
     color: #000000;
     text-decoration: none;
