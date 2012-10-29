@@ -93,11 +93,11 @@ try:
 except AttributeError:
     from ClientForm import Item as mechanize_Item
 
-def browser_class(application):
-    class WSGIBrowser(mechanize.Browser):
-        handler_classes = mechanize.Browser.handler_classes.copy()
-        handler_classes["http"] = WSGIHandler.creator(application)
-    return WSGIBrowser
+class WSGIBrowser(mechanize.Browser):
+    def __init__(self, application):
+        self.handler_classes = mechanize.Browser.handler_classes.copy()
+        self.handler_classes["http"] = WSGIHandler.creator(application)
+        mechanize.Browser.__init__(self)
 
 teststrings = [
     (u"simple string", u"simple string"),
@@ -115,7 +115,7 @@ class DokuforgeTests(unittest.TestCase):
         createexample.main(size=1, pc=self.pathconfig)
         app = buildapp(self.pathconfig)
         app = validator(app)
-        self.br = browser_class(app)()
+        self.br = WSGIBrowser(app)
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
