@@ -1,4 +1,3 @@
-from __future__ import with_statement
 import os
 
 from werkzeug.datastructures import FileStorage
