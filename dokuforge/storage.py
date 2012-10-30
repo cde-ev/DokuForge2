@@ -1,6 +1,6 @@
 from __future__ import with_statement
-from cStringIO import StringIO
 import datetime
+import io
 import logging
 import os, errno
 import shutil
@@ -155,13 +155,13 @@ class Storage(object):
         Store the given contents; rcs file is create if it does not
         exist already.
 
-        @type content: bytes or filelike
+        @type content: bytes or raw filelike 
         @param content: the content of the file
         @type message: str
         """
         if isinstance(content, basestring):
             assert isinstance(content, bytes)
-            content = StringIO(content)
+            content = io.BytesIO(content)
         logger.debug("storing %r" % self.fullpath())
 
         with havelock or self.lock as gotlock:

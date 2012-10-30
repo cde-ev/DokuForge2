@@ -1,6 +1,6 @@
 import random
 import ConfigParser
-from cStringIO import StringIO
+import io
 
 sysrand = random.SystemRandom()
 
@@ -316,7 +316,7 @@ class UserDB:
         We use ConfigParser and the accompanying format.
         """
         config = ConfigParser.SafeConfigParser()
-        content = StringIO()
+        content = io.BytesIO()
         for name in self.db:
             ename = name.encode("utf8")
             config.add_section(ename)
@@ -341,7 +341,7 @@ class UserDB:
         if self.storage.timestamp() <= self.timestamp:
             return
         config = ConfigParser.SafeConfigParser()
-        content = StringIO(self.storage.content())
+        content = io.BytesIO(self.storage.content())
         ## update time, since we read the new content
         self.timestamp = self.storage.cachedtime
         config.readfp(content)

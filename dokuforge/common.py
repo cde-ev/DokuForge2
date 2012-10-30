@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import with_statement
+import io
 import random
 import subprocess
 import re
 import os
 import ConfigParser
-from cStringIO import StringIO
 import tarfile
 import datetime
 
@@ -222,7 +222,7 @@ def validateUserConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser.SafeConfigParser()
     try:
-        parser.readfp(StringIO(config.encode("utf8")))
+        parser.readfp(io.BytesIO(config.encode("utf8")))
     except ConfigParser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
@@ -245,7 +245,7 @@ def validateGroupConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser.SafeConfigParser()
     try:
-        parser.readfp(StringIO(config.encode("utf8")))
+        parser.readfp(io.BytesIO(config.encode("utf8")))
     except ConfigParser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
@@ -273,7 +273,7 @@ def validateRcsRevision(versionnumber):
 
 class TarWriter:
     def __init__(self):
-        self.io = StringIO()
+        self.io = io.BytesIO()
         self.tar = tarfile.open(mode="w|", fileobj=self.io)
         self.dirs = []
 
@@ -319,7 +319,7 @@ class TarWriter:
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
-        self.tar.addfile(info, StringIO(content))
+        self.tar.addfile(info, io.BytesIO(content))
         return self.read()
 
     def addFileChunk(self, name, filename):
