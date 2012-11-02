@@ -108,6 +108,22 @@ teststrings = [
     (u"some ' " + u'" quotes', u"some &#39; &#34; quotes")
     ]
 
+class DokuforgeMockTests(unittest.TestCase):
+    def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
+        for _ in range(rounds):
+            for l in range(minlength, maxlength):
+                inp = "".join(random.choice("aA \n*[()]1.$<>&\"{}_\\-")
+                              for _ in range(l))
+                inp2 = dfLineGroupParser(inp).toDF()
+                inp3 = dfLineGroupParser(inp2).toDF()
+                self.assertEqual(inp2, inp3, "original input was %r" % inp)
+
+    def testParserIdempotency1(self):
+        inp = '_a\n[[[\n\n"'
+        inp2 = dfLineGroupParser(inp).toDF()
+        inp3 = dfLineGroupParser(inp2).toDF()
+        self.assertEqual(inp2, inp3)
+
 class DokuforgeWebTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
@@ -625,22 +641,6 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.br.click_link(text="rcs"))
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.get_data().startswith("head"))
-
-class DokuforgeMockTests(unittest.TestCase):
-    def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
-        for _ in range(rounds):
-            for l in range(minlength, maxlength):
-                inp = "".join(random.choice("aA \n*[()]1.$<>&\"{}_\\-")
-                              for _ in range(l))
-                inp2 = dfLineGroupParser(inp).toDF()
-                inp3 = dfLineGroupParser(inp2).toDF()
-                self.assertEqual(inp2, inp3, "original input was %r" % inp)
-
-    def testParserIdempotency1(self):
-        inp = '_a\n[[[\n\n"'
-        inp2 = dfLineGroupParser(inp).toDF()
-        inp3 = dfLineGroupParser(inp2).toDF()
-        self.assertEqual(inp2, inp3)
 
 class DokuforgeMicrotypeUnitTests(unittest.TestCase):
     def verifyExportsTo(self, df, tex):
