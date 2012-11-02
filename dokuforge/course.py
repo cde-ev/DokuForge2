@@ -572,7 +572,7 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
-        tex = u"\\course{%s}" % self.gettitle()
+        tex = u"\\course{%02d}{%s}" % (self.number, self.gettitle())
         for p in self.listpages():
             tex += "\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)

@@ -1,4 +1,5 @@
 import os.path
+import re
 
 from dokuforge.storage import Storage
 from dokuforge.view import LazyView
@@ -43,6 +44,21 @@ class StorageDir:
         @rtype: str
         """
         return os.path.basename(self.path)
+
+    @property
+    def number(self):
+        """
+        A best guess of a number associated with this directory.
+
+        @rtype: int
+        """
+        digits = re.compile("[^0-9]*([0-9]+)")
+        basename = os.path.basename(self.path)
+        m = digits.match(basename)
+        if m is None:
+            return 0
+        return int(m.group(1))
+        
 
     def gettitle(self):
         """
