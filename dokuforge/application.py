@@ -276,6 +276,8 @@ class Application:
                  methods=("GET", "HEAD"), endpoint="edit"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!save",
                  methods=("POST",), endpoint="save"),
+            rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!suggestdelete",
+                 methods=("GET", "HEAD"), endpoint="suggestdelete"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!delete",
                  methods=("POST",), endpoint="delete"),
             rule("/docs/<identifier:academy>/<identifier:course>/<int:page>/!deadblobs",
@@ -754,6 +756,21 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         c.newpage(user=rs.user.name)
         return self.render_course(rs, aca, c)
+
+    def do_suggestdelete(self, rs, academy = None, course = None, page = None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type page: int
+        """
+        assert academy is not None and course is not None and page is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        return self.render_suggestdelete(rs, aca, c, page)
 
     def do_delete(self, rs, academy=None, course=None, page=None):
         """
@@ -1553,6 +1570,23 @@ class Application:
             saved=saved,
             blobs=theblobs)
         return self.render("show.html", rs, params)
+
+    def render_suggestdelete(self, rs, theacademy, thecourse, thepage):
+        """
+        @type rs: RequestState
+        @type theacademy: Academy
+        @type thecourse: Course
+        @type thepage: int
+        """
+        parsed = dfLineGroupParser(thecourse.showpage(thepage))
+        params = dict(
+            academy=theacademy.view(),
+            course=thecourse.view(),
+            page=thepage,
+            commit = thecourse.getcommit(thepage),
+            content=parsed.toHtml())
+        return self.render("suggestdelete.html", rs, params)
+
 
     def render_file(self, rs, templatename, theversion, thecontent, ok=None,
                     error=None, extraparams=dict()):

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block subheading %}
+{{ academy.title|e }}
+{% endblock %}
+{% block location %}
+{{ navbar([("academy", {}, academy.title),
+           ("course", {}, course.title),
+	   ("page", {}, "Teil #" ~ page)]) }}
+{% endblock %}
+{% block content %}
+Teil #{{ page|string }}
+[Version {{commit['revision'] | e }}, 
+ zuletzt ge&auml;ndert von {{ commit['author'] | e }}
+ am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
+{%- if user.allowedWrite(academy, course) %}
+{{ button(buildurl("delete"), "Löschen", dict()) }}
+{%- endif -%}
+<a href="{{ buildurl("page")|e }}">Abbrechen</a>
+<hr>
+<div class="dokucontent">
+{# content does not need to be escaped, since this is done by the parser #}
+{{ content }}
+</div>
+<hr>
+
+{% endblock %}

@@ -25,9 +25,11 @@ Teil #{{ page|string }}
 
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
-{{ button(buildurl("delete"), "Löschen", dict()) }}
-{%- endif -%}
+<a href="{{ buildurl("suggestdelete")|e }}">L&ouml;schen</a>
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
+{%- else -%}
+<a href="{{ buildurl("rcs")|e }}">rcs</a>
+{%- endif -%}
 
 <hr>
 {%- if blobs %}
