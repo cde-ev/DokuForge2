@@ -269,6 +269,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/.*suggestdelete$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.assertFalse("Teil&nbsp;#0" in self.get_data())
@@ -280,6 +281,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("/.*suggestdelete$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/.*deadpages$")))
@@ -554,7 +556,7 @@ permissions = df_superadmin True,df_admin True
         self.br.open(form.click(label="Bild hochladen"))
         self.assertTrue("Zugeordnete Bilder" in self.get_data())
         self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
-        form = list(self.br.forms())[2]
+        form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.assertTrue("Keine Bilder zu diesem Teil gefunden." in self.get_data())
         self.assertFalse("#[0] (README-rlog.txt)" in self.get_data())
@@ -574,7 +576,7 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
-        form = list(self.br.forms())[2]
+        form = list(self.br.forms())[1]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
         self.assertTrue("Keine Bilder zu diesem Teil gefunden." in self.get_data())
         self.assertFalse("#[0] (README-rlog.txt)" in self.get_data())
