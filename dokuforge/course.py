@@ -572,7 +572,7 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
-        tex = u"\\course{%s}" % self.gettitle()
+        tex = u"\\course{%02d}{%s}" % (self.number, self.gettitle())
         for p in self.listpages():
             tex += "\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
@@ -581,7 +581,8 @@ class Course(StorageDir):
                 blob = self.viewblob(b)
                 tex += "\n\n%% blob %d\n" % b
                 tex += "\\begin{figure}\n\centering\n"
-                tex += "\\includegraphics{%s/blob_%d_%s}\n" % (self.name, b, blob['filename'])
+                tex += "\\includegraphics[width=0.75\\textwidth]{%s/blob_%d_%s}\n" % \
+                    (self.name, b, blob['filename'])
                 tex += "\\caption{%s}\n" % blob['comment']
                 tex += "\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += "\\end{figure}\n"
@@ -589,5 +590,5 @@ class Course(StorageDir):
                                          (self.name, b, str(blob['filename'])),
                                          blob['data'])
 
-        yield tarwriter.addChunk("%s/chap.tex.untrusted" % self.name,
+        yield tarwriter.addChunk("%s/chap.tex" % self.name,
                                  tex.encode("utf8"))
