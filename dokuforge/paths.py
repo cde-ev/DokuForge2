@@ -1,5 +1,5 @@
 import ConfigParser
-from cStringIO import StringIO
+import io
 
 from dokuforge.storage import CachingStorage
 from dokuforge.user import UserDB
@@ -20,7 +20,7 @@ class PathConfig(object):
     def __init__(self,config=None):
         if config is None:
             self.cp = ConfigParser.SafeConfigParser()
-            self.cp.readfp(StringIO(default_config))
+            self.cp.readfp(io.BytesIO(default_config))
         else:
             self.cp = config
 

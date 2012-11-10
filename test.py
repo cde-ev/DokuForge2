@@ -6,8 +6,8 @@
 # are callable. This is clearly wrong and renders this message useless for this
 # file.
 
-from cStringIO import StringIO
 from httplib import HTTPMessage
+import io
 import mechanize
 import re
 import shutil
@@ -57,11 +57,11 @@ class WSGIHandler(BaseHandler):
         environ["QUERY_STRING"] = "" # FIXME
         if request.has_data():
             reqdata = request.get_data()
-            environ["wsgi.input"] = StringIO(reqdata)
+            environ["wsgi.input"] = io.BytesIO(reqdata)
             environ["CONTENT_LENGTH"] = str(len(reqdata))
             environ["CONTENT_TYPE"] = "application/x-www-form-urlencoded"
         else:
-            environ["wsgi.input"] = StringIO()
+            environ["wsgi.input"] = io.BytesIO()
             environ["CONTENT_LENGTH"] = "0"
         environ.update(("HTTP_%s" % key.replace("-", "_").upper(), value)
                        for key, value in request.headers.items())
@@ -69,7 +69,7 @@ class WSGIHandler(BaseHandler):
                        for key, value in request.unredirected_hdrs.items())
         if "HTTP_CONTENT_TYPE" in environ:
             environ["CONTENT_TYPE"] = environ.pop("HTTP_CONTENT_TYPE")
-        fp = StringIO()
+        fp = io.BytesIO()
         wsgiresp = []
         def start_response(status, headers):
             wsgiresp.append(status)

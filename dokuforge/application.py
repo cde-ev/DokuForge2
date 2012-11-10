@@ -3,12 +3,9 @@
 
 import ConfigParser
 import copy
-from cStringIO import StringIO
 import datetime
-try:
-    from hashlib import md5 as getmd5
-except ImportError:
-    from md5 import new as getmd5
+from hashlib import md5 as getmd5
+import io
 import logging
 import operator
 import os
@@ -45,7 +42,7 @@ def gensid(bits=64):
     @rtype: unicode
     @returns: a random string
     """
-    return ("%x" % sysrand.getrandbits(bits)).decode("ascii")
+    return u"%x" % sysrand.getrandbits(bits)
 
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database."""
@@ -433,7 +430,7 @@ class Application:
         """
         try:
             config = ConfigParser.SafeConfigParser()
-            config.readfp(StringIO(self.groupstore.content()))
+            config.readfp(io.BytesIO(self.groupstore.content()))
         except ConfigParser.ParsingError as err:
             return {}
         ret = {}
@@ -451,7 +448,7 @@ class Application:
             ## grab a copy of the parameters for url building
             rs.endpoint_args = args
             return getattr(self, "do_%s" % endpoint)(rs, **args)
-        except werkzeug.routing.HTTPException, e:
+        except werkzeug.routing.HTTPException as e:
             return e
 
     def check_login(self, rs):
