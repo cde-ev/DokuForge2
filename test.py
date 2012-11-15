@@ -25,6 +25,7 @@ from dokuforge.application import Application
 from dokuforge import dfexceptions
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
+from dokuforge.storage import Storage
 
 theapplication = None
 
@@ -653,6 +654,23 @@ class DokuforgeDBTests(unittest.TestCase):
         course.showpage(pages[0]) # should not raise
         self.assertRaises(dfexceptions.PageOutOfBound,
                           course.showpage, max(pages) + 1)
+
+class DokuforgeStorageTests(unittest.TestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
+        self.storage = Storage(self.tmpdir, b"storagetest")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, True)
+
+    def testBadVersion(self):
+        self.assertRaises(dfexceptions.RcsUserInputError,
+                          self.storage.endedit, b"ERROR", b"")
+
+    def testHugeVersion(self):
+        self.assertRaises(dfexceptions.RcsUserInputError,
+                          self.storage.endedit, b"100.1", b"")
+
 
 if __name__ == '__main__':
     unittest.main()
