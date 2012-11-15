@@ -21,6 +21,8 @@ from wsgiref.validate import validator
 
 import createexample
 from dokuforge import buildapp
+from dokuforge.application import Application
+from dokuforge import dfexceptions
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
 
@@ -632,6 +634,25 @@ class DokuforgeMockTests(unittest.TestCase):
         inp2 = dfLineGroupParser(inp).toDF()
         inp3 = dfLineGroupParser(inp2).toDF()
         self.assertEqual(inp2, inp3)
+
+class DokuforgeDBTests(unittest.TestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
+        self.pathconfig = PathConfig()
+        self.pathconfig.rootdir = self.tmpdir
+        createexample.main(size=1, pc=self.pathconfig)
+        self.app = Application(self.pathconfig)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, True)
+
+    def testShowpageBound(self):
+        aca = self.app.getAcademy(u"xa2011-1")
+        course = aca.getCourse(u"course01")
+        pages = course.listpages()
+        course.showpage(pages[0]) # should not raise
+        self.assertRaises(dfexceptions.PageOutOfBound,
+                          course.showpage, max(pages) + 1)
 
 if __name__ == '__main__':
     unittest.main()
