@@ -212,8 +212,8 @@ class Course(StorageDir):
         """
         Show the contents of a page
 
-        @type number: int
-        @param number: the internal number of that page
+        @type page: int
+        @param page: the internal number of that page
         @rtype: unicode
         @raises dfexceptions.PageOutOfBound()
         """
@@ -430,15 +430,15 @@ class Course(StorageDir):
         version, content = pagestore.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
-    def savepage(self, number, version, newcontent, user=None):
+    def savepage(self, page, version, newcontent, user=None):
         """
         Finish editing a page
 
-        @param number: the internal page number
+        @param page: the internal page number
         @param version: the opaque version string, as obtained from edit page
         @param newcontent: the new content of the page, based on editing the said version
         @param user: the df-login name of the user to carried out the edit
-        @type number: int
+        @type page: int
         @type version: unicode
         @type newcontent: unicode
         @type user: unicode
@@ -450,14 +450,14 @@ class Course(StorageDir):
         @rtype: (unicode, unicode, unicode)
         @raises dfexceptions.PageOutOfBound
         """
-        if 0 > number or number >= self.nextpage():
+        if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
         assert isinstance(version, unicode)
         assert isinstance(newcontent, unicode)
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        pagestore = self.getstorage(b"page%d" % number)
+        pagestore = self.getstorage(b"page%d" % page)
         ok, version, mergedcontent = pagestore.endedit(version.encode("utf8"),
                                                        newcontent.encode("utf8"),
                                                        user = user)
