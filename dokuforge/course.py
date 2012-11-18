@@ -1,4 +1,3 @@
-from __future__ import with_statement
 import os
 
 from werkzeug.datastructures import FileStorage
@@ -108,7 +107,7 @@ class Course(StorageDir):
         constructor for Course objects
 
         @param obj: either the path to a coures or a Course object
-        @type obj: str or Course
+        @type obj: bytes or Course
         """
         StorageDir.__init__(self, obj)
         try:
@@ -122,7 +121,7 @@ class Course(StorageDir):
         @type havelock: None or LockDir
         @rtype: int
         """
-        return int(self.getcontent("nextpage", havelock) or "0")
+        return int(self.getcontent(b"nextpage", havelock) or "0")
 
     def nextblob(self, havelock=None):
         """
@@ -132,7 +131,7 @@ class Course(StorageDir):
         @returns: number of next available blob
         @rtype: int
         """
-        return int(self.getcontent("nextblob", havelock) or "0")
+        return int(self.getcontent(b"nextblob", havelock) or "0")
 
     def listpages(self, havelock=None):
         """
@@ -140,7 +139,7 @@ class Course(StorageDir):
         @returns: a list of the available page numbers in correct order
         @rtype: [int]
         """
-        lines = self.getcontent("Index", havelock).splitlines()
+        lines = self.getcontent(b"Index", havelock).splitlines()
         return [int(line.split()[0]) for line in lines if line != ""]
 
     def outlinepages(self, havelock=None):
@@ -172,7 +171,8 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
-        info = self.getstorage("page%d" % page).commitstatus()
+        page = (u"page%d" % page).encode("ascii")
+        info = self.getstorage(page).commitstatus()
         return dict((k, v) if k == "date" else (k, v.encode("utf8"))
                     for k, v in info.items())
 
@@ -181,8 +181,8 @@ class Course(StorageDir):
         @returns: a list of the pages not currently linked in the index
         @rtype: [int]
         """
-        indexstore = self.getstorage("Index")
-        nextpage = self.getstorage("nextpage")
+        indexstore = self.getstorage(b"Index")
+        nextpage = self.getstorage(b"nextpage")
         with indexstore.lock as gotlockindex:
             with nextpage.lock as gotlocknextpage:
                 np = self.nextpage(havelock = gotlocknextpage)
@@ -194,8 +194,8 @@ class Course(StorageDir):
         @returns: a list of the blobs not currently linked to the index
         @rtype: [int]
         """
-        indexstore = self.getstorage("Index")
-        nextblob = self.getstorage("nextblob")
+        indexstore = self.getstorage(b"Index")
+        nextblob = self.getstorage(b"nextblob")
         with indexstore.lock as gotlockindex:
             index = indexstore.content(havelock = gotlockindex)
             lines = index.splitlines()
@@ -219,7 +219,8 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
-        return self.getcontent("page%d" % page).decode("utf8")
+        page = (u"page%d" % page).encode("ascii")
+        return self.getcontent(page).decode("utf8")
 
     def getrcs(self, page):
         """
@@ -230,7 +231,8 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
-        return self.getstorage("page%d" % page).asrcs()
+        page = (u"page%d" % page).encode("ascii")
+        return self.getstorage(page).asrcs()
 
     def rawExportIterator(self, tarwriter):
         """
@@ -251,17 +253,17 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        index = self.getstorage("Index")
-        nextpagestore = self.getstorage("nextpage")
+        index = self.getstorage(b"Index")
+        nextpagestore = self.getstorage(b"nextpage")
         with index.lock as gotlockindex:
             with nextpagestore.lock as gotlocknextpage:
                 newnumber = self.nextpage(havelock = gotlocknextpage)
-                nextpagestore.store("%d" % (newnumber+1),
+                nextpagestore.store((u"%d" % (newnumber+1)).encode("ascii"),
                                     havelock = gotlocknextpage, user = user)
                 indexcontents = index.content(havelock = gotlockindex)
-                if indexcontents == "\n":
-                    indexcontents = ""
-                indexcontents += "%s\n" % newnumber
+                if indexcontents == b"\n":
+                    indexcontents = b""
+                indexcontents += (u"%s\n" % newnumber).encode("ascii")
                 index.store(indexcontents, havelock = gotlockindex, user = user)
                 return newnumber
 
@@ -279,7 +281,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = self.getstorage("Index")
+        indexstore = self.getstorage(b"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock = gotlock)
             lines = index.splitlines()
@@ -290,8 +292,8 @@ class Course(StorageDir):
                     continue
                 newentries = [entries[0]]
                 newentries.extend([x for x in entries[1:] if int(x) != number])
-                newlines.append(" ".join(newentries))
-            newindex = "\n".join(newlines) + "\n"
+                newlines.append(b" ".join(newentries))
+            newindex = b"\n".join(newlines) + b"\n"
             indexstore.store(newindex, havelock = gotlock, user = user)
 
     def delpage(self, page, user=None):
@@ -308,7 +310,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = self.getstorage("Index")
+        indexstore = self.getstorage(b"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock = gotlock)
             lines = index.splitlines()
@@ -317,7 +319,7 @@ class Course(StorageDir):
                 entries = line.split()
                 if entries and int(entries[0]) != page:
                     newlines.append(line)
-            newindex = "\n".join(newlines) + "\n"
+            newindex = b"\n".join(newlines) + b"\n"
             indexstore.store(newindex, havelock = gotlock, user = user)
 
     def swappages(self, position, user=None):
@@ -333,7 +335,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = self.getstorage("Index")
+        indexstore = self.getstorage(b"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock = gotlock)
             lines = index.splitlines()
@@ -341,7 +343,7 @@ class Course(StorageDir):
                 tmp = lines[position-1]
                 lines[position-1] = lines[position]
                 lines[position] = tmp
-            newindex = "\n".join(lines) + "\n"
+            newindex = b"\n".join(lines) + b"\n"
             indexstore.store(newindex, havelock = gotlock, user = user)
 
     def relink(self, page, user=None):
@@ -356,8 +358,8 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = self.getstorage("Index")
-        nextpage = self.getstorage("nextpage")
+        indexstore = self.getstorage(b"Index")
+        nextpage = self.getstorage(b"nextpage")
         with indexstore.lock as gotlockindex:
             with nextpage.lock as gotlocknextpage:
                 np = self.nextpage(havelock = gotlocknextpage)
@@ -372,8 +374,8 @@ class Course(StorageDir):
                     if page in [int(x.split()[0]) for x in lines]:
                         pass # page already present
                     else:
-                        lines.append("%d" % page)
-                        newindex = "\n".join(lines) + "\n"
+                        lines.append((u"%d" % page).encode("ascii"))
+                        newindex = b"\n".join(lines) + b"\n"
                         indexstore.store(newindex, havelock = gotlockindex,
                                          user = user)
 
@@ -390,8 +392,8 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = self.getstorage("Index")
-        nextblob = self.getstorage("nextblob")
+        indexstore = self.getstorage(b"Index")
+        nextblob = self.getstorage(b"nextblob")
         with indexstore.lock as gotlockindex:
             with nextblob.lock as gotlocknextblob:
                 nb = self.nextblob(havelock = gotlocknextblob)
@@ -407,8 +409,8 @@ class Course(StorageDir):
                         if number in [int(x) for x in lineparts[1:]]:
                             pass # want a set-like semantics
                         else:
-                            lines[i] += " %d" % number
-            newindex = "\n".join(lines) + "\n"
+                            lines[i] += (u" %d" % number).encode("ascii")
+            newindex = b"\n".join(lines) + b"\n"
             indexstore.store(newindex, havelock = gotlockindex, user = user)
 
 
@@ -424,7 +426,7 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
-        page = self.getstorage("page%d" % page)
+        page = self.getstorage(b"page%d" % page)
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -455,7 +457,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        page = self.getstorage("page%d" % number)
+        page = self.getstorage(b"page%d" % number)
         ok, version, mergedcontent = page.endedit(version.encode("utf8"),
                                                   newcontent.encode("utf8"),
                                                   user = user)
@@ -495,27 +497,28 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        indexstore = self.getstorage("Index")
-        nextblobstore = self.getstorage("nextblob")
+        indexstore = self.getstorage(b"Index")
+        nextblobstore = self.getstorage(b"nextblob")
 
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
                 newnumber = self.nextblob(havelock = gotlocknextblob)
-                nextblobstore.store("%d" % (newnumber+1),
+                nextblobstore.store((u"%d" % (newnumber+1)).encode("ascii"),
                                     havelock = gotlocknextblob)
                 index = indexstore.content()
                 lines = index.splitlines()
                 for i in range(len(lines)):
                     entries = lines[i].split()
                     if entries and int(entries[0]) == page:
-                        lines[i] += " %d" % newnumber
-                        newindex = "\n".join(lines) + "\n"
+                        lines[i] += (u" %d" % newnumber).encode("ascii")
+                        newindex = b"\n".join(lines) + b"\n"
                         indexstore.store(newindex, havelock = gotlockindex)
 
-        blob = self.getstorage("blob%d" % newnumber)
-        bloblabel = self.getstorage("blob%d.label" % newnumber)
-        blobcomment = self.getstorage("blob%d.comment" % newnumber)
-        blobname = self.getstorage("blob%d.filename" % newnumber)
+        blobbase = (u"blob%d" % newnumber).encode("ascii")
+        blob = self.getstorage(blobbase)
+        bloblabel = self.getstorage(blobbase + b".label")
+        blobcomment = self.getstorage(blobbase + b".comment")
+        blobname = self.getstorage(blobbase + b".filename")
         blob.store(data, user = user)
         bloblabel.store(label.encode("utf8"), user = user)
         blobcomment.store(comment.encode("utf8"), user = user)
@@ -533,7 +536,7 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.BlobOutOfBound()
-        for line in self.getcontent("Index").splitlines():
+        for line in self.getcontent(b"Index").splitlines():
             entries = line.split()
             if entries and int(entries[0]) == page:
                 entries.pop(0)
@@ -554,11 +557,12 @@ class Course(StorageDir):
         if 0 > number or number >= self.nextblob():
             raise dfexceptions.BlobOutOfBound()
         ldu = liftdecodeutf8
+        blobbase = (u"blob%d" % number).encode("ascii")
         return LazyView(dict(
-            data = self.getstorage("blob%d" % number).content,
-            label = ldu(self.getstorage("blob%d.label" % number).content),
-            comment = ldu(self.getstorage("blob%d.comment" % number).content),
-            filename = ldu(self.getstorage("blob%d.filename" % number).content),
+            data = self.getstorage(blobbase).content,
+            label = ldu(self.getstorage(blobbase + b".label").content),
+            comment = ldu(self.getstorage(blobbase + b".comment").content),
+            filename = ldu(self.getstorage(blobbase + b".filename").content),
             number = lambda:number))
 
     def modifyblob(self, number, label, comment, filename, user):
@@ -578,9 +582,10 @@ class Course(StorageDir):
         common.validateBlobComment(comment)
         common.validateBlobFilename(filename)
 
-        bloblabel = self.getstorage("blob%d.label" % number)
-        blobcomment = self.getstorage("blob%d.comment" % number)
-        blobname = self.getstorage("blob%d.filename" % number)
+        blobbase = (u"blob%d" % number).encode("ascii")
+        bloblabel = self.getstorage(blobbase + b".label")
+        blobcomment = self.getstorage(blobbase + b".comment")
+        blobname = self.getstorage(blobbase + b".filename")
         bloblabel.store(label.encode("utf8"), user = user)
         blobcomment.store(comment.encode("utf8"), user = user)
         blobname.store(filename.encode("utf8"), user = user)
@@ -589,7 +594,7 @@ class Course(StorageDir):
         return common.findlastchange([self.getcommit(p) for p in self.listpages()])
 
     def timestamp(self):
-        return max([self.getstorage("page%d" % p).timestamp()
+        return max([self.getstorage((u"page%d" % p).encode("ascii")).timestamp()
                     for p in self.listpages()] + [common.epoch])
 
     def view(self, extrafunctions=dict()):
@@ -611,22 +616,23 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
-        tex = u"\\course{%s}" % self.gettitle()
+        tex = u"\\course{%02d}{%s}" % (self.number, self.gettitle())
         for p in self.listpages():
-            tex += "\n\n%%%%%% Part %d\n" % p
+            tex += u"\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
             tex += dfLineGroupParser(page).toTex()
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
-                tex += "\n\n%% blob %d\n" % b
-                tex += "\\begin{figure}\n\centering\n"
-                tex += "\\includegraphics{%s/blob_%d_%s}\n" % (self.name, b, blob['filename'])
-                tex += "\\caption{%s}\n" % blob['comment']
-                tex += "\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
-                tex += "\\end{figure}\n"
-                yield tarwriter.addChunk("%s/blob_%d_%s" %
+                tex += u"\n\n%% blob %d\n" % b
+                tex += u"\\begin{figure}\n\centering\n"
+                tex += u"\\includegraphics[width=0.75\\textwidth]{%s/blob_%d_%s}\n" % \
+                    (self.name, b, blob['filename'])
+                tex += u"\\caption{%s}\n" % blob['comment']
+                tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
+                tex += u"\\end{figure}\n"
+                yield tarwriter.addChunk(b"%s/blob_%d_%s" %
                                          (self.name, b, str(blob['filename'])),
                                          blob['data'])
 
-        yield tarwriter.addChunk("%s/chap.tex.untrusted" % self.name,
+        yield tarwriter.addChunk(b"%s/chap.tex" % self.name,
                                  tex.encode("utf8"))

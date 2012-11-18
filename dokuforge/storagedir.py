@@ -1,4 +1,5 @@
 import os.path
+import re
 
 from dokuforge.storage import Storage
 from dokuforge.view import LazyView
@@ -10,26 +11,26 @@ class StorageDir:
     """
     def __init__(self, obj):
         """
-        @type obj: str or StorageDir
+        @type obj: bytes or StorageDir
         """
         if isinstance(obj, StorageDir):
             obj = obj.path
-        assert isinstance(obj, str)
+        assert isinstance(obj, bytes)
         self.path = obj
 
     def getstorage(self, filename):
         """
-        @type filename: str
+        @type filename: bytes
         @param filename: passed to Storage as second param
         @rtype: Storage
         @returns: a Storage build from self.path and filename
         """
-        assert isinstance(filename, str)
+        assert isinstance(filename, bytes)
         return Storage(self.path, filename)
 
     def getcontent(self, filename, havelock=None):
         """
-        @type filename: str
+        @type filename: bytes
         @param filename: passed to Storage as second param
         @type havelock: None or LockDir
         @rtype: str
@@ -40,16 +41,31 @@ class StorageDir:
     @property
     def name(self):
         """
-        @rtype: str
+        @rtype: bytes
         """
         return os.path.basename(self.path)
+
+    @property
+    def number(self):
+        """
+        A best guess of a number associated with this directory.
+
+        @rtype: int
+        """
+        digits = re.compile("[^0-9]*([0-9]+)")
+        basename = os.path.basename(self.path)
+        m = digits.match(basename)
+        if m is None:
+            return 0
+        return int(m.group(1))
+        
 
     def gettitle(self):
         """
         @returns: contents of the "title" Storage
         @rtype: unicode
         """
-        return self.getcontent("title").decode("utf8")
+        return self.getcontent(b"title").decode("utf8")
 
     def settitle(self, title):
         """
@@ -63,7 +79,7 @@ class StorageDir:
         """
         assert isinstance(title, unicode)
         common.validateTitle(title)
-        self.getstorage("title").store(title.encode("utf8"))
+        self.getstorage(b"title").store(title.encode("utf8"))
         return True
 
     def view(self, extrafunctions=dict()):

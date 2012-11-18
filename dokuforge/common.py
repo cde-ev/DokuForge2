@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement
+import io
 import random
 import subprocess
 import re
 import os
 import ConfigParser
-from cStringIO import StringIO
 import tarfile
 import datetime
 
@@ -104,7 +103,7 @@ def validateTitle(title):
     if title == u"":
         raise CheckError(u"Leerer Titel!",
                          u"Der Titel darf nicht leer sein.")
-    if re.match('^[ \t]*$', title) is not None:
+    if re.match(u'^[ \t]*$', title) is not None:
         raise CheckError(u"Leerer Titel!",
                          u"Der Titel darf nicht nur aus Leerzeichen bestehen.")
 
@@ -118,7 +117,7 @@ def validateBlobLabel(label):
     @raises CheckError:
     """
     assert isinstance(label, unicode)
-    if re.match('^[a-z0-9]{1,200}$', label) is None:
+    if re.match(u'^[a-z0-9]{1,200}$', label) is None:
         raise CheckError(u"Kürzel nicht wohlgeformt!",
                          u"Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten, nicht leer sein und nicht mehr als 200 Zeichen enthalten.")
 
@@ -170,16 +169,16 @@ def validateNonExistence(path, name):
     check whether a name is already in use as internal representation, if so
     raise a CheckError. This also checks for additional rcs file extensions.
 
-    @type name: str
-    @type path: str
+    @type name: bytes
+    @type path: bytes
     @param name: name to check for existence
     @param path: base path in which to check for the name
     @raises CheckError:
     """
-    assert isinstance(name, str)
-    assert isinstance(path, str)
+    assert isinstance(name, bytes)
+    assert isinstance(path, bytes)
     if os.path.exists(os.path.join(path, name)) or \
-           os.path.exists(os.path.join(path, name + ",v")):
+           os.path.exists(os.path.join(path, name + b",v")):
         raise CheckError(u"Interner Name bereits vergeben!",
                          u"Wähle einen anderen Namen.")
 
@@ -187,14 +186,14 @@ def validateExistence(path, name):
     """
     check whether a name exsits. If not raise a CheckError.
 
-    @type name: str
-    @type path: str
+    @type name: bytes
+    @type path: bytes
     @param name: name to check for existence
     @param path: base path in which to check for the name
     @raises CheckError:
     """
-    assert isinstance(name, str)
-    assert isinstance(path, str)
+    assert isinstance(name, bytes)
+    assert isinstance(path, bytes)
     if not os.path.exists(os.path.join(path, name)):
         raise CheckError(u"Interner Name existiert nicht!",
                          u"Bitte den Namen korrigieren.")
@@ -212,7 +211,7 @@ def validateUserConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser.SafeConfigParser()
     try:
-        parser.readfp(StringIO(config.encode("utf8")))
+        parser.readfp(io.BytesIO(config.encode("utf8")))
     except ConfigParser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
@@ -235,7 +234,7 @@ def validateGroupConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser.SafeConfigParser()
     try:
-        parser.readfp(StringIO(config.encode("utf8")))
+        parser.readfp(io.BytesIO(config.encode("utf8")))
     except ConfigParser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
@@ -261,22 +260,22 @@ def validateRcsRevision(versionnumber):
 
 class TarWriter:
     def __init__(self):
-        self.io = StringIO()
+        self.io = io.BytesIO()
         self.tar = tarfile.open(mode="w|", fileobj=self.io)
         self.dirs = []
 
     @property
     def prefix(self):
-        return "".join(map("%s/".__mod__, self.dirs))
+        return b"".join(map(lambda s: s + b"/", self.dirs))
 
     def pushd(self, dirname):
         """Push a new directory on the directory stack. Further add* calls will
         place their files into this directory. The operation must be reverted
         using popd before close is called. The directory name must not contain
         a slash.
-        @type dirname: str
+        @type dirname: bytes
         """
-        assert "/" not in dirname
+        assert b"/" not in dirname
         self.dirs.append(dirname)
 
     def popd(self):
@@ -298,24 +297,24 @@ class TarWriter:
         Add a file with given content and return some tar content generated
         along the way.
 
-        @type name: str
+        @type name: bytes
         @type content: bytes
         @rtype: bytes
         """
-        assert isinstance(name, str)
-        assert isinstance(content, str)
+        assert isinstance(name, bytes)
+        assert isinstance(content, bytes)
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
-        self.tar.addfile(info, StringIO(content))
+        self.tar.addfile(info, io.BytesIO(content))
         return self.read()
 
     def addFileChunk(self, name, filename):
         """
         Add a regular file with given (tar) name and given (filesystem)
         filename and return some tar content generated along the way.
-        @type name: str
-        @type filename: str
+        @type name: bytes
+        @type filename: bytes
         @rtype: bytes
         """
         info = tarfile.TarInfo(self.prefix + name)
@@ -332,8 +331,8 @@ class TarWriter:
         Only regular files and directories are considered. Any basename that
         is contained in excludes is left out. The tar content generated along
         the way is returned as a bytes iterator.
-        @type name: str
-        @type dirname: str
+        @type name: bytes
+        @type dirname: bytes
         @param excludes: an object that provides __contains__
         """
         self.pushd(name)
@@ -354,7 +353,7 @@ class TarWriter:
     def close(self):
         """
         Close the TarWriter and return the remaining content.
-        @rtype: str
+        @rtype: bytes
         """
         assert not self.dirs
         self.tar.close()

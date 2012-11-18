@@ -1,5 +1,13 @@
 [scgi]
 port = 4000
+maxworkers = 32
+# If nothing else runs the same user, set limitnprocoffset to 0.
+limitnprocoffset = 100
+# This is supposed to limit the available memory to malloc() (i.e. brk()).
+# It does not seem to have any effect though.
+limitdata = 128M
+# For example on amd64, at least 64M are required to start the daemon.
+limitas = 512M
 
 [path]
 rootdir = ./work/example

@@ -73,6 +73,8 @@ Kurzform, die für Verweise im Text verwendet wird.</p>
 @BOOK{fischer97,							"Kurzform"
   title		= "Lineare Algebra",					"Vollständiger Titel der Monographie"
   author	= "Gerd Fischer",					"Name der Autoren"
+  editor        = "Heinz Rühmann",      %% optional %%                  "Editor des Werkes"
+  translator    = "Wilhelm Braun",      %% optional %%                  "Übersetzer des Werkes"
   year		= "1997",						"Veröffentlichungsjahr"
   address	= "Berlin"						""Ort der Veröffentlichung"
   publisher	= "Vieweg Studium",    %% optional %%			"Verlag"
@@ -86,7 +88,7 @@ vollständige Datum angeben):</p>
   author	= "Werner Heisenberg",					"Name der Autoren"
   title		= "Die Kopenhagener Deutung der Quantentheorie",	"Vollständiger Titel des Artikels"
   journal	= "Physik und Philosophie",				"Name des Journals, in dem der Artikel veröffentlicht wurde"
-  volume	= "12"							"Nummer des Jahrgangs"
+  volume	= "12",							"Nummer des Jahrgangs"
   year		= "1990",						"Veröffentlichungsjahr"
   pages		= "27--42",						"Seitenumfang im Journal"
 }
@@ -98,7 +100,7 @@ lautet die Syntax:</p>
 @INCOLLECTION{brodersen,						"Kurzform"
   author	= "Brodersen, Kai",					"Name der Autoren"
   title		= "Gebet und Fluch, Zeichen und Traum.",		"Titel des Aufsatzes"
-  editor	= "Brodersen, Kai"					"Name der Herausgeber"
+  editor	= "Brodersen, Kai",					"Name der Herausgeber"
   booktitle	= "Briefe in die Unterwelt.",				"Name des Sammelwerkes/Lexikons"
   address	= "Münster",						"Ort der Veröffentlichung"
   year		= "2001",						"Jahr der Veröffentlichung"
@@ -109,10 +111,10 @@ lautet die Syntax:</p>
 <ul><li><p> Im Fall einer URL bzw. Internetreferenz lautet die Syntax:</p>
 <p><pre>
 @BOOKLET{mpgBericht,							"Kurzform"
-  url 		= "http://www.mpg.de/180882/Jahresbericht"		"Internetadresse"
-  lastchecked	= "02.07.2012"						"Datum des Abrufes"
-  title		= "Jahresbericht der Max-Planck-Gesellschaft 2010"	"Titel der Internetreferenz"
-  author	= "Max-Planck-Gesellschaft	%% optional %%		"Name des Autors
+  url 		= "http://www.mpg.de/180882/Jahresbericht",		"Internetadresse"
+  urldate	= "02.07.2012",						"Datum des Abrufes"
+  title		= "Jahresbericht der Max-Planck-Gesellschaft 2010",	"Titel der Internetreferenz"
+  author	= "Max-Planck-Gesellschaft,	%% optional %%		"Name des Autors
 }
 </pre></p></li></ul>
 

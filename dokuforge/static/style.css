@@ -227,3 +227,7 @@ a:active {
 }
 
 
+.rareCommands {
+  display: inline-block;
+  float: right;
+}

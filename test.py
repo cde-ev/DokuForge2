@@ -6,8 +6,8 @@
 # are callable. This is clearly wrong and renders this message useless for this
 # file.
 
-from cStringIO import StringIO
 from httplib import HTTPMessage
+import io
 import mechanize
 import re
 import shutil
@@ -39,6 +39,16 @@ class WSGIHandler(BaseHandler):
         "wsgi.url_scheme": "http",
         "SERVER_PROTOCOL": "HTTP/1.1",
     }
+
+    def __init__(self, application):
+        self.application = application
+
+    @classmethod
+    def creator(cls, application):
+        def create():
+            return cls(application)
+        return create
+
     def http_request(self, request):
         return request
 
@@ -52,11 +62,11 @@ class WSGIHandler(BaseHandler):
         environ["QUERY_STRING"] = "" # FIXME
         if request.has_data():
             reqdata = request.get_data()
-            environ["wsgi.input"] = StringIO(reqdata)
+            environ["wsgi.input"] = io.BytesIO(reqdata)
             environ["CONTENT_LENGTH"] = str(len(reqdata))
             environ["CONTENT_TYPE"] = "application/x-www-form-urlencoded"
         else:
-            environ["wsgi.input"] = StringIO()
+            environ["wsgi.input"] = io.BytesIO()
             environ["CONTENT_LENGTH"] = "0"
         environ.update(("HTTP_%s" % key.replace("-", "_").upper(), value)
                        for key, value in request.headers.items())
@@ -64,7 +74,7 @@ class WSGIHandler(BaseHandler):
                        for key, value in request.unredirected_hdrs.items())
         if "HTTP_CONTENT_TYPE" in environ:
             environ["CONTENT_TYPE"] = environ.pop("HTTP_CONTENT_TYPE")
-        fp = StringIO()
+        fp = io.BytesIO()
         wsgiresp = []
         def start_response(status, headers):
             wsgiresp.append(status)
@@ -72,7 +82,7 @@ class WSGIHandler(BaseHandler):
                 fp.write("%s: %s\r\n" % item)
             fp.write("\r\n")
             return fp.write
-        iterator = theapplication(environ, start_response)
+        iterator = self.application(environ, start_response)
         for data in iterator:
             fp.write(data)
         if hasattr(iterator, "close"):
@@ -91,8 +101,10 @@ except AttributeError:
     from ClientForm import Item as mechanize_Item
 
 class WSGIBrowser(mechanize.Browser):
-    handler_classes = mechanize.Browser.handler_classes.copy()
-    handler_classes["http"] = WSGIHandler
+    def __init__(self, application):
+        self.handler_classes = mechanize.Browser.handler_classes.copy()
+        self.handler_classes["http"] = WSGIHandler.creator(application)
+        mechanize.Browser.__init__(self)
 
 teststrings = [
     (u"simple string", u"simple string"),
@@ -104,14 +116,13 @@ teststrings = [
 class DokuforgeWebTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
-        global theapplication
         self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
         self.pathconfig = PathConfig()
         self.pathconfig.rootdir = self.tmpdir
         createexample.main(size=1, pc=self.pathconfig)
         app = buildapp(self.pathconfig)
-        theapplication = validator(app)
-        self.br = WSGIBrowser()
+        app = validator(app)
+        self.br = WSGIBrowser(app)
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
@@ -635,6 +646,77 @@ class DokuforgeMockTests(unittest.TestCase):
         inp2 = dfLineGroupParser(inp).toDF()
         inp3 = dfLineGroupParser(inp2).toDF()
         self.assertEqual(inp2, inp3)
+
+class DokuforgeMicrotypeUnitTests(unittest.TestCase):
+    def verifyExportsTo(self, df, tex):
+        obtained = dfLineGroupParser(df).toTex().strip()
+        self.assertEquals(obtained, tex)
+
+    def testQuotes(self):
+        self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
+                             'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
+        self.verifyExportsTo('"Am Anfang" ...',
+                             '"`Am Anfang"\' \\dots{}')
+        self.verifyExportsTo('... "vor Kommata", ...',
+                             '\\dots{} "`vor Kommata"\', \\dots{}')
+        self.verifyExportsTo('... und "am Ende".',
+                             '\\dots{} und "`am Ende"\'.')
+
+    def testAbbrev(self):
+        self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                             'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
+        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter...',
+                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter\\dots{}')
+
+    def testAcronym(self):
+        self.verifyExportsTo('Bitte ACRONYME anders setzen.',
+                             'Bitte \\acronym{ACRONYME} anders setzen.')
+        self.verifyExportsTo('Unterscheide T-shirt und DNA-Sequenz.',
+                             'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
+
+    def testEscaping(self):
+        self.verifyExportsTo('Do not allow \\dangerous commands!',
+                             'Do not allow \\forbidden\\dangerous commands!')
+        self.verifyExportsTo('\\\\ok',
+                             '\\\\ok')
+        self.verifyExportsTo('\\\\\\bad',
+                             '\\\\\\forbidden\\bad')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '10\\% sind ein Zehntel')
+        self.verifyExportsTo('f# ist eine Note',
+                             'f\# ist eine Note')
+        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
+                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
+                             'Heinemann\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo('Escaping should also happen in math, like $\\evilmath$, but not $\\mathbb C$',
+                             'Escaping should also happen in math, like $\\forbidden\\evilmath$, but not $\\mathbb C$')
+
+    def testEdnoteEscape(self):
+        self.verifyExportsTo(
+"""
+
+{{
+
+Bobby Tables...
+
+\\end{ednote}
+
+\\herebedragons
+
+}}
+
+""",
+"""\\begin{ednote}
+
+Bobby Tables...
+
+|end{ednote}
+
+\\herebedragons
+
+\\end{ednote}""")
+
 
 class DokuforgeDBTests(unittest.TestCase):
     def setUp(self):
