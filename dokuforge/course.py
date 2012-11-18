@@ -426,7 +426,7 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
-        pagestore = self.getstorage(b"page%d" % page)
+        pagestore = self.getstorage((u"page%d" % page).encode("ascii"))
         version, content = pagestore.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -457,7 +457,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        pagestore = self.getstorage(b"page%d" % page)
+        pagestore = self.getstorage((u"page%d" % page).encode("ascii"))
         ok, version, mergedcontent = pagestore.endedit(version.encode("utf8"),
                                                        newcontent.encode("utf8"),
                                                        user = user)
