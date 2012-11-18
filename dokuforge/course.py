@@ -171,8 +171,8 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
-        page = (u"page%d" % page).encode("ascii")
-        info = self.getstorage(page).commitstatus()
+        pageid = (u"page%d" % page).encode("ascii")
+        info = self.getstorage(pageid).commitstatus()
         return dict((k, v) if k == "date" else (k, v.encode("utf8"))
                     for k, v in info.items())
 
@@ -219,8 +219,8 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
-        page = (u"page%d" % page).encode("ascii")
-        return self.getcontent(page).decode("utf8")
+        pageid = (u"page%d" % page).encode("ascii")
+        return self.getcontent(pageid).decode("utf8")
 
     def getrcs(self, page):
         """
@@ -231,8 +231,8 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
-        page = (u"page%d" % page).encode("ascii")
-        return self.getstorage(page).asrcs()
+        pageid = (u"page%d" % page).encode("ascii")
+        return self.getstorage(pageid).asrcs()
 
     def rawExportIterator(self, tarwriter):
         """
@@ -426,8 +426,8 @@ class Course(StorageDir):
         """
         if 0 > page or page >= self.nextpage():
             raise dfexceptions.PageOutOfBound()
-        page = self.getstorage(b"page%d" % page)
-        version, content = page.startedit()
+        pagestore = self.getstorage(b"page%d" % page)
+        version, content = pagestore.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
     def savepage(self, number, version, newcontent, user=None):
@@ -457,10 +457,10 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        page = self.getstorage(b"page%d" % number)
-        ok, version, mergedcontent = page.endedit(version.encode("utf8"),
-                                                  newcontent.encode("utf8"),
-                                                  user = user)
+        pagestore = self.getstorage(b"page%d" % number)
+        ok, version, mergedcontent = pagestore.endedit(version.encode("utf8"),
+                                                       newcontent.encode("utf8"),
+                                                       user = user)
         return (ok, version.decode("utf8"), mergedcontent.decode("utf8"))
 
     def attachblob(self, page, data, comment="unknown blob", label="fig",
@@ -619,8 +619,8 @@ class Course(StorageDir):
         tex = u"\\course{%02d}{%s}" % (self.number, self.gettitle())
         for p in self.listpages():
             tex += u"\n\n%%%%%% Part %d\n" % p
-            page = self.showpage(p)
-            tex += dfLineGroupParser(page).toTex()
+            pagecontent = self.showpage(p)
+            tex += dfLineGroupParser(pagecontent).toTex()
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
                 tex += u"\n\n%% blob %d\n" % b
