@@ -284,7 +284,7 @@ class Storage(object):
         except FileDoesNotExist:
             # we just ensured the existence
             raise RcsError("failed to get commitstatus, rcs-file %s vanished" %
-                           self.fullpath("%s,v"))
+                           self.fullpath(postfix=b",v"))
         return status
 
     def content(self, havelock=None):
