@@ -630,9 +630,9 @@ class Course(StorageDir):
                 tex += u"\\caption{%s}\n" % blob['comment']
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
-                yield tarwriter.addChunk(b"%s/blob_%d_%s" %
-                                         (self.name, b, str(blob['filename'])),
+                yield tarwriter.addChunk((u"%s/blob_%d_%s" %
+                                         (self.name, b, str(blob['filename']))).encode("ascii"),
                                          blob['data'])
 
-        yield tarwriter.addChunk(b"%s/chap.tex" % self.name,
+        yield tarwriter.addChunk((u"%s/chap.tex" % self.name).encode("ascii"),
                                  tex.encode("utf8"))
