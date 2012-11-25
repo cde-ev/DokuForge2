@@ -103,10 +103,10 @@ class TemporaryRequestRedirect(exceptions.HTTPException,
     def get_response(self, environ):
         return werkzeug.utils.redirect(self.new_url, self.code)
 
-class RcsError(DfException):
+class StorageFailure(DfException):
     """
-    An RcsError does not occur under normal circumstances. It can be thought
-    of as an AssertionError, except that you cannot suppress it with -O.
+    A StorageFailure does not occur under normal circumstances. It can be
+    thought of as an AssertionError, except that you cannot suppress it with -O.
     It may be raised when the disk is full or when dokuforge is lacking
     permission to access its own files for example.
     """
