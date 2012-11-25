@@ -111,45 +111,41 @@ teststrings = [
     ]
 
 
-def isTar(octets):
+class DfTestCase(unittest.TestCase):
     """
-    Return true if there is some indication that the argument
-    is a complete tar archive.
+    Class were all units tests for dokuforge derive from. The
+    class itself only provides utility functions and does not
+    contain any tests.
     """
-    blocksize = 512
-    if len(octets) < 2 * blocksize:
+    def assertIsTar(self, octets):
+        blocksize = 512
         # there must be at least the 2 terminating 0-blocks
-        return False
-    if len(octets) % blocksize != 0:
+        self.assertTrue(len(octets) >= 2 * blocksize)
         # a tar archive is a sequence of complete blocks
-        return False
-    if not "\0\0\0\0\0\0\0\0\0\0" in octets:
+        self.assertTrue(len(octets) % blocksize == 0)
         # there is at least the terminating 0-block
-        return False
-    # since we want to tolerate old-style tar archives, do not
-    # check for magic
-    return True
+        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in octets)
 
-def isTarGz(octets):
-    f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
-    return isTar(f.read())
+    def assertIsTarGz(self, octets):
+        f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
+        self.assertIsTar(f.read())
 
-class TarWriterTests(unittest.TestCase):
+class TarWriterTests(DfTestCase):
     def testUncompressed(self):
         tarwriter = TarWriter()
         tar = b''
         tar = tar + tarwriter.addChunk('myFile', 'contents')
         tar = tar + tarwriter.close()
-        self.assertTrue(isTar(tar))
+        self.assertIsTar(tar)
         
     def testGzip(self):
         tarwriter = TarWriter(gzip=True)
         tar = b''
         tar = tar + tarwriter.addChunk('myFile', 'contents')
         tar = tar + tarwriter.close()
-        self.assertTrue(isTarGz(tar))
+        self.assertIsTarGz(tar)
 
-class DokuforgeWebTests(unittest.TestCase):
+class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
@@ -647,7 +643,7 @@ permissions = df_superadmin True,df_admin True
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(text="Exportieren"))
-        self.assertTrue(isTarGz(self.get_data()))
+        self.assertIsTarGz(self.get_data())
 
     def testRawCourseExport(self):
         self.br.open(self.url)
@@ -655,7 +651,7 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course02/$")))
         self.br.open(self.br.click_link(text="Roh-Export"))
-        self.assertTrue(isTar(self.get_data()))
+        self.assertIsTar(self.get_data())
 
     def testRawPageExport(self):
         self.br.open(self.url)
@@ -667,7 +663,7 @@ permissions = df_superadmin True,df_admin True
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.get_data().startswith("head"))
 
-class DokuforgeMockTests(unittest.TestCase):
+class DokuforgeMockTests(DfTestCase):
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
         for _ in range(rounds):
             for l in range(minlength, maxlength):
@@ -683,7 +679,7 @@ class DokuforgeMockTests(unittest.TestCase):
         inp3 = dfLineGroupParser(inp2).toDF()
         self.assertEqual(inp2, inp3)
 
-class DokuforgeMicrotypeUnitTests(unittest.TestCase):
+class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfLineGroupParser(df).toTex().strip()
         self.assertEquals(obtained, tex)
