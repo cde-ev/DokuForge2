@@ -142,8 +142,8 @@ class TarWriterTests(unittest.TestCase):
         tar = tar + tarwriter.close()
         self.assertTrue(isTar(tar))
         
-    def testCompressed(self):
-        tarwriter = TarWriter(compression=True)
+    def testGzip(self):
+        tarwriter = TarWriter(gzip=True)
         tar = b''
         tar = tar + tarwriter.addChunk('myFile', 'contents')
         tar = tar + tarwriter.close()

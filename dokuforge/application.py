@@ -1012,7 +1012,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         prefix = "texexport_%s" % aca.name
         def export_iterator(aca, static, prefix):
-            tarwriter = common.TarWriter(compression=True)
+            tarwriter = common.TarWriter(gzip=True)
             tarwriter.pushd(prefix)
             for chunk in aca.texExportIterator(tarwriter,
                                                static=static):
