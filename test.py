@@ -108,6 +108,27 @@ teststrings = [
     (u"some ' " + u'" quotes', u"some &#39; &#34; quotes")
     ]
 
+
+def isTar(octets):
+    """
+    Return true if there is some indication that the argument
+    is a complete tar archive.
+    """
+    blocksize = 512
+    if len(octets) < 2 * blocksize:
+        # there must be at least the 2 terminating 0-blocks
+        return False
+    if len(octets) % blocksize != 0:
+        # a tar archive is a sequence of complete blocks
+        return False
+    if not "\0\0\0\0\0\0\0\0\0\0" in octets:
+        # there is at least the terminating 0-block
+        return False
+    # since we want to tolerate old-style tar archives, do not
+    # check for magic
+    return True
+    
+
 class DokuforgeWebTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
@@ -606,7 +627,7 @@ permissions = df_superadmin True,df_admin True
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(text="Exportieren"))
-        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in self.get_data())
+        self.assertTrue(isTar(self.get_data()))
 
     def testRawCourseExport(self):
         self.br.open(self.url)
@@ -614,7 +635,7 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course02/$")))
         self.br.open(self.br.click_link(text="Roh-Export"))
-        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in self.get_data())
+        self.assertTrue(isTar(self.get_data()))
 
     def testRawPageExport(self):
         self.br.open(self.url)
