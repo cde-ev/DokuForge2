@@ -2,7 +2,6 @@ import os
 
 from werkzeug.datastructures import FileStorage
 
-from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
 import dokuforge.dfexceptions as dfexceptions

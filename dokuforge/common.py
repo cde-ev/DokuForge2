@@ -2,7 +2,6 @@
 
 import io
 import random
-import subprocess
 import re
 import os
 import ConfigParser
@@ -11,17 +10,6 @@ import datetime
 
 from dokuforge.dfexceptions import CheckError, InvalidBlobFilename, \
         RcsUserInputError
-
-try:
-    check_output = subprocess.check_output
-except AttributeError:
-    def check_output(cmdline, **kwargs):
-        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE, **kwargs)
-        output, _ = proc.communicate()
-        if proc.returncode:
-            raise subprocess.CalledProcessError()
-        return output
-
 
 sysrand = random.SystemRandom()
 

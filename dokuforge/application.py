@@ -3,7 +3,6 @@
 
 import ConfigParser
 import copy
-import datetime
 from hashlib import md5 as getmd5
 import io
 import logging

@@ -7,8 +7,7 @@ import time
 import subprocess
 import re
 
-from dokuforge.common import check_output, utc, epoch
-from dokuforge.common import validateRcsRevision
+from dokuforge.common import utc, epoch, validateRcsRevision
 from dokuforge.dfexceptions import RcsUserInputError, StorageFailure, RcsError
 
 logger = logging.getLogger(__name__)

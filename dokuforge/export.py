@@ -7,7 +7,6 @@ import os.path
 import sys
 
 from dokuforge.course import Course
-from dokuforge.parser import dfLineGroupParser
 
 class PseudoTarWriter:
     def __init__(self, directory):
