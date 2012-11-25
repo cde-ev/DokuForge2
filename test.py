@@ -647,7 +647,7 @@ permissions = df_superadmin True,df_admin True
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(text="Exportieren"))
-        self.assertTrue(isTar(self.get_data()))
+        self.assertTrue(isTarGz(self.get_data()))
 
     def testRawCourseExport(self):
         self.br.open(self.url)
