@@ -550,7 +550,7 @@ class Course(StorageDir):
         @param number: the internal number of the blob
         @type number: int
         @rtype: LazyView
-        @returns: a mapping providing the keys: data(str), label(unicode),
+        @returns: a mapping providing the keys: data(bytes), label(unicode),
                   comment(unicode), filename(unicode) and number(int)
         @raises dfexceptions.BlobOutOfBound
         """
@@ -630,9 +630,9 @@ class Course(StorageDir):
                 tex += u"\\caption{%s}\n" % blob['comment']
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
-                yield tarwriter.addChunk((u"%s/blob_%d_%s" %
-                                         (self.name, b, str(blob['filename']))).encode("ascii"),
+                yield tarwriter.addChunk(self.name +
+                                         (u"/blob_%d_%s" %
+                                          (b, blob['filename'])).encode("utf8"),
                                          blob['data'])
 
-        yield tarwriter.addChunk((u"%s/chap.tex" % self.name).encode("ascii"),
-                                 tex.encode("utf8"))
+        yield tarwriter.addChunk(self.name + b"/chap.tex", tex.encode("utf8"))
