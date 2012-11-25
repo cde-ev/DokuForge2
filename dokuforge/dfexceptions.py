@@ -110,21 +110,33 @@ class StorageFailure(DfException):
     It may be raised when the disk is full or when dokuforge is lacking
     permission to access its own files for example.
     """
-    def __init__(self, msg, stderr="", code=0):
+    def __init__(self, msg):
         """
         @type msg: str
-        @type stderr: str
+        """
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+    def __repr__(self):
+        return "%s(%r)" % (self.__class__.__name, self.msg)
+
+class RcsError(StorageFailure):
+    """A failure from a spawned rcs command."""
+    def __init__(self, msg, stderr, code):
+        """
+        @type msg: str
+        @type stderr: bytes
         @param stderr: the contents of stderr of a called provides being
                 responsible for this exception if any
         @type code: int
         @param code: the exit status of a called process being responsible for
                 this exception if any
         """
-        self.msg = msg
+        StorageFailure.__init__(self, msg)
         self.stderr = stderr
         self.code = code
-    def __str__(self):
-        return self.msg
     def __repr__(self):
         if self.code:
             return "%s(%r, %r, %d)" % (self.__class__.__name__, self.msg,

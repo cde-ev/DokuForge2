@@ -10,7 +10,7 @@ import re
 from dokuforge.common import check_output, utc, epoch
 from dokuforge.common import validateRcsRevision
 from dokuforge.dfexceptions import RcsUserInputError, StorageFailure
-from dokuforge.dfexceptions import FileDoesNotExist
+from dokuforge.dfexceptions import FileDoesNotExist, RcsError
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +22,14 @@ def call_rcs(cmdline):
     @type cmdline: [str]
     @rtype: str
     @returns: the content received on stdout
-    @raises StorageFailure: if the process exits with a non-zero status
+    @raises RcsError: if the process exits with a non-zero status
     """
     assert isinstance(cmdline, list)
     process = subprocess.Popen(cmdline, env=RCSENV, stderr=subprocess.PIPE,
                                stdout=subprocess.PIPE)
     stdout, stderr = process.communicate()
     if process.returncode:
-        raise StorageFailure("failure invoking %r" % cmdline, stderr,
+        raise RcsError("failure invoking %r" % cmdline, stderr,
                        process.returncode)
     return stdout
 
