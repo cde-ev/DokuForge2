@@ -9,8 +9,7 @@ import re
 
 from dokuforge.common import check_output, utc, epoch
 from dokuforge.common import validateRcsRevision
-from dokuforge.dfexceptions import RcsUserInputError, StorageFailure
-from dokuforge.dfexceptions import FileDoesNotExist, RcsError
+from dokuforge.dfexceptions import RcsUserInputError, StorageFailure, RcsError
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +37,9 @@ def rlogv(filename):
     Return the head revision of an rcs file
 
     (needed, as rlog -v is a FreeBSD extension)
-    @type filename: bytes or None
+    @type filename: bytes
+    @rtype: str
+    @raises StorageFailure:
     """
     # FIXME: maybe use proper exceptions to differentiate errors?
     assert isinstance(filename, bytes)
@@ -47,12 +48,13 @@ def rlogv(filename):
         with file(filename) as rcsfile:
             content = rcsfile.read()
     except IOError:
-        return None
+        raise StorageFailure("rlogv failed to open %r" % filename)
     m = re.match(r'^\s*head\s*([0-9.]+)\s*;', content)
     if m:
         return m.groups()[0]
     else:
-        return None
+        raise StorageFailure("rlogv failed to discover head revision for %r" %
+                             filename)
 
 rcsseparator='----------------------------' 
 
@@ -66,7 +68,6 @@ def rloghead(filename):
               All values are str, except for the 'date' key which has a
               datetime object associated.
     @rtype: {str: object}
-    @raises FileDoesNotExist:
     @raises StorageFailure:
     """
     assert isinstance(filename, bytes)
@@ -80,8 +81,6 @@ def rloghead(filename):
     answer = {}
 
     revision = rlogv(filename)
-    if revision is None:
-        raise FileDoesNotExist(filename)
     answer['revision'] = revision
     rlog = call_rcs(["rlog", "-q", "-r%s" % revision, filename])
     lines = rlog.splitlines()
@@ -264,10 +263,13 @@ class Storage(object):
         @raises StorageFailure:
         """
         self.ensureexistence(havelock = havelock)
-        result = rlogv(self.fullpath(postfix=b",v"))
-        if result is None:
-            result = rlogv(self.fullpath(prefix=b"RCS/", postfix=b",v"))
-        return result
+        try:
+            return rlogv(self.fullpath(postfix=b",v"))
+        except StorageFailure:
+            try:
+                return rlogv(self.fullpath(prefix=b"RCS/", postfix=b",v"))
+            except StorageFailure:
+                return None
 
     def commitstatus(self, havelock=None):
         """
@@ -279,13 +281,7 @@ class Storage(object):
         @raises StorageFailure:
         """
         self.ensureexistence(havelock=havelock)
-        try:
-            status = rloghead(self.fullpath(postfix=b",v"))
-        except FileDoesNotExist:
-            # we just ensured the existence
-            raise StorageFailure("failed to get commitstatus, rcs-file %s vanished" %
-                           self.fullpath(postfix=b",v"))
-        return status
+        return rloghead(self.fullpath(postfix=b",v"))
 
     def content(self, havelock=None):
         """

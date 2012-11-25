@@ -21,9 +21,6 @@ class CheckError(StandardError, DfException):
     def __str__(self):
         return self.message
 
-class FileDoesNotExist(CheckError):
-    pass
-
 class InvalidBlobFilename(CheckError):
     pass
 
