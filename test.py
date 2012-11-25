@@ -6,6 +6,7 @@
 # are callable. This is clearly wrong and renders this message useless for this
 # file.
 
+import gzip
 from httplib import HTTPMessage
 import io
 import mechanize
@@ -23,6 +24,7 @@ import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
+from dokuforge.common import TarWriter
 
 class WSGIHandler(BaseHandler):
     environ_base = {
@@ -127,7 +129,25 @@ def isTar(octets):
     # since we want to tolerate old-style tar archives, do not
     # check for magic
     return True
-    
+
+def isTarGz(octets):
+    f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
+    return isTar(f.read())
+
+class TarWriterTests(unittest.TestCase):
+    def testUncompressed(self):
+        tarwriter = TarWriter()
+        tar = b''
+        tar = tar + tarwriter.addChunk('myFile', 'contents')
+        tar = tar + tarwriter.close()
+        self.assertTrue(isTar(tar))
+        
+    def testCompressed(self):
+        tarwriter = TarWriter(compression=True)
+        tar = b''
+        tar = tar + tarwriter.addChunk('myFile', 'contents')
+        tar = tar + tarwriter.close()
+        self.assertTrue(isTarGz(tar))
 
 class DokuforgeWebTests(unittest.TestCase):
     url = "http://www.dokuforge.de"
