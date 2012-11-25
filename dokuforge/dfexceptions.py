@@ -117,7 +117,7 @@ class StorageFailure(DfException):
         return self.msg
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name, self.msg)
+        return "%s(%r)" % (self.__class__.__name__, self.msg)
 
 class RcsError(StorageFailure):
     """A failure from a spawned rcs command."""
