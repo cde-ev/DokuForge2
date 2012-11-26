@@ -271,9 +271,12 @@ def validateRcsRevision(versionnumber):
                                 u"can only happen in hand-crafted requests")
 
 class TarWriter:
-    def __init__(self):
+    def __init__(self, gzip=False):
         self.io = io.BytesIO()
-        self.tar = tarfile.open(mode="w|", fileobj=self.io)
+        if gzip:
+            self.tar = tarfile.open(mode="w|gz", fileobj=self.io)
+        else:
+            self.tar = tarfile.open(mode="w|", fileobj=self.io)
         self.dirs = []
 
     @property

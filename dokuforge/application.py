@@ -1012,7 +1012,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         prefix = "texexport_%s" % aca.name
         def export_iterator(aca, static, prefix):
-            tarwriter = common.TarWriter()
+            tarwriter = common.TarWriter(gzip=True)
             tarwriter.pushd(prefix)
             for chunk in aca.texExportIterator(tarwriter,
                                                static=static):
@@ -1022,7 +1022,7 @@ class Application:
         rs.response.response = export_iterator(aca, self.staticexportdir,
                                                prefix)
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar" % prefix
+                "attachment; filename=%s.tar.gz" % prefix
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):

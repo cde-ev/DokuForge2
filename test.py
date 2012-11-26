@@ -6,6 +6,7 @@
 # are callable. This is clearly wrong and renders this message useless for this
 # file.
 
+import gzip
 from httplib import HTTPMessage
 import io
 import mechanize
@@ -23,6 +24,7 @@ import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
+from dokuforge.common import TarWriter
 
 class WSGIHandler(BaseHandler):
     environ_base = {
@@ -108,7 +110,42 @@ teststrings = [
     (u"some ' " + u'" quotes', u"some &#39; &#34; quotes")
     ]
 
-class DokuforgeWebTests(unittest.TestCase):
+
+class DfTestCase(unittest.TestCase):
+    """
+    Class were all units tests for dokuforge derive from. The
+    class itself only provides utility functions and does not
+    contain any tests.
+    """
+    def assertIsTar(self, octets):
+        blocksize = 512
+        # there must be at least the 2 terminating 0-blocks
+        self.assertTrue(len(octets) >= 2 * blocksize)
+        # a tar archive is a sequence of complete blocks
+        self.assertTrue(len(octets) % blocksize == 0)
+        # there is at least the terminating 0-block
+        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in octets)
+
+    def assertIsTarGz(self, octets):
+        f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
+        self.assertIsTar(f.read())
+
+class TarWriterTests(DfTestCase):
+    def testUncompressed(self):
+        tarwriter = TarWriter()
+        tar = b''
+        tar = tar + tarwriter.addChunk('myFile', 'contents')
+        tar = tar + tarwriter.close()
+        self.assertIsTar(tar)
+        
+    def testGzip(self):
+        tarwriter = TarWriter(gzip=True)
+        tar = b''
+        tar = tar + tarwriter.addChunk('myFile', 'contents')
+        tar = tar + tarwriter.close()
+        self.assertIsTarGz(tar)
+
+class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
@@ -606,7 +643,7 @@ permissions = df_superadmin True,df_admin True
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(text="Exportieren"))
-        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in self.get_data())
+        self.assertIsTarGz(self.get_data())
 
     def testRawCourseExport(self):
         self.br.open(self.url)
@@ -614,7 +651,7 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course02/$")))
         self.br.open(self.br.click_link(text="Roh-Export"))
-        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in self.get_data())
+        self.assertIsTar(self.get_data())
 
     def testRawPageExport(self):
         self.br.open(self.url)
@@ -626,7 +663,7 @@ permissions = df_superadmin True,df_admin True
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.get_data().startswith("head"))
 
-class DokuforgeMockTests(unittest.TestCase):
+class DokuforgeMockTests(DfTestCase):
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
         for _ in range(rounds):
             for l in range(minlength, maxlength):
@@ -642,7 +679,7 @@ class DokuforgeMockTests(unittest.TestCase):
         inp3 = dfLineGroupParser(inp2).toDF()
         self.assertEqual(inp2, inp3)
 
-class DokuforgeMicrotypeUnitTests(unittest.TestCase):
+class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfLineGroupParser(df).toTex().strip()
         self.assertEquals(obtained, tex)
