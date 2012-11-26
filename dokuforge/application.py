@@ -665,20 +665,6 @@ class Application:
             return dfexceptions.NotEnoughPrivileges()
         return self.render_deadcourses(rs, aca)
 
-    def do_listblobs(self, rs, academy=None, course=None, page=None):
-        """
-        @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
-        """
-        assert academy is not None and course is not None and page is not None
-        self.check_login(rs)
-        aca = self.getAcademy(academy, rs.user)
-        c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedRead(aca, c):
-            return dfexceptions.NotEnoughPrivileges()
-        return self.render_listblobs(rs, aca, c, page)
-
     def do_showdeadblobs(self, rs, academy=None, course=None, page=None):
         """
         @type rs: RequestState
