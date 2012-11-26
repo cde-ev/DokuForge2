@@ -607,6 +607,8 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None
         self.check_login(rs)
@@ -618,6 +620,8 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -630,6 +634,8 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -645,6 +651,8 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -658,6 +666,8 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None
         self.check_login(rs)
@@ -671,6 +681,8 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @raises MalformedPOSTRequest:
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None
         self.check_login(rs)
@@ -742,6 +754,8 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -758,6 +772,8 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -776,6 +792,8 @@ class Application:
         @type course: unicode
         @type page: int
         @type blob: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
@@ -793,6 +811,8 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @raises MalformedPOSTRequest:
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -818,6 +838,8 @@ class Application:
         @type course: unicode
         @type page: int
         @raises MalformedPOSTRequest:
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -843,6 +865,8 @@ class Application:
         @type course: unicode
         @type page: int
         @type blob: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
@@ -860,6 +884,8 @@ class Application:
         @type course: unicode
         @type page: int
         @type blob: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
@@ -879,6 +905,8 @@ class Application:
         @type page: int
         @type blob: int
         @raises MalformedPOSTRequest:
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
@@ -908,6 +936,8 @@ class Application:
         @type course: unicode
         @type page: int
         @type blob: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
@@ -930,6 +960,8 @@ class Application:
         @type course: unicode
         @type page: int
         @type blob: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and \
                page is not None and blob is not None
@@ -951,6 +983,8 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -969,6 +1003,8 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -991,6 +1027,8 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None
         self.check_login(rs)
@@ -1014,6 +1052,8 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None
         self.check_login(rs)
@@ -1041,6 +1081,8 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @raises MalformedPOSTRequest:
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -1065,6 +1107,8 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1078,6 +1122,8 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1094,6 +1140,8 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1109,6 +1157,8 @@ class Application:
         @type academy: unicode
         @type course: unicode
         @type page: int
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1135,6 +1185,8 @@ class Application:
         @type course: unicode
         @type page: int
         @raises MalformedPOSTRequest:
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1179,6 +1231,8 @@ class Application:
         @type course: unicode
         @type page: int
         @raises MalformedPOSTRequest:
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
@@ -1204,6 +1258,8 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None
         self.check_login(rs)
@@ -1217,6 +1273,8 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @raises MalformedPOSTRequest:
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None
         self.check_login(rs)
@@ -1238,6 +1296,8 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None
         self.check_login(rs)
@@ -1252,6 +1312,8 @@ class Application:
         """
         @type rs: RequestState
         @type academy: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None
         self.check_login(rs)
@@ -1267,6 +1329,8 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -1284,6 +1348,8 @@ class Application:
         @type rs: RequestState
         @type academy: unicode
         @type course: unicode
+        @raises MalformedAdress:
+        @raises NotEnoughPrivileges:
         """
         assert academy is not None and course is not None
         self.check_login(rs)
