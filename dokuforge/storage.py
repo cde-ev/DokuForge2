@@ -364,7 +364,7 @@ class Storage(object):
             try:
                 call_rcs(["co", "-f", "-q", "-l%s" % version,
                           self.fullpath()])
-            except StorageFailure, error:
+            except RcsError, error:
                 # FIXME: verify that the passed revision is indeed rejected
                 # Otherwise we may be hiding real errors. Looking at
                 # error.stderr might help here.
@@ -382,7 +382,7 @@ class Storage(object):
             os.chmod(self.fullpath(), 0o600)
             try:
                 call_rcs(["rcsmerge", "-q", "-r%s" % version, self.fullpath()])
-            except StorageFailure, error:
+            except RcsError, error:
                 # Note: non-zero exit status is OK!
                 # FIXME: can we distinguish merge conflicts from other errors
                 # using error.stderr or error.code?
