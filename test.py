@@ -27,8 +27,6 @@ from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
 from dokuforge.storage import Storage
 
-theapplication = None
-
 class WSGIHandler(BaseHandler):
     environ_base = {
         "wsgi.multithread": False,
