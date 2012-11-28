@@ -122,13 +122,19 @@ class DfTestCase(unittest.TestCase):
         # there must be at least the 2 terminating 0-blocks
         self.assertTrue(len(octets) >= 2 * blocksize)
         # a tar archive is a sequence of complete blocks
-        self.assertTrue(len(octets) % blocksize == 0)
+        self.assertEqual(len(octets) % blocksize, 0)
         # there is at least the terminating 0-block
-        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in octets)
+        self.assertIn("\0\0\0\0\0\0\0\0\0\0", octets)
 
     def assertIsTarGz(self, octets):
         f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
         self.assertIsTar(f.read())
+
+    if not hasattr(unittest.TestCase, "assertIn"):
+        # Support Python < 2.7
+        def assertIn(self, member, container):
+            if member not in container:
+                self.fail("%r not found in %r" % (member, container))
 
 class TarWriterTests(DfTestCase):
     def testUncompressed(self):
@@ -176,7 +182,7 @@ class DokuforgeWebTests(DfTestCase):
         self.br.open(form.click())
 
     def is_loggedin(self):
-        self.assertTrue("/logout" in self.get_data())
+        self.assertIn("/logout", self.get_data())
 
     def testLogin(self):
         self.br.open(self.url)
@@ -211,7 +217,7 @@ class DokuforgeWebTests(DfTestCase):
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.is_loggedin()
-        self.assertTrue("Exportieren" in self.get_data())
+        self.assertIn("Exportieren", self.get_data())
 
     def testCourse(self):
         self.br.open(self.url)
@@ -219,7 +225,7 @@ class DokuforgeWebTests(DfTestCase):
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
         self.is_loggedin()
-        self.assertTrue("Roh-Export" in self.get_data())
+        self.assertIn("Roh-Export", self.get_data())
 
     def testPage(self):
         self.br.open(self.url)
@@ -228,7 +234,7 @@ class DokuforgeWebTests(DfTestCase):
         self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
         self.is_loggedin()
-        self.assertTrue("neues Bild hinzuf" in self.get_data())
+        self.assertIn("neues Bild hinzuf", self.get_data())
 
     def testEdit(self):
         self.br.open(self.url)
@@ -241,7 +247,7 @@ class DokuforgeWebTests(DfTestCase):
             form = list(self.br.forms())[1]
             form["content"] = inputstr.encode("utf8")
             self.br.open(form.click(label="Speichern und Beenden"))
-            self.assertTrue(outputstr.encode("utf8") in self.get_data())
+            self.assertIn(outputstr.encode("utf8"), self.get_data())
         self.is_loggedin()
 
     def testMarkup(self):
@@ -264,8 +270,8 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
 """
         self.br.open(form.click(label="Speichern und Beenden"))
         content = self.get_data()
-        self.assertTrue("$\\sqrt{2}$" in content)
-        self.assertTrue("ednote \\end{ednote}" in content)
+        self.assertIn("$\\sqrt{2}$", content)
+        self.assertIn("ednote \\end{ednote}", content)
         self.is_loggedin()
 
     def testMovePage(self):
@@ -285,7 +291,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form = list(self.br.forms())[2]
         self.br.open(form.click(label=u"Neuen Teil anlegen".encode("utf8")))
         self.is_loggedin()
-        self.assertTrue("Teil&nbsp;#2" in self.get_data())
+        self.assertIn("Teil&nbsp;#2", self.get_data())
 
     def testCourseTitle(self):
         self.br.open(self.url)
@@ -297,7 +303,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
             form = list(self.br.forms())[1]
             form["content"] = inputstr.encode("utf8")
             self.br.open(form.click(label="Speichern und Editieren"))
-            self.assertTrue(outputstr.encode("utf8") in self.get_data())
+            self.assertIn(outputstr.encode("utf8"), self.get_data())
         self.is_loggedin()
 
     def testDeletePage(self):
@@ -322,7 +328,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.br.click_link(url_regex=re.compile("course01/.*deadpages$")))
         form = list(self.br.forms())[1]
         self.br.open(form.click(label="wiederherstellen"))
-        self.assertTrue("Teil&nbsp;#0" in self.get_data())
+        self.assertIn("Teil&nbsp;#0", self.get_data())
         self.is_loggedin()
 
     def testAcademyTitle(self):
@@ -334,7 +340,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
             form = list(self.br.forms())[1]
             form["content"] = inputstr.encode("utf8")
             self.br.open(form.click(label="Speichern und Editieren"))
-            self.assertTrue(outputstr.encode("utf8") in self.get_data())
+            self.assertIn(outputstr.encode("utf8"), self.get_data())
         self.is_loggedin()
 
     def testAcademyGroups(self):
@@ -345,13 +351,13 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form = list(self.br.forms())[1]
         form["groups"] = ["cde"]
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Gruppen erfolgreich bearbeitet." in self.get_data())
+        self.assertIn("Gruppen erfolgreich bearbeitet.", self.get_data())
         form = list(self.br.forms())[1]
         # hack an invalid group
         mechanize_Item(form.find_control("groups"), dict(value="spam"))
         form["groups"] = ["cde", "spam"]
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
+        self.assertIn("Nichtexistente Gruppe gefunden!", self.get_data())
         self.is_loggedin()
 
     def testCreateCourse(self):
@@ -363,14 +369,14 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form["name"] = "course03"
         form["title"] = "Testkurs"
         self.br.open(form.click(label=u"Kurs hinzufügen".encode("utf8")))
-        self.assertTrue("Area51" in self.get_data())
-        self.assertTrue("Testkurs" in self.get_data())
+        self.assertIn("Area51", self.get_data())
+        self.assertIn("Testkurs", self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/.*createcourse$")))
         form = list(self.br.forms())[1]
         form["name"] = "foo_bar"
         form["title"] = "next Testkurs"
         self.br.open(form.click(label=u"Kurs hinzufügen".encode("utf8")))
-        self.assertTrue("Interner Name nicht wohlgeformt!" in self.get_data())
+        self.assertIn("Interner Name nicht wohlgeformt!", self.get_data())
         self.is_loggedin()
 
     def testCreateAcademy(self):
@@ -382,15 +388,15 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form["title"] = "Testakademie"
         form["groups"] = ["cde"]
         self.br.open(form.click(label="Akademie anlegen"))
-        self.assertTrue("Testakademie" in self.get_data())
-        self.assertTrue("X-Akademie" in self.get_data())
+        self.assertIn("Testakademie", self.get_data())
+        self.assertIn("X-Akademie", self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/createacademy$")))
         form = list(self.br.forms())[1]
         form["name"] = "foo_bar"
         form["title"] = "next Testakademie"
         form["groups"] = ["cde"]
         self.br.open(form.click(label="Akademie anlegen"))
-        self.assertTrue("Interner Name nicht wohlgeformt!" in self.get_data())
+        self.assertIn("Interner Name nicht wohlgeformt!", self.get_data())
         form = list(self.br.forms())[1]
         form["name"] = "foobar"
         form["title"] = "next Testakademie"
@@ -398,7 +404,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         mechanize_Item(form.find_control("groups"), dict(value="spam"))
         form["groups"] = ["cde", "spam"]
         self.br.open(form.click(label="Akademie anlegen"))
-        self.assertTrue("Nichtexistente Gruppe gefunden!" in self.get_data())
+        self.assertIn("Nichtexistente Gruppe gefunden!", self.get_data())
         self.is_loggedin()
 
     def testGroups(self):
@@ -413,7 +419,7 @@ title = CdE-Akademien
 title = Wie der Name sagt
 """
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Aenderungen erfolgreich gespeichert." in self.get_data())
+        self.assertIn("Aenderungen erfolgreich gespeichert.", self.get_data())
         form = list(self.br.forms())[1]
         form["content"] = """[cde]
 title = CdE-Akademien
@@ -422,7 +428,8 @@ title = CdE-Akademien
 title = Wie der Name sagt
 """
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Es ist ein allgemeiner Parser-Fehler aufgetreten!" in self.get_data())
+        self.assertIn("Es ist ein allgemeiner Parser-Fehler aufgetreten!",
+                      self.get_data())
         self.is_loggedin()
 
     def testAdmin(self):
@@ -437,7 +444,7 @@ password = secret
 permissions = df_superadmin True,df_admin True
 """
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Aenderungen erfolgreich gespeichert." in self.get_data())
+        self.assertIn("Aenderungen erfolgreich gespeichert.", self.get_data())
         form = list(self.br.forms())[1]
         form["content"] = """[bob
 name = bob
@@ -446,51 +453,56 @@ password = secret
 permissions = df_superadmin True,df_admin True
 """
         self.br.open(form.click(label="Speichern und Editieren"))
-        self.assertTrue("Es ist ein allgemeiner Parser-Fehler aufgetreten!" in self.get_data())
+        self.assertIn("Es ist ein allgemeiner Parser-Fehler aufgetreten!",
+                      self.get_data())
         self.is_loggedin()
 
     def testStyleguide(self):
         self.br.open(self.url)
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.assertTrue("Richtlinien für die Erstellung der Dokumentation" in self.get_data())
+        self.assertIn("Richtlinien für die Erstellung der Dokumentation",
+                      self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/intro$")))
-        self.assertTrue(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge".encode("utf8") in self.get_data())
+        self.assertIn(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge".encode("utf8"), self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/hilfe$")))
-        self.assertTrue("Ein kurzer Leitfaden für die Benutzung von DokuForge" in self.get_data())
+        self.assertIn("Ein kurzer Leitfaden für die Benutzung von DokuForge",
+                      self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/grundlagen$")))
-        self.assertTrue("Grundlagen von DokuForge" in self.get_data())
+        self.assertIn("Grundlagen von DokuForge", self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/abbildungen$")))
-        self.assertTrue(u"Wie werden Abbildungen in DokuForge eingefügt?".encode("utf8") in self.get_data())
+        self.assertIn(u"Wie werden Abbildungen in DokuForge eingefügt?".encode("utf8"), self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/mathe$")))
-        self.assertTrue("Wie werden Formeln gesetzt?" in self.get_data())
+        self.assertIn("Wie werden Formeln gesetzt?", self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/spezielles$")))
-        self.assertTrue(u"Sondersonderwünsche".encode("utf8") in self.get_data())
+        self.assertIn(u"Sondersonderwünsche".encode("utf8"), self.get_data())
         self.br.open(self.br.click_link(text="Login"))
         self.do_login()
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
-        self.assertTrue("Richtlinien für die Erstellung der Dokumentation" in self.get_data())
+        self.assertIn("Richtlinien für die Erstellung der Dokumentation",
+                      self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/intro$")))
-        self.assertTrue(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge".encode("utf8") in self.get_data())
+        self.assertIn(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge".encode("utf8"), self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/hilfe$")))
-        self.assertTrue("Ein kurzer Leitfaden für die Benutzung von DokuForge" in self.get_data())
+        self.assertIn("Ein kurzer Leitfaden für die Benutzung von DokuForge",
+                      self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/grundlagen$")))
-        self.assertTrue("Grundlagen von DokuForge" in self.get_data())
+        self.assertIn("Grundlagen von DokuForge", self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/abbildungen$")))
-        self.assertTrue(u"Wie werden Abbildungen in DokuForge eingefügt?".encode("utf8") in self.get_data())
+        self.assertIn(u"Wie werden Abbildungen in DokuForge eingefügt?".encode("utf8"), self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/mathe$")))
-        self.assertTrue("Wie werden Formeln gesetzt?" in self.get_data())
+        self.assertIn("Wie werden Formeln gesetzt?", self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("/style/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("/style/spezielles$")))
-        self.assertTrue(u"Sondersonderwünsche".encode("utf8") in self.get_data())
+        self.assertIn(u"Sondersonderwünsche".encode("utf8"), self.get_data())
         self.is_loggedin()
 
     def testAddBlob(self):
@@ -507,8 +519,8 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
-        self.assertTrue("Zugeordnete Bilder" in self.get_data())
-        self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
+        self.assertIn("Zugeordnete Bilder", self.get_data())
+        self.assertIn("#[0] (README-rlog.txt)", self.get_data())
         self.is_loggedin()
 
     def testShowBlob(self):
@@ -526,8 +538,9 @@ permissions = df_superadmin True,df_admin True
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
-        self.assertTrue("Bildunterschrift/Kommentar: Shiny blob" in self.get_data())
-        self.assertTrue("K&uuml;rzel: blob" in self.get_data())
+        self.assertIn("Bildunterschrift/Kommentar: Shiny blob",
+                      self.get_data())
+        self.assertIn("K&uuml;rzel: blob", self.get_data())
         self.is_loggedin()
 
     def testMD5Blob(self):
@@ -546,7 +559,7 @@ permissions = df_superadmin True,df_admin True
         self.br.open(form.click(label="Bild hochladen"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/$")))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/0/.*md5$")))
-        self.assertTrue("MD5 Summe des Bildes ist" in self.get_data())
+        self.assertIn("MD5 Summe des Bildes ist", self.get_data())
         self.is_loggedin()
 
     def testEditBlob(self):
@@ -570,9 +583,10 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blub"
         form["name"] = "README"
         self.br.open(form.click(label="Speichern"))
-        self.assertTrue("Bildunterschrift/Kommentar: Real Shiny blob" in self.get_data())
-        self.assertTrue("K&uuml;rzel: blub" in self.get_data())
-        self.assertTrue("Dateiname: README" in self.get_data())
+        self.assertIn("Bildunterschrift/Kommentar: Real Shiny blob",
+                      self.get_data())
+        self.assertIn("K&uuml;rzel: blub", self.get_data())
+        self.assertIn("Dateiname: README", self.get_data())
         self.is_loggedin()
 
     def testDeleteBlob(self):
@@ -589,11 +603,11 @@ permissions = df_superadmin True,df_admin True
         form = list(self.br.forms())[1]
         form.find_control("content").add_file(file("./README-rlog.txt"), filename="README-rlog.txt")
         self.br.open(form.click(label="Bild hochladen"))
-        self.assertTrue("Zugeordnete Bilder" in self.get_data())
-        self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
+        self.assertIn("Zugeordnete Bilder", self.get_data())
+        self.assertIn("#[0] (README-rlog.txt)", self.get_data())
         form = list(self.br.forms())[2]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
-        self.assertTrue("Keine Bilder zu diesem Teil gefunden." in self.get_data())
+        self.assertIn("Keine Bilder zu diesem Teil gefunden.", self.get_data())
         self.assertFalse("#[0] (README-rlog.txt)" in self.get_data())
         self.is_loggedin()
 
@@ -613,14 +627,14 @@ permissions = df_superadmin True,df_admin True
         self.br.open(form.click(label="Bild hochladen"))
         form = list(self.br.forms())[2]
         self.br.open(form.click(label=u"Löschen".encode("utf8")))
-        self.assertTrue("Keine Bilder zu diesem Teil gefunden." in self.get_data())
+        self.assertIn("Keine Bilder zu diesem Teil gefunden.", self.get_data())
         self.assertFalse("#[0] (README-rlog.txt)" in self.get_data())
         self.br.open(self.br.click_link(url_regex=re.compile("course01/0/.*deadblobs$")))
-        self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
+        self.assertIn("#[0] (README-rlog.txt)", self.get_data())
         form = list(self.br.forms())[1]
         self.br.open(form.click(label="wiederherstellen"))
-        self.assertTrue("Zugeordnete Bilder" in self.get_data())
-        self.assertTrue("#[0] (README-rlog.txt)" in self.get_data())
+        self.assertIn("Zugeordnete Bilder", self.get_data())
+        self.assertIn("#[0] (README-rlog.txt)", self.get_data())
         self.is_loggedin()
 
     def testAddBlobEmptyLabel(self):
@@ -635,7 +649,8 @@ permissions = df_superadmin True,df_admin True
         form["label"] = ""
         self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
         form = list(self.br.forms())[1]
-        self.assertTrue(u"Kürzel nicht wohlgeformt!".encode("utf8") in self.get_data())
+        self.assertIn(u"Kürzel nicht wohlgeformt!".encode("utf8"),
+                      self.get_data())
         self.is_loggedin()
 
     def testAcademyExport(self):
