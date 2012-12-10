@@ -10,6 +10,7 @@ import gzip
 from httplib import HTTPMessage
 import io
 import mechanize
+import os
 import re
 import shutil
 import sys
@@ -25,6 +26,7 @@ from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
 from dokuforge.common import TarWriter
+from dokuforge.course import Course
 
 class WSGIHandler(BaseHandler):
     environ_base = {
@@ -662,6 +664,26 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.br.click_link(text="rcs"))
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.get_data().startswith("head"))
+
+class CourseTests(DfTestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')
+        self.course = Course(os.path.join(self.tmpdir, b'example'))
+        
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, True)
+
+    def testIsDeletedDefault(self):
+        self.assertFalse(self.course.isDeleted)
+
+    def testDelete(self):
+        self.course.delete()
+        self.assertTrue(self.course.isDeleted)
+
+    def testUnDelete(self):
+        self.course.delete()
+        self.course.undelete()
+        self.assertFalse(self.course.isDeleted)
 
 class DokuforgeMockTests(DfTestCase):
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
