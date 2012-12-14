@@ -247,10 +247,16 @@ class Application:
                  endpoint="academytitle"),
             rule("/docs/<identifier:academy>/!title", methods=("POST",),
                  endpoint="academytitlesave"),
+            rule("/docs/<identifier:academy>/!deadcourses", methods=("GET",),
+                 endpoint="deadcourses"),
 
             # course-specific pages
             rule("/docs/<identifier:academy>/<identifier:course>/",
                  methods=("GET", "HEAD"), endpoint="course"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!delete",
+                 methods=("POST",), endpoint="deletecourse"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!undelete",
+                 methods=("POST",), endpoint="undeletecourse"),
             rule("/docs/<identifier:academy>/<identifier:course>/!createpage",
                  methods=("POST",), endpoint="createpage"),
             rule("/docs/<identifier:academy>/<identifier:course>/!deadpages",
@@ -737,6 +743,36 @@ class Application:
             raise werkzeug.exceptions.NotFound()
         return self.render_styleguide(rs, topic)
 
+    def do_deletecourse(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        c.delete()
+        return self.render_academy(rs, aca)
+
+    def do_undeletecourse(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        c.undelete()
+        return self.render_academy(rs, aca)
+
     def do_createpage(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
@@ -1212,6 +1248,18 @@ class Application:
                                              error = error)
         return self.render_academygroups(rs, aca, ok = True)
 
+    def do_deadcourses(self, rs, academy=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        """
+        assert academy is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        if not rs.user.allowedWrite(aca):
+            return werkzeug.exceptions.Forbidden()
+        return self.render_deadcourses(rs, aca)
+
     def do_academytitle(self, rs, academy=None):
         """
         @type rs: RequestState
@@ -1377,6 +1425,14 @@ class Application:
         @type theacademy: Academy
         """
         return self.render("academy.html", rs,
+                           dict(academy=theacademy.view()))
+
+    def render_deadcourses(self, rs, theacademy):
+        """
+        @type rs: RequestState
+        @type theacademy: Academy
+        """
+        return self.render("deadcourses.html", rs,
                            dict(academy=theacademy.view()))
 
     def render_deadblobs(self, rs, theacademy, thecourse, thepage):

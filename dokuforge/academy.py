@@ -52,9 +52,15 @@ class Academy(StorageDir):
 
     def viewCourses(self):
         """
-        @returns: list of Course.view dicts for all courses of this academy
+        @returns: list of Course.view dicts for all non-deleted courses of this academy
         """
         return [course.view() for course in self.listCourses()]
+
+    def viewDeadCourses(self):
+        """
+        @returns: list of Course.view dicts for all deleted courses of this academy
+        """
+        return [course.view() for course in self.listDeadCourses()]
 
     def listAllCourses(self):
         """
@@ -147,6 +153,7 @@ class Academy(StorageDir):
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
+                         deadcourses=self.viewDeadCourses,
                          groups=self.getgroups,
                          lastchange=self.lastchange,
                          timestamp=self.timestamp)

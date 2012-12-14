@@ -376,6 +376,22 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.assertTrue("Interner Name nicht wohlgeformt!" in self.get_data())
         self.is_loggedin()
 
+    def testCourseDeletion(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.assertTrue("Area51" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        form = list(self.br.forms())[3]
+        self.br.open(form.click(label=u"Kurs löschen".encode("utf8")))
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.assertFalse("Area51" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("deadcourses$")))
+        form = list(self.br.forms())[1]
+        self.br.open(form.click(label=u"Kurs wiederherstellen".encode("utf8")))
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.assertTrue("Area51" in self.get_data())
+
     def testCreateAcademy(self):
         self.br.open(self.url)
         self.do_login()
