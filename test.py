@@ -27,6 +27,7 @@ from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
 from dokuforge.common import TarWriter
 from dokuforge.course import Course
+from dokuforge.academy import Academy
 
 class WSGIHandler(BaseHandler):
     environ_base = {
@@ -684,6 +685,46 @@ class CourseTests(DfTestCase):
         self.course.delete()
         self.course.undelete()
         self.assertFalse(self.course.isDeleted)
+
+class AcademyTest(DfTestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')
+        os.makedirs(os.path.join(self.tmpdir, b'example/legacy'))
+        self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
+        self.academy.createCourse(u'new01', u'erster neuer Kurs')
+        self.academy.createCourse(u'new02', u'zweiter neuer Kurs')
+        
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, True)
+
+    def assertCourses(self, names):
+        namesfound = [c.name for c in self.academy.listCourses()]
+        self.assertEqual(set(names), set(namesfound))
+
+    def assertDeadCourses(self, names):
+        namesfound = [c.name for c in self.academy.listDeadCourses()]
+        self.assertEqual(set(names), set(namesfound))
+
+    def testLegacyCoursePresent(self):
+        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.assertDeadCourses([])
+
+    def testDeleteCourse(self):
+        self.academy.getCourse(u'new01').delete()
+        self.assertCourses([u'legacy', u'new02'])
+        self.assertDeadCourses([u'new01'])
+
+    def testDeleteLegacyCourse(self):
+        self.academy.getCourse(u'legacy').delete()
+        self.assertCourses([u'new01', u'new02'])
+        self.assertDeadCourses([u'legacy'])
+
+    def testCourseDeleteUndelete(self):
+        self.academy.getCourse(u'new01').delete()
+        self.assertDeadCourses([u'new01'])
+        self.academy.getCourse(u'new01').undelete()
+        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.assertDeadCourses([])
 
 class DokuforgeMockTests(DfTestCase):
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
