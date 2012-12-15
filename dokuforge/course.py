@@ -3,6 +3,7 @@ import os
 from werkzeug.datastructures import FileStorage
 
 from dokuforge.common import check_output
+from dokuforge.common import Sortkeys
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
 from dokuforge.parser import dfLineGroupParser, Estimate, PHeading
@@ -85,6 +86,9 @@ class Course(StorageDir):
      - isDeleted,v --
          A bit indicating whether the course is to be hidden from the list
          of courses; defaults to false.
+     - sortKey,v --
+         The binary representation of the sortkey by which the courses are
+         sorted; legacy key is the course name. 
      - Index,v --
          List of internal page numbers, in order of appearence
          Each line contains the internal page number, followed by a space,
@@ -127,6 +131,11 @@ class Course(StorageDir):
 
     def undelete(self):
         self.getstorage(b"isDeleted").store(b"False")
+
+    @property
+    def sortkey(self):
+        octets = self.getcontent(b"sortKey")
+        return Sortkeys.fromOctets(octets, legacy=self.name)
 
     def nextpage(self, havelock=None):
         """

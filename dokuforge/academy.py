@@ -72,7 +72,7 @@ class Academy(StorageDir):
         ret = filter(os.path.isdir, ret)
         ret = map(Course, ret)
         ret = list(ret)
-        ret.sort(key=operator.attrgetter('name'))
+        ret.sort(key=operator.attrgetter('sortkey'))
         return ret
 
     def listCourses(self):
