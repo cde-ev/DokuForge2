@@ -25,7 +25,7 @@ import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
-from dokuforge.common import TarWriter
+from dokuforge.common import TarWriter, Sortkeys
 from dokuforge.course import Course
 from dokuforge.academy import Academy
 
@@ -682,6 +682,28 @@ permissions = df_superadmin True,df_admin True
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.get_data().startswith("head"))
 
+class SortKeyTests(DfTestCase):
+    def verifyBefore(self, after):
+        before = Sortkeys.before(after)
+        self.assertTrue(before < after, "Sortkeys.before(%s) returned %s" % (after, before))
+
+    def verifyInbetween(self, before, after):
+        mid = Sortkeys.between(before, after)
+        self.assertTrue(before < mid, "Sortkeys.between(%s, %s) returned %s" % (before, after, mid))
+        self.assertTrue(mid < after, "Sortkeys.between(%s, %s) returned %s" % (before, after, mid))
+
+    def testBefore(self):
+        self.verifyBefore(['a', 0])
+        self.verifyBefore(['asdf', 1, 2, 3])
+        self.verifyBefore(['a', -99, 2, 3])
+
+    def testInbetween(self):
+        self.verifyInbetween(['a', 0], ['b', 0])
+        self.verifyInbetween(['a', 0], ['a', 0, 0])
+        self.verifyInbetween(['a', 1], ['a', 1, 1])
+        self.verifyInbetween(['a', -1], ['a', -1, -1])
+        self.verifyInbetween(['a', 42, 7, 8, 9], ['a', 43])
+        
 class CourseTests(DfTestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')

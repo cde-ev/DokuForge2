@@ -386,3 +386,38 @@ def findlastchange(changes):
     """
     return max(changes + [{'author': u'unkown', 'revision' : u'?',
                            'date' : epoch}], key=lambda x: x["date"])
+
+
+class Sortkeys:
+    """
+    Sortkeys are a general, lecacy respecting, structure for local sorting.
+    They are lists where constisting of a binary string followed by a non-empty
+    sequence of integers. Sort order is python's native sort order, i.e.,
+    lexicographic order. I simple "move up" can be achieved by the before
+    and between functions.
+    """
+
+    @classmethod
+    def before(cls, sortkey):
+        """
+        Given a sortkey, return a new one that is strictly before the given one.
+        """
+        return [sortkey[0], sortkey[1] -1]
+
+    @classmethod
+    def between(cls, before, after):
+        """
+        Given two sortkeys in order, return a new one strictly inbetween.
+        """
+        for i in range(len(before)):
+            assert(i < len(after)) # otherwise we would have before > after
+            if before[i] < after[i]:
+                if i + 1 < len(before):
+                    return before[0:i+1] + [before[i+1] + 1]
+                else:
+                    return before[0:i+1] + [0]
+        # now before is a prefix of after
+        assert(len(before) < len(after))
+        return after[0:len(before)] + [after[len(before)] - 1]
+                
+    
