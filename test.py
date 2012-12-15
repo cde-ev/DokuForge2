@@ -740,6 +740,12 @@ class CourseTests(DfTestCase):
         self.course.undelete()
         self.assertFalse(self.course.isDeleted)
 
+    def testSetsortkey(self):
+        key = ['abc', 47, 11]
+        self.course.setSortkey(key)
+        self.assertEquals(self.course.sortkey, key)
+    
+
 class AcademyTest(DfTestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')

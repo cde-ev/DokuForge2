@@ -137,6 +137,10 @@ class Course(StorageDir):
         octets = self.getcontent(b"sortKey")
         return Sortkeys.fromOctets(octets, legacy=self.name)
 
+    def setSortkey(self, key):
+        octets = Sortkeys.toOctets(key)
+        self.getstorage(b"sortKey").store(octets)
+
     def nextpage(self, havelock=None):
         """
         internal function: return the number of the next available page, but don't do anything
