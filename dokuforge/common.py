@@ -419,5 +419,27 @@ class Sortkeys:
         # now before is a prefix of after
         assert(len(before) < len(after))
         return after[0:len(before)] + [after[len(before)] - 1]
+
+    @classmethod
+    def fromOctets(cls, octets, legacy='unknown'):
+        """
+        Obtain a sortkey from its binary representation, or
+        the legacy sort key, if the string is empty.
+        """
+        entries = octets.split()
+        if len(entries) < 2:
+            return [legacy, 0]
+        return [entries[0]] + [int(x) for x in entries[1:]]
+
+    @classmethod
+    def toOctets(cls, key):
+        """
+        Obtain a binary representation from a sortkey
+        """
+        result = key[0]
+        for i in key[1:]:
+            result = result + " %d" % i
+        return result
+        
                 
     

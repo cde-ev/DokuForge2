@@ -703,6 +703,22 @@ class SortKeyTests(DfTestCase):
         self.verifyInbetween(['a', 1], ['a', 1, 1])
         self.verifyInbetween(['a', -1], ['a', -1, -1])
         self.verifyInbetween(['a', 42, 7, 8, 9], ['a', 43])
+
+    def testLegacyOrder(self):
+        self.assertTrue(Sortkeys.fromOctets('', legacy='a') < Sortkeys.fromOctets('', legacy='b'))
+        self.assertTrue(Sortkeys.fromOctets('', legacy='d') > Sortkeys.fromOctets('', legacy='c'))
+
+    def verifyWriteRead(self, key):
+        octets = Sortkeys.toOctets(key)
+        readback = Sortkeys.fromOctets(octets)
+        self.assertEqual(key, readback)
+
+    def testWriteRead(self):
+        self.verifyWriteRead(['a', 0])
+        self.verifyWriteRead(['a', 1])
+        self.verifyWriteRead(['a', -1])
+        self.verifyWriteRead(['aasdf', 1, 2, 3])
+        self.verifyWriteRead(['aasdf', 1, 2, 3, 0])
         
 class CourseTests(DfTestCase):
     def setUp(self):
