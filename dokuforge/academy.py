@@ -7,7 +7,7 @@ import werkzeug.exceptions
 from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
-from dokuforge.common import CheckError
+from dokuforge.common import CheckError, Sortkeys
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
@@ -105,6 +105,35 @@ class Academy(StorageDir):
         except CheckError:
             raise werkzeug.exceptions.NotFound()
         return Course(os.path.join(self.path, coursename))
+
+    def moveUpCourse(self, coursename):
+        """
+        Move the specified course up one position in the order of
+        undeleted courses; do nothing if the course is already in top
+        position. In the course does not exist or is deleted raise
+        werkzeug.exception.NotFound.
+
+        @param coursename: internal name of course
+        @type coursename: unicode
+        @raises werkzeug.exceptions.NotFound: if the course does not exist, or is deleted.
+        """
+        assert isinstance(coursename, unicode)
+        coursename = coursename.encode("utf8")
+        courses = self.listCourses()
+        for i in range(len(courses)):
+            if courses[i].name == coursename:
+                if i == 0:
+                    # course first among the undeleted
+                    return
+                if i == 1:
+                    after = courses[i - 1].sortkey
+                    new = Sortkeys.before(after)
+                    courses[i].setSortkey(new)
+                    return
+                after = courses[i - 1].sortkey
+                before = courses[i - 2].sortkey
+                new = Sortkeys.between(before, after)
+                courses[i].setSortkey(new)
 
     def setgroups(self, groups):
         """

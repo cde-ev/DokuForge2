@@ -758,8 +758,11 @@ class AcademyTest(DfTestCase):
         shutil.rmtree(self.tmpdir, True)
 
     def assertCourses(self, names):
+        """
+        Verify the courses, and their order.
+        """
         namesfound = [c.name for c in self.academy.listCourses()]
-        self.assertEqual(set(names), set(namesfound))
+        self.assertEqual(names, namesfound)
 
     def assertDeadCourses(self, names):
         namesfound = [c.name for c in self.academy.listDeadCourses()]
@@ -785,6 +788,33 @@ class AcademyTest(DfTestCase):
         self.academy.getCourse(u'new01').undelete()
         self.assertCourses([u'legacy', u'new01', u'new02'])
         self.assertDeadCourses([])
+
+    def testCourseMoveUp(self):
+        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.academy.moveUpCourse(u'new01')
+        self.assertCourses([u'new01', u'legacy', u'new02'])
+
+    def testCourseMoveUpTop(self):
+        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.academy.moveUpCourse(u'new02')
+        self.assertCourses([u'legacy', u'new02', u'new01'])
+        self.academy.moveUpCourse(u'new02')
+        self.assertCourses([u'new02', u'legacy', u'new01'])
+        self.academy.moveUpCourse(u'new02')
+        self.assertCourses([u'new02', u'legacy', u'new01'])
+        
+    def testCourseMoveUpSwap(self):
+        self.academy.createCourse(u'zzz', u'letzter Kurs')
+        self.academy.createCourse(u'yyy', u'vorletzter Kurs')
+        self.assertCourses([u'legacy', u'new01', u'new02', u'yyy', u'zzz'])
+        self.academy.moveUpCourse(u'yyy')
+        self.assertCourses([u'legacy', u'new01', u'yyy', u'new02', u'zzz'])
+        self.academy.moveUpCourse(u'new02')
+        self.assertCourses([u'legacy', u'new01', u'new02', u'yyy', u'zzz'])
+        self.academy.moveUpCourse(u'yyy')
+        self.assertCourses([u'legacy', u'new01', u'yyy', u'new02', u'zzz'])
+        self.academy.moveUpCourse(u'new02')
+        self.assertCourses([u'legacy', u'new01', u'new02', u'yyy', u'zzz'])
 
 class DokuforgeMockTests(DfTestCase):
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
