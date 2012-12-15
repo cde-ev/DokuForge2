@@ -303,6 +303,7 @@ class Application:
         """Connect to the session database and create missing tables."""
         sessiondb = sqlite3.connect(self.sessiondbpath)
         cur = sessiondb.cursor()
+        cur.execute("PRAGMA synchronous = OFF;")
         cur.execute(SessionHandler.create_table)
         sessiondb.commit()
         return sessiondb
