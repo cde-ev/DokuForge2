@@ -3,14 +3,14 @@
 {{ academy.title|e }}
 {% endblock %}
 {% block location %}
-{{ navbar([("academy", academy.title),
-	   ("showdeadcourses", "Attic")])}}
+{{ navbar([("academy", {}, academy.title),
+	   ("showdeadcourses", {}, "Attic")])}}
 {% endblock %}
 {% block content %}
 {%- if academy.deadcourses %}
 <ul>
 	{%- for course in academy.deadcourses %}
-	<li> #{{ course.title|string }}
+	<li> {{ course.title|string }}
          {{ button(buildurl("relinkcourse"), "wiederherstellen", dict(name=course.name)) }}
 	</li>
 	{%- endfor %}
