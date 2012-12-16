@@ -604,7 +604,7 @@ class Course(StorageDir):
 
     def isalive(self):
         return self.getstorage("livingstate").content().decode("utf8") in \
-            [u"True", u"true", u"t"]
+            [u"True", u"true", u"t", u""]
 
     def setlivingstate(self, b):
         if b:
