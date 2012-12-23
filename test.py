@@ -181,6 +181,42 @@ permissions = akademie_view_aca123 True,kurs_read_aca123_course42 True
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
 
+    def testReadRecursive(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_read_aca123 True
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedRead(self.academy))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+
+    def testRevoke(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_read_aca123 True,kurs_read_aca123_course42 False
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedRead(self.academy))
+        self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+
+    def testAdminNonrevokable(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = df_superadmin True,kurs_read_aca123_course42 False
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedRead(self.academy))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
