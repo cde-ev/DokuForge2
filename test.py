@@ -157,7 +157,9 @@ class UserDBTests(DfTestCase):
         self.userdb = UserDB(self.storage)
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course42'))
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course4711'))
-        self.academy = Academy(os.path.join(self.tmpdir, b'aca123'), [])
+        self.academy = Academy(os.path.join(self.tmpdir, b'aca123'),
+                               lambda : ['abc', 'cde'])
+        self.academy.setgroups([u'cde'])
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
@@ -216,6 +218,46 @@ permissions = df_superadmin True,kurs_read_aca123_course42 False
         self.assertTrue(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+
+    def testMetaSimple(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_meta_aca123 True
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedMeta(self.academy))
+
+    def testMetaGroup(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = gruppe_meta_cde True
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedMeta(self.academy))
+
+    def testMetaRevoke(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = gruppe_meta_cde True,akademie_meta_aca123 False
+""")
+        user = self.getUser("userfoo")
+        self.assertFalse(user.allowedMeta(self.academy))
+
+    def testGlobalNonRevoke(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = df_meta True,akademie_meta_aca123 False
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedMeta(self.academy))
 
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
