@@ -10,6 +10,7 @@ import gzip
 from httplib import HTTPMessage
 import io
 import mechanize
+import os
 import re
 import shutil
 import sys
@@ -25,6 +26,10 @@ from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
 from dokuforge.common import TarWriter
+from dokuforge.user import UserDB
+from dokuforge.storage import CachingStorage
+from dokuforge.academy import Academy
+
 
 class WSGIHandler(BaseHandler):
     environ_base = {
@@ -144,6 +149,37 @@ class TarWriterTests(DfTestCase):
         tar = tar + tarwriter.addChunk('myFile', 'contents')
         tar = tar + tarwriter.close()
         self.assertIsTarGz(tar)
+
+class UserDBTests(DfTestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
+        self.storage = CachingStorage(self.tmpdir,"db")
+        self.userdb = UserDB(self.storage)
+        os.makedirs(os.path.join(self.tmpdir, b'aca123/course42'))
+        os.makedirs(os.path.join(self.tmpdir, b'aca123/course4711'))
+        self.academy = Academy(os.path.join(self.tmpdir, b'aca123'), [])
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, True)
+
+    def getUser(self, user):
+        self.userdb.load()
+        return self.userdb.db.get(user)
+
+    def writeUserDbFile(self, contents):
+        self.storage.store(contents)
+
+    def testSimple(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_view_aca123 True,kurs_read_aca123_course42 True
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedRead(self.academy))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
+        self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
 
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
