@@ -45,7 +45,10 @@ def gensid(bits=64):
     return u"%x" % sysrand.getrandbits(bits)
 
 class SessionHandler:
-    """Associate users with session ids in a DBAPI2 database."""
+    """Associate users with session ids in a DBAPI2 database. The database
+    may be optimized for performance -- that is we accept an unlikely loss
+    of the session database for performance reasons since the information
+    therein is ephemeral by nature and loss has little impact."""
     create_table = "CREATE TABLE IF NOT EXISTS sessions " + \
                    "(sid TEXT, user TEXT, updated INTEGER, UNIQUE(sid));"
     cookie_name = "sid"
@@ -303,6 +306,9 @@ class Application:
         """Connect to the session database and create missing tables."""
         sessiondb = sqlite3.connect(self.sessiondbpath)
         cur = sessiondb.cursor()
+        # Disable safety -- this increases performance (in a relevant way);
+        # if the sessiondb should be lost at some point it's not uber-tragic
+        cur.execute("PRAGMA synchronous = OFF;")
         cur.execute(SessionHandler.create_table)
         sessiondb.commit()
         return sessiondb
