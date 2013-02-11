@@ -28,14 +28,18 @@ class User:
         - cde_dokubeauftragter
         - cde_kursleiter
         - cde_dokuteam
+        - jgw_dokubeauftragter
+        - jgw_kursleiter
+        - jgw_dokuteam
     @ivar password: password of the user
     @ivar permissions: dictionary of permissions, the key is the name of
         the permission, the value is a boolean, True if the permission is
         granted, False if explicitly revoked. Absence of a key means no
         permission. Some permissions grant recursive permissions (like
-        akademie_read_y), if there is an explicitly revoked permission it
-        takes precedence over a recursively granted permission. The
-        permissions are as follows.
+        akademie_read_y=True), if there is a more specific explicitly
+        revoked permission (like kurs_read_y_z=False) it takes precedence
+        over a recursively granted permission. The permissions are as
+        follows.
          - kurs_x_y_z --
             x in {read, write}, y akademiename, z kursname
 
@@ -45,19 +49,23 @@ class User:
             x in {read, write, view, meta}, y akademiename
 
             Grants the coresponding privelege for one academy, in the case
-            of read and write implying the priveleges for all courses of the
-            academy. The view privelege enables the user to access the
-            academy but does not grant any recursive priveleges (in contrast
-            to akademie_read_* which allows to read all courses). The
-            meta privelege grants the ability to modify academy/course
-            titles, academy groups and the ability to create new courses.
+            of read and write implying recursivelythe priveleges for all
+            courses of the academy. The view privelege enables the user to
+            access the academy but does not grant any recursive priveleges
+            (in contrast to akademie_read_* which allows to read all
+            courses). The meta privelege grants the ability to modify
+            academy/course titles, academy groups and the ability to create
+            new courses.
          - gruppe_x_y --
             x in {read, write, show, meta}, y gruppenname
 
             Grants the coresponding privelege for a whole group of academies
-            implying the priveleges for all academies of this group and all
-            courses of these academies. The privelege show controles whether
-            academies of the corresponding groups are displayed.
+            recursively implying the priveleges for all academies of this
+            group and all courses of these academies. The privelege show
+            controles whether academies of the corresponding groups are
+            displayed (by default only the academies of the group associated
+            to the user are displayed; currently this is the
+            defaultgroup()).
          - df_{read, write, show, meta} --
             Grants a global version of the corresponding privelege. This is
             a global privelege and thus not affected by explicitly revoked
@@ -73,6 +81,13 @@ class User:
             (This restriction is not yet implemented.)
          - df_superadmin --
             Grants all priveleges.
+
+        In summary there are the global df_* privileges which cannot be
+        revoked by more specific privileges and the tower of gruppe_*,
+        akademie_* and kurs_* in ascending order of explicitness. The first
+        two of which grant recursive privileges which can be revoked by a
+        more explicit entry -- the most explicit applicable entry decides
+        the actual privilege.
     """
     def __init__(self, name, status, password, permissions):
         """
@@ -303,6 +318,7 @@ class User:
 
         @rtype: unicode
         """
+        # FIXME we should add support for jgw
         return u"cde"
 
 class UserDB:
@@ -310,7 +326,7 @@ class UserDB:
     Class for the user database
 
     @ivar db: dictionary containing (username, User object) pairs
-    @ivar storage: storage.Storage object holding the userdb
+    @ivar storage: storage.CachingStorage object holding the userdb
     @ivar timestamp: time of last update, this is compared to the mtime of
         the CachingStorage
     """
