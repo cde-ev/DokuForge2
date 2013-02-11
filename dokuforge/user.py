@@ -355,28 +355,6 @@ class UserDB:
         except KeyError:
             return False
 
-    def store(self):
-        """
-        Store the user database on disk.
-
-        We use ConfigParser and the accompanying format.
-        """
-        config = ConfigParser.SafeConfigParser()
-        content = io.BytesIO()
-        for name in self.db:
-            ename = name.encode("utf8")
-            config.add_section(ename)
-            config.set(ename, 'status', self.db[name].status.encode("utf8"))
-            config.set(ename, 'password', self.db[name].password.encode("utf8"))
-            permstr = u','.join(u'%s %r' % t for t in
-                                self.db[ename].permissions.items()) \
-                    .encode("utf8")
-            config.set(ename, 'permissions', permstr)
-        config.write(content)
-        ## seek to the start, so we know what to store
-        content.seek(0)
-        self.storage.store(content)
-
     def load(self):
         """
         Load the user database from disk.
