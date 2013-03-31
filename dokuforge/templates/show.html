@@ -15,6 +15,13 @@ Teil #{{ page|string }}
 ({{estimate.pages | round(2) | e}} Seiten,
 {{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
 {{estimate.ednotepages | round(2) | e}} Seiten Ednotes)
+{%- set pageindex = course.pages.index(page) %}
+{%- if pageindex > 0 -%}
+<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Voriger Teil</a>
+{%- endif -%}
+{%- if course.pages[pageindex+1] is defined %}
+<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">N&auml;chster Teil</a>
+{%- endif -%}
 <hr>
 <div class="dokucontent">
 {# content does not need to be escaped, since this is done by the parser #}
