@@ -10,6 +10,7 @@ import gzip
 from httplib import HTTPMessage
 import io
 import mechanize
+import os
 import re
 import shutil
 import sys
@@ -25,6 +26,10 @@ from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
 from dokuforge.common import TarWriter
+from dokuforge.user import UserDB
+from dokuforge.storage import CachingStorage
+from dokuforge.academy import Academy
+
 
 class WSGIHandler(BaseHandler):
     environ_base = {
@@ -144,6 +149,115 @@ class TarWriterTests(DfTestCase):
         tar = tar + tarwriter.addChunk('myFile', 'contents')
         tar = tar + tarwriter.close()
         self.assertIsTarGz(tar)
+
+class UserDBTests(DfTestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
+        self.storage = CachingStorage(self.tmpdir,"db")
+        self.userdb = UserDB(self.storage)
+        os.makedirs(os.path.join(self.tmpdir, b'aca123/course42'))
+        os.makedirs(os.path.join(self.tmpdir, b'aca123/course4711'))
+        self.academy = Academy(os.path.join(self.tmpdir, b'aca123'),
+                               lambda : ['abc', 'cde'])
+        self.academy.setgroups([u'cde'])
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, True)
+
+    def getUser(self, user):
+        self.userdb.load()
+        return self.userdb.db.get(user)
+
+    def writeUserDbFile(self, contents):
+        self.storage.store(contents)
+
+    def testSimple(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_view_aca123 True,kurs_read_aca123_course42 True
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedRead(self.academy))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
+        self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+
+    def testReadRecursive(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_read_aca123 True
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedRead(self.academy))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+
+    def testRevoke(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_read_aca123 True,kurs_read_aca123_course42 False
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedRead(self.academy))
+        self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+
+    def testAdminNonrevokable(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = df_superadmin True,kurs_read_aca123_course42 False
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedRead(self.academy))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+
+    def testMetaSimple(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_meta_aca123 True
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedMeta(self.academy))
+
+    def testMetaGroup(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = gruppe_meta_cde True
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedMeta(self.academy))
+
+    def testMetaRevoke(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = gruppe_meta_cde True,akademie_meta_aca123 False
+""")
+        user = self.getUser("userfoo")
+        self.assertFalse(user.allowedMeta(self.academy))
+
+    def testGlobalNonRevoke(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = df_meta True,akademie_meta_aca123 False
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedMeta(self.academy))
 
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
