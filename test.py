@@ -171,7 +171,7 @@ class UserDBTests(DfTestCase):
     def writeUserDbFile(self, contents):
         self.storage.store(contents)
 
-    def testSimple(self):
+    def testReadSimple(self):
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -192,10 +192,21 @@ permissions = akademie_read_aca123 True
 """)
         user = self.getUser("userfoo")
         self.assertTrue(user.allowedRead(self.academy))
+        self.assertTrue(user.allowedRead(self.academy, recursive=True))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
 
-    def testRevoke(self):
+    def testReadNonRecursive(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_view_aca123 True
+""")
+        user = self.getUser("userfoo")
+        self.assertFalse(user.allowedRead(self.academy, recursive=True))
+
+    def testReadRevoke(self):
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -207,17 +218,43 @@ permissions = akademie_read_aca123 True,kurs_read_aca123_course42 False
         self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
 
+    def testWriteSimple(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = kurs_write_aca123_course42 True
+""")
+        user = self.getUser("userfoo")
+        self.assertFalse(user.allowedWrite(self.academy))
+        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
+        self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
+
+    def testWriteRevoke(self):
+        self.writeUserDbFile(b"""
+[userfoo]
+status = cde_dokubeauftragter
+password = abc
+permissions = akademie_write_aca123 True,kurs_write_aca123_course42 False
+""")
+        user = self.getUser("userfoo")
+        self.assertTrue(user.allowedWrite(self.academy))
+        self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
+        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
+
     def testAdminNonrevokable(self):
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
 password = abc
-permissions = df_superadmin True,kurs_read_aca123_course42 False
+permissions = df_superadmin True,kurs_read_aca123_course42 False,kurs_write_aca123_course4711 False
 """)
         user = self.getUser("userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
+        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
 
     def testMetaSimple(self):
         self.writeUserDbFile(b"""
