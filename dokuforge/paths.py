@@ -74,6 +74,10 @@ class PathConfig(object):
     def userdb(self):
         return UserDB(CachingStorage(self.admindir, "userdb"))
 
+    @property
+    def userdbstore(self):
+        return CachingStorage(self.admindir, "userdb")
+
     def loaduserdb(self):
         userdb = self.userdb
         userdb.load()
