@@ -30,29 +30,28 @@ def main(size=100, pc=PathConfig()):
         os.makedirs(pc.staticexportdir)
     except OSError:
         pass
-    userdb = pc.userdb
+    userdbstore = pc.userdbstore
     if size > 10:
-        userdb.addUser(u"arthur", u"cde_dokubeauftragter", u"mypass",
-                       dict([(u"akademie_read_pa2010", True),
-                             (u"akademie_read_za2011", True),
-                             (u"kurs_read_za2011_course01", True)]))
-    userdb.addUser(u"bob", u"cde_dokuteam", u"secret",
-                   dict([(u"akademie_read_pa2010", True),
-                         (u"akademie_write_pa2010", True),
-                         (u"df_admin", True),
-                         (u"df_superadmin", True),
-                         (u"akademie_read_za2011-1", True),
-                         (u"kurs_read_za2011-1_course01", True),
-                         (u"kurs_write_za2011-1_course01", True),
-                         (u"kurs_read_za2011-1_course02", True),
-                         (u"akademie_read_ya2011-1", True),
-                         (u"akademie_write_ya2011-1", True),
-                         (u"kurs_read_ya2011-1_course01", True),
-                         (u"kurs_write_ya2011-1_course01", True),
-                         (u"kurs_read_ya2011-1_course02", True),
-                         (u"df_export", True),
-                         (u"df_show", True)]))
-    userdb.store()
+        userdbstore.store("""
+[arthur]
+status = cde_dokubeauftragter
+password = mypass
+permissions = akademie_read_pa2010 True,akademie_read_za2011-1 True,kurs_read_za2011-1_course01 True
+
+[bob]
+name = bob
+status = cde_dokuteam
+password = secret
+permissions = df_show True,akademie_read_za2011-1 True,kurs_write_ya2011-1_course01 True,kurs_write_za2011-1_course01 True,df_export True,df_superadmin True,akademie_write_pa2010 True,kurs_read_ya2011-1_course02 True,akademie_read_ya2011-1 True,kurs_read_za2011-1_course01 True,akademie_write_ya2011-1 True,kurs_read_za2011-1_course02 True,akademie_read_pa2010 True,df_admin True,kurs_read_ya2011-1_course01 True
+""")
+    else:
+        userdbstore.store("""
+[bob]
+name = bob
+status = cde_dokuteam
+password = secret
+permissions = df_show True,akademie_read_za2011-1 True,kurs_write_ya2011-1_course01 True,kurs_write_za2011-1_course01 True,df_export True,df_superadmin True,akademie_write_pa2010 True,kurs_read_ya2011-1_course02 True,akademie_read_ya2011-1 True,kurs_read_za2011-1_course01 True,akademie_write_ya2011-1 True,kurs_read_za2011-1_course02 True,akademie_read_pa2010 True,df_admin True,kurs_read_ya2011-1_course01 True
+""")
     mygroupstore = pc.groupstore
     mygroupstore.store("""[cde]
 title = CdE-Akademien

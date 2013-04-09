@@ -45,7 +45,10 @@ def gensid(bits=64):
     return u"%x" % sysrand.getrandbits(bits)
 
 class SessionHandler:
-    """Associate users with session ids in a DBAPI2 database."""
+    """Associate users with session ids in a DBAPI2 database. The database
+    may be optimized for performance -- that is we accept an unlikely loss
+    of the session database for performance reasons since the information
+    therein is ephemeral by nature and loss has little impact."""
     create_table = "CREATE TABLE IF NOT EXISTS sessions " + \
                    "(sid TEXT, user TEXT, updated INTEGER, UNIQUE(sid));"
     cookie_name = "sid"
@@ -309,6 +312,9 @@ class Application:
         """Connect to the session database and create missing tables."""
         sessiondb = sqlite3.connect(self.sessiondbpath)
         cur = sessiondb.cursor()
+        # Disable safety -- this increases performance (in a relevant way);
+        # if the sessiondb should be lost at some point it's not uber-tragic
+        cur.execute("PRAGMA synchronous = OFF;")
         cur.execute(SessionHandler.create_table)
         sessiondb.commit()
         return sessiondb
@@ -677,7 +683,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.render_createcoursequiz(rs, aca)
 
@@ -689,7 +695,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         name = rs.request.form["name"] # FIXME: raises KeyError
         title = rs.request.form["title"] # FIXME: raises KeyError
@@ -1226,7 +1232,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.render_academygroups(rs, aca)
 
@@ -1238,7 +1244,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         groups = rs.request.form.getlist("groups") # FIXME: raises KeyError
         try:
@@ -1268,7 +1274,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_property(rs, aca.gettitle,
                                 "academytitle.html",
@@ -1282,7 +1288,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.allowedWrite(aca):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_propertysave(rs, aca.settitle,
                                     "academytitle.html",
@@ -1298,7 +1304,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_property(rs, c.gettitle,
                                 "coursetitle.html",
@@ -1315,7 +1321,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedWrite(aca) or not rs.user.allowedWrite(aca, c):
+        if not rs.user.allowedMeta(aca):
             return werkzeug.exceptions.Forbidden()
         return self.do_propertysave(rs, c.settitle,
                                     "coursetitle.html",
