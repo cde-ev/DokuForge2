@@ -848,8 +848,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
     def testAbbrev(self):
         self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                              'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
-        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter...',
-                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter\\dots{}')
+        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., er...',
+                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., er\\dots{}')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
@@ -872,8 +872,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
                              'Heinemann\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo('Escaping should also happen in math, like $\\evilmath$, but not $\\mathbb C$',
-                             'Escaping should also happen in math, like $\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
+                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
