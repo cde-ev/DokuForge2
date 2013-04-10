@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """
-Usage: python -m dokuforge.export academy_or_course_directory
+Usage: python2 -m dokuforge.export academy_or_course_directory
 """
 
 import os.path

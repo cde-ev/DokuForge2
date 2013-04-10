@@ -11,7 +11,7 @@ doc:
 
 setup:
 	rm -rf work
-	python createexample.py
+	python2 createexample.py
 
 clean:
 	rm -rf html work
@@ -20,7 +20,7 @@ clean:
 check: test
 
 test: test.py
-	python test.py
+	python2 test.py
 
 .coverage:$(wildcard dokuforge/*.py) test.py
 	${PYTHON_COVERAGE} -x test.py

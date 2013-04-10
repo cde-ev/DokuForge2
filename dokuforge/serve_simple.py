@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """
 Simple server listening on http://localhost:8800/ with a traceback middleware
 and logging requests to stdout.

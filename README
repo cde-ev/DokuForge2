@@ -55,10 +55,10 @@ Prerequisites:
 Configuration:
 ~~~~~~~~~~~~~~
 Copy dokuforge.conf.sample and update it. A basic data set for testing can be
-created by invoking python createexample.py.
+created by invoking python2 createexample.py.
 
 Running:
 ~~~~~~~~
 The simplest form is
-python -m dokuforge.serve_simple path_to_your_dokuforge.conf
+python2 -m dokuforge.serve_simple path_to_your_dokuforge.conf
 It will start a webserver on localhost:8800.

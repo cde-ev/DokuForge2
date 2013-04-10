@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """
 Forking server listening on scgi://localhost with a spamassassin like
 worker model. The port to listen will be taken from the configuration file

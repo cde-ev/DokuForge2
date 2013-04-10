@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """
 Moderate server listening on scgi://localhost:4000/ with an asynchronous worker.
 """

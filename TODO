@@ -35,3 +35,4 @@
 * preview and edit (df1 feature)
 * view content of whole course on one page (df1 feature)
 * list of all blobs (so the Fuzzi can review for bad quality/missing raw data)
+* exporter uses $$ instead of \[
