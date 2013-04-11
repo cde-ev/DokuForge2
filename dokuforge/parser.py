@@ -735,7 +735,7 @@ class PItem(PTree):
 
     def toDF(self):
         if self.number is None:
-            return '\n-' + self.it.toDF()
+            return '\n- ' + self.it.toDF()
         else:
             return '\n' + self.number + '. ' + self.it.toDF()
 
