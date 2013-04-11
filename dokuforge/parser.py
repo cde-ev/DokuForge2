@@ -517,7 +517,7 @@ class PDisplayMath(PTree):
         return ('displaymath', self.text)
 
     def toTex(self):
-        return '$$%1s$$' % mathMicrotype(self.text)
+        return '\\[%1s\\]' % mathMicrotype(self.text)
 
     def toHtml(self):
         return "<div class=\"displaymath\">$$%1s$$</div>" % self.text
@@ -1235,8 +1235,8 @@ class Item(Linegroup):
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines))
         firstline = self.lines[0]
-        if firstline.startswith('-'):
-            firstline = firstline[1:]
+        if firstline.startswith('- '):
+            firstline = firstline[2:]
         withcleanedfirstline = [firstline]
         withcleanedfirstline.extend(self.lines[1:])
         return PItem(defaultInnerParse(withcleanedfirstline))
