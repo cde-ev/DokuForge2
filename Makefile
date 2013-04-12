@@ -4,6 +4,12 @@ else
 PYTHON_COVERAGE ?= coverage
 endif
 
+ifneq ($(shell which python2),)
+PYTHON2 ?= python2
+else
+PYTHON2 ?= python
+endif
+
 all: doc setup
 
 doc:
@@ -11,7 +17,7 @@ doc:
 
 setup:
 	rm -rf work
-	python createexample.py
+	${PYTHON2} createexample.py
 
 clean:
 	rm -rf html work
@@ -20,7 +26,7 @@ clean:
 check: test
 
 test: test.py
-	python test.py
+	${PYTHON2} test.py
 
 .coverage:$(wildcard dokuforge/*.py) test.py
 	${PYTHON_COVERAGE} -x test.py
