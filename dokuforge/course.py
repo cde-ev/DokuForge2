@@ -82,6 +82,9 @@ class Course(StorageDir):
 
      - title,v --
          The title of this course (as to be printed)
+     - isDeleted,v --
+         A bit indicating whether the course is to be hidden from the list
+         of courses; defaults to false.
      - Index,v --
          List of internal page numbers, in order of appearence
          Each line contains the internal page number, followed by a space,
@@ -113,6 +116,17 @@ class Course(StorageDir):
             os.makedirs(self.path)
         except os.error:
             pass
+
+    @property
+    def isDeleted(self):
+        value = self.getcontent(b"isDeleted")
+        return value == b"True"
+
+    def delete(self):
+        self.getstorage(b"isDeleted").store(b"True")
+
+    def undelete(self):
+        self.getstorage(b"isDeleted").store(b"False")
 
     def nextpage(self, havelock=None):
         """

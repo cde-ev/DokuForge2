@@ -52,13 +52,20 @@ class Academy(StorageDir):
 
     def viewCourses(self):
         """
-        @returns: list of Course.view dicts for all courses of this academy
+        @returns: list of Course.view dicts for all non-deleted courses of this academy
         """
         return [course.view() for course in self.listCourses()]
 
-    def listCourses(self):
+    def viewDeadCourses(self):
         """
-        @returns: list of Course object; all courses of this academy
+        @returns: list of Course.view dicts for all deleted courses of this academy
+        """
+        return [course.view() for course in self.listDeadCourses()]
+
+    def listAllCourses(self):
+        """
+        @returns: list of Course object; all courses of this academy, including
+            deleted ones.
         """
         ret = (os.path.join(self.path, entry)
                for entry in os.listdir(self.path))
@@ -68,10 +75,22 @@ class Academy(StorageDir):
         ret.sort(key=operator.attrgetter('name'))
         return ret
 
+    def listCourses(self):
+        """
+        @returns: list of Course object; all non-deleted courses of this academy
+        """
+        return [c for c in self.listAllCourses() if not c.isDeleted]
+
+    def listDeadCourses(self):
+        """
+        @returns: list of Course object; all deleted courses of this academy
+        """
+        return [c for c in self.listAllCourses() if c.isDeleted]
+
     def getCourse(self, coursename):
         """
-        find a course of this academy to a given name. If none is found
-        raise a werkzeug.exceptions.NotFound.
+        find a course of this academy to a given name. The course may be
+        deleted. If none is found raise a werkzeug.exceptions.NotFound.
 
         @param coursename: internal name of course
         @type coursename: unicode
@@ -134,6 +153,7 @@ class Academy(StorageDir):
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
+                         deadcourses=self.viewDeadCourses,
                          groups=self.getgroups,
                          lastchange=self.lastchange,
                          timestamp=self.timestamp)

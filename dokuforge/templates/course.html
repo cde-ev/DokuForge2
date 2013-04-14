@@ -67,5 +67,10 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 <a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>
 {{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
 {%- endif -%}
+{%- if user.allowedMeta(academy) %}
+<div class="rareCommands">
+{{ button(buildurl("deletecourse"), "Kurs löschen") }}
+</div>
+{%- endif -%}
 </div>
 {% endblock %}

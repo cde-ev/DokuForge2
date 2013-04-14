@@ -26,10 +26,10 @@ from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser
 from dokuforge.common import TarWriter
+from dokuforge.course import Course
+from dokuforge.academy import Academy
 from dokuforge.user import UserDB
 from dokuforge.storage import CachingStorage
-from dokuforge.academy import Academy
-
 
 class WSGIHandler(BaseHandler):
     environ_base = {
@@ -524,6 +524,22 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.assertTrue("Interner Name nicht wohlgeformt!" in self.get_data())
         self.is_loggedin()
 
+    def testCourseDeletion(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.assertTrue("Area51" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        form = list(self.br.forms())[3]
+        self.br.open(form.click(label=u"Kurs löschen".encode("utf8")))
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.assertFalse("Area51" in self.get_data())
+        self.br.open(self.br.click_link(url_regex=re.compile("deadcourses$")))
+        form = list(self.br.forms())[1]
+        self.br.open(form.click(label=u"Kurs wiederherstellen".encode("utf8")))
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.assertTrue("Area51" in self.get_data())
+
     def testCreateAcademy(self):
         self.br.open(self.url)
         self.do_login()
@@ -813,6 +829,66 @@ permissions = df_superadmin True,df_admin True
         self.br.open(self.br.click_link(text="rcs"))
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.get_data().startswith("head"))
+
+class CourseTests(DfTestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')
+        self.course = Course(os.path.join(self.tmpdir, b'example'))
+        
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, True)
+
+    def testIsDeletedDefault(self):
+        self.assertFalse(self.course.isDeleted)
+
+    def testDelete(self):
+        self.course.delete()
+        self.assertTrue(self.course.isDeleted)
+
+    def testUnDelete(self):
+        self.course.delete()
+        self.course.undelete()
+        self.assertFalse(self.course.isDeleted)
+
+class AcademyTest(DfTestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')
+        os.makedirs(os.path.join(self.tmpdir, b'example/legacy'))
+        self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
+        self.academy.createCourse(u'new01', u'erster neuer Kurs')
+        self.academy.createCourse(u'new02', u'zweiter neuer Kurs')
+        
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, True)
+
+    def assertCourses(self, names):
+        namesfound = [c.name for c in self.academy.listCourses()]
+        self.assertEqual(set(names), set(namesfound))
+
+    def assertDeadCourses(self, names):
+        namesfound = [c.name for c in self.academy.listDeadCourses()]
+        self.assertEqual(set(names), set(namesfound))
+
+    def testLegacyCoursePresent(self):
+        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.assertDeadCourses([])
+
+    def testDeleteCourse(self):
+        self.academy.getCourse(u'new01').delete()
+        self.assertCourses([u'legacy', u'new02'])
+        self.assertDeadCourses([u'new01'])
+
+    def testDeleteLegacyCourse(self):
+        self.academy.getCourse(u'legacy').delete()
+        self.assertCourses([u'new01', u'new02'])
+        self.assertDeadCourses([u'legacy'])
+
+    def testCourseDeleteUndelete(self):
+        self.academy.getCourse(u'new01').delete()
+        self.assertDeadCourses([u'new01'])
+        self.academy.getCourse(u'new01').undelete()
+        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.assertDeadCourses([])
 
 class DokuforgeMockTests(DfTestCase):
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
