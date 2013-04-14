@@ -1,9 +1,3 @@
-ifneq ($(shell which python-coverage),)
-PYTHON_COVERAGE ?= python-coverage
-else
-PYTHON_COVERAGE ?= coverage
-endif
-
 ifneq ($(shell which python2),)
 PYTHON2 ?= python2
 else
@@ -29,8 +23,8 @@ test: test.py
 	${PYTHON2} test.py
 
 .coverage:$(wildcard dokuforge/*.py) test.py
-	${PYTHON_COVERAGE} -x test.py
+	${PYTHON2} -m coverage -x test.py
 coverage: .coverage
-	${PYTHON_COVERAGE} -r -m -i "dokuforge/*.py"
+	${PYTHON2} -m coverage -r -m -i "dokuforge/*.py"
 
 .PHONY: all doc clean setup test check
