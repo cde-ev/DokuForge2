@@ -17,7 +17,7 @@ Teil #{{ page|string }}
 {{estimate.ednotepages | round(2) | e}} Seiten Ednotes)
 {%- set pageindex = course.pages.index(page) %}
 {%- if pageindex > 0 -%}
-<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Voriger Teil</a>
+<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
 {%- endif -%}
 {%- if course.pages[pageindex+1] is defined %}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">N&auml;chster Teil</a>
