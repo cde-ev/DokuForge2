@@ -43,3 +43,4 @@
 * add course number attribute (so each course knows which number it has for export)
 * evaluate estimator performance (how acurate is the estimate, does it need tuning?)
 * check and fix bugs reported via meta academy
+* fix groups support
