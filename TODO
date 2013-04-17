@@ -24,7 +24,7 @@
 * display captions during page listing
 * tweaked print.css
 * webaccess to rcs history
-* trail export (to view the current length)
+* per course trail export (to view the current length)
 * interactive page swapping
 * create manual for setting up a local dokuforge server
 * escaping in ednotes in exportparser
@@ -35,3 +35,14 @@
 * preview and edit (df1 feature)
 * view content of whole course on one page (df1 feature)
 * list of all blobs (so the Fuzzi can review for bad quality/missing raw data)
+* exporter: fix usage of \@
+* exporter: fix 'komma~-- ' and ' --~brackets~-- ' and '3--7'
+* exporter: fix utf8-handling
+* exporter: fix spacing after numerations ('21.\,Jahrhundert')
+* exporter: fix spacing before units ('200\,m' and '30\,kV')
+* exporter: fix spacing around special characters (e.g. %)
+* exporter: fix spacing around \dots ('it was~\dots{}')
+* exporter: mangle course and academy titles (currently they are simply copy pasted, but we want to e.g. replace '...' by '\dots')
+* add course number attribute (so each course knows which number it has for export)
+* evaluate estimator performance (how acurate is the estimate, does it need tuning?)
+* check and fix bugs reported via meta academy
