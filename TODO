@@ -19,9 +19,7 @@
 * link directly to headings (with anchors) and not only to the page in general on the page listing for a course
 * add links to edit/delete pages directly from the course page listing
 * add some more context information for easing the navigation for the user
-* page estimates
 * nicer admin interface
-* display captions during page listing
 * tweaked print.css
 * webaccess to rcs history
 * per course trail export (to view the current length)
@@ -31,7 +29,6 @@
 * sensible file types for downloads
 * "wrong password" needs html rendering
 * extremely long course titles break layout
-* set LC_ALL=C when calling rcs (fixed in branch last-edited)
 * preview and edit (df1 feature)
 * view content of whole course on one page (df1 feature)
 * list of all blobs (so the Fuzzi can review for bad quality/missing raw data)
