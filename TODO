@@ -44,3 +44,4 @@
 * evaluate estimator performance (how acurate is the estimate, does it need tuning?)
 * check and fix bugs reported via meta academy
 * fix groups support
+* update style guide -- add more information about conflicts and a short resolution howto
