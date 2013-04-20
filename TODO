@@ -39,7 +39,8 @@
 * exporter: fix spacing before units ('200\,m' and '30\,kV')
 * exporter: fix spacing around special characters (e.g. %)
 * exporter: fix spacing around \dots ('it was~\dots{}')
-* exporter: mangle course and academy titles (currently they are simply copy pasted, but we want to e.g. replace '...' by '\dots')
+* exporter: mangle course and academy titles as well as captions (currently they are simply copy pasted, but we want to e.g. replace '...' by '\dots')
+* exporter: in $x_1,...,x_n$ the dots are not replaced by \dots{}
 * add course number attribute (so each course knows which number it has for export)
 * evaluate estimator performance (how acurate is the estimate, does it need tuning?)
 * check and fix bugs reported via meta academy
