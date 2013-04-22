@@ -20,8 +20,7 @@ def randpasswordstring(n=6):
 
 
 class User:
-    """
-    User-Class
+    """User-Class
 
     @ivar name: name of the user
     @ivar status: status of the user, valid values are as follows
@@ -43,19 +42,20 @@ class User:
          - kurs_x_y_z --
             x in {read, write}, y akademiename, z kursname
 
-            Grants the coresponding privelege for one course. Write does
-            never imply read.
+            Grants the coresponding privelege for one course. Write always
+            implies read.
          - akademie_x_y --
             x in {read, write, view, meta}, y akademiename
 
             Grants the coresponding privelege for one academy, in the case
-            of read and write implying recursivelythe priveleges for all
+            of read and write implying recursively the priveleges for all
             courses of the academy. The view privelege enables the user to
             access the academy but does not grant any recursive priveleges
             (in contrast to akademie_read_* which allows to read all
-            courses). The meta privelege grants the ability to modify
+            courses); it (the view privilege) is implied by the read
+            privilege. The meta privelege grants the ability to modify
             academy/course titles, academy groups and the ability to create
-            new courses.
+            new courses. Write always implies read.
          - gruppe_x_y --
             x in {read, write, show, meta}, y gruppenname
 
@@ -65,11 +65,11 @@ class User:
             controles whether academies of the corresponding groups are
             displayed (by default only the academies of the group associated
             to the user are displayed; currently this is the
-            defaultgroup()).
+            defaultgroup()).  Write always implies read.
          - df_{read, write, show, meta} --
             Grants a global version of the corresponding privelege. This is
             a global privelege and thus not affected by explicitly revoked
-            permissions.
+            permissions. Write always implies read.
          - df_export --
             Grants the privelege to export academies. Requires the
             corresponding read privilege
@@ -88,6 +88,7 @@ class User:
         two of which grant recursive privileges which can be revoked by a
         more explicit entry -- the most explicit applicable entry decides
         the actual privilege.
+
     """
     def __init__(self, name, status, password, permissions):
         """
@@ -121,7 +122,7 @@ class User:
 
     def revokedPermission(self, perm):
         """
-        check if user has a permission
+        check if user has an explicitly revoked permission
         @type perm: unicode
         @rtype: bool
         """
@@ -132,16 +133,34 @@ class User:
         else:
             return False
 
-    def allowedRead(self, aca, course = None, recursive = False):
+    def allowedView(self, aca):
+        """
+        @type aca: Academy or LazyView
+        @rtype: bool
+        """
+        ## first check whether we are allowed to read
+        ## this include the check for global privileges (df_*)
+        if self.allowedRead(aca):
+            return True
+        ## now we need to resolve aca
+        if isinstance(aca, LazyView):
+            aca = aca["name"]
+        else:
+            assert isinstance(aca, Academy)
+            aca = aca.name
+        ## second check for view privilege (this includes explicitly revocation)
+        return self.hasPermission(u"akademie_view_%s" % aca)
+
+    def allowedRead(self, aca, course = None):
         """
         @type aca: Academy or LazyView
         @type course: None or Course or LazyView
-        @type recursive: bool
-        @param recursive: check for recursive read priveleges. This means that
-            akademie_view_* is not enough.
         @rtype: bool
         """
-        ## first check global priveleges
+        ## first check whether we are allowed to write
+        if self.allowedWrite(aca, course):
+            return True
+        ## second check global priveleges
         if self.hasPermission(u"df_read") or self.isSuperAdmin():
             return True
         ## now we need to resolve aca and course
@@ -160,10 +179,9 @@ class User:
         else:
             assert isinstance(course, Course)
             course = course.name
-        ## second check for explicitly revoked privilege
+        ## third check for explicitly revoked privilege
         if course is None:
-            if self.revokedPermission(u"akademie_read_%s" % aca) or \
-                self.revokedPermission(u"akademie_view_%s" % aca):
+            if self.revokedPermission(u"akademie_read_%s" % aca):
                 return False
         else:
             if self.revokedPermission(u"kurs_read_%s_%s" % (aca, course)):
@@ -172,21 +190,16 @@ class User:
                 not self.hasPermission(u"kurs_read_%s_%s" % (aca, course)):
                 return False
         ## now we are done with revoked permissions and can continue
-        ## third check group level privileges
+        ## fourth check group level privileges
         for g in groups:
             if self.hasPermission(u"gruppe_read_%s" % g):
                 return True
-        ## fourth check the academy level priveleges
+        ## fifth check the academy level priveleges
         if self.hasPermission(u"akademie_read_%s" % aca):
             return True
+        ## we finished checking stuff for whole academies
         if course is None:
-            ## we only want to read an academy entry
-            ## we now have to check the akademie_view privelege
-            ## but in recursive case this is not sufficient
-            if recursive:
-                return False
-            ## in non-recursive case we check akademie_view_*
-            return self.hasPermission(u"akademie_view_%s" % aca)
+            return False
         ## at this point we ask for a read privelege of a specific course
         return self.hasPermission(u"kurs_read_%s_%s" % (aca, course))
 
@@ -267,7 +280,7 @@ class User:
         ## fourth check the academy level priveleges
         return self.hasPermission(u"akademie_meta_%s" % aca)
 
-    def mayExport(self, aca):
+    def allowedExport(self, aca):
         """
         @type aca: Academy or LazyView
         @rtype: bool
@@ -277,13 +290,12 @@ class User:
         if self.isSuperAdmin():
             return True
         ## we require the corresponding read privelege
-        ## akademie_view_* shall not be enough, hence we demand recursive
-        if not self.allowedRead(aca, recursive = True):
+        if not self.allowedRead(aca):
             return False
         ## now we have to check the export privelege
         return self.hasPermission(u"df_export")
 
-    def mayCreate(self):
+    def allowedCreate(self):
         """
         @rtype: bool
         """
