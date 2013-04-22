@@ -9,7 +9,7 @@
 <ul>
 {%- for academy in academies -%}
   {%- if group in academy.groups -%}
-    {%- if user.allowedRead(academy) %}
+    {%- if user.allowedView(academy) %}
     <li><a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a>
 </li>
     {%- else -%}
@@ -28,7 +28,7 @@
 {%- endif -%}
 {%- endfor -%}
 </ul>
-{% if user.mayCreate() %}
+{% if user.allowedCreate() %}
 <a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
 {% endif%}
 {% endblock %}

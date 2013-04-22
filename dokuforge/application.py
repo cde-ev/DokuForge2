@@ -382,7 +382,7 @@ class Application:
         except CheckError:
             raise werkzeug.exceptions.NotFound()
         aca = Academy(os.path.join(self.acapath, name), self.listGroups)
-        if user is not None and not user.allowedRead(aca):
+        if user is not None and not user.allowedView(aca):
             raise werkzeug.exceptions.Forbidden()
         return aca
 
@@ -711,7 +711,7 @@ class Application:
         @type rs: RequestState
         """
         self.check_login(rs)
-        if not rs.user.mayCreate():
+        if not rs.user.allowedCreate():
             return werkzeug.exceptions.Forbidden()
         return self.render_createacademyquiz(rs)
 
@@ -720,7 +720,7 @@ class Application:
         @type rs: RequestState
         """
         self.check_login(rs)
-        if not rs.user.mayCreate():
+        if not rs.user.allowedCreate():
             return werkzeug.exceptions.Forbidden()
         name = rs.request.form["name"] # FIXME: raises KeyError
         title = rs.request.form["title"] # FIXME: raises KeyError
@@ -900,7 +900,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
+        if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
         return self.render_editblob(rs, aca, c, page, blob)
 
@@ -918,7 +918,7 @@ class Application:
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedRead(aca, c) or not rs.user.allowedWrite(aca, c):
+        if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
         newlabel = rs.request.form["label"] # FIXME: raises KeyError
@@ -1029,7 +1029,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.allowedRead(aca):
             return werkzeug.exceptions.Forbidden()
-        if not rs.user.mayExport(aca):
+        if not rs.user.allowedExport(aca):
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         def export_iterator(academy):
@@ -1050,7 +1050,7 @@ class Application:
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
-        if not rs.user.mayExport(aca):
+        if not rs.user.allowedExport(aca):
             return werkzeug.exceptions.Forbidden()
         prefix = "texexport_%s" % aca.name
         def export_iterator(aca, static, prefix):

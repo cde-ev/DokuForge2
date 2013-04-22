@@ -179,7 +179,8 @@ password = abc
 permissions = akademie_view_aca123 True,kurs_read_aca123_course42 True
 """)
         user = self.getUser("userfoo")
-        self.assertTrue(user.allowedRead(self.academy))
+        self.assertTrue(user.allowedView(self.academy))
+        self.assertFalse(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
 
@@ -191,20 +192,10 @@ password = abc
 permissions = akademie_read_aca123 True
 """)
         user = self.getUser("userfoo")
+        self.assertTrue(user.allowedView(self.academy))
         self.assertTrue(user.allowedRead(self.academy))
-        self.assertTrue(user.allowedRead(self.academy, recursive=True))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
-
-    def testReadNonRecursive(self):
-        self.writeUserDbFile(b"""
-[userfoo]
-status = cde_dokubeauftragter
-password = abc
-permissions = akademie_view_aca123 True
-""")
-        user = self.getUser("userfoo")
-        self.assertFalse(user.allowedRead(self.academy, recursive=True))
 
     def testReadRevoke(self):
         self.writeUserDbFile(b"""

@@ -23,7 +23,7 @@
 <em>Keine Kurse gefunden.</em><br>
 {%- endif -%}
 <div class="academyoperations">
-{%- if user.mayExport(academy)%}
+{%- if user.allowedExport(academy)%}
 <a href="{{ buildurl("export")|e }}">Exportieren</a>
 <a href="{{ buildurl("rawacademy")|e }}">Roh-Export</a>
 {%- endif %}

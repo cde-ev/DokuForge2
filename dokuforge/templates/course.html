@@ -56,7 +56,7 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 <em>Keine Teile gefunden gefunden.</em><br>
 {%- endif -%}
 <div class="courseoperations">
-{%- if user.mayExport(academy) %}
+{%- if user.allowedExport(academy) %}
 <a href="{{ buildurl("raw")|e }}">Roh-Export</a>
 {%- endif -%}
 {%- if user.allowedMeta(academy) %}
