@@ -133,6 +133,62 @@ class User:
         else:
             return False
 
+    def checkReadWrite(self, aca, course, priv):
+        """
+        Check for read or write privileges.
+
+        This does not enforce the rule 'write implies read', but otherwise
+        works as allowedRead or allowedWrite should do.
+
+        @type aca: Academy or LazyView
+        @type course: None or Course or LazyView
+        @type priv: unicode
+        @param priv: either u'read' or u'write'
+        @rtype: bool
+        """
+        ## first check global priveleges
+        if self.hasPermission(u"df_%s" % priv) or self.isSuperAdmin():
+            return True
+        ## now we need to resolve aca and course
+        ## a bit care has to be taken since we need the groups too
+        if isinstance(aca, LazyView):
+            groups = aca["groups"]
+            aca = aca["name"]
+        else:
+            assert isinstance(aca, Academy)
+            groups = aca.getgroups()
+            aca = aca.name
+        if course is None:
+            pass
+        elif isinstance(course, LazyView):
+            course = course["name"]
+        else:
+            assert isinstance(course, Course)
+            course = course.name
+        ## second check for explicitly revoked privilege
+        if course is None:
+            if self.revokedPermission(u"akademie_%s_%s" % (priv, aca)):
+                return False
+        else:
+            if self.revokedPermission(u"kurs_%s_%s_%s" % (priv, aca, course)):
+                return False
+            if self.revokedPermission(u"akademie_%s_%s" % (priv, aca)) and \
+                not self.hasPermission(u"kurs_%s_%s_%s" % (priv, aca, course)):
+                return False
+        ## now we are done with revoked permissions and can continue
+        ## third check group level privileges
+        for g in groups:
+            if self.hasPermission(u"gruppe_%s_%s" % (priv, g)):
+                return True
+        ## fourth check the academy level priveleges
+        if self.hasPermission(u"akademie_%s_%s" % (priv, aca)):
+            return True
+        if course is None:
+            ## no access to the whole academy
+            return False
+        ## at this point we ask for a write privelege of a specific course
+        return self.hasPermission(u"kurs_%s_%s_%s" % (priv, aca, course))
+
     def allowedView(self, aca):
         """
         @type aca: Academy or LazyView
@@ -157,51 +213,11 @@ class User:
         @type course: None or Course or LazyView
         @rtype: bool
         """
-        ## first check whether we are allowed to write
+        ## first check whether we are allowed to write to enforce 'write implies read'
         if self.allowedWrite(aca, course):
             return True
-        ## second check global priveleges
-        if self.hasPermission(u"df_read") or self.isSuperAdmin():
-            return True
-        ## now we need to resolve aca and course
-        ## a bit care has to be taken since we need the groups too
-        if isinstance(aca, LazyView):
-            groups = aca["groups"]
-            aca = aca["name"]
-        else:
-            assert isinstance(aca, Academy)
-            groups = aca.getgroups()
-            aca = aca.name
-        if course is None:
-            pass
-        elif isinstance(course, LazyView):
-            course = course["name"]
-        else:
-            assert isinstance(course, Course)
-            course = course.name
-        ## third check for explicitly revoked privilege
-        if course is None:
-            if self.revokedPermission(u"akademie_read_%s" % aca):
-                return False
-        else:
-            if self.revokedPermission(u"kurs_read_%s_%s" % (aca, course)):
-                return False
-            if self.revokedPermission(u"akademie_read_%s" % aca) and \
-                not self.hasPermission(u"kurs_read_%s_%s" % (aca, course)):
-                return False
-        ## now we are done with revoked permissions and can continue
-        ## fourth check group level privileges
-        for g in groups:
-            if self.hasPermission(u"gruppe_read_%s" % g):
-                return True
-        ## fifth check the academy level priveleges
-        if self.hasPermission(u"akademie_read_%s" % aca):
-            return True
-        ## we finished checking stuff for whole academies
-        if course is None:
-            return False
-        ## at this point we ask for a read privelege of a specific course
-        return self.hasPermission(u"kurs_read_%s_%s" % (aca, course))
+        ## second check whether we are allowed to read
+        return self.checkReadWrite(aca, course, u'read')
 
     def allowedWrite(self, aca, course = None):
         """
@@ -209,48 +225,7 @@ class User:
         @type course: None or Course or LazyView
         @rtype: bool
         """
-        ## first check global priveleges
-        if self.hasPermission(u"df_write") or self.isSuperAdmin():
-            return True
-        ## now we need to resolve aca and course
-        ## a bit care has to be taken since we need the groups too
-        if isinstance(aca, LazyView):
-            groups = aca["groups"]
-            aca = aca["name"]
-        else:
-            assert isinstance(aca, Academy)
-            groups = aca.getgroups()
-            aca = aca.name
-        if course is None:
-            pass
-        elif isinstance(course, LazyView):
-            course = course["name"]
-        else:
-            assert isinstance(course, Course)
-            course = course.name
-        ## second check for explicitly revoked privilege
-        if course is None:
-            if self.revokedPermission(u"akademie_write_%s" % aca):
-                return False
-        else:
-            if self.revokedPermission(u"kurs_write_%s_%s" % (aca, course)):
-                return False
-            if self.revokedPermission(u"akademie_write_%s" % aca) and \
-                not self.hasPermission(u"kurs_write_%s_%s" % (aca, course)):
-                return False
-        ## now we are done with revoked permissions and can continue
-        ## third check group level privileges
-        for g in groups:
-            if self.hasPermission(u"gruppe_write_%s" % g):
-                return True
-        ## fourth check the academy level priveleges
-        if self.hasPermission(u"akademie_write_%s" % aca):
-            return True
-        if course is None:
-            ## no write access to the academy
-            return False
-        ## at this point we ask for a write privelege of a specific course
-        return self.hasPermission(u"kurs_write_%s_%s" % (aca, course))
+        return self.checkReadWrite(aca, course, u'write')
 
     def allowedMeta(self, aca):
         """
