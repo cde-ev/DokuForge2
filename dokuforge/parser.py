@@ -370,6 +370,8 @@ def wrap(text, ifPitem=False):
     subsequent_indent=''
     if ifPitem:
         subsequent_indent = '  '
+    # triple @ to label linebreaks after long lines before wrapping
+    text = re.sub("([^\n]{160})\n", "\\1\\@\\@\\@\n", text)
     return textwrap.fill(text, subsequent_indent=subsequent_indent,
             drop_whitespace = True, replace_whitespace = True,
             break_long_words = False, break_on_hyphens = False)
