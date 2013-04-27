@@ -16,10 +16,20 @@ Teil #{{ page|string }}
 {{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
 {{estimate.ednotepages | round(2) | e}} Seiten Ednotes)
 {%- set pageindex = course.pages.index(page) %}
+<hr>
 {%- if pageindex > 0 -%}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Voriger Teil</a>
 {%- endif -%}
+{%- for otherpage in course.pages -%}
+&nbsp;
+{%- if otherpage==page -%}
+<b>#{{page|e}}</b>
+{%- else -%}
+<a href="{{ buildurl('page', {'page': otherpage})|e }}">#{{otherpage|e}}</a>
+{%- endif -%}
+{%- endfor -%}
 {%- if course.pages[pageindex+1] is defined %}
+&nbsp;
 <a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">N&auml;chster Teil</a>
 {%- endif -%}
 <hr>
