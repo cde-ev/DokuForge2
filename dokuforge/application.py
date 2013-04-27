@@ -1033,13 +1033,13 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         def export_iterator(academy):
-            tarwriter = common.TarWriter()
+            tarwriter = common.TarWriter(gzip=True)
             for chunk in academy.rawExportIterator(tarwriter):
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(aca)
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar" % (aca.name,)
+                "attachment; filename=%s.tar.gz" % (aca.name,)
         return rs.response
 
     def do_export(self, rs, academy=None):
