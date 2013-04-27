@@ -20,12 +20,14 @@ Teil #{{ page|string }}
 {%- if pageindex > 0 -%}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Voriger Teil</a>
 {%- endif -%}
+{%- set i=0 -%}
 {%- for otherpage in course.pages -%}
+{%- set i=i+1 -%}
 &nbsp;
 {%- if otherpage==page -%}
-<b>#{{page|e}}</b>
+<b>{{i|e}}</b>
 {%- else -%}
-<a href="{{ buildurl('page', {'page': otherpage})|e }}">#{{otherpage|e}}</a>
+<a href="{{ buildurl('page', {'page': otherpage})|e }}">{{i|e}}</a>
 {%- endif -%}
 {%- endfor -%}
 {%- if course.pages[pageindex+1] is defined %}
