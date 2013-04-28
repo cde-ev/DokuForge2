@@ -467,66 +467,66 @@ class PEmph(PTree):
     An emphasized piece of text.
     """
     def __init__(self, text):
-        self.text = text
+        self.text = PLeaf(text)
 
     def debug(self):
-        return ('emph', self.text)
+        return ('emph', self.text.text)
 
     def toTex(self):
-        return '\\emph{' + defaultMicrotype(self.text) + '}'
+        return '\\emph{%s}' % self.text.toTex()
 
     def toHtml(self):
-        return '<em>' + self.text + '</em>'
+        return '<em>%s</em>' % self.text.toHtml()
 
     def toDF(self):
-        return '_' + self.text + '_'
+        return '_%s_' % self.text.toDF()
 
     def toEstimate(self):
-        return Estimate.fromText(self.text)
+        return self.text.toEstimate()
 
 class PMath(PTree):
     """
     An non-display math area.
     """
     def __init__(self, text):
-        self.text = text
+        self.text = PLeaf(text)
 
     def debug(self):
         return ('math', self.text)
 
     def toTex(self):
-        return '$%1s$' % mathMicrotype(self.text)
+        return '$%1s$' % mathMicrotype(self.text.text)
 
     def toHtml(self):
-        return '$%1s$' % self.text
+        return '$%1s$' % self.text.toHtml()
 
     def toDF(self):
-        return '$%1s$' % self.text
+        return '$%1s$' % self.text.toDF()
 
     def toEstimate(self):
-        return Estimate.fromText(self.text)
+        return self.text.toEstimate()
 
 class PDisplayMath(PTree):
     """
     An display math area.
     """
     def __init__(self, text):
-        self.text = text
+        self.text = PLeaf(text)
 
     def debug(self):
-        return ('displaymath', self.text)
+        return ('displaymath', self.text.text)
 
     def toTex(self):
-        return '$$%1s$$' % mathMicrotype(self.text)
+        return '$$%1s$$' % mathMicrotype(self.text.text)
 
     def toHtml(self):
-        return "<div class=\"displaymath\">$$%1s$$</div>" % self.text
+        return "<div class=\"displaymath\">$$%1s$$</div>" % self.text.toHtml()
 
     def toDF(self):
-        return '$$%1s$$' % self.text
+        return '$$%1s$$' % self.text.toDF()
 
     def toEstimate(self):
-        return Estimate.fromText(self.text).fullline() + \
+        return Estimate.fromText(self.text.text).fullline() + \
                 Estimate.emptyLines(2)
 
 class PEdnote(PTree):
@@ -534,7 +534,7 @@ class PEdnote(PTree):
     An Ednote; contents are compeletly unchanged.
     """
     def __init__(self, text):
-        self.text = text
+        self.text = PLeaf(text)
 
     def isEmpty(self):
         # the mere fact that there was an Ednote
@@ -542,29 +542,27 @@ class PEdnote(PTree):
         return False
 
     def debug(self):
-        return ('Ednote', self.text)
+        return ('Ednote', self.text.text)
 
     def toTex(self):
-        return '\n\\begin{ednote}\n' + ednoteMicrotype(self.text) + '\n\\end{ednote}\n'
+        return '\n\\begin{ednote}\n%s\n\\end{ednote}\n' % \
+                ednoteMicrotype(self.text.text)
 
     def toHtml(self):
-        result = self.text
-        result = re.sub('&', '&amp;', result)
-        result = re.sub('<', '&lt;', result)
-        result = re.sub('>', '&gt;', result)
-        return '\n<pre class="ednote">\n' + result + '\n</pre>\n'
+        return '\n<pre class="ednote">\n%s\n</pre>\n' % self.text.toHtml()
 
     def toDF(self):
         # find a bracket combination not in the text
+        text = self.text.toDF()
         openbracket = '{'
         closebracket = '}'
-        while self.text.find(closebracket) >= 0:
+        while text.find(closebracket) >= 0:
             openbracket = openbracket + '{'
             closebracket = closebracket + '}'
-        return '\n' + openbracket + '\n' + self.text + '\n' + closebracket + '\n'
+        return '\n%s\n%s\n%s\n' % (openbracket, text, closebracket)
 
     def toEstimate(self):
-        return Estimate.fromEdnote(self.text)
+        return Estimate.fromEdnote(self.text.text)
 
 class PParagraph(PTree):
     def __init__(self, subtree):
@@ -590,28 +588,24 @@ class PParagraph(PTree):
 
 class PHeading(PTree):
     def __init__(self, title, level):
-        self.title = title
+        self.title = PLeaf(title)
         self.level = level
 
     def debug(self):
-        return ('Heading', self.level, self.title)
+        return ('Heading', self.level, self.getTitle())
 
     def toTex(self):
-        result = '\n\\'
-        for _ in range(self.level):
-            result = result + 'sub'
-        result = result + 'section'
-        result = result + '{' + defaultMicrotype(self.title) + '}\n'
-        return result
+        return '\n\\%ssection{%s}\n' % ("sub" * self.level, self.title.toTex())
 
     def toHtml(self):
-        return ('\n<h%d>' % (self.level +1)) + self.title + ('</h%d>\n' % (self.level +1))
+        return ('\n<h%d>%s</h%d>\n' %
+                (self.level + 1, self.title.toHtml(), self.level + 1))
 
     def toDF(self):
         result = '\n\n'
         for _ in range(self.level + 1):
             result = result + '['
-        result = result + self.title
+        result = result + self.title.toDF()
         for _ in range(self.level + 1):
             result = result + ']'
         return result
@@ -620,32 +614,32 @@ class PHeading(PTree):
         return self.level
 
     def getTitle(self):
-        return self.title
+        return self.title.text
 
     def toEstimate(self):
-        return Estimate.fromTitle(self.title)
+        return Estimate.fromTitle(self.getTitle())
 
 class PAuthor(PTree):
     def __init__(self, author):
-        self.author = author
+        self.author = PLeaf(author)
 
     def getAuthor(self):
-        return self.author
+        return self.author.text
 
     def debug(self):
-        return ('Author', self.author)
+        return ('Author', self.getAuthor())
 
     def toTex(self):
-        return '\\authors{' + defaultMicrotype(self.author) + '}\n'
+        return '\\authors{%s}\n' % self.author.toTex()
 
     def toHtml(self):
-        return '<i>' + self.author + '</i>'
+        return '<i>%s</i>' % self.author.toHtml()
 
     def toDF(self):
-        return '\n(' + self.author + ')'
+        return '\n(%s)' % self.author.toDF()
 
     def toEstimate(self):
-        return Estimate.fromParagraph(self.author)
+        return Estimate.fromParagraph(self.getAuthor())
 
 class PDescription(PTree):
     def __init__(self, key, value):
