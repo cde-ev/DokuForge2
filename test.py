@@ -906,6 +906,10 @@ class DokuforgeMockTests(DfTestCase):
         inp3 = dfLineGroupParser(inp2).toDF()
         self.assertEqual(inp2, inp3)
 
+    def testHeadingHtmlEscape(self):
+        out = dfLineGroupParser("[bad < html chars >]").toHtml().strip()
+        self.assertEqual(out, "<h1>bad &lt; html chars &gt;</h1>")
+
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfLineGroupParser(df).toTex().strip()
