@@ -386,9 +386,31 @@ schreiben.  Diese sogenannte <em>ednote</em> sieht zum Beispiel so aus:</p>
 <p>In ednotes gibt es keinen automatischen Zeilenumbruch. Es wäre also schön,
 wenn ihr jeweils nach einer geeigneten Zeilenlänge (z.B. der Breite des
 Eingabefeldes&nbsp;...) selbst umbrecht.</p>
+</p>Wenn ihr in den ednotes geschweifte Klammern verwendet, genügt eine einfach
+geschweifte Klammer nicht, um eine ednote auszuzeichnen. Ihr könnt die ednote
+dann mit einer beliebigen Kombination von Klammern öffnen:</p>
+
+<table  width="80%">
+<tr>
+	<td width="40%">Eingabe:</td>
+	<td width="40%">Vorschau:</td>
+</tr>
+<tr>
+	<td><pre>
+{[(
+\title{Beispieltitel}
+)]}</pre>
+        </td>
+	<td><pre class="ednote">
+\title{Beispieltitel}</pre>
+        </td>
+</tr>
+</table>
+
 <p>ednotes werden auch für einige besondere Dinge wie Gedichte, Tabellen oder
 andere Schriften verwendet. Mehr Informationen dazu gibt es im Kapitel <a
 href="/style/spezielles">Spezielles</a></p>
+
 
 <p>Bei Problemen und Fragen könnt und <em>sollt</em> ihr uns natürlich auch
 einfach eine E-Mail an <a href="mailto:team (at) dokuforge.de">team (at)
