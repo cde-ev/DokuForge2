@@ -110,20 +110,20 @@ if (checkMathCookie() == true){
    {%- if allowMathChange %}
        <script type="text/javascript">
 	 if (checkMathCookie() == true) {
-	   document.write('<a href="" onClick="disableMathCookie()">Mathe: an</a>')
+	   document.write('<a href="" onClick="disableMathCookie()">Formelvorschau ausschalten</a>')
 	 } else {
-	   document.write('<a href="" onClick="enableMathCookie()">Mathe: aus</a>')
+	   document.write('<a href="" onClick="enableMathCookie()">Formelvorschau einschalten</a>')
 	 }
        </script>
        <noscript>
-	 Mathe: aus
+	 Formelvorschau ist aus
        </noscript>
        {% else %}
        <script type="text/javascript">
 	 if (checkMathCookie() == true) {
-	   document.write('Mathe: an')
+	   document.write('Formelvorschau ist an')
 	 } else {
-	   document.write('Mathe: aus')
+	   document.write('Formelvorschau ist aus')
 	 }
        </script>
        <noscript>
