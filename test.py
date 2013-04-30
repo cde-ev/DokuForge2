@@ -18,7 +18,7 @@ import random
 import tempfile
 import unittest
 from urllib import addinfourl, unquote
-from urllib2 import BaseHandler
+from urllib2 import BaseHandler, ProxyHandler
 from wsgiref.validate import validator
 
 import createexample
@@ -105,6 +105,8 @@ except AttributeError:
 class WSGIBrowser(mechanize.Browser):
     def __init__(self, application):
         self.handler_classes = mechanize.Browser.handler_classes.copy()
+        # disable all proxy processing induced by environment http_proxy
+        self.handler_classes["_proxy"] = lambda: ProxyHandler({})
         self.handler_classes["http"] = WSGIHandler.creator(application)
         mechanize.Browser.__init__(self)
 
