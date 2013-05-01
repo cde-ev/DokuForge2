@@ -338,7 +338,7 @@ class TarWriter:
         with file(filename) as infile:
             infile.seek(0, 2)
             info.size = infile.tell()
-            info.mtime = int(time.time())
+            info.mtime = os.path.getmtime(filename)
             infile.seek(0)
             self.tar.addfile(info, infile)
         return self.read()
