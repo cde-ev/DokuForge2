@@ -600,7 +600,7 @@ class Course(StorageDir):
                 blob = self.viewblob(b)
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
-                tex += u"\\includegraphics[width=0.75\\textwidth]{%s/blob_%d_%s}\n" % \
+                tex += u"\\includegraphics[height=12\\baselineskip]{%s/blob_%d_%s}\n" % \
                     (self.name, b, blob['filename'])
                 tex += u"\\caption{%s}\n" % blob['comment']
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
