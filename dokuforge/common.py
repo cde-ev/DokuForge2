@@ -308,21 +308,23 @@ class TarWriter:
         self.io.truncate(0)
         return data
 
-    def addChunk(self, name, content):
+    def addChunk(self, name, content, lastchanged):
         """
         Add a file with given content and return some tar content generated
         along the way.
 
         @type name: bytes
         @type content: bytes
+        @type lastchanged: int
         @rtype: bytes
         """
         assert isinstance(name, bytes)
         assert isinstance(content, bytes)
+        assert isinstance(lastchanged, int)
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
-        info.mtime = int(time.time())
+        info.mtime = lastchanged
         self.tar.addfile(info, io.BytesIO(content))
         return self.read()
 

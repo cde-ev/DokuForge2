@@ -1,4 +1,5 @@
 import os
+import time
 
 from werkzeug.datastructures import FileStorage
 
@@ -607,7 +608,9 @@ class Course(StorageDir):
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(b"%s/blob_%d_%s" %
                                          (self.name, b, str(blob['filename'])),
-                                         blob['data'])
+                                         blob['data'],
+                                         int(time.mktime(self.getstorage((u"blob%d" % b).encode("ascii")).commitstatus()['date'].timetuple())))
 
         yield tarwriter.addChunk(b"%s/chap.tex" % self.name,
-                                 tex.encode("utf8"))
+                                 tex.encode("utf8"),
+                                 int(time.mktime(self.lastchange()['date'].timetuple())))

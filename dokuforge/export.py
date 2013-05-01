@@ -13,7 +13,7 @@ class PseudoTarWriter:
     def __init__(self, directory):
         self.directory = directory
 
-    def addChunk(self, filename, content):
+    def addChunk(self, filename, content, lastchanged):
         # Drop leading component. It is contained both in self.directory and in
         # filename.
         filename = filename.split('/', 1)[1]
