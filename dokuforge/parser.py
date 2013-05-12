@@ -363,13 +363,10 @@ def ednoteMicrotype(text):
 def isemptyline(line):
     return re.match('^[ \t]*$', line)
 
-def wrap(text, ifPitem=False):
+def wrap(text, subsequent_indent=''):
     """
     Wraps text to width 70.
     """
-    subsequent_indent=''
-    if ifPitem:
-        subsequent_indent = '  '
     # triple @ to label linebreaks after long lines before wrapping
     text = re.sub("([^\n]{160})\n", "\\1\\@\\@\\@\n", text)
     return textwrap.fill(text, subsequent_indent=subsequent_indent,
@@ -739,9 +736,9 @@ class PItem(PTree):
 
     def toTex(self):
         if self.number is None:
-            return '\n' + wrap('\\item ' + self.it.toTex(), True)
+            return '\n' + wrap('\\item ' + self.it.toTex(), subsequent_indent='  ')
         else:
-            return '\n% ' + self.number + '\n' + wrap('\\item ' + self.it.toTex(), True)
+            return '\n% ' + self.number + '\n' + wrap('\\item ' + self.it.toTex(), subsequent_indent='  ')
 
     def toHtml(self):
         return '\n<li> ' + self.it.toHtml()
