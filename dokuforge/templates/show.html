@@ -18,7 +18,7 @@ Teil #{{ page|string }}
 {%- set pageindex = course.pages.index(page) %}
 <hr>
 {%- if pageindex > 0 -%}
-<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Voriger Teil</a>
+<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
 {%- endif -%}
 {%- for otherpage in course.pages -%}
 &nbsp;
