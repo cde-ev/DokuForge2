@@ -19,6 +19,8 @@ Teil #{{ page|string }}
 <hr>
 {%- if pageindex > 0 -%}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
+{%- else -%}
+Vorheriger Teil
 {%- endif -%}
 {% for otherpage in course.pages %}
 
@@ -28,10 +30,13 @@ Teil #{{ page|string }}
 <a href="{{ buildurl('page', {'page': otherpage})|e }}">{{loop.index|e}}</a>
 {%- endif -%}
 {%- endfor -%}
-{%- if course.pages[pageindex+1] is defined %}
+{% if course.pages[pageindex+1] is defined %}
 
 <a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">N&auml;chster Teil</a>
-{%- endif -%}
+{% else %}
+N&auml;chster Teil
+
+{% endif %}
 <hr>
 <div class="dokucontent">
 {# content does not need to be escaped, since this is done by the parser #}
