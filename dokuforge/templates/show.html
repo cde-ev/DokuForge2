@@ -54,7 +54,11 @@ N&auml;chster Teil
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
 <div class="rareCommands">
 {%- if user.allowedWrite(academy, course) %}
+{%- if page in course.pages -%}
 {{ button(buildurl("delete"), "Löschen", dict()) }}
+{%- else -%}
+{{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
+{%- endif -%}
 {%- endif -%}
 </div>
 
