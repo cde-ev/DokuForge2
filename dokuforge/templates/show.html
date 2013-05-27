@@ -15,6 +15,7 @@ Teil #{{ page|string }}
 ({{estimate.pages | round(2) | e}} Seiten,
 {{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
 {{estimate.ednotepages | round(2) | e}} Seiten Ednotes)
+{%- if page in course.pages -%}
 {%- set pageindex = course.pages.index(page) %}
 <hr>
 {%- if pageindex > 0 -%}
@@ -38,6 +39,7 @@ N&auml;chster Teil
 
 {% endif %}
 <hr>
+{% endif %}
 <div class="dokucontent">
 {# content does not need to be escaped, since this is done by the parser #}
 {{ content }}
