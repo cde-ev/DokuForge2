@@ -231,3 +231,7 @@ a:active {
   display: inline-block;
   float: right;
 }
+
+.inactiveNavigation {
+	visibility: hidden;
+}
