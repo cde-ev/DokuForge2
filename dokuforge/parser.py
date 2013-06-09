@@ -42,9 +42,10 @@ class Estimate(collections.namedtuple("Estimate",
     @type weightedchars: float
     @type blobs: int
     """
-    charsperpage = 3000
-    charsperline = 80
-    blobsperpage = 3
+    # The following constants must be float in Py2.X to avoid int division.
+    charsperpage = 3000.0
+    charsperline = 80.0
+    blobsperpage = 3.0
 
     @classmethod
     def fromText(cls, s):
@@ -58,7 +59,7 @@ class Estimate(collections.namedtuple("Estimate",
     @classmethod
     def fromTitle(cls, s):
         n = len(s)
-        wc = math.ceil(float(n) / cls.charsperline) * cls.charsperline * 2
+        wc = math.ceil(n / cls.charsperline) * cls.charsperline * 2
         return cls(n, 0, wc, 0)
 
     @classmethod
@@ -79,15 +80,15 @@ class Estimate(collections.namedtuple("Estimate",
 
     @property
     def pages(self):
-        return float(self.weightedchars) / self.charsperpage
+        return self.weightedchars / self.charsperpage
 
     @property
     def ednotepages(self):
-        return float(self.ednotechars) / self.charsperpage
+        return self.ednotechars / self.charsperpage
 
     @property
     def blobpages(self):
-        return float(self.blobs) / self.blobsperpage
+        return self.blobs / self.blobsperpage
 
     def fullline(self):
         weightedchars = math.ceil(self.weightedchars / self.charsperline) \
