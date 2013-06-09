@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import collections
+import functools
 import itertools
 import math
 import re
@@ -427,7 +428,7 @@ class PSequence(PTree):
         return result
 
     def toEstimate(self):
-        return reduce(lambda a, b: a + b,
+        return functools.reduce(lambda a, b: a + b,
                       (part.toEstimate() for part in self.parts),
                       Estimate.fromNothing())
 
@@ -701,7 +702,7 @@ class PItemize(PTree):
         return result
 
     def toEstimate(self):
-        return reduce(lambda a, b: a + b + Estimate.emptyLines(0.5),
+        return functools.reduce(lambda a, b: a + b + Estimate.emptyLines(0.5),
                       [item.toEstimate() for item in self.items],
                       Estimate.fromNothing()) + \
                 Estimate.emptyLines(2)
