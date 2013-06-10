@@ -270,6 +270,8 @@ class Application:
                  methods=("POST",), endpoint="relink"),
             rule("/docs/<identifier:academy>/<identifier:course>/!raw",
                  methods=("GET", "HEAD"), endpoint="raw"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!courseastex",
+                 methods=("GET", "HEAD"), endpoint="courseastex"),
             rule("/docs/<identifier:academy>/<identifier:course>/!title",
                  methods=("GET", "HEAD"), endpoint="coursetitle"),
             rule("/docs/<identifier:academy>/<identifier:course>/!title",
@@ -1015,6 +1017,33 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(c)
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=%s_%s.tar" % (aca.name, c.name)
+        return rs.response
+
+    def do_courseastex(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedRead(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        prefix = "texexport_%s_%s" % ( aca.name, c.name )
+        rs.response.content_type = "application/octet-stream"
+        def export_iterator(course, prefix):
+            tarwriter = common.TarWriter()
+            tarwriter.pushd(prefix)
+            for chunk in course.texExportIterator(tarwriter):
+                yield chunk
+            tarwriter.popd()
+            yield tarwriter.close()
+        rs.response.response = export_iterator(course,
+                                               prefix)
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=%s_%s.tar" % (aca.name, c.name)
         return rs.response

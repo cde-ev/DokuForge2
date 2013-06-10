@@ -59,6 +59,9 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 {%- if user.mayExport(academy) %}
 <a href="{{ buildurl("raw")|e }}">Roh-Export</a>
 {%- endif -%}
+{%- if user.mayExport(academy) %}
+<a href="{{ buildurl("courseastex")|e }}">Einzelkurs-Export</a>
+{%- endif -%}
 {%- if user.allowedMeta(academy) %}
 <a href="{{ buildurl("coursetitle")|e }}">Titel bearbeiten</a>
 </a>
