@@ -1052,6 +1052,7 @@ class Application:
         aca = self.getAcademy(academy, rs.user)
         if not rs.user.mayExport(aca):
             return werkzeug.exceptions.Forbidden()
+        rs.response.content_type = "application/octet-stream"
         prefix = "texexport_%s" % aca.name
         def export_iterator(aca, static, prefix):
             tarwriter = common.TarWriter(gzip=True)
