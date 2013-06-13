@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import collections
 import itertools
+import textwrap
 import math
 import re
 
@@ -362,6 +363,16 @@ def ednoteMicrotype(text):
 def isemptyline(line):
     return re.match('^[ \t]*$', line)
 
+def wrap(text, subsequent_indent=''):
+    """
+    Wraps text to width 70.
+    """
+    # triple @ to label linebreaks after long lines before wrapping
+    text = re.sub("([^\n]{160})\n", "\\1\\@\\@\\@\n", text)
+    return textwrap.fill(text, subsequent_indent=subsequent_indent,
+            drop_whitespace = True, replace_whitespace = True,
+            break_long_words = False, break_on_hyphens = False)
+
 class PTree:
     """
     Abstract class where all parsed objects inherit from.
@@ -575,7 +586,7 @@ class PParagraph(PTree):
         return self.it.isEmpty()
 
     def toTex(self):
-        return '\n' + self.it.toTex() + '\n'
+        return '\n' + wrap(self.it.toTex()) + '\n'
 
     def toHtml(self):
         return '\n<p>\n'  + self.it.toHtml() + '\n</p>\n'
@@ -650,7 +661,7 @@ class PDescription(PTree):
         return ('Description', self.key.debug(), self.value.debug())
 
     def toTex(self):
-        return '\n\\paragraph{' + self.key.toTex() + '} ' + self.value.toTex() + '\n'
+        return '\n' + wrap('\\paragraph{' + self.key.toTex() + '} ' + self.value.toTex()) + '\n'
 
     def toHtml(self):
         return '\n<p><b>' + self.key.toHtml() + '</b> ' + self.value.toHtml() + '\n</p>\n'
@@ -719,10 +730,9 @@ class PItem(PTree):
 
     def toTex(self):
         if self.number is None:
-            return '\n\\item ' + self.it.toTex()
+            return '\n' + wrap('\\item ' + self.it.toTex(), subsequent_indent='  ')
         else:
-            return '\n% ' + self.number + '\n\\item ' + self.it.toTex()
-
+            return '\n% ' + self.number + '\n' + wrap('\\item ' + self.it.toTex(), subsequent_indent='  ')
 
     def toHtml(self):
         return '\n<li> ' + self.it.toHtml()
