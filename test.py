@@ -835,6 +835,12 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         obtained = dfLineGroupParser(df).toTex().strip()
         self.assertEquals(obtained, tex)
 
+    def testItemize(self):
+        self.verifyExportsTo('- Text',
+                             '\\begin{itemize}\n\\item Text\n\\end{itemize}')
+        self.verifyExportsTo('-Text', '-Text')
+
+
     def testQuotes(self):
         self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                              'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
