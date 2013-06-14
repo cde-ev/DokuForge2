@@ -44,8 +44,16 @@ letzte Silbe      |  x   |   x    |     x
 vorletzte Silbe   |  x   |   -    |     x
 drittletzte Silbe |  x   |   -    |     -
 }
+</pre>
+</p>
 
-{ Tabelle 1 "Mögliche Stellungen griechischer Akzente
+<p>Damit die ednote im zweiten Beispiel nicht zu früh durch eine schließende
+Klammer beendet wird, muss diese mit einer Klammerkombination geöffnet und
+geschlossen werden, siehe <a href="/style/grundlagen#ed">ednotes</a>.  Hier
+wurde &bdquo;{( ednote )}&ldquo; gewählt.</p>
+
+<p><pre>
+{( Tabelle 1 "Mögliche Stellungen griechischer Akzente
              ohne Berücksichtigung der Silbenlänge"
 
 \begin{tabular}{lccc}
@@ -56,7 +64,8 @@ letzte Silbe      &  x   &   x    &    x   \\
 vorletzte Silbe   &  x   &   --   &    x   \\
 drittletzte Silbe &  x   &   --   &    --  \\
 \bottomrule
-\end{tabular }
+\end{tabular}
+)}
 </pre>
 </p>
 
