@@ -448,8 +448,14 @@ class PLeaf(PTree):
     """
     A piece of text that contains no further substructure.
     """
-    def __init__(self, text):
+    def __init__(self, text, microtype=defaultMicrotype,
+                 estimator=Estimate.fromText):
         self.text = text
+        self.microtype = microtype
+        self.estimator = estimator
+
+    def getText(self):
+        return self.text
 
     def debug(self):
         return self.text
@@ -458,7 +464,7 @@ class PLeaf(PTree):
         return isemptyline(self.text)
 
     def toTex(self):
-        return defaultMicrotype(self.text)
+        return self.microtype(self.text)
 
     def toHtml(self):
         result = self.text
@@ -473,7 +479,7 @@ class PLeaf(PTree):
         return self.text
 
     def toEstimate(self):
-        return Estimate.fromText(self.text)
+        return self.estimator(self.text)
 
 class PEmph(PTree):
     """
@@ -483,7 +489,7 @@ class PEmph(PTree):
         self.text = PLeaf(text)
 
     def debug(self):
-        return ('emph', self.text.text)
+        return ('emph', self.text.debug())
 
     def toTex(self):
         return '\\emph{%s}' % self.text.toTex()
@@ -502,13 +508,13 @@ class PMath(PTree):
     An non-display math area.
     """
     def __init__(self, text):
-        self.text = PLeaf(text)
+        self.text = PLeaf(text, microtype = mathMicrotype)
 
     def debug(self):
-        return ('math', self.text)
+        return ('math', self.text.debug())
 
     def toTex(self):
-        return '$%1s$' % mathMicrotype(self.text.text)
+        return '$%1s$' % self.text.toTex()
 
     def toHtml(self):
         return '$%1s$' % self.text.toHtml()
@@ -524,13 +530,13 @@ class PDisplayMath(PTree):
     An display math area.
     """
     def __init__(self, text):
-        self.text = PLeaf(text)
+        self.text = PLeaf(text, microtype = mathMicrotype)
 
     def debug(self):
-        return ('displaymath', self.text.text)
+        return ('displaymath', self.text.debug())
 
     def toTex(self):
-        return '$$%1s$$' % mathMicrotype(self.text.text)
+        return '$$%1s$$' % self.text.toTex()
 
     def toHtml(self):
         return "<div class=\"displaymath\">$$%1s$$</div>" % self.text.toHtml()
@@ -539,7 +545,7 @@ class PDisplayMath(PTree):
         return '$$%1s$$' % self.text.toDF()
 
     def toEstimate(self):
-        return Estimate.fromText(self.text.text).fullline() + \
+        return self.text.toEstimate().fullline() + \
                 Estimate.emptyLines(2)
 
 class PEdnote(PTree):
@@ -547,7 +553,8 @@ class PEdnote(PTree):
     An Ednote; contents are compeletly unchanged.
     """
     def __init__(self, text):
-        self.text = PLeaf(text)
+        self.text = PLeaf(text, microtype = ednoteMicrotype,
+                          estimator = Estimate.fromEdnote)
 
     def isEmpty(self):
         # the mere fact that there was an Ednote
@@ -555,11 +562,11 @@ class PEdnote(PTree):
         return False
 
     def debug(self):
-        return ('Ednote', self.text.text)
+        return ('Ednote', self.text.debug())
 
     def toTex(self):
         return '\n\\begin{ednote}\n%s\n\\end{ednote}\n' % \
-                ednoteMicrotype(self.text.text)
+                self.text.toTex()
 
     def toHtml(self):
         return '\n<pre class="ednote">\n%s\n</pre>\n' % self.text.toHtml()
@@ -575,7 +582,7 @@ class PEdnote(PTree):
         return '\n%s\n%s\n%s\n' % (openbracket, text, closebracket)
 
     def toEstimate(self):
-        return Estimate.fromEdnote(self.text.text)
+        return self.text.toEstimate()
 
 class PParagraph(PTree):
     def __init__(self, subtree):
@@ -601,11 +608,17 @@ class PParagraph(PTree):
 
 class PHeading(PTree):
     def __init__(self, title, level):
-        self.title = PLeaf(title)
+        self.title = PLeaf(title, estimator = Estimate.fromTitle)
         self.level = level
 
+    def getLevel(self):
+        return self.level
+
+    def getTitle(self):
+        return self.title.getText()
+
     def debug(self):
-        return ('Heading', self.level, self.getTitle())
+        return ('Heading', self.level, self.title.debug())
 
     def toTex(self):
         return '\n\\%ssection{%s}\n' % ("sub" * self.level, self.title.toTex())
@@ -623,24 +636,15 @@ class PHeading(PTree):
             result = result + ']'
         return result
 
-    def getLevel(self):
-        return self.level
-
-    def getTitle(self):
-        return self.title.text
-
     def toEstimate(self):
-        return Estimate.fromTitle(self.getTitle())
+        return self.title.toEstimate()
 
 class PAuthor(PTree):
     def __init__(self, author):
-        self.author = PLeaf(author)
-
-    def getAuthor(self):
-        return self.author.text
+        self.author = PLeaf(author, estimator = Estimate.fromParagraph)
 
     def debug(self):
-        return ('Author', self.getAuthor())
+        return ('Author', self.author.debug)
 
     def toTex(self):
         return '\\authors{%s}\n' % self.author.toTex()
@@ -652,7 +656,7 @@ class PAuthor(PTree):
         return '\n(%s)' % self.author.toDF()
 
     def toEstimate(self):
-        return Estimate.fromParagraph(self.getAuthor())
+        return self.author.toEstimate()
 
 class PDescription(PTree):
     def __init__(self, key, value):
