@@ -457,9 +457,6 @@ class PLeaf(PTree):
     def getText(self):
         return self.text
 
-    def debug(self):
-        return self.text
-
     def isEmpty(self):
         return isemptyline(self.text)
 
@@ -489,7 +486,7 @@ class PEmph(PTree):
         self.text = PLeaf(text)
 
     def debug(self):
-        return ('emph', self.text.debug())
+        return ('emph', self.text.getText())
 
     def toTex(self):
         return '\\emph{%s}' % self.text.toTex()
@@ -511,7 +508,7 @@ class PMath(PTree):
         self.text = PLeaf(text, microtype = mathMicrotype)
 
     def debug(self):
-        return ('math', self.text.debug())
+        return ('math', self.text.getText())
 
     def toTex(self):
         return '$%1s$' % self.text.toTex()
@@ -533,7 +530,7 @@ class PDisplayMath(PTree):
         self.text = PLeaf(text, microtype = mathMicrotype)
 
     def debug(self):
-        return ('displaymath', self.text.debug())
+        return ('displaymath', self.text.getText())
 
     def toTex(self):
         return '$$%1s$$' % self.text.toTex()
@@ -562,7 +559,7 @@ class PEdnote(PTree):
         return False
 
     def debug(self):
-        return ('Ednote', self.text.debug())
+        return ('Ednote', self.text.getText())
 
     def toTex(self):
         return '\n\\begin{ednote}\n%s\n\\end{ednote}\n' % \
@@ -618,7 +615,7 @@ class PHeading(PTree):
         return self.title.getText()
 
     def debug(self):
-        return ('Heading', self.level, self.title.debug())
+        return ('Heading', self.level, self.title.getText())
 
     def toTex(self):
         return '\n\\%ssection{%s}\n' % ("sub" * self.level, self.title.toTex())
@@ -644,7 +641,7 @@ class PAuthor(PTree):
         self.author = PLeaf(author, estimator = Estimate.fromParagraph)
 
     def debug(self):
-        return ('Author', self.author.debug)
+        return ('Author', self.author.getText())
 
     def toTex(self):
         return '\\authors{%s}\n' % self.author.toTex()
