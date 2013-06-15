@@ -7,8 +7,8 @@
   * similar problem for blobs
 
 == later and important ==
-* exporter
 * bibliography: serialize as json
+* rcs is much stricter about usernames as df2 creating error potential
 
 == not so important ==
 * nicer design
@@ -25,7 +25,6 @@
 * per course trail export (to view the current length)
 * interactive page swapping
 * create manual for setting up a local dokuforge server
-* escaping in ednotes in exportparser
 * sensible file types for downloads
 * "wrong password" needs html rendering
 * extremely long course titles break layout
@@ -41,8 +40,12 @@
 * exporter: fix spacing around \dots ('it was~\dots{}')
 * exporter: mangle course and academy titles as well as captions (currently they are simply copy pasted, but we want to e.g. replace '...' by '\dots')
 * exporter: in $x_1,...,x_n$ the dots are not replaced by \dots{}
+* exporter/parse: aggregate spaces, just as LaTeX does for a more readable export
+* exporter: use templates (string.Template)
 * add course number attribute (so each course knows which number it has for export)
 * evaluate estimator performance (how acurate is the estimate, does it need tuning?)
 * check and fix bugs reported via meta academy
 * fix groups support
 * update style guide -- add more information about conflicts and a short resolution howto
+* improve utf8 handling -- differentiate good and bad characters in web- and tex-output
+* redirect POST-request such that reloading (F5) is possible
