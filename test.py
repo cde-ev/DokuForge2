@@ -372,7 +372,7 @@ class DokuforgeWebTests(DfTestCase):
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
         self.is_loggedin()
-        self.assertTrue("Roh-Export" in self.get_data())
+        self.assertTrue("df2-Rohdaten" in self.get_data())
 
     def testPage(self):
         self.br.open(self.url)
@@ -819,7 +819,7 @@ permissions = df_superadmin True,df_admin True
         self.do_login()
         self.br.open(self.br.click_link(text="X-Akademie"))
         self.br.open(self.br.click_link(url_regex=re.compile("course02/$")))
-        self.br.open(self.br.click_link(text="Roh-Export"))
+        self.br.open(self.br.click_link(text="df2-Rohdaten"))
         self.assertIsTar(self.get_data())
 
     def testRawPageExport(self):
