@@ -176,12 +176,12 @@ def naturalNumbers(word):
             # no special typesetting for 4 digits only
             yield u"%d" % value
         else:
-            result = ''
+            result = u''
             while value >= 1000:
                 threedigits = value % 1000
-                result = '\\,%03d%s' % (threedigits, result)
+                result = u'\\,%03d%s' % (threedigits, result)
                 value = value // 1000
-            yield '%d%s' % (value, result)
+            yield u'%d%s' % (value, result)
 
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith(u'"'):
@@ -1062,7 +1062,7 @@ def splitleftbracket(line):
 def splitrightbracket(line):
     line = line.rstrip()
     closings = set([u')', u']', u'}'])
-    bracket, rest = '', ''
+    bracket, rest = u'', u''
     stillbracket = True
     for i in range(len(line)):
         c = line[len(line)-i-1]
