@@ -995,5 +995,15 @@ Bobby Tables...
 
 \\end{ednote}""")
 
+    def testStructures(self):
+        self.verifyExportsTo(u'[foo]\n(bar)',
+                             u'\\section{foo}\n\\authors{bar}')
+        self.verifyExportsTo(u'[[foo]]\n\n(bar)',
+                             u'\\subsection{foo}\n\n(bar)')
+        self.verifyExportsTo(u'- item\n\n-nonitem',
+                             u'\\begin{itemize}\n\\item  item\n\end{itemize}\n\n-nonitem')
+        self.verifyExportsTo(u'1. item',
+                             u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}')
+
 if __name__ == '__main__':
     unittest.main()

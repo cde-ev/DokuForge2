@@ -613,7 +613,7 @@ class PHeading(PTree):
         return ('Heading', self.level, self.getTitle())
 
     def toTex(self):
-        return '\n\\%ssection{%s}\n' % ("sub" * self.level, self.title.toTex())
+        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.title.toTex())
 
     def toHtml(self):
         n = self.level + 1
@@ -643,7 +643,7 @@ class PAuthor(PTree):
         return ('Author', self.getAuthor())
 
     def toTex(self):
-        return '\\authors{%s}\n' % self.author.toTex()
+        return u'\\authors{%s}\n' % self.author.toTex()
 
     def toHtml(self):
         return u'<i>%s</i>' % self.author.toHtml()
@@ -688,14 +688,9 @@ class PItemize(PTree):
         return self.isEnum
 
     def toTex(self):
-        itemtype =  'itemize'
-        if self.isEnumerate():
-            itemtype = 'enumerate'
-        result = '\n\\begin{%s}' % itemtype
-        for item in self.items:
-            result = result + item.toTex()
-        result = result + ('\n\\end{%s}\n' % itemtype)
-        return result
+        itemtype = u'enumerate' if self.isEnumerate() else u'itemize'
+        body = u''.join(item.toTex() for item in self.items)
+        return u'\n\\begin{%s}%s\n\\end{%s}\n' % (itemtype, body, itemtype)
 
     def toHtml(self):
         itemtype =  'ul'
@@ -728,10 +723,11 @@ class PItem(PTree):
         return self.number is not None
 
     def toTex(self):
+        body = wrap(u'\\item ' + self.it.toTex(), subsequent_indent=u'  ')
         if self.number is None:
-            return '\n' + wrap('\\item ' + self.it.toTex(), subsequent_indent='  ')
+            return u'\n' + body
         else:
-            return '\n% ' + self.number + '\n' + wrap('\\item ' + self.it.toTex(), subsequent_indent='  ')
+            return u'\n%% %s\n%s' % (self.number, body)
 
     def toHtml(self):
         return '\n<li> ' + self.it.toHtml()
