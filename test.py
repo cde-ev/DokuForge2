@@ -709,6 +709,8 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
                              'And dots\\@~\\ldots{} in the middle.')
         self.verifyExportsTo('And dots...in the middle.',
                              'And dots\\@~\\ldots{} in the middle.')
+        self.verifyExportsTo('And dots [...] for missing text.',
+                             'And dots [\\@$\\ldots{}$] for missing text.')
 
     def testLaws(self):
         self.verifyExportsTo('In §§1ff. HGB steht',
