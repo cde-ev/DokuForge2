@@ -648,7 +648,7 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('und "am Ende".',
                              'und "`am Ende"\'.')
         self.verifyExportsTo('Markus\' single quote',
-                             'Markus\@\' single quote')
+                             'Markus\\@\' single quote')
 
     def testAbbrev(self):
         self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
@@ -662,7 +662,7 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
                              'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
         self.verifyExportsTo('Es ist z. B. so, s. o., s. u., etc., dass wir, d. h., der Exporter bzw. oder ca. oder so.',
-                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h., der Exporter \@bzw oder \@ca. oder so.')
+                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h., der Exporter \\@bzw oder \\@ca. oder so.')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
@@ -694,9 +694,9 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
 
     def testSpacing(self):
         self.verifyExportsTo('A number range 6--9 is nice.',
-                             'A number range 6\@--9 is nice.')
+                             'A number range 6\\@--9 is nice.')
         self.verifyExportsTo('A number range 6 -- 9 is nice.',
-                             'A number range 6\@--9 is nice.')
+                             'A number range 6\\@--9 is nice.')
         self.verifyExportsTo('Now we do -- with all due respect -- an intersperse. Followed by an afterthougt -- here it comes. And another afterthought -- here you go. And a third afterthought -- again here we go. And a final -- even ultimate -- interjection.',
                              'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by an afterthougt\\@~-- here it comes. And another afterthought\\@~-- here you go. And a third afterthought\\@~-- again here we go. And a final \\@--~even ultimate\\@~-- interjection.')
         self.verifyExportsTo('Now we do--with all due respect--an intersperse. Followed by an afterthougt--here it comes. And another afterthought--here you go. And a third afterthought--again here we go. And a final--even ultimate--interjection.',
