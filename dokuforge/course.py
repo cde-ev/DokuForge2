@@ -591,18 +591,19 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
-        tex = u"\\course{%02d}{%s}" % (self.number, self.gettitle())
+        toTex = lambda x: dfLineGroupParser(x).toTex()
+        tex = u"\\course{%02d}{%s}" % (self.number, toTex(self.gettitle()))
         for p in self.listpages():
             tex += u"\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
-            tex += dfLineGroupParser(page).toTex()
+            tex += toTex(page)
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
                 tex += u"\\includegraphics[height=12\\baselineskip]{%s/blob_%d_%s}\n" % \
                     (self.name, b, blob['filename'])
-                tex += u"\\caption{%s}\n" % blob['comment']
+                tex += u"\\caption{%s}\n" % toTex(blob['comment'])
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(b"%s/blob_%d_%s" %
