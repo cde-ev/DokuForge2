@@ -34,12 +34,10 @@ def randstring(n=6):
 def strtobool(s):
     """
     @returns: Boolean version of s
-    @type s: str
+    @type s: unicode
     @rtype: bool
     """
-    if s == "True" or s == "true" or s == "t":
-        return True
-    return False
+    return s in (u"True", u"true", u"t")
 
 class CheckError(StandardError):
     def __init__(self, msg, exp):
