@@ -24,7 +24,7 @@ from wsgiref.validate import validator
 import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
-from dokuforge.parser import dfLineGroupParser
+from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
 from dokuforge.common import TarWriter
 from dokuforge.course import Course
 from dokuforge.academy import Academy
@@ -985,6 +985,51 @@ Bobby Tables...
 \\herebedragons
 
 \\end{ednote}""")
+
+class DokuforgeTitleParserTests(DfTestCase):
+    def verifyExportsTo(self, df, tex):
+        obtained = dfTitleParser(df).toTex().strip()
+        self.assertEquals(obtained, tex)
+
+    def testEscaping(self):
+        self.verifyExportsTo('Do not allow \\dangerous commands!',
+                             'Do not allow \\forbidden\\dangerous commands!')
+        self.verifyExportsTo('\\\\ok',
+                             '\\\\ok')
+        self.verifyExportsTo('\\\\\\bad',
+                             '\\\\\\forbidden\\bad')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '10\\% sind ein Zehntel')
+        self.verifyExportsTo('f# ist eine Note',
+                             'f\# ist eine Note')
+        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
+                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
+                             'Heinemann\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
+                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+class DokuforgeCaptionParserTests(DfTestCase):
+    def verifyExportsTo(self, df, tex):
+        obtained = dfTitleParser(df).toTex().strip()
+        self.assertEquals(obtained, tex)
+
+    def testEscaping(self):
+        self.verifyExportsTo('Do not allow \\dangerous commands!',
+                             'Do not allow \\forbidden\\dangerous commands!')
+        self.verifyExportsTo('\\\\ok',
+                             '\\\\ok')
+        self.verifyExportsTo('\\\\\\bad',
+                             '\\\\\\forbidden\\bad')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '10\\% sind ein Zehntel')
+        self.verifyExportsTo('f# ist eine Note',
+                             'f\# ist eine Note')
+        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
+                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
+                             'Heinemann\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
+                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
 if __name__ == '__main__':
     unittest.main()
