@@ -936,6 +936,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
         self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., er...',
                              'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., er\\dots{}')
+        self.verifyExportsTo('Bitte keine unbek.Abk. verwenden.',
+                             'Bitte keine \@unbek.Abk. verwenden.')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
