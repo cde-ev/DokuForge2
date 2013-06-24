@@ -325,6 +325,7 @@ class UserDB:
     """
     Class for the user database
 
+    @type db: {unicode: User}
     @ivar db: dictionary containing (username, User object) pairs
     @ivar storage: storage.CachingStorage object holding the userdb
     @ivar timestamp: time of last update, this is compared to the mtime of

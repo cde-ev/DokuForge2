@@ -167,6 +167,9 @@ class UserDBTests(DfTestCase):
         shutil.rmtree(self.tmpdir, True)
 
     def getUser(self, user):
+        """
+        @type user: unicode
+        """
         self.userdb.load()
         return self.userdb.db.get(user)
 
@@ -180,7 +183,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_view_aca123 True,kurs_read_aca123_course42 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
@@ -192,7 +195,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_read_aca123 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, recursive=True))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
@@ -205,7 +208,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_view_aca123 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertFalse(user.allowedRead(self.academy, recursive=True))
 
     def testReadRevoke(self):
@@ -215,7 +218,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_read_aca123 True,kurs_read_aca123_course42 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
@@ -227,7 +230,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = kurs_write_aca123_course42 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertFalse(user.allowedWrite(self.academy))
         self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
         self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
@@ -239,7 +242,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_write_aca123 True,kurs_write_aca123_course42 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedWrite(self.academy))
         self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
@@ -251,7 +254,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = df_superadmin True,kurs_read_aca123_course42 False,kurs_write_aca123_course4711 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
@@ -265,7 +268,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_meta_aca123 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
     def testMetaGroup(self):
@@ -285,7 +288,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = gruppe_meta_cde True,akademie_meta_aca123 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertFalse(user.allowedMeta(self.academy))
 
     def testGlobalNonRevoke(self):
@@ -295,7 +298,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = df_meta True,akademie_meta_aca123 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
 class DokuforgeWebTests(DfTestCase):
