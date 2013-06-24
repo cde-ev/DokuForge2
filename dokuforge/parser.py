@@ -153,8 +153,14 @@ def  standardAbbreviations(word):
         'v.Chr.' : 'v.\\,Chr.',
         'vgl.' : 'vgl.',
         'z.B.' : 'z.\\,B.'}
-
-    yield abb.get(word, word)
+    if word in abb:
+        yield abb.get(word)
+    elif len(word) < 1:
+        yield word
+    elif '.' in word[:-1]:
+        yield '\\@' + word
+    else:
+        yield word
 
 splitEllipsis = Escaper("...", "...")
 # Replace the ellipsis symbol ... by \dots
@@ -222,7 +228,7 @@ class EscapeCommands:
     allowed = [
     # produced by our own microtypography or otherwise essential
     '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym', '\\&',
-    '\\#', '\\caret',
+    '\\#', '\\caret', '\\@',
     # other allowed commands; FIXME: complete and put to a separate file
     ## list of useful math commands mostly taken
     ## from 'A Guide To LaTeX' by Kopka
