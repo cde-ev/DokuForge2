@@ -936,8 +936,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
     def testAbbrev(self):
         self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                              'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
-        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., er...',
-                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., er\\dots{}')
+        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter',
+                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
@@ -952,8 +952,6 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              '\\\\ok')
         self.verifyExportsTo('\\\\\\bad',
                              '\\\\\\forbidden\\bad')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\% sind ein Zehntel')
         self.verifyExportsTo('f# ist eine Note',
                              'f\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
@@ -962,6 +960,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'Heinemann\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+
     def testLaws(self):
         self.verifyExportsTo('In §§1ff. HGB steht',
                              'In \\@§§\\,1\\,ff. \\@\\acronym{HGB} steht')
@@ -973,7 +972,6 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'In \\@§\\,1 \\@Absatz~1 \\@Satz~2 \\@\\acronym{HGB} steht')
         self.verifyExportsTo('In §§ 10-15 HGB steht',
                              'In \\@§§\\,10\\,--\\,15 \\@\\acronym{HGB} steht')
-
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
