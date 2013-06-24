@@ -961,7 +961,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
-    def testLaws(self):
+    def testLawReferences(self):
         self.verifyExportsTo('In §§1ff. HGB steht',
                              'In \\@§§\\,1\\,ff. \\@\\acronym{HGB} steht')
         self.verifyExportsTo('In § 1 f. HGB steht',
