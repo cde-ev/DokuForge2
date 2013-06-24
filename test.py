@@ -953,11 +953,11 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('\\\\\\bad',
                              '\\\\\\forbidden\\bad')
         self.verifyExportsTo('f# ist eine Note',
-                             'f\# ist eine Note')
+                             'f\\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
                              '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\&Co. ist vielleicht eine Firma')
+                             'Heinemann\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
