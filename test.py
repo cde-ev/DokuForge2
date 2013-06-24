@@ -960,6 +960,18 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'Heinemann\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+    def testLaws(self):
+        self.verifyExportsTo('In §§1ff. HGB steht',
+                             'In \\@§§\\,1\\,ff. \\@\\acronym{HGB} steht')
+        self.verifyExportsTo('In § 1 f. HGB steht',
+                             'In \\@§\\,1\\,f. \\@\\acronym{HGB} steht')
+        self.verifyExportsTo('In § 1 Abs. 1,9 HGB steht',
+                             'In \\@§\\,1 \\@Abs.~1,\\,9 \\@\\acronym{HGB} steht')
+        self.verifyExportsTo('In § 1 Absatz 1 Satz 2 HGB steht',
+                             'In \\@§\\,1 \\@Absatz~1 \\@Satz~2 \\@\\acronym{HGB} steht')
+        self.verifyExportsTo('In §§ 10-15 HGB steht',
+                             'In \\@§§\\,10\\,--\\,15 \\@\\acronym{HGB} steht')
+
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
