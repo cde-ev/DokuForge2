@@ -724,7 +724,7 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
 
     def testNumbers(self):
         self.verifyExportsTo('We have 10000 and 2000 and 3000000 and -40000 and -5000.',
-                             'We have 10\\,000 and 2000 and 3\\,000\\,000 and $-$40\\,000 and $-$5000.')
+                             'We have 10\\,000 and 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.')
         self.verifyExportsTo('We are in the 21. regiment. And again we are in the 21.regiment. The date is 19.10.2012 or 19. 10. 2012 for good.',
                              'We are in the \\@21.\\,regiment. And again we are in the \\@21.\\,regiment. The date is \\@19.\\,\\@10.\\,2012 or \\@19.\\,\\@10.\\,2012 for good.')
         self.verifyExportsTo('Here come some units: 21kg and 4MW or 21 kg and 4 MW are nice examples.',
