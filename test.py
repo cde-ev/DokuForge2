@@ -973,6 +973,20 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('In §§ 10-15 HGB steht',
                              'In \\@§§\\,10\\,--\\,15 \\@\\acronym{HGB} steht')
 
+    def testNumbers(self):
+        self.verifyExportsTo('We have 10000 and 2000 and 3000000 and -40000 and -5000.',
+                             'We have 10\\,000 and 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.')
+        self.verifyExportsTo('We are in the 21. regiment. And again we are in the 21.regiment.',
+                             'We are in the \\@21.\\,regiment. And again we are in the \\@21.\\,regiment.')
+        self.verifyExportsTo('Datum 19.10.2012 oder 19. 10. 2012.',
+                             'Datum \\@19.\\,\\@10.\\,2012 oder \\@19.\\,\\@10.\\,2012.')
+        self.verifyExportsTo('Einheiten: 21kg, 4MW, 1GeV, 13-14TeV, 5°C, 25,4mm.',
+                             'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
+        self.verifyExportsTo('Einheiten: 21 kg, 4 MW, 1 GeV, 13-14 TeV, 5 °C, 25,4 mm.',
+                             'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
+        self.verifyExportsTo('Prozentangaben: 5% oder 5 %.',
+                             'Prozentangaben: \\@5\\,\\% oder \\@5\\,\\%.')
+
     def testEdnoteEscape(self):
         self.verifyExportsTo(
 """
