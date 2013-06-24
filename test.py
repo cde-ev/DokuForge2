@@ -160,7 +160,7 @@ class UserDBTests(DfTestCase):
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course42'))
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course4711'))
         self.academy = Academy(os.path.join(self.tmpdir, b'aca123'),
-                               lambda : ['abc', 'cde'])
+                               lambda : [u'abc', u'cde'])
         self.academy.setgroups([u'cde'])
 
     def tearDown(self):
@@ -278,7 +278,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = gruppe_meta_cde True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
     def testMetaRevoke(self):
