@@ -5,7 +5,8 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
-from dokuforge.parser import dfLineGroupParser, Estimate, PHeading
+from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
+from dokuforge.parser import Estimate, PHeading
 import dokuforge.common as common
 
 class Outline:
@@ -591,19 +592,19 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
-        toTex = lambda x: dfLineGroupParser(x).toTex()
-        tex = u"\\course{%02d}{%s}" % (self.number, toTex(self.gettitle()))
+        tex = u"\\course{%02d}{%s}" % (self.number,
+                                       dfTitleParser(self.gettitle()).toTex())
         for p in self.listpages():
             tex += u"\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
-            tex += toTex(page)
+            tex += dfLineGroupParser(page).toTex()
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
                 tex += u"\\includegraphics[height=12\\baselineskip]{%s/blob_%d_%s}\n" % \
                     (self.name, b, blob['filename'])
-                tex += u"\\caption{%s}\n" % toTex(blob['comment'])
+                tex += u"\\caption{%s}\n" % dfCaptionParser(blob['comment']).toTex()
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(b"%s/blob_%d_%s" %
