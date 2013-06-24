@@ -710,6 +710,18 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('And dots...in the middle.',
                              'And dots\\@~\\ldots{} in the middle.')
 
+    def testLaws(self):
+        self.verifyExportsTo('In §§1ff. HGB steht',
+                             'In \\@§§\\,1\\,ff. \\acronym{HGB} steht')
+        self.verifyExportsTo('In § 1 f. HGB steht',
+                             'In \\@§\\,1\\,f. \\acronym{HGB} steht')
+        self.verifyExportsTo('In § 1 Abs. 1,9 HGB steht',
+                             'In \\@§\\,1 \\@Abs.~1,\\,9 \\acronym{HGB} steht')
+        self.verifyExportsTo('In § 1 Absatz 1 Satz 2 HGB steht',
+                             'In \\@§\\,1 \\@Absatz~1 \\@Satz~2 \\acronym{HGB} steht')
+        self.verifyExportsTo('In §§ 10-15 HGB steht',
+                             'In \\@§§\\,10\\,--\\,15 \\acronym{HGB} steht')
+
     def testNumbers(self):
         self.verifyExportsTo('We have 10000 and 2000 and 3000000 and -40000 and -5000.',
                              'We have 10\\,000 and 2000 and 3\\,000\\,000 and $-$40\\,000 and $-$5000.')
