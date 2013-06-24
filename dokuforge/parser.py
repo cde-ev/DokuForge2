@@ -312,7 +312,7 @@ class EscapeCommands:
                     # Oh, a backslash at end of input;
                     # maybe we broke into words incorrectly,
                     # so just return something safe.
-                    yield '\\@\\ '
+                    yield u'\\@\\textbackslash{}'
                 else:
                     yield self.forbid(part)
             else:

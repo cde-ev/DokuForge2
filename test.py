@@ -964,6 +964,12 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              u'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
+    def testTrails(self):
+        self.verifyExportsTo(u'trailing space ',
+                             u'trailing space')
+        self.verifyExportsTo(u'trailing backslash \\',
+                             u'trailing backslash \\@\\textbackslash{}')
+
     def testEdnoteEscape(self):
         self.verifyExportsTo(
 u"""
