@@ -658,7 +658,7 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
                              'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.')
         self.verifyExportsTo('Dots in math $a_1,...,a_n$ should work without spacing.',
-                             'Dots in math $a_1,\dots{},a_n$ should work without spacing.')
+                             'Dots in math $a_1,\\dots{},a_n$ should work without spacing.')
         self.verifyExportsTo('Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
                              'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
         self.verifyExportsTo('Es ist z. B. so, s. o., s. u., etc., dass wir, d. h., der Exporter bzw. oder ca. oder so.',
@@ -684,13 +684,13 @@ class DokuforgeMicrotypeUnitTests(unittest.TestCase):
         self.verifyExportsTo('$Trailing \\$',
                              '$Trailing \\@\\ $')
         self.verifyExportsTo('f# ist eine Note',
-                             'f\\@\# ist eine Note')
+                             'f\\@\\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
                              '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\\@\&Co. ist vielleicht eine Firma')
+                             'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('10% sind ein Zehntel',
-                             '\\@10\,\\% sind ein Zehntel')
+                             '\\@10\\,\\% sind ein Zehntel')
 
     def testSpacing(self):
         self.verifyExportsTo('A number range 6--9 is nice.',
