@@ -141,6 +141,9 @@ def validateBlobComment(comment):
     if comment == u"":
         raise CheckError(u"Keine Bildunterschrift gefunden!",
                          u"Bitte eine Bildunterschrift eingeben und erneut versuchen.")
+    if u"\\" in comment:
+        raise CheckError(u"Es darf kein Backslash (\\) in der Bildunterschrift vorkommen.",
+                         u"Bitte eine andere Bildunterschrift eingeben und erneut versuchen.")
 
 class InvalidBlobFilename(CheckError):
     pass

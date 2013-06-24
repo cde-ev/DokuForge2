@@ -807,6 +807,19 @@ permissions = df_superadmin True,df_admin True
         self.assertTrue(u"Kürzel nicht wohlgeformt!".encode("utf8") in self.get_data())
         self.is_loggedin()
 
+    def testSanitizeBlobLabel(self):
+        self.br.open(self.url)
+        self.do_login()
+        self.br.open(self.br.click_link(text="X-Akademie"))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/$")))
+        self.br.open(self.br.click_link(url_regex=re.compile("course01/0/.*addblob$")))
+        form = list(self.br.forms())[1]
+        form["comment"] = "\\tex"
+        form["label"] = "tex"
+        self.br.open(form.click(label=u"Bild auswählen".encode("utf8")))
+        self.assertTrue(u"Backslash (\\) in der Bildunterschrift".encode("utf8") in self.get_data())
+
     def testAcademyExport(self):
         self.br.open(self.url)
         self.do_login()
