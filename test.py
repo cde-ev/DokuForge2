@@ -994,6 +994,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'We are in the \\@21.\\,regiment. And again we are in the \\@21.\\,regiment.')
         self.verifyExportsTo('Datum 19.10.2012 oder 19. 10. 2012.',
                              'Datum \\@19.\\,\\@10.\\,2012 oder \\@19.\\,\\@10.\\,2012.')
+
+    def testUnits(self):
         self.verifyExportsTo('Einheiten: 21kg, 4MW, 1GeV, 13-14TeV, 5°C, 25,4mm.',
                              'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
         self.verifyExportsTo('Einheiten: 21 kg, 4 MW, 1 GeV, 13-14 TeV, 5 °C, 25,4 mm.',
