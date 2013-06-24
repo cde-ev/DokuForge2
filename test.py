@@ -952,6 +952,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              '\\\\ok')
         self.verifyExportsTo('\\\\\\bad',
                              '\\\\\\forbidden\\bad')
+        self.verifyExportsTo('Geschweifte Klammern { muessen } escaped werden.',
+                             'Geschweifte Klammern \\{ muessen \\} escaped werden.')
         self.verifyExportsTo('f# ist eine Note',
                              'f\\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
