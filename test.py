@@ -961,6 +961,18 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
+    def testPageReferences(self):
+        self.verifyExportsTo('Auf S. 4 steht',
+                             'Auf S.\\@\\,4 steht')
+        self.verifyExportsTo('Auf S.4-6 steht',
+                             'Auf S.\\@\\,4--6 steht')
+        self.verifyExportsTo('Auf S.4--6 steht',
+                             'Auf S.\\@\\,4--6 steht')
+        self.verifyExportsTo('Auf S. 4f steht',
+                             'Auf S.\\@\\,4\\,f. steht')
+        self.verifyExportsTo('Auf S. 4 ff. steht',
+                             'Auf S.\\@\\,4\\,ff. steht')
+
     def testLawReferences(self):
         self.verifyExportsTo('In §§1ff. HGB steht',
                              'In \\@§§\\,1\\,ff. \\@\\acronym{HGB} steht')
