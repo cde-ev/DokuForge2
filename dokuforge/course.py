@@ -592,7 +592,6 @@ class Course(StorageDir):
         yield the contents of the course as tex-export.
         """
         tex = u"\\course{%02d}{%s}" % (self.number, self.gettitle())
-        allowedImageFileEndings=['png','jpg','pdf']
         for p in self.listpages():
             tex += u"\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
@@ -602,15 +601,16 @@ class Course(StorageDir):
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
                 fileName = blob['filename']
-                fileEnding = fileName.split('.')[-1]
-                if fileEnding in allowedImageFileEndings:
-                    tex += u"\\includegraphics[height=12\\baselineskip]{%s/blob_%d_%s}\n" % \
-                        (self.name, b, fileName)
+                includegraphics = \
+                    (u"\\includegraphics" +
+                     u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
+                    (self.name, b, fileName)
+                if fileName.endswith((".png", ".jpg", ".pdf")):
+                    tex += includegraphics
                 else:
-                    tex += u"%%\\includegraphics[height=12\\baselineskip]{%s/blob_%d_%s}\n" % \
-                        (self.name, b, fileName)
-                    tex += u"(Binaerdatei \\verb|%s| nicht als Bild eingebunden)\n" % \
-                        (fileName)
+                    tex += (u"%%%s(Binaerdatei \\verb|%s|" +
+                            u" nicht als Bild eingebunden)\n") % \
+                           (includegraphics, fileName)
                 tex += u"\\caption{%s}\n" % blob['comment']
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
