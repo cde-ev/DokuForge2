@@ -41,9 +41,9 @@ def strtobool(s):
         return True
     return False
 
-class CheckError(StandardError):
+class CheckError(Exception):
     def __init__(self, msg, exp):
-        StandardError.__init__(self, msg)
+        Exception.__init__(self, msg)
         assert isinstance(msg, unicode)
         assert isinstance(exp, unicode)
         self.message = msg
