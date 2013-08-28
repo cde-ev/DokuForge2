@@ -27,9 +27,8 @@ def rlogv(filename):
     """
     assert isinstance(filename, bytes)
     logger.debug("rlogv: looking up revision for %r" % filename)
-    f = file(filename, mode = "r")
-    content = f.read()
-    f.close()
+    with open(filename, "rb") as f:
+        content = f.read()
     m = re.match(r'^\s*head\s*([0-9.]+)\s*;', content)
     if m:
         return m.groups()[0]
@@ -167,9 +166,8 @@ class Storage(object):
             self.ensureexistence(havelock = gotlock)
             subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
                                   env=RCSENV)
-            objfile = file(self.fullpath(), mode = "w")
-            shutil.copyfileobj(content, objfile)
-            objfile.close()
+            with open(self.fullpath(), "wb") as objfile:
+                shutil.copyfileobj(content, objfile)
             args = ["ci", "-q", "-f", "-m%s" % message]
             if user is not None:
                 args.append("-w%s" % user)
@@ -183,7 +181,8 @@ class Storage(object):
                     logger.debug("creating rcs file %r" % self.fullpath())
                     subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                            self.fullpath()], env=RCSENV)
-                    file(self.fullpath(), mode = "w").close()
+                    with open(self.fullpath(), "wb"):
+                        pass
                     subprocess.check_call(["ci", "-q", "-f",
                                            "-minitial, implicit, empty commit",
                                            self.fullpath()], env=RCSENV)
@@ -191,9 +190,8 @@ class Storage(object):
     def asrcs(self, havelock=None):
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
-            f = file(self.fullpath(postfix=b",v"), mode="r")
-            content = f.read()
-            f.close()
+            with open(self.fullpath(postfix=b",v"), "rb") as f:
+                content = f.read()
             return content
 
     def status(self, havelock=None):
@@ -290,9 +288,8 @@ class Storage(object):
             except CalledProcessError:
                 raise RcsUserInputError(u"specified rcs version does not exist",
                                         u"can only happen in hand-crafted requests")
-            objfile = file(self.fullpath(), mode = "w")
-            objfile.write(newcontent)
-            objfile.close()
+            with open(self.fullpath(), "wb") as objfile:
+                objfile.write(newcontent)
             args = ["ci", "-f", "-q", "-u"]
             args.append("-mstoring original edit conflicting with %s in a branch" % currentversion)
             if user is not None:
@@ -304,9 +301,8 @@ class Storage(object):
             subprocess.call(["rcsmerge", "-q", "-r%s" % version,
                              self.fullpath()]) # Note: non-zero exit status is
                                                # OK!
-            objfile = file(self.fullpath(), mode = "r")
-            mergedcontent = objfile.read()
-            objfile.close()
+            with open(self.fullpath(), "rb") as objfile:
+                mergedcontent = objfile.read()
             os.unlink(self.fullpath())
             # 3) return new state
             return False, currentversion, mergedcontent
