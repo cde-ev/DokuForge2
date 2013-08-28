@@ -155,7 +155,7 @@ class TarWriterTests(DfTestCase):
 class UserDBTests(DfTestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
-        self.storage = CachingStorage(self.tmpdir,"db")
+        self.storage = CachingStorage(self.tmpdir, b"db")
         self.userdb = UserDB(self.storage)
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course42'))
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course4711'))
