@@ -919,7 +919,7 @@ class DokuforgeMockTests(DfTestCase):
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfLineGroupParser(df).toTex().strip()
-        self.assertEquals(obtained, tex)
+        self.assertEqual(obtained, tex)
 
     def testItemize(self):
         self.verifyExportsTo('- Text',
