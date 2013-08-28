@@ -131,7 +131,7 @@ class DfTestCase(unittest.TestCase):
         # a tar archive is a sequence of complete blocks
         self.assertTrue(len(octets) % blocksize == 0)
         # there is at least the terminating 0-block
-        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in octets)
+        self.assertTrue(b"\0\0\0\0\0\0\0\0\0\0" in octets)
 
     def assertIsTarGz(self, octets):
         f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
@@ -141,14 +141,14 @@ class TarWriterTests(DfTestCase):
     def testUncompressed(self):
         tarwriter = TarWriter()
         tar = b''
-        tar = tar + tarwriter.addChunk('myFile', 'contents')
+        tar = tar + tarwriter.addChunk(b'myFile', b'contents')
         tar = tar + tarwriter.close()
         self.assertIsTar(tar)
         
     def testGzip(self):
         tarwriter = TarWriter(gzip=True)
         tar = b''
-        tar = tar + tarwriter.addChunk('myFile', 'contents')
+        tar = tar + tarwriter.addChunk(b'myFile', b'contents')
         tar = tar + tarwriter.close()
         self.assertIsTarGz(tar)
 

@@ -273,15 +273,21 @@ def validateRcsRevision(versionnumber):
 class TarWriter:
     def __init__(self, gzip=False):
         self.io = io.BytesIO()
+        # tarfile requires the use of decoded strings, so choose any encoding
+        # that will never fail decoding arbitrary bytes. In particular choose
+        # the encoding used by wsgi: iso8859-1. Note that we do not rely on
+        # the decoded data to carry any meaning beyond being able to encode it.
         if gzip:
-            self.tar = tarfile.open(mode="w|gz", fileobj=self.io)
+            self.tar = tarfile.open(mode="w|gz", fileobj=self.io,
+                                    encoding="iso8859-1")
         else:
-            self.tar = tarfile.open(mode="w|", fileobj=self.io)
+            self.tar = tarfile.open(mode="w|", fileobj=self.io,
+                                    encoding="iso8859-1")
         self.dirs = []
 
     @property
     def prefix(self):
-        return b"".join(map(lambda s: s + b"/", self.dirs))
+        return "".join(map(lambda s: s + "/", self.dirs))
 
     def pushd(self, dirname):
         """Push a new directory on the directory stack. Further add* calls will
@@ -291,6 +297,8 @@ class TarWriter:
         @type dirname: bytes
         """
         assert b"/" not in dirname
+        if not isinstance(dirname, str):
+            dirname = dirname.decode("iso8859-1")
         self.dirs.append(dirname)
 
     def popd(self):
@@ -318,6 +326,8 @@ class TarWriter:
         """
         assert isinstance(name, bytes)
         assert isinstance(content, bytes)
+        if not isinstance(name, str):
+            name = name.decode("iso8859-1")
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
@@ -332,6 +342,8 @@ class TarWriter:
         @type filename: bytes
         @rtype: bytes
         """
+        if not isinstance(name, str):
+            name = name.decode("iso8859-1")
         info = tarfile.TarInfo(self.prefix + name)
         with file(filename) as infile:
             infile.seek(0, 2)
