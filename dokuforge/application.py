@@ -375,9 +375,9 @@ class Application:
         @raises werkzeug.exceptions.HTTPException:
         """
         assert isinstance(name, unicode)
-        name = name.encode("utf8")
         try:
             common.validateInternalName(name)
+            name = name.encode("utf8")
             common.validateExistence(self.acapath, name)
         except CheckError:
             raise werkzeug.exceptions.NotFound()
@@ -414,8 +414,8 @@ class Application:
         assert isinstance(name, unicode)
         assert isinstance(title, unicode)
         assert all(isinstance(group, unicode) for group in groups)
-        name = name.encode("utf8")
         common.validateInternalName(name)
+        name = name.encode("utf8")
         common.validateNonExistence(self.acapath, name)
         common.validateTitle(title)
         common.validateGroups(groups, self.listGroups())
