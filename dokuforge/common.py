@@ -262,11 +262,15 @@ def validateRcsRevision(versionnumber):
     """
     Check if versionnumber is a syntactically well-formed rcs version number
 
-    @type versionnumber: str
+    @type versionnumber: bytes
     @raises RcsUserInputError:
     """
-    assert isinstance(versionnumber, str)
-    if re.match('^[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}(\.[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}){0,5}$', versionnumber) is None:
+    assert isinstance(versionnumber, bytes)
+    # Decoding with this encoding will not fail. Non-ascii bytes will be
+    # rejected by the regex.
+    versionnumber = versionnumber.decode("iso8859-1")
+    if re.match(u'^[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}(\\.[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}){0,5}$',
+                versionnumber) is None:
         raise RcsUserInputError(u"rcs version number syntactically malformed",
                                 u"can only happen in hand-crafted requests")
 
