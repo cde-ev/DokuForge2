@@ -416,7 +416,7 @@ class Course(StorageDir):
         @returns: a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
         """
-        page = self.getstorage(b"page%d" % number)
+        page = self.getstorage((u"page%d" % number).encode("ascii"))
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -444,7 +444,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        page = self.getstorage(b"page%d" % number)
+        page = self.getstorage((u"page%d" % number).encode("ascii"))
         ok, version, mergedcontent = page.endedit(version.encode("utf8"),
                                                   newcontent.encode("utf8"),
                                                   user = user)
@@ -605,9 +605,10 @@ class Course(StorageDir):
                 tex += u"\\caption{%s}\n" % blob['comment']
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
-                yield tarwriter.addChunk(b"%s/blob_%d_%s" %
-                                         (self.name, b, str(blob['filename'])),
+                yield tarwriter.addChunk(self.name +
+                                         (u"/blob_%d_" % b).encode("ascii") +
+                                         str(blob['filename']),
                                          blob['data'])
 
-        yield tarwriter.addChunk(b"%s/chap.tex" % self.name,
+        yield tarwriter.addChunk(self.name + b"/chap.tex",
                                  tex.encode("utf8"))
