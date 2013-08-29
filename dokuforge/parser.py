@@ -203,13 +203,13 @@ def fullStop(word):
     else:
         yield word
 
-percent = Escaper(u"%", ur"\%")
+percent = Escaper(u"%", u"\\%")
 
-ampersand = Escaper(u"&", ur"\&")
+ampersand = Escaper(u"&", u"\\&")
 
-hashmark = Escaper(u"#", ur"\#")
+hashmark = Escaper(u"#", u"\\#")
 
-caret = Escaper(u"^", ur"\caret{}")
+caret = Escaper(u"^", u"\\caret{}")
 
 quote = Escaper(u"'", u"'")
 
@@ -320,7 +320,7 @@ class EscapeCommands:
 
 escapeCommands = EscapeCommands()
 
-escapeEndEdnote = Escaper(ur"\end{ednote}", u"|end{ednote}")
+escapeEndEdnote = Escaper(u"\\end{ednote}", u"|end{ednote}")
 # Escpage the string \\end{ednote}, so that ednotes end
 # where we expect them to end.
 
