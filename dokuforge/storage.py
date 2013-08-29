@@ -24,14 +24,15 @@ def rlogv(filename):
 
     (needed, as rlog -v is a FreeBSD extension)
     @type filename: bytes
+    @rtype: bytes or None
     """
     assert isinstance(filename, bytes)
     logger.debug("rlogv: looking up revision for %r" % filename)
     with open(filename, "rb") as f:
-        content = f.read()
-    m = re.match(r'^\s*head\s*([0-9.]+)\s*;', content)
+        firstline = f.readline()
+    m = re.match(u'^\\s*head\\s*([0-9.]+)\\s*;', firstline.decode("ascii"))
     if m:
-        return m.groups()[0]
+        return m.groups()[0].encode("ascii")
     else:
         return None
 
@@ -230,7 +231,7 @@ class Storage(object):
         that version is still the head revision.
 
         @returns: an opaque version string and the contents of the file
-        @rtype: (str, str)
+        @rtype: (bytes, str)
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
