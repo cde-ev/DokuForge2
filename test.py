@@ -875,24 +875,24 @@ class AcademyTest(DfTestCase):
         self.assertEqual(set(names), set(namesfound))
 
     def testLegacyCoursePresent(self):
-        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.assertCourses([b'legacy', b'new01', b'new02'])
         self.assertDeadCourses([])
 
     def testDeleteCourse(self):
         self.academy.getCourse(u'new01').delete()
-        self.assertCourses([u'legacy', u'new02'])
-        self.assertDeadCourses([u'new01'])
+        self.assertCourses([b'legacy', b'new02'])
+        self.assertDeadCourses([b'new01'])
 
     def testDeleteLegacyCourse(self):
         self.academy.getCourse(u'legacy').delete()
-        self.assertCourses([u'new01', u'new02'])
-        self.assertDeadCourses([u'legacy'])
+        self.assertCourses([b'new01', b'new02'])
+        self.assertDeadCourses([b'legacy'])
 
     def testCourseDeleteUndelete(self):
         self.academy.getCourse(u'new01').delete()
-        self.assertDeadCourses([u'new01'])
+        self.assertDeadCourses([b'new01'])
         self.academy.getCourse(u'new01').undelete()
-        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.assertCourses([b'legacy', b'new01', b'new02'])
         self.assertDeadCourses([])
 
 class DokuforgeMockTests(DfTestCase):
