@@ -605,7 +605,7 @@ class Course(StorageDir):
                     (u"\\includegraphics" +
                      u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
                     (self.name, b, fileName)
-                if fileName.endswith((".png", ".jpg", ".pdf")):
+                if fileName.lower().endswith((".png", ".jpg", ".pdf")):
                     tex += includegraphics
                 else:
                     tex += (u"%%%s(Binaerdatei \\verb|%s|" +
