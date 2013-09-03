@@ -1043,7 +1043,7 @@ class Paragraph(Linegroup):
 
 def splitleftbracket(line):
     openings = set([u'(', u'[', u'{'])
-    bracket, rest = '', ''
+    bracket, rest = u'', u''
     stillbracket = True
     for i in range(len(line)):
         c = line[i]
