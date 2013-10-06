@@ -1374,3 +1374,21 @@ def dfLineGroupParser(text):
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
     return PSequence(ptrees)
+
+titlefeatures =  [Paragraph]
+
+def dfTitleParser(text):
+    groups = grouplines(text.splitlines(), titlefeatures)
+    ptrees = [g.parse() for g in groups]
+    ptrees = groupItems(ptrees)
+    ptrees = removeEmpty(ptrees)
+    return PSequence(ptrees)
+
+captionfeatures =  [Paragraph, Item, EnumerateItem, Description, Ednote]
+
+def dfCaptionParser(text):
+    groups = grouplines(text.splitlines(), dffeatures)
+    ptrees = [g.parse() for g in groups]
+    ptrees = groupItems(ptrees)
+    ptrees = removeEmpty(ptrees)
+    return PSequence(ptrees)
