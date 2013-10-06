@@ -600,8 +600,17 @@ class Course(StorageDir):
                 blob = self.viewblob(b)
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
-                tex += u"\\includegraphics[height=12\\baselineskip]{%s/blob_%d_%s}\n" % \
-                    (self.name, b, blob['filename'])
+                fileName = blob['filename']
+                includegraphics = \
+                    (u"\\includegraphics" +
+                     u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
+                    (self.name, b, fileName)
+                if fileName.lower().endswith((".png", ".jpg", ".pdf")):
+                    tex += includegraphics
+                else:
+                    tex += (u"%%%s(Binaerdatei \\verb|%s|" +
+                            u" nicht als Bild eingebunden)\n") % \
+                           (includegraphics, fileName)
                 tex += u"\\caption{%s}\n" % blob['comment']
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
