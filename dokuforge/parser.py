@@ -168,7 +168,7 @@ def naturalNumbers(word):
     #       - a number followed by a dot wants a thin space: '21.\,regiment'
     #       - a number followed by a unit wants a thin space: 'weight 67\,kg'
     #       - a number followed by a percent sign wants a thin space: '51\,\%'
-    if not word.isdigit():
+    if not re.match('^[0-9]+$', word):
         yield word
     else:
         value = int(word)
