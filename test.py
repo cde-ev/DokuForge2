@@ -992,6 +992,10 @@ Bobby Tables...
 
 \\end{ednote}""")
 
+    def testNumeralScope(self):
+        self.verifyExportsTo(u'10\xb3 Meter sind ein km',
+                             u'10\xb3 Meter sind ein km')
+
 class DokuforgeTitleParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfTitleParser(df).toTex().strip()
