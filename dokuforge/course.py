@@ -592,8 +592,10 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
+        formattedTitle = dfTitleParser(self.gettitle()).toTex()
+        formattedTitle = formattedTitle.lstrip().rstrip()
         tex = u"\\course{%02d}{%s}" % (self.number,
-                                       dfTitleParser(self.gettitle()).toTex())
+                                       formattedTitle)
         for p in self.listpages():
             tex += u"\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
