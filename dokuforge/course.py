@@ -615,7 +615,9 @@ class Course(StorageDir):
                     tex += (u"%%%s(Binaerdatei \\verb|%s|" +
                             u" nicht als Bild eingebunden)\n") % \
                            (includegraphics, fileName)
-                tex += u"\\caption{%s}\n" %  dfCaptionParser(blob['comment']).toTex()
+                formattedCaption = dfCaptionParser(blob['comment']).toTex()
+                formattedCaption = formattedCaption.lstrip().rstrip()
+                tex += u"\\caption{%s}\n" %  formattedCaption
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(b"%s/blob_%d_%s" %
