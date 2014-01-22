@@ -949,6 +949,11 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Unterscheide T-shirt und DNA-Sequenz.',
                              'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
 
+    def testNaturalNumbers(self):
+        self.verifyExportsTo('1000 10000 100000 -1000 -10000 -100000',
+                             '1000 10\\,000 100\\,000 -1000 -10\\,000 -100\\,000')
+
+
     def testEscaping(self):
         self.verifyExportsTo('Do not allow \\dangerous commands!',
                              'Do not allow \\forbidden\\dangerous commands!')
