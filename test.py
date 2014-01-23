@@ -951,7 +951,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
                              'Bitte \\@\\acronym{ACRONYME} anders setzen.')
         self.verifyExportsTo('Unterscheide T-shirt und DNA-Sequenz.',
-                             'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
+                             'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.')
 
     def testEscaping(self):
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
@@ -975,9 +975,9 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
                              'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('10% sind ein Zehntel',
-                             '\\@10\\,\\% sind ein Zehntel')
+                             '10\\@\\% sind ein Zehntel')
         self.verifyExportsTo('Geschweifte Klammern { muessen } escaped werden.',
-                             'Geschweifte Klammern \\{ muessen \\} escaped werden.')
+                             'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
     def testPageReferences(self):
         self.verifyExportsTo('Auf S. 4 steht',
@@ -996,6 +996,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'A number range 6\\@--9 is nice.')
         self.verifyExportsTo('A number range 6 -- 9 is nice.',
                              'A number range 6\\@--9 is nice.')
+
     def testLawReferences(self):
         self.verifyExportsTo('In §§1ff. HGB steht',
                              'In \\@§§\\,1\\,ff. \\@\\acronym{HGB} steht')
@@ -1023,6 +1024,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
         self.verifyExportsTo('Einheiten: 21 kg, 4 MW, 1 GeV, 13-14 TeV, 5 °C, 25,4 mm.',
                              'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
+        # FIXME: in contradiction to testEscaping:
         self.verifyExportsTo('Prozentangaben: 5% oder 5 %.',
                              'Prozentangaben: \\@5\\,\\% oder \\@5\\,\\%.')
 
@@ -1061,6 +1063,7 @@ class DokuforgeTitleParserTests(DfTestCase):
         self.assertEquals(obtained, tex)
 
     def testEscaping(self):
+        # FIXME: synchronize with DokuforgeMicrotypeUnitTests
         self.verifyExportsTo('Do not allow \\dangerous commands!',
                              'Do not allow \\forbidden\\dangerous commands!')
         self.verifyExportsTo('\\\\ok',
@@ -1068,21 +1071,23 @@ class DokuforgeTitleParserTests(DfTestCase):
         self.verifyExportsTo('\\\\\\bad',
                              '\\\\\\forbidden\\bad')
         self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\% sind ein Zehntel')
+                             '10\\@\\% sind ein Zehntel')
         self.verifyExportsTo('f# ist eine Note',
-                             'f\# ist eine Note')
+                             'f\\@\\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
-                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+                             '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\&Co. ist vielleicht eine Firma')
+                             'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfTitleParser(df).toTex().strip()
         self.assertEquals(obtained, tex)
 
     def testEscaping(self):
+        # FIXME: synchronize with DokuforgeMicrotypeUnitTests
         self.verifyExportsTo('Do not allow \\dangerous commands!',
                              'Do not allow \\forbidden\\dangerous commands!')
         self.verifyExportsTo('\\\\ok',
@@ -1090,13 +1095,13 @@ class DokuforgeCaptionParserTests(DfTestCase):
         self.verifyExportsTo('\\\\\\bad',
                              '\\\\\\forbidden\\bad')
         self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\% sind ein Zehntel')
+                             '10\\@\\% sind ein Zehntel')
         self.verifyExportsTo('f# ist eine Note',
-                             'f\# ist eine Note')
+                             'f\\@\\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
-                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+                             '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\&Co. ist vielleicht eine Firma')
+                             'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 

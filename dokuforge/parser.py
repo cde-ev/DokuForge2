@@ -131,7 +131,7 @@ def acronym(word):
     wordlist = []
     for part in word.split('-'):
         if len(part) > 1 and part.isalpha() and part.isupper():
-            part = '\\acronym{%s}' % part
+            part = '\\@\\acronym{%s}' % part
         wordlist.append(part)
     yield '-'.join(wordlist)
 
@@ -219,19 +219,19 @@ def fullStop(word):
     else:
         yield word
 
-percent = Escaper("%", r"\%")
+percent = Escaper("%", r"\@\%")
 
-ampersand = Escaper("&", r"\&")
+ampersand = Escaper("&", r"\@\&")
 
-hashmark = Escaper("#", r"\#")
+hashmark = Escaper("#", r"\@\#")
 
-quote = Escaper("'", "\\@'")
+quote = Escaper("'", r"\@'")
 
-leftCurlyBracket = Escaper("{", "\\{")
+leftCurlyBracket = Escaper("{", r"\@\{")
 
-rightCurlyBracket = Escaper("}", "\\}")
+rightCurlyBracket = Escaper("}", r"\@\}")
 
-caret = Escaper("^", r"\caret{}")
+caret = Escaper("^", r"\@\caret{}")
 
 class EscapeCommands:
     """
@@ -340,7 +340,7 @@ class EscapeCommands:
 
 escapeCommands = EscapeCommands()
 
-escapeEndEdnote = Escaper(r"\end{ednote}", "|end{ednote}")
+escapeEndEdnote = Escaper(r"\end{ednote}", r"\@|end{ednote}")
 # Escpage the string \\end{ednote}, so that ednotes end
 # where we expect them to end.
 
