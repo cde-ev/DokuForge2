@@ -219,7 +219,7 @@ hashmark = Escaper("#", r"\#")
 
 caret = Escaper("^", r"\caret{}")
 
-quote = Escaper("'", "'")
+quote = Escaper("'", "\\@'")
 
 class EscapeCommands:
     """
@@ -230,7 +230,7 @@ class EscapeCommands:
     allowed = [
     # produced by our own microtypography or otherwise essential
     '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym', '\\&',
-    '\\#', '\\caret',
+    '\\#', '\\caret', '\\@',
     # other allowed commands; FIXME: complete and put to a separate file
     ## list of useful math commands mostly taken
     ## from 'A Guide To LaTeX' by Kopka
