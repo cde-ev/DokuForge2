@@ -135,7 +135,15 @@ def acronym(word):
         wordlist.append(part)
     yield '-'.join(wordlist)
 
-def  standardAbbreviations(word):
+def formatDate(word):
+    """
+    Do spacing for dates that consist of day, month and year.
+    """
+    date_pattern = '%s%s' % (2 * '([0-9]{2}\.) ?', '([0-9]{4})')
+    word = re.sub(date_pattern, '\\@\\1\\,\\@\\2\\,\\3', word)
+    yield word
+
+def standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
     """
@@ -358,7 +366,7 @@ def applyMicrotypefeatures(wordlist, featurelist):
 
 def defaultMicrotype(text):
     separators = ' \t,;()' # no point, might be in abbreviations
-    features = [SplitSeparators(separators),
+    features = [formatDate, SplitSeparators(separators),
                 splitEllipsis, percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket,
                 caret, # after curly brackets
