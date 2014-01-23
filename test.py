@@ -930,18 +930,20 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
     def testQuotes(self):
         self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                              'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
-        self.verifyExportsTo('"Am Anfang" ...',
-                             '"`Am Anfang"\' \\dots{}')
-        self.verifyExportsTo('... "vor Kommata", ...',
-                             '\\dots{} "`vor Kommata"\', \\dots{}')
-        self.verifyExportsTo('... und "am Ende".',
-                             '\\dots{} und "`am Ende"\'.')
+        self.verifyExportsTo('"Am Anfang" des Texts',
+                             '"`Am Anfang"\' des Texts')
+        self.verifyExportsTo('in der Mitte "vor Kommata", im Text',
+                             'in der Mitte "`vor Kommata"\', im Text')
+        self.verifyExportsTo('und "am Ende".',
+                             'und "`am Ende"\'.')
+        self.verifyExportsTo('Markus\' single quote',
+                             'Markus\\@\' single quote')
 
     def testAbbrev(self):
         self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                              'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
-        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., er...',
-                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., er\\dots{}')
+        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter',
+                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
@@ -961,16 +963,58 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              '\\\\ok')
         self.verifyExportsTo('\\\\\\bad',
                              '\\\\\\forbidden\\bad')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\% sind ein Zehntel')
+        self.verifyExportsTo('Geschweifte Klammern { muessen } escaped werden.',
+                             'Geschweifte Klammern \\{ muessen \\} escaped werden.')
         self.verifyExportsTo('f# ist eine Note',
-                             'f\# ist eine Note')
+                             'f\\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
                              '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\&Co. ist vielleicht eine Firma')
+                             'Heinemann\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+
+    def testPageReferences(self):
+        self.verifyExportsTo('Auf S. 4 steht',
+                             'Auf S.\\@\\,4 steht')
+        self.verifyExportsTo('Auf S.4-6 steht',
+                             'Auf S.\\@\\,4--6 steht')
+        self.verifyExportsTo('Auf S.4--6 steht',
+                             'Auf S.\\@\\,4--6 steht')
+        self.verifyExportsTo('Auf S. 4f steht',
+                             'Auf S.\\@\\,4\\,f. steht')
+        self.verifyExportsTo('Auf S. 4 ff. steht',
+                             'Auf S.\\@\\,4\\,ff. steht')
+
+    def testLawReferences(self):
+        self.verifyExportsTo('In §§1ff. HGB steht',
+                             'In \\@§§\\,1\\,ff. \\@\\acronym{HGB} steht')
+        self.verifyExportsTo('In § 1 f. HGB steht',
+                             'In \\@§\\,1\\,f. \\@\\acronym{HGB} steht')
+        self.verifyExportsTo('In § 1 Abs. 1,9 HGB steht',
+                             'In \\@§\\,1 \\@Abs.~1,\\,9 \\@\\acronym{HGB} steht')
+        self.verifyExportsTo('In § 1 Absatz 1 Satz 2 HGB steht',
+                             'In \\@§\\,1 \\@Absatz~1 \\@Satz~2 \\@\\acronym{HGB} steht')
+        self.verifyExportsTo('In §§ 10-15 HGB steht',
+                             'In \\@§§\\,10\\,--\\,15 \\@\\acronym{HGB} steht')
+
+    def testNumbers(self):
+        self.verifyExportsTo('We have 10000 and 2000 and 3000000 and -40000 and -5000.',
+                             'We have 10\\,000 and 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.')
+        self.verifyExportsTo('We are in the 21. regiment. And again we are in the 21.regiment.',
+                             'We are in the \\@21.\\,regiment. And again we are in the \\@21.\\,regiment.')
+
+    def testDates(self):
+        self.verifyExportsTo('Datum 19.10.2012 oder 19. 10. 2012.',
+                             'Datum \\@19.\\,\\@10.\\,2012 oder \\@19.\\,\\@10.\\,2012.')
+
+    def testUnits(self):
+        self.verifyExportsTo('Einheiten: 21kg, 4MW, 1GeV, 13-14TeV, 5°C, 25,4mm.',
+                             'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
+        self.verifyExportsTo('Einheiten: 21 kg, 4 MW, 1 GeV, 13-14 TeV, 5 °C, 25,4 mm.',
+                             'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
+        self.verifyExportsTo('Prozentangaben: 5% oder 5 %.',
+                             'Prozentangaben: \\@5\\,\\% oder \\@5\\,\\%.')
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
