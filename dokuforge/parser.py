@@ -175,7 +175,7 @@ def naturalNumbers(word):
         yield word
     else:
         if word.startswith('-'):
-            sign = '-'
+            sign = '\\@$-$'
             word = word[1:]
         else:
             sign = ''

@@ -951,11 +951,6 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Unterscheide T-shirt und DNA-Sequenz.',
                              'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
 
-    def testNaturalNumbers(self):
-        self.verifyExportsTo('1000 10000 100000 -1000 -10000 -100000',
-                             '1000 10\\,000 100\\,000 -1000 -10\\,000 -100\\,000')
-
-
     def testEscaping(self):
         self.verifyExportsTo('Do not allow \\dangerous commands!',
                              'Do not allow \\forbidden\\dangerous commands!')
@@ -999,8 +994,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'In \\@§§\\,10\\,--\\,15 \\@\\acronym{HGB} steht')
 
     def testNumbers(self):
-        self.verifyExportsTo('We have 10000 and 2000 and 3000000 and -40000 and -5000.',
-                             'We have 10\\,000 and 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.')
+        self.verifyExportsTo('We have 10000, 2000 and 3000000 and -40000 and -5000.',
+                             'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.')
         self.verifyExportsTo('We are in the 21. regiment. And again we are in the 21.regiment.',
                              'We are in the \\@21.\\,regiment. And again we are in the \\@21.\\,regiment.')
 
