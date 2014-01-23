@@ -217,9 +217,13 @@ ampersand = Escaper("&", r"\&")
 
 hashmark = Escaper("#", r"\#")
 
-caret = Escaper("^", r"\caret{}")
-
 quote = Escaper("'", "\\@'")
+
+leftCurlyBracket = Escaper("{", "\\{")
+
+rightCurlyBracket = Escaper("}", "\\}")
+
+caret = Escaper("^", r"\caret{}")
 
 class EscapeCommands:
     """
@@ -230,7 +234,7 @@ class EscapeCommands:
     allowed = [
     # produced by our own microtypography or otherwise essential
     '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym', '\\&',
-    '\\#', '\\caret', '\\@',
+    '\\#', '\\caret', '\\{', '\\}', '\\@',
     # other allowed commands; FIXME: complete and put to a separate file
     ## list of useful math commands mostly taken
     ## from 'A Guide To LaTeX' by Kopka
@@ -355,7 +359,9 @@ def applyMicrotypefeatures(wordlist, featurelist):
 def defaultMicrotype(text):
     separators = ' \t,;()' # no point, might be in abbreviations
     features = [SplitSeparators(separators),
-                splitEllipsis, percent, ampersand, caret, hashmark, quote,
+                splitEllipsis, percent, ampersand, hashmark, quote,
+                leftCurlyBracket, rightCurlyBracket,
+                caret, # after curly brackets
                 standardAbbreviations, fullStop, openQuotationMark,
                 closeQuotationMark, acronym, naturalNumbers, escapeCommands]
     return applyMicrotypefeatures([text], features)
