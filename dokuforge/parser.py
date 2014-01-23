@@ -125,11 +125,15 @@ class Escaper:
 def acronym(word):
     """
     All-capital words should be displayed in smaller font.
-    But don't mangle things like 'T-Shirt' or 'E-Mail'.
+    But don't mangle things like 'T-Shirt' or 'E-Mail' while
+    still allowing for compound nouns such as 'DNA-Sequenz'.
     """
-    if len(word) > 1 and word.isalpha() and word.isupper():
-        word = '\\acronym{%s}' % word
-    yield word
+    wordlist = []
+    for part in word.split('-'):
+        if len(part) > 1 and part.isalpha() and part.isupper():
+            part = '\\acronym{%s}' % part
+        wordlist.append(part)
+    yield '-'.join(wordlist)
 
 def  standardAbbreviations(word):
     """
@@ -163,25 +167,29 @@ def naturalNumbers(word):
     """
     Special Spacing for numbers.
     """
-    # FIXME negative numbers only work because '-' currently is a separator
     # FIXME we want some special spacing around numbers:
     #       - a number followed by a dot wants a thin space: '21.\,regiment'
     #       - a number followed by a unit wants a thin space: 'weight 67\,kg'
     #       - a number followed by a percent sign wants a thin space: '51\,\%'
-    if not re.match('^[0-9]+$', word):
+    if not re.match('^-?[0-9]+$', word):
         yield word
     else:
+        if word.startswith('-'):
+            sign = '-'
+            word = word[1:]
+        else:
+            sign = ''
         value = int(word)
         if value < 10000:
             # no special typesetting for 4 digits only
-            yield "%d" % value
+            yield "%s%d" % (sign, value)
         else:
             result = ''
             while value >= 1000:
                 threedigits = value % 1000
                 result = '\\,%03d%s' % (threedigits, result)
                 value = value // 1000
-            yield '%d%s' % (value, result)
+            yield '%s%d%s' % (sign, value, result)
 
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith('"'):
@@ -345,9 +353,7 @@ def applyMicrotypefeatures(wordlist, featurelist):
     return ''.join(wordlist)
 
 def defaultMicrotype(text):
-    # FIXME '-' should not be a separator so we are able to detect dashes '--'
-    #       however this will break NaturalNumbers for negative inputs
-    separators = ' \t,;()-' # no point, might be in abbreviations
+    separators = ' \t,;()' # no point, might be in abbreviations
     features = [SplitSeparators(separators),
                 splitEllipsis, percent, ampersand, caret, hashmark, quote,
                 standardAbbreviations, fullStop, openQuotationMark,
