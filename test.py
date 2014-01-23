@@ -944,30 +944,40 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
         self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter',
                              'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter')
+        self.verifyExportsTo('Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
+                             'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
-                             'Bitte \\acronym{ACRONYME} anders setzen.')
+                             'Bitte \\@\\acronym{ACRONYME} anders setzen.')
         self.verifyExportsTo('Unterscheide T-shirt und DNA-Sequenz.',
                              'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
 
     def testEscaping(self):
+        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
+                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
         self.verifyExportsTo('Do not allow \\dangerous commands!',
                              'Do not allow \\forbidden\\dangerous commands!')
+        self.verifyExportsTo('Do not allow $a \\dangerous{b}$ commands!',
+                             'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
         self.verifyExportsTo('\\\\ok',
                              '\\\\ok')
         self.verifyExportsTo('\\\\\\bad',
-                             '\\\\\\forbidden\\bad')
+                             '\\\\@\\forbidden\\bad')
+        self.verifyExportsTo('Escaping should also happen in math, like $\\evilmath$, but not $\\mathbb C$',
+                             'Escaping should also happen in math, like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo('$Trailing \\$',
+                             '$Trailing \\@\\ $')
+        self.verifyExportsTo('f# ist eine Note',
+                             'f\\@\\# ist eine Note')
+        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
+                             '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
+        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
+                             'Heinemann\\@\\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '\\@10\\,\\% sind ein Zehntel')
         self.verifyExportsTo('Geschweifte Klammern { muessen } escaped werden.',
                              'Geschweifte Klammern \\{ muessen \\} escaped werden.')
-        self.verifyExportsTo('f# ist eine Note',
-                             'f\\# ist eine Note')
-        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
-                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
-        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
     def testPageReferences(self):
         self.verifyExportsTo('Auf S. 4 steht',
@@ -981,6 +991,11 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Auf S. 4 ff. steht',
                              'Auf S.\\@\\,4\\,ff. steht')
 
+    def testSpacing(self):
+        self.verifyExportsTo('A number range 6--9 is nice.',
+                             'A number range 6\\@--9 is nice.')
+        self.verifyExportsTo('A number range 6 -- 9 is nice.',
+                             'A number range 6\\@--9 is nice.')
     def testLawReferences(self):
         self.verifyExportsTo('In §§1ff. HGB steht',
                              'In \\@§§\\,1\\,ff. \\@\\acronym{HGB} steht')
@@ -1000,8 +1015,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'We are in the \\@21.\\,regiment. And again we are in the \\@21.\\,regiment.')
 
     def testDates(self):
-        self.verifyExportsTo('Datum 19.10.2012 oder 19. 10. 2012.',
-                             'Datum \\@19.\\,\\@10.\\,2012 oder \\@19.\\,\\@10.\\,2012.')
+        self.verifyExportsTo('The date is 19.10.2012 or 19. 10. 2012 for good.',
+                             'The date is \\@19.\\,\\@10.\\,2012 or \\@19.\\,\\@10.\\,2012 for good.')
 
     def testUnits(self):
         self.verifyExportsTo('Einheiten: 21kg, 4MW, 1GeV, 13-14TeV, 5°C, 25,4mm.',
@@ -1030,7 +1045,7 @@ Bobby Tables...
 
 Bobby Tables...
 
-|end{ednote}
+\\@|end{ednote}
 
 \\herebedragons
 
