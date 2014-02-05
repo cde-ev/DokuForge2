@@ -975,21 +975,21 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
                              'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\@\\% sind ein Zehntel')
+                             '\\@10\\,\\% sind ein Zehntel')
         self.verifyExportsTo('Geschweifte Klammern { muessen } escaped werden.',
                              'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
     def testPageReferences(self):
         self.verifyExportsTo('Auf S. 4 steht',
-                             'Auf S.\\@\\,4 steht')
+                             'Auf \\@S.\\,4 steht')
         self.verifyExportsTo('Auf S.4-6 steht',
-                             'Auf S.\\@\\,4--6 steht')
+                             'Auf \\@S.\\,4--6 steht')
         self.verifyExportsTo('Auf S.4--6 steht',
-                             'Auf S.\\@\\,4--6 steht')
+                             'Auf \\@S.\\,4--6 steht')
         self.verifyExportsTo('Auf S. 4f steht',
-                             'Auf S.\\@\\,4\\,f. steht')
+                             'Auf \\@S.\\,4\\,f. steht')
         self.verifyExportsTo('Auf S. 4 ff. steht',
-                             'Auf S.\\@\\,4\\,ff. steht')
+                             'Auf \\@S.\\,4\\,ff. steht')
 
     def testSpacing(self):
         self.verifyExportsTo('A number range 6--9 is nice.',
