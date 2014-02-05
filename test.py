@@ -1012,8 +1012,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
     def testNumbers(self):
         self.verifyExportsTo('We have 10000, 2000 and 3000000 and -40000 and -5000.',
                              'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.')
-        self.verifyExportsTo('We are in the 21. regiment. And again we are in the 21.regiment.',
-                             'We are in the \\@21.\\,regiment. And again we are in the \\@21.\\,regiment.')
+        self.verifyExportsTo('We are in the 21. regiment and again in the 21.regiment.',
+                             'We are in the \\@21.\\,regiment and again in the \\@21.\\,regiment.')
 
     def testDates(self):
         self.verifyExportsTo('The date is 19.10.2012 or 19. 10. 2012 for good.',

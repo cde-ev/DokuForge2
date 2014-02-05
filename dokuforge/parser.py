@@ -155,6 +155,18 @@ def pageReferences(word):
     word = re.sub('S\. ?([0-9])', '\\@S.\\,\\1', word)
     yield word
 
+def numberSpacing(word):
+    """
+    Do spacing for number ranges and between numbers and words..
+    """
+    # ^6--9
+    word = re.sub('^([0-9]) ?-- ?([0-9])', '\\1\\@--\\2', word)
+    # 6--9 ([^,] is necessary to avoid collision with pageReferences)
+    word = re.sub('([^,])([0-9]) ?-- ?([0-9])', '\\1\\2\\@--\\3', word)
+    # 21. regiment
+    word = re.sub('([0-9]+\.) ?([a-z])', '\\@\\1\\,\\2', word)
+    yield word
+
 def standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
@@ -378,7 +390,8 @@ def applyMicrotypefeatures(wordlist, featurelist):
 
 def defaultMicrotype(text):
     separators = ' \t,;()' # no point, might be in abbreviations
-    features = [formatDate, pageReferences, SplitSeparators(separators),
+    features = [formatDate, pageReferences, numberSpacing,
+                SplitSeparators(separators),
                 splitEllipsis, percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket,
                 caret, # after curly brackets
