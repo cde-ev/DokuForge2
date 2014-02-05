@@ -148,11 +148,11 @@ def pageReferences(word):
     Do spacing for page references.
     """
     # S. 4--6
-    word = re.sub('S\. ?([0-9]*) ?-+ ?([0-9])', '\\@S.\\,\\1--\\2', word)
+    word = re.sub('S\. ?([0-9]+) ?-+ ?([0-9])', '\\@S.\\,\\1--\\2', word)
     # S. 4 ff.
-    word = re.sub('S\. ?([0-9]*) ?(f+)\.? ', '\\@S.\\,\\1\\,\\2. ', word)
+    word = re.sub('S\. ?([0-9]+) ?(f+)\.? ', '\\@S.\\,\\1\\,\\2. ', word)
     # S. 4
-    word = re.sub('S\. ?([0-9])', '\\@S.\\,\\1', word)
+    word = re.sub('S\. ?([0-9]+)', '\\@S.\\,\\1', word)
     yield word
 
 def numberSpacing(word):
