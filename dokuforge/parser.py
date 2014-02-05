@@ -143,6 +143,18 @@ def formatDate(word):
     word = re.sub(date_pattern, '\\@\\1\\,\\@\\2\\,\\3', word)
     yield word
 
+def pageReferences(word):
+    """
+    Do spacing for page references.
+    """
+    # S. 4--6
+    word = re.sub('S\. ?([0-9]*) ?-+ ?([0-9])', '\\@S.\\,\\1--\\2', word)
+    # S. 4 ff.
+    word = re.sub('S\. ?([0-9]*) ?(f+)\.? ', '\\@S.\\,\\1\\,\\2. ', word)
+    # S. 4
+    word = re.sub('S\. ?([0-9])', '\\@S.\\,\\1', word)
+    yield word
+
 def standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
@@ -366,7 +378,7 @@ def applyMicrotypefeatures(wordlist, featurelist):
 
 def defaultMicrotype(text):
     separators = ' \t,;()' # no point, might be in abbreviations
-    features = [formatDate, SplitSeparators(separators),
+    features = [formatDate, pageReferences, SplitSeparators(separators),
                 splitEllipsis, percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket,
                 caret, # after curly brackets
