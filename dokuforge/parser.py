@@ -505,7 +505,7 @@ class PMath(PTree):
         self.text = PLeaf(text)
 
     def debug(self):
-        return ('math', self.text)
+        return ('math', self.text.text)
 
     def toTex(self):
         return '$%1s$' % mathMicrotype(self.text.text)
