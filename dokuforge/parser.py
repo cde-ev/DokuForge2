@@ -347,7 +347,7 @@ def applyMicrotypefeatures(wordlist, featurelist):
 def defaultMicrotype(text):
     # FIXME '-' should not be a separator so we are able to detect dashes '--'
     #       however this will break NaturalNumbers for negative inputs
-    separators = ' \t,;()-' # no point, might be in abbreviations
+    separators = ' \t,;()-\n' # no point, might be in abbreviations
     features = [SplitSeparators(separators),
                 splitEllipsis, percent, ampersand, caret, hashmark, quote,
                 standardAbbreviations, fullStop, openQuotationMark,

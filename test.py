@@ -936,6 +936,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              '\\dots{} "`vor Kommata"\', \\dots{}')
         self.verifyExportsTo('... und "am Ende".',
                              '\\dots{} und "`am Ende"\'.')
+        self.verifyExportsTo('"Vor und"\n"nach" Zeilenumbrüchen.',
+                             '"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
 
     def testAbbrev(self):
         self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
