@@ -9,7 +9,6 @@
 import gzip
 from httplib import HTTPMessage
 import io
-import mechanize
 import os
 import re
 import shutil
@@ -17,9 +16,11 @@ import sys
 import random
 import tempfile
 import unittest
-from urllib import addinfourl, unquote
-from urllib2 import BaseHandler, ProxyHandler
+from urlparse import urljoin
+from urllib import addinfourl, unquote, urlencode
+from urllib2 import BaseHandler, ProxyHandler, Request, HTTPCookieProcessor
 from wsgiref.validate import validator
+import lxml.html
 
 import createexample
 from dokuforge import buildapp
@@ -57,10 +58,10 @@ class WSGIHandler(BaseHandler):
     def http_open(self, request):
         environ = self.environ_base.copy()
         environ["REQUEST_METHOD"] = request.get_method()
-        environ["SERVER_NAME"] = request.get_host()
+        environ["SERVER_NAME"] = request.get_host().encode("ascii")
         environ["SERVER_PORT"] = "%d" % (request.port or 80)
         environ["SCRIPT_NAME"] = ""
-        environ["PATH_INFO"] = unquote(request.get_selector())
+        environ["PATH_INFO"] = unquote(request.get_selector()).encode("ascii")
         environ["QUERY_STRING"] = "" # FIXME
         if request.has_data():
             reqdata = request.get_data()
@@ -97,18 +98,79 @@ class WSGIHandler(BaseHandler):
         resp.msg = msg
         return resp
 
-try:
-    mechanize_Item = mechanize.Item
-except AttributeError:
-    from ClientForm import Item as mechanize_Item
+class MechanizeResponse(object):
+    def __init__(self, message):
+        self.message = message
 
-class WSGIBrowser(mechanize.Browser):
+    def get_data(self):
+        pos = self.message.fp.tell()
+        data = self.message.fp.read()
+        self.message.fp.seek(pos)
+        return data
+
+class MechanizeControl(object):
+    def __init__(self, form, name):
+        self.form = form
+        self.name = name
+
+    def add_file(self, filelike, filename=None):
+        self.form[self.name] = filelike.read()
+
+class MechanizeForm(object):
+    def __init__(self, browser, form):
+        self.browser = browser
+        self.form = form
+
+    def __setitem__(self, key, value):
+        self.form.fields[key] = value
+
+    def click(self, label=None):
+        assert self.form.method == "POST"
+        url = self.form.action or self.form.base_url
+        values = self.form.form_values()
+        for el in self.form.fields.inputs:
+            if el.tag == "input" and el.type == "submit" and (label is None or el.value == label):
+                values.append((el.name, el.value))
+                break
+        data = urlencode([(k, v.encode("utf-8")) for k, v in values])
+        return Request(url, data)
+
+    def find_control(self, name):
+        return MechanizeControl(self, name)
+
+class WSGIBrowser(object):
     def __init__(self, application):
-        self.handler_classes = mechanize.Browser.handler_classes.copy()
-        # disable all proxy processing induced by environment http_proxy
-        self.handler_classes["_proxy"] = lambda: ProxyHandler({})
-        self.handler_classes["http"] = WSGIHandler.creator(application)
-        mechanize.Browser.__init__(self)
+        self.handler = WSGIHandler(application)
+        self.cookieprocessor = HTTPCookieProcessor()
+        self.cur_request = self.cur_response = self.cur_tree = None
+
+    def open(self, url):
+        print url
+        if not isinstance(url, Request):
+            url = Request(url)
+        self.cookieprocessor.http_request(url)
+        self.cur_request = url
+        self.cur_response = self.handler.http_open(url)
+        self.cookieprocessor.http_response(self.cur_request, self.cur_response)
+        base_url = self.cur_request.get_full_url()
+        self.cur_tree = lxml.html.document_fromstring(self.response().get_data(),
+                                                      base_url=base_url)
+
+    def response(self):
+        return MechanizeResponse(self.cur_response)
+
+    def forms(self):
+        return [MechanizeForm(self, f)
+                for f in self.cur_tree.forms]
+
+    def click_link(self, text=None, url_regex=None):
+        for element, attribute, link, pos in self.cur_tree.iterlinks():
+            if text is not None and element.text == text:
+                return urljoin(self.cur_request.get_full_url(), link)
+            if url_regex:
+                url = urljoin(self.cur_request.get_full_url(), link)
+                if url_regex.search(url):
+                    return url
 
 teststrings = [
     (u"simple string", u"simple string"),
@@ -392,7 +454,7 @@ class DokuforgeWebTests(DfTestCase):
         for (inputstr, outputstr) in teststrings:
             self.br.open(self.br.click_link(text="Editieren"))
             form = list(self.br.forms())[1]
-            form["content"] = inputstr.encode("utf8")
+            form["content"] = inputstr
             self.br.open(form.click(label="Speichern und Beenden"))
             self.assertTrue(outputstr.encode("utf8") in self.get_data())
         self.is_loggedin()
@@ -448,7 +510,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.br.click_link(url_regex=re.compile("/.*title$")))
         for (inputstr, outputstr) in teststrings:
             form = list(self.br.forms())[1]
-            form["content"] = inputstr.encode("utf8")
+            form["content"] = inputstr
             self.br.open(form.click(label="Speichern und Editieren"))
             self.assertTrue(outputstr.encode("utf8") in self.get_data())
         self.is_loggedin()
@@ -485,7 +547,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.br.open(self.br.click_link(url_regex=re.compile("/.*title$")))
         for (inputstr, outputstr) in teststrings:
             form = list(self.br.forms())[1]
-            form["content"] = inputstr.encode("utf8")
+            form["content"] = inputstr
             self.br.open(form.click(label="Speichern und Editieren"))
             self.assertTrue(outputstr.encode("utf8") in self.get_data())
         self.is_loggedin()
