@@ -155,6 +155,24 @@ def pageReferences(word):
     word = re.sub('S\. ?([0-9]+)', '\\@S.\\,\\1', word)
     yield word
 
+def lawReferences(word):
+    """
+    Do spacing for law references.
+    """
+    # §§ 1 ff. --> §§ 1\,ff.
+    word = re.sub('([§]+ ?[0-9]+) ?(f+)\.? ', '\\1\\,\\2. ', word)
+    # §§ 10-15 --> §§ 10\,--\,15
+    word = re.sub('([§]+ ?[0-9]*)[ -]*-[ -]*([0-9])', '\\1\\,--\\,\\2', word)
+    # § 1 Satz 2 --> § 1 Satz~2
+    word = re.sub('([§]+ ?[0-9]+ *[Absatz.]* *[0-9]*) (Satz) ?([0-9])',
+            '\\1 \\@\\2~\\3', word)
+    # § 1 Abs. 1 --> § 1 Abs.~1
+    word = re.sub('([§]+ ?[0-9]+) (Abs\.|Absatz) ?([0-9])',
+            '\\1 \\@\\2~\\3', word)
+    # § 1 --> §\,1
+    word = re.sub('([§]+) ?([0-9]+)', '\\@\\1\\,\\2', word)
+    yield word
+
 def numberSpacing(word):
     """
     Do spacing for number ranges and between numbers and words..
@@ -390,7 +408,7 @@ def applyMicrotypefeatures(wordlist, featurelist):
 
 def defaultMicrotype(text):
     separators = ' \t,;()\n' # no point, might be in abbreviations
-    features = [formatDate, pageReferences, numberSpacing,
+    features = [formatDate, pageReferences, lawReferences, numberSpacing,
                 SplitSeparators(separators),
                 splitEllipsis, percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket,
