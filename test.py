@@ -991,9 +991,9 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Auf S. 4 steht',
                              'Auf \\@S.\\,4 steht')
         self.verifyExportsTo('Auf S.4-6 steht',
-                             'Auf \\@S.\\,4--6 steht')
+                             'Auf \\@S.\\,4\\@--6 steht')
         self.verifyExportsTo('Auf S.4--6 steht',
-                             'Auf \\@S.\\,4--6 steht')
+                             'Auf \\@S.\\,4\\@--6 steht')
         self.verifyExportsTo('Auf S. 4f steht',
                              'Auf \\@S.\\,4\\,f. steht')
         self.verifyExportsTo('Auf S. 4 ff. steht',
@@ -1044,19 +1044,16 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'The date is \\@19.\\,\\@10.\\,2012 or \\@19.\\,\\@10.\\,2012 for good.')
 
     def testUnits(self):
-        #<<<<<<< HEAD
-        self.verifyExportsTo('Einheiten: 21kg, 4MW, 1GeV, 13-14TeV, 5°C, 25,4mm.',
-                             'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
-        self.verifyExportsTo('Einheiten: 21 kg, 4 MW, 1 GeV, 13-14 TeV, 5 °C, 25,4 mm.',
-                             'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
-        self.verifyExportsTo('Prozentangaben: 5% oder 5 %.',
-                             'Prozentangaben: \\@5\\,\\% oder \\@5\\,\\%.')
-        #=======
-        self.verifyExportsTo('Here come some units: 21kg and 4MW or 21 kg and 4 MW are nice examples.',
-                             'Here come some units: \\@21\\,kg and \\@4\\,MW or \\@21\\,kg and \\@4\\,MW are nice examples.')
-        self.verifyExportsTo('Fractional stuff like 5% should be handled nicely as with 5 % too.',
-                             'Fractional stuff like \\@5\\,\\% should be handled nicely as with \\@5\\,\\% too.')
-        #>>>>>>> feature-microtype-fixes
+        self.verifyExportsTo('Units: 21kg, 4MW, 1GeV, 13-14TeV, 5°C.',
+                             'Units: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C.')
+        self.verifyExportsTo('Decimal number with unit: 25,4mm.',
+                             'Decimal number with unit: 25,4\\,mm.')
+        self.verifyExportsTo('Units: 21 kg, 4 MW, 1 GeV, 13-14 TeV, 5 °C.',
+                             'Units: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C.')
+        self.verifyExportsTo('Decimal number with unit: 25,4 mm.',
+                             'Decimal number with unit: 25,4\\,mm.')
+        self.verifyExportsTo('Percentages like 5% should be handled as nicely as 5 %.',
+                             'Percentages like \\@5\\,\\% should be handled as nicely as \\@5\\,\\%.')
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(

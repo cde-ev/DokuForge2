@@ -178,9 +178,7 @@ def numberSpacing(word):
     Do spacing for number ranges and between numbers and words.
     """
     # ^6--9
-    word = re.sub('^([0-9]) ?-- ?([0-9])', '\\1\\@--\\2', word)
-    # 6--9 ([^,] is necessary to avoid collision with pageReferences)
-    word = re.sub('([^,])([0-9]) ?-- ?([0-9])', '\\1\\2\\@--\\3', word)
+    word = re.sub('([0-9]) ?-{1,2} ?([0-9])', '\\1\\@--\\2', word)
     # 21. regiment
     word = re.sub('([0-9]+\.) ?([a-z])', '\\@\\1\\,\\2', word)
     yield word
