@@ -943,13 +943,17 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
 
     def testAbbrev(self):
         self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                             'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
-        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., der Exporter',
-                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter')
+                             'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
+        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
+                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h.,')
         self.verifyExportsTo('Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
                              'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.')
         self.verifyExportsTo('Dots in math $a_1,...,a_n$ should work without spacing.',
                              'Dots in math $a_1,\\dots{},a_n$ should work without spacing.')
+        self.verifyExportsTo('Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
+                             'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
+        self.verifyExportsTo('Es ist z. B. so, s. o., s. u., etc., dass wir, d. h., der Exporter bzw. oder ca. oder so.',
+                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h., der Exporter \\@bzw oder \\@ca. oder so.')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
@@ -958,8 +962,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.')
 
     def testEscaping(self):
-        self.verifyExportsTo('Do not allow \\dangerous commands!',
-                             'Do not allow \\@\\forbidden\\dangerous commands!')
+        self.verifyExportsTo('Forbid \\mathbb and \\dangerous outside math.',
+                             'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.')
         self.verifyExportsTo('Do not allow $a \\dangerous{b}$ commands!',
                              'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
         self.verifyExportsTo('\\\\ok, $\\\\ok$',
@@ -998,6 +1002,10 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'A number range 6\\@--9 is nice.')
         self.verifyExportsTo('A number range 6 -- 9 is nice.',
                              'A number range 6\\@--9 is nice.')
+        self.verifyExportsTo('Now we do -- with all due respect -- an intersperse. Followed by an afterthougt -- here it comes. And another afterthought -- here you go. And a third afterthought -- again here we go. And a final -- even ultimate -- interjection.',
+                             'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by an afterthougt\\@~-- here it comes. And another afterthought\\@~-- here you go. And a third afterthought\\@~-- again here we go. And a final \\@--~even ultimate\\@~-- interjection.')
+        self.verifyExportsTo('Now we do--with all due respect--an intersperse. Followed by an afterthougt--here it comes. And another afterthought--here you go. And a third afterthought--again here we go. And a final--even ultimate--interjection.',
+                             'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by an afterthougt\\@~-- here it comes. And another afterthought\\@~-- here you go. And a third afterthought\\@~-- again here we go. And a final \\@--~even ultimate\\@~-- interjection.')
         self.verifyExportsTo('Here come some dots ...',
                              'Here come some dots\\@~\\dots{}')
         self.verifyExportsTo('Here come some dots...',
@@ -1014,11 +1022,13 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'In \\@§§\\,1\\,ff. \\@\\acronym{HGB} steht')
         self.verifyExportsTo('In § 1 f. HGB steht',
                              'In \\@§\\,1\\,f. \\@\\acronym{HGB} steht')
+
         # FIXME: not implemented due to escaping of 1,\\,9
         #self.verifyExportsTo('In § 1 Abs. 1,9 HGB steht',
         #                     'In \\@§\\,1 \\@Abs.~1,\\,9 \\@\\acronym{HGB} steht')
         self.verifyExportsTo('In § 1 Abs. 1 HGB steht',
                              'In \\@§\\,1 \\@Abs.~1 \\@\\acronym{HGB} steht')
+
         self.verifyExportsTo('In § 1 Absatz 1 HGB steht',
                              'In \\@§\\,1 \\@Absatz~1 \\@\\acronym{HGB} steht')
         self.verifyExportsTo('In § 1 Absatz 1 Satz 2 HGB steht',
@@ -1037,12 +1047,19 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'The date is \\@19.\\,\\@10.\\,2012 or \\@19.\\,\\@10.\\,2012 for good.')
 
     def testUnits(self):
+        #<<<<<<< HEAD
         self.verifyExportsTo('Einheiten: 21kg, 4MW, 1GeV, 13-14TeV, 5°C, 25,4mm.',
                              'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
         self.verifyExportsTo('Einheiten: 21 kg, 4 MW, 1 GeV, 13-14 TeV, 5 °C, 25,4 mm.',
                              'Einheiten: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C, 25,4\\,mm.')
         self.verifyExportsTo('Prozentangaben: 5% oder 5 %.',
                              'Prozentangaben: \\@5\\,\\% oder \\@5\\,\\%.')
+        #=======
+        self.verifyExportsTo('Here come some units: 21kg and 4MW or 21 kg and 4 MW are nice examples.',
+                             'Here come some units: \\@21\\,kg and \\@4\\,MW or \\@21\\,kg and \\@4\\,MW are nice examples.')
+        self.verifyExportsTo('Fractional stuff like 5% should be handled nicely as with 5 % too.',
+                             'Fractional stuff like \\@5\\,\\% should be handled nicely as with \\@5\\,\\% too.')
+        #>>>>>>> feature-microtype-fixes
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
