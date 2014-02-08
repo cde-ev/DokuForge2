@@ -952,8 +952,10 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'Dots in math $a_1,\\dots{},a_n$ should work without spacing.')
         self.verifyExportsTo('Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
                              'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
-        self.verifyExportsTo('Es ist z. B. so, s. o., s. u., etc., dass wir, d. h., der Exporter bzw. oder ca. oder so.',
-                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h., der Exporter \\@bzw oder \\@ca. oder so.')
+        self.verifyExportsTo('Es ist z. B. so, s. o., s. u., etc., dass wir,',
+                             'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir,')
+        self.verifyExportsTo('d. h., der Exporter bzw. oder ca. oder so.',
+                             '\\@d.\\,h., der Exporter \\@bzw. oder \\@ca. oder so.')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',

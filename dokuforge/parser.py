@@ -200,6 +200,21 @@ def percentSpacing(word):
     word = re.sub('([0-9]+) ?%', '\\@\\1\\,%', word)
     yield word
 
+def unspaceAbbreviations(word):
+    """
+    Remove single spaces within known abbreviations.
+    """
+    word = word.replace('d. h.', 'd.h.')
+    word = word.replace(' n. Chr.', ' n.Chr.')
+    #FIXME: the following breaks the non-unicode unittests
+    #word = word.replace(u' o. Ä.', u' o.Ä.')
+    word = word.replace(' s. o.', ' s.o.')
+    word = word.replace(' s. u.', ' s.u.')
+    word = word.replace(' u. a.', ' u.a.')
+    word = word.replace(' v. Chr.', ' v.Chr.')
+    word = word.replace(' z. B.', ' z.B.')
+    yield word
+
 def standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
@@ -210,7 +225,7 @@ def standardAbbreviations(word):
         'd.h.' : '\\@d.\\,h.',
         'etc.' : '\\@etc.',
         'n.Chr.' : '\\@n.\\,Chr.',
-        u'o.Ä.' : u'\\@o.\,Ä.',
+        u'o.Ä.' : u'\\@o.\\,Ä.',
         's.o.' : '\\@s.\\,o.',
         'sog.' : '\\@sog.',
         's.u.' : '\\@s.\\,u.',
@@ -433,7 +448,8 @@ def applyMicrotypefeatures(wordlist, featurelist):
 def defaultMicrotype(text):
     separators = ' \t,;()\n' # no point, might be in abbreviations
     features = [formatDate, pageReferences, lawReferences, numberSpacing,
-                ellipsisSpacing, percentSpacing, SplitSeparators(separators),
+                ellipsisSpacing, percentSpacing, unspaceAbbreviations,
+                SplitSeparators(separators),
                 percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket,
                 caret, splitEllipsis, # after curly brackets
