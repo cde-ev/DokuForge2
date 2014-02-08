@@ -961,18 +961,16 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.')
 
     def testEscaping(self):
-        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
         self.verifyExportsTo('Do not allow \\dangerous commands!',
-                             'Do not allow \\forbidden\\dangerous commands!')
+                             'Do not allow \\@\\forbidden\\dangerous commands!')
         self.verifyExportsTo('Do not allow $a \\dangerous{b}$ commands!',
                              'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
-        self.verifyExportsTo('\\\\ok',
-                             '\\\\ok')
-        self.verifyExportsTo('\\\\\\bad',
-                             '\\\\@\\forbidden\\bad')
-        self.verifyExportsTo('Escaping should also happen in math, like $\\evilmath$, but not $\\mathbb C$',
-                             'Escaping should also happen in math, like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo('\\\\ok, $\\\\ok$',
+                             '\\\\ok, $\\\\ok$')
+        self.verifyExportsTo('$\\\\\\bad$',
+                             '$\\\\\\@\\forbidden\\bad$')
+        self.verifyExportsTo('Escaping in math like $\\evilmath$, but not $\\mathbb C$',
+                             'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
         self.verifyExportsTo('$Trailing \\$',
                              '$Trailing \\@\\ $')
         self.verifyExportsTo('f# ist eine Note',
@@ -1084,23 +1082,28 @@ class DokuforgeTitleParserTests(DfTestCase):
         self.assertEquals(obtained, tex)
 
     def testEscaping(self):
-        # FIXME: synchronize with DokuforgeMicrotypeUnitTests
         self.verifyExportsTo('Do not allow \\dangerous commands!',
-                             'Do not allow \\forbidden\\dangerous commands!')
-        self.verifyExportsTo('\\\\ok',
-                             '\\\\ok')
-        self.verifyExportsTo('\\\\\\bad',
-                             '\\\\\\forbidden\\bad')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\@\\% sind ein Zehntel')
+                             'Do not allow \\@\\forbidden\\dangerous commands!')
+        self.verifyExportsTo('Do not allow $a \\dangerous{b}$ commands!',
+                             'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
+        self.verifyExportsTo('\\\\ok, $\\\\ok$',
+                             '\\\\ok, $\\\\ok$')
+        self.verifyExportsTo('$\\\\\\bad$',
+                             '$\\\\\\@\\forbidden\\bad$')
+        self.verifyExportsTo('Escaping in math like $\\evilmath$, but not $\\mathbb C$',
+                             'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo('$Trailing \\$',
+                             '$Trailing \\@\\ $')
         self.verifyExportsTo('f# ist eine Note',
                              'f\\@\\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
                              '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
                              'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '\\@10\\,\\% sind ein Zehntel')
+        self.verifyExportsTo('Geschweifte Klammern { muessen } escaped werden.',
+                             'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
@@ -1108,23 +1111,28 @@ class DokuforgeCaptionParserTests(DfTestCase):
         self.assertEquals(obtained, tex)
 
     def testEscaping(self):
-        # FIXME: synchronize with DokuforgeMicrotypeUnitTests
         self.verifyExportsTo('Do not allow \\dangerous commands!',
-                             'Do not allow \\forbidden\\dangerous commands!')
-        self.verifyExportsTo('\\\\ok',
-                             '\\\\ok')
-        self.verifyExportsTo('\\\\\\bad',
-                             '\\\\\\forbidden\\bad')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\@\\% sind ein Zehntel')
+                             'Do not allow \\@\\forbidden\\dangerous commands!')
+        self.verifyExportsTo('Do not allow $a \\dangerous{b}$ commands!',
+                             'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
+        self.verifyExportsTo('\\\\ok, $\\\\ok$',
+                             '\\\\ok, $\\\\ok$')
+        self.verifyExportsTo('$\\\\\\bad$',
+                             '$\\\\\\@\\forbidden\\bad$')
+        self.verifyExportsTo('Escaping in math like $\\evilmath$, but not $\\mathbb C$',
+                             'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo('$Trailing \\$',
+                             '$Trailing \\@\\ $')
         self.verifyExportsTo('f# ist eine Note',
                              'f\\@\\# ist eine Note')
         self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
                              '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
                              'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+        self.verifyExportsTo('10% sind ein Zehntel',
+                             '\\@10\\,\\% sind ein Zehntel')
+        self.verifyExportsTo('Geschweifte Klammern { muessen } escaped werden.',
+                             'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
 if __name__ == '__main__':
     unittest.main()
