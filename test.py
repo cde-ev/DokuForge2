@@ -1005,9 +1005,9 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('A number range 6 -- 9 is nice.',
                              'A number range 6\\@--9 is nice.')
         self.verifyExportsTo('Now we do -- with all due respect -- an intersperse. Followed by an afterthougt -- here it comes. And another afterthought -- here you go. And a third afterthought -- again here we go. And a final -- even ultimate -- interjection.',
-                             'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by an afterthougt\\@~-- here it comes. And another afterthought\\@~-- here you go. And a third afterthought\\@~-- again here we go. And a final \\@--~even ultimate\\@~-- interjection.')
+                             'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by\nan afterthougt\\@~-- here it comes. And another afterthought\\@~-- here\nyou go. And a third afterthought\\@~-- again here we go. And a final\n\\@--~even ultimate\\@~-- interjection.')
         self.verifyExportsTo('Now we do--with all due respect--an intersperse. Followed by an afterthougt--here it comes. And another afterthought--here you go. And a third afterthought--again here we go. And a final--even ultimate--interjection.',
-                             'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by an afterthougt\\@~-- here it comes. And another afterthought\\@~-- here you go. And a third afterthought\\@~-- again here we go. And a final \\@--~even ultimate\\@~-- interjection.')
+                             'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by\nan afterthougt\\@~-- here it comes. And another afterthought\\@~-- here\nyou go. And a third afterthought\\@~-- again here we go. And a final\n\\@--~even ultimate\\@~-- interjection.')
         self.verifyExportsTo('Here come some dots ...',
                              'Here come some dots\\@~\\dots{}')
         self.verifyExportsTo('Here come some dots...',

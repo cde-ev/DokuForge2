@@ -135,6 +135,22 @@ def acronym(word):
         wordlist.append(part)
     yield '-'.join(wordlist)
 
+def formatDashes(word):
+    """
+    Insert protected spaces before or after dashes.
+    """
+    # for correct spacing " -- " but avoid non-spaced number ranges
+    word = re.sub('([^.0-9]) -- ([^-.]+) -- ',
+                      '\\1 \\@--~\\2\\@~-- ', word)
+    word = re.sub('([^.0-9]) -- ',
+                     '\\1\\@~-- ', word)
+    # for missing spacing only substitute carefully
+    word = re.sub('([^.0-9- @~])--([^- ][^-.]+)--([^0-9- ~])',
+                        '\\1 \\@--~\\2\\@~-- \\3', word)
+    word = re.sub('([^.0-9- @~])--([^0-9- ~])',
+                        '\\1\\@~-- \\2', word)
+    yield word
+
 def formatDate(word):
     """
     Do spacing for dates that consist of day, month and year.
@@ -445,7 +461,8 @@ def applyMicrotypefeatures(wordlist, featurelist):
 
 def defaultMicrotype(text):
     separators = ' \t\n();,' # no point, might be in abbreviations
-    features = [SplitSeparators(separators[1:]), # separators without ' '
+    features = [formatDashes,
+                SplitSeparators(separators[1:]), # separators without ' '
                 formatDate, pageReferences, lawReferences, numberSpacing,
                 ellipsisSpacing, percentSpacing, unspaceAbbreviations,
                 SplitSeparators(separators[:-1]), # separators without ','
