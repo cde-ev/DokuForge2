@@ -144,7 +144,7 @@ class TarWriterTests(DfTestCase):
         tar = tar + tarwriter.addChunk('myFile', 'contents')
         tar = tar + tarwriter.close()
         self.assertIsTar(tar)
-        
+
     def testGzip(self):
         tarwriter = TarWriter(gzip=True)
         tar = b''
@@ -836,7 +836,7 @@ class CourseTests(DfTestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')
         self.course = Course(os.path.join(self.tmpdir, b'example'))
-        
+
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
 
@@ -859,7 +859,7 @@ class AcademyTest(DfTestCase):
         self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
         self.academy.createCourse(u'new01', u'erster neuer Kurs')
         self.academy.createCourse(u'new02', u'zweiter neuer Kurs')
-        
+
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
 
