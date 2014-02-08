@@ -175,7 +175,7 @@ def lawReferences(word):
 
 def numberSpacing(word):
     """
-    Do spacing for number ranges and between numbers and words..
+    Do spacing for number ranges and between numbers and words.
     """
     # ^6--9
     word = re.sub('^([0-9]) ?-- ?([0-9])', '\\1\\@--\\2', word)
@@ -186,8 +186,18 @@ def numberSpacing(word):
     yield word
 
 def ellipsisSpacing(word):
+    """
+    Do spacing for ellipsis.
+    """
     word = re.sub('\[\.\.\.\]', '[\\@$...$]', word)
     word = re.sub('([^$]) ?\.\.\. ?', '\\1\\@~... ', word)
+    yield word
+
+def percentSpacing(word):
+    """
+    Do spacing for the percent sign.
+    """
+    word = re.sub('([0-9]+) ?%', '\\@\\1\\,%', word)
     yield word
 
 def standardAbbreviations(word):
@@ -218,9 +228,7 @@ def naturalNumbers(word):
     Special Spacing for numbers.
     """
     # FIXME we want some special spacing around numbers:
-    #       - a number followed by a dot wants a thin space: '21.\,regiment'
     #       - a number followed by a unit wants a thin space: 'weight 67\,kg'
-    #       - a number followed by a percent sign wants a thin space: '51\,\%'
     if not re.match('^-?[0-9]+$', word):
         yield word
     else:
@@ -268,7 +276,7 @@ def fullStop(word):
     else:
         yield word
 
-percent = Escaper("%", r"\@\%")
+percent = Escaper("%", r"\%")
 
 ampersand = Escaper("&", r"\@\&")
 
@@ -418,7 +426,7 @@ def applyMicrotypefeatures(wordlist, featurelist):
 def defaultMicrotype(text):
     separators = ' \t,;()\n' # no point, might be in abbreviations
     features = [formatDate, pageReferences, lawReferences, numberSpacing,
-                ellipsisSpacing, SplitSeparators(separators),
+                ellipsisSpacing, percentSpacing, SplitSeparators(separators),
                 percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket,
                 caret, splitEllipsis, # after curly brackets
