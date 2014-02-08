@@ -930,12 +930,14 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
     def testQuotes(self):
         self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                              'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
-        self.verifyExportsTo('"Am Anfang" des Texts',
-                             '"`Am Anfang"\' des Texts')
-        self.verifyExportsTo('in der Mitte "vor Kommata", im Text',
-                             'in der Mitte "`vor Kommata"\', im Text')
-        self.verifyExportsTo('und "am Ende".',
-                             'und "`am Ende"\'.')
+        self.verifyExportsTo('"Am Anfang" ...',
+                             '"`Am Anfang"\' \\dots{}')
+        self.verifyExportsTo('... "vor Kommata", ...',
+                             '\\dots{} "`vor Kommata"\', \\dots{}')
+        self.verifyExportsTo('... und "am Ende".',
+                             '\\dots{} und "`am Ende"\'.')
+        self.verifyExportsTo('"Vor und"\n"nach" Zeilenumbrüchen.',
+                             '"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
         self.verifyExportsTo('Markus\' single quote',
                              'Markus\\@\' single quote')
 

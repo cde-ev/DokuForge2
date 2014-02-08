@@ -389,7 +389,7 @@ def applyMicrotypefeatures(wordlist, featurelist):
     return ''.join(wordlist)
 
 def defaultMicrotype(text):
-    separators = ' \t,;()' # no point, might be in abbreviations
+    separators = ' \t,;()\n' # no point, might be in abbreviations
     features = [formatDate, pageReferences, numberSpacing,
                 SplitSeparators(separators),
                 splitEllipsis, percent, ampersand, hashmark, quote,
