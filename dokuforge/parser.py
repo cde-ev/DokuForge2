@@ -241,6 +241,13 @@ def naturalNumbers(word):
                 value = value // 1000
             yield '%s%d%s' % (sign, value, result)
 
+def trailingBackslash(word):
+    """
+    Escape trailing backslashes.
+    """
+    word = re.sub('\\\\$', '\\@\\ ', word)
+    yield word
+
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith('"'):
         yield '"`'
@@ -422,7 +429,7 @@ def defaultMicrotype(text):
 def mathMicrotype(text):
     # FIXME we want to substitute '...' -> '\dots{}' in math mode too
     features = [percent, hashmark, splitEllipsis, naturalNumbers,
-            escapeCommands]
+            trailingBackslash, escapeCommands]
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
