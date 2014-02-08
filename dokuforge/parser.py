@@ -446,10 +446,11 @@ def applyMicrotypefeatures(wordlist, featurelist):
     return ''.join(wordlist)
 
 def defaultMicrotype(text):
-    separators = ' \t,;()\n' # no point, might be in abbreviations
-    features = [formatDate, pageReferences, lawReferences, numberSpacing,
+    separators = ' \t\n();,' # no point, might be in abbreviations
+    features = [SplitSeparators(separators[1:]), # separators without ' '
+                formatDate, pageReferences, lawReferences, numberSpacing,
                 ellipsisSpacing, percentSpacing, unspaceAbbreviations,
-                SplitSeparators(separators),
+                SplitSeparators(separators[:-1]), # separators without ','
                 percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket,
                 caret, splitEllipsis, # after curly brackets
