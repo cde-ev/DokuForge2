@@ -185,13 +185,16 @@ def numberSpacing(word):
     word = re.sub('([0-9]+\.) ?([a-z])', '\\@\\1\\,\\2', word)
     yield word
 
+def ellipsisSpacing(word):
+    word = re.sub('\[\.\.\.\]', '[\\@$...$]', word)
+    word = re.sub('([^$]) ?\.\.\. ?', '\\1\\@~... ', word)
+    yield word
+
 def standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
     """
     abb = { 
-    # FIXME we want '~\dots{}' in nearly every case
-        '...' : '\\dots{}',
         'bzw.' : 'bzw.',
         'ca.' : 'ca.',
         'd.h.' : 'd.\\,h.',
@@ -209,9 +212,6 @@ def standardAbbreviations(word):
         'z.B.' : 'z.\\,B.'}
 
     yield abb.get(word, word)
-
-splitEllipsis = Escaper("...", "...")
-# Replace the ellipsis symbol ... by \dots
 
 def naturalNumbers(word):
     """
@@ -274,6 +274,8 @@ leftCurlyBracket = Escaper("{", r"\@\{")
 rightCurlyBracket = Escaper("}", r"\@\}")
 
 caret = Escaper("^", r"\@\caret{}")
+
+splitEllipsis = Escaper("...", r'\dots{}')
 
 class EscapeCommands:
     """
@@ -409,17 +411,18 @@ def applyMicrotypefeatures(wordlist, featurelist):
 def defaultMicrotype(text):
     separators = ' \t,;()\n' # no point, might be in abbreviations
     features = [formatDate, pageReferences, lawReferences, numberSpacing,
-                SplitSeparators(separators),
-                splitEllipsis, percent, ampersand, hashmark, quote,
+                ellipsisSpacing, SplitSeparators(separators),
+                percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket,
-                caret, # after curly brackets
+                caret, splitEllipsis, # after curly brackets
                 standardAbbreviations, fullStop, openQuotationMark,
                 closeQuotationMark, acronym, naturalNumbers, escapeCommands]
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text):
     # FIXME we want to substitute '...' -> '\dots{}' in math mode too
-    features = [percent, hashmark, naturalNumbers, escapeCommands]
+    features = [percent, hashmark, splitEllipsis, naturalNumbers,
+            escapeCommands]
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
