@@ -938,9 +938,6 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'und "`am Ende"\'.')
         self.verifyExportsTo('"Vor und"\n"nach" Zeilenumbrüchen.',
                              '"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
-
-        self.verifyExportsTo('"Vor und"\n"nach" Zeilenumbrüchen.',
-                             '"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
         self.verifyExportsTo('Markus\' single quote',
                              'Markus\\@\' single quote')
 
