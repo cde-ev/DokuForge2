@@ -390,9 +390,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = form.submit(name="Speichern und Editieren")
         self.res.mustcontain("Gruppen erfolgreich bearbeitet.")
         form = self.res.forms[1]
-        # hack an invalid group
-        form["groups"].options.append(("spam", False, "spam"))
-        form["groups"] = ["cde", "spam"]
+        form["groups"].force_value(["cde", "spam"])
         self.res = form.submit(name="Speichern und Editieren")
         self.res.mustcontain("Nichtexistente Gruppe gefunden!")
         self.is_loggedin()
@@ -448,9 +446,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form = self.res.forms[1]
         form["name"] = "foobar"
         form["title"] = "next Testakademie"
-        # hack an invalid group
-        form["groups"].options.append(("spam", False, "spam"))
-        form["groups"] = ["cde", "spam"]
+        form["groups"].force_value(["cde", "spam"])
         self.res = form.submit(name="Akademie anlegen")
         self.res.mustcontain("Nichtexistente Gruppe gefunden!")
         self.is_loggedin()
