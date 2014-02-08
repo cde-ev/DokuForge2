@@ -930,12 +930,15 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
     def testQuotes(self):
         self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                              'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
-        self.verifyExportsTo('"Am Anfang" ...',
-                             '"`Am Anfang"\' \\dots{}')
-        self.verifyExportsTo('... "vor Kommata", ...',
-                             '\\dots{} "`vor Kommata"\', \\dots{}')
-        self.verifyExportsTo('... und "am Ende".',
-                             '\\dots{} und "`am Ende"\'.')
+        self.verifyExportsTo('"Am Anfang" des Texts',
+                             '"`Am Anfang"\' des Texts')
+        self.verifyExportsTo('in der Mitte "vor Kommata", im Text',
+                             'in der Mitte "`vor Kommata"\', im Text')
+        self.verifyExportsTo('und "am Ende".',
+                             'und "`am Ende"\'.')
+        self.verifyExportsTo('"Vor und"\n"nach" Zeilenumbrüchen.',
+                             '"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
+
         self.verifyExportsTo('"Vor und"\n"nach" Zeilenumbrüchen.',
                              '"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
         self.verifyExportsTo('Markus\' single quote',
@@ -948,6 +951,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., der Exporter')
         self.verifyExportsTo('Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
                              'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.')
+        self.verifyExportsTo('Dots in math $a_1,...,a_n$ should work without spacing.',
+                             'Dots in math $a_1,\\dots{},a_n$ should work without spacing.')
 
     def testAcronym(self):
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
@@ -998,6 +1003,16 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'A number range 6\\@--9 is nice.')
         self.verifyExportsTo('A number range 6 -- 9 is nice.',
                              'A number range 6\\@--9 is nice.')
+        self.verifyExportsTo('Here come some dots ...',
+                             'Here come some dots\\@~\\dots{}')
+        self.verifyExportsTo('Here come some dots...',
+                             'Here come some dots\\@~\\dots{}')
+        self.verifyExportsTo('And dots ... in the middle.',
+                             'And dots\\@~\\dots{} in the middle.')
+        self.verifyExportsTo('And dots...in the middle.',
+                             'And dots\\@~\\dots{} in the middle.')
+        self.verifyExportsTo('And dots [...] for missing text.',
+                             'And dots [\\@$\\dots{}$] for missing text.')
 
     def testLawReferences(self):
         self.verifyExportsTo('In §§1ff. HGB steht',
