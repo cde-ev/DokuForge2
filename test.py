@@ -1026,8 +1026,6 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              'In \\@§\\,1\\,f. \\@\\acronym{HGB} steht')
         self.verifyExportsTo('In § 1 Abs. 1 HGB steht',
                              'In \\@§\\,1 \\@Abs.~1 \\@\\acronym{HGB} steht')
-        self.verifyExportsTo('In § 1 Absatz 1 HGB steht',
-                             'In \\@§\\,1 \\@Absatz~1 \\@\\acronym{HGB} steht')
         self.verifyExportsTo('In § 1 Absatz 1 Satz 2 HGB steht',
                              'In \\@§\\,1 \\@Absatz~1 \\@Satz~2 \\@\\acronym{HGB} steht')
         self.verifyExportsTo('In §§ 10-15 HGB steht',
