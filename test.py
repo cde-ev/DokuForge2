@@ -299,7 +299,7 @@ class DokuforgeWebTests(DfTestCase):
             self.res = self.res.click(description="Editieren")
             form = self.res.forms[1]
             form["content"] = inputstr
-            self.res = form.submit(name="Speichern und Beenden")
+            self.res = form.submit(name="saveshow")
             self.res.mustcontain(outputstr)
         self.is_loggedin()
 
@@ -320,7 +320,7 @@ $$\\sqrt{2}$$
 - bullet2
 chars like < > & " to be escaped and an { ednote \\end{ednote} }
 """
-        self.res = form.submit(name="Speichern und Beenden")
+        self.res = form.submit(name="saveshow")
         self.res.mustcontain("$\\sqrt{2}$", "ednote \\end{ednote}")
         self.is_loggedin()
 
@@ -329,7 +329,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
         form = self.res.forms[1]
-        self.res = form.submit(name=u"Hochrücken")
+        self.res = form.submit()
         self.is_loggedin()
 
     def testCreatePage(self):
@@ -337,7 +337,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
         form = self.res.forms[2]
-        self.res = form.submit(name=u"Neuen Teil anlegen")
+        self.res = form.submit()
         self.is_loggedin()
         self.res.mustcontain("Teil&nbsp;#2")
 
@@ -349,7 +349,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         for (inputstr, outputstr) in teststrings:
             form = self.res.forms[1]
             form["content"] = inputstr
-            self.res = form.submit(name="Speichern und Editieren")
+            self.res = form.submit(name="saveedit")
             self.res.mustcontain(outputstr)
         self.is_loggedin()
 
@@ -359,7 +359,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = self.res.click(href=re.compile("course01/$"))
         self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
         form = self.res.forms[1]
-        self.res = form.submit(name=u"Löschen")
+        self.res = form.submit()
         self.res.mustcontain(no="Teil&nbsp;#0")
         self.is_loggedin()
 
@@ -369,10 +369,10 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = self.res.click(href=re.compile("course01/$"))
         self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
         form = self.res.forms[1]
-        self.res = form.submit(name=u"Löschen")
+        self.res = form.submit()
         self.res = self.res.click(href=re.compile("course01/.*deadpages$"))
         form = self.res.forms[1]
-        self.res = form.submit(name="wiederherstellen")
+        self.res = form.submit()
         self.res.mustcontain("Teil&nbsp;#0")
         self.is_loggedin()
 
@@ -383,7 +383,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         for (inputstr, outputstr) in teststrings:
             form = self.res.forms[1]
             form["content"] = inputstr
-            self.res = form.submit(name="Speichern und Editieren")
+            self.res = form.submit(name="saveedit")
             self.res.mustcontain(outputstr)
         self.is_loggedin()
 
@@ -393,11 +393,11 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = self.res.click(description="Gruppen bearbeiten")
         form = self.res.forms[1]
         form["groups"] = ["cde"]
-        self.res = form.submit(name="Speichern und Editieren")
+        self.res = form.submit(name="saveedit")
         self.res.mustcontain("Gruppen erfolgreich bearbeitet.")
         form = self.res.forms[1]
         form["groups"].force_value(["cde", "spam"])
-        self.res = form.submit(name="Speichern und Editieren")
+        self.res = form.submit(name="saveedit")
         self.res.mustcontain("Nichtexistente Gruppe gefunden!")
         self.is_loggedin()
 
@@ -408,13 +408,13 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form = self.res.forms[1]
         form["name"] = "course03"
         form["title"] = "Testkurs"
-        self.res = form.submit(name=u"Kurs hinzufügen")
+        self.res = form.submit()
         self.res.mustcontain("Area51", "Testkurs")
         self.res = self.res.click(href=re.compile("/.*createcourse$"))
         form = self.res.forms[1]
         form["name"] = "foo_bar"
         form["title"] = "next Testkurs"
-        self.res = form.submit(name=u"Kurs hinzufügen")
+        self.res = form.submit()
         self.res.mustcontain("Interner Name nicht wohlgeformt!")
         self.is_loggedin()
 
@@ -424,12 +424,12 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res.mustcontain("Area51")
         self.res = self.res.click(href=re.compile("course01/$"))
         form = self.res.forms[3]
-        self.res = form.submit(name=u"Kurs löschen")
+        self.res = form.submit()
         self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain(no="Area51")
         self.res = self.res.click(href=re.compile("deadcourses$"))
         form = self.res.forms[1]
-        self.res = form.submit(name=u"Kurs wiederherstellen")
+        self.res = form.submit()
         self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain("Area51")
 
@@ -440,20 +440,20 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         form["name"] = "newacademy-2001"
         form["title"] = "Testakademie"
         form["groups"] = ["cde"]
-        self.res = form.submit(name="Akademie anlegen")
+        self.res = form.submit()
         self.res.mustcontain("Testakademie", "X-Akademie")
         self.res = self.res.click(href=re.compile("/createacademy$"))
         form = self.res.forms[1]
         form["name"] = "foo_bar"
         form["title"] = "next Testakademie"
         form["groups"] = ["cde"]
-        self.res = form.submit(name="Akademie anlegen")
+        self.res = form.submit()
         self.res.mustcontain("Interner Name nicht wohlgeformt!")
         form = self.res.forms[1]
         form["name"] = "foobar"
         form["title"] = "next Testakademie"
         form["groups"].force_value(["cde", "spam"])
-        self.res = form.submit(name="Akademie anlegen")
+        self.res = form.submit()
         self.res.mustcontain("Nichtexistente Gruppe gefunden!")
         self.is_loggedin()
 
@@ -467,7 +467,7 @@ title = CdE-Akademien
 [spam]
 title = Wie der Name sagt
 """
-        self.res = form.submit(name="Speichern und Editieren")
+        self.res = form.submit(name="saveedit")
         self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
         form = self.res.forms[1]
         form["content"] = """[cde]
@@ -476,7 +476,7 @@ title = CdE-Akademien
 [spam
 title = Wie der Name sagt
 """
-        self.res = form.submit(name="Speichern und Editieren")
+        self.res = form.submit(name="saveedit")
         self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
         self.is_loggedin()
 
@@ -490,7 +490,7 @@ status = ueberadmin
 password = secret
 permissions = df_superadmin True,df_admin True
 """
-        self.res = form.submit(name="Speichern und Editieren")
+        self.res = form.submit(name="saveedit")
         self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
         form = self.res.forms[1]
         form["content"] = """[bob
@@ -499,7 +499,7 @@ status = ueberadmin
 password = secret
 permissions = df_superadmin True,df_admin True
 """
-        self.res = form.submit(name="Speichern und Editieren")
+        self.res = form.submit(name="saveedit")
         self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
         self.is_loggedin()
 
@@ -556,10 +556,10 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
-        self.res = form.submit(name=u"Bild auswählen")
+        self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit(name="Bild hochladen")
+        self.res = form.submit()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         self.is_loggedin()
 
@@ -572,10 +572,10 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
-        self.res = form.submit(name=u"Bild auswählen")
+        self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit(name="Bild hochladen")
+        self.res = form.submit()
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
         self.res.mustcontain("Bildunterschrift/Kommentar: Shiny blob",
                              "K&uuml;rzel: blob")
@@ -590,10 +590,10 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
-        self.res = form.submit(name=u"Bild auswählen")
+        self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit(name="Bild hochladen")
+        self.res = form.submit()
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
         self.res = self.res.click(href=re.compile("course01/0/0/.*md5$"))
         self.res.mustcontain("MD5 Summe des Bildes ist")
@@ -608,17 +608,17 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
-        self.res = form.submit(name=u"Bild auswählen")
+        self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit(name="Bild hochladen")
+        self.res = form.submit()
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
         self.res = self.res.click(href=re.compile("course01/0/0/.*edit$"))
         form = self.res.forms[1]
         form["comment"] = "Real Shiny blob"
         form["label"] = "blub"
         form["name"] = "README"
-        self.res = form.submit(name="Speichern")
+        self.res = form.submit()
         self.res.mustcontain("Bildunterschrift/Kommentar: Real Shiny blob",
                              "K&uuml;rzel: blub",
                              "Dateiname: README")
@@ -633,13 +633,13 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
-        self.res = form.submit(name=u"Bild auswählen")
+        self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit(name="Bild hochladen")
+        self.res = form.submit()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         form = self.res.forms[2]
-        self.res = form.submit(name=u"Löschen")
+        self.res = form.submit()
         self.res.mustcontain("Keine Bilder zu diesem Teil gefunden.",
                              no="#[0] (README-rlog.txt)")
         self.is_loggedin()
@@ -653,18 +653,18 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
-        self.res = form.submit(name=u"Bild auswählen")
+        self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit(name="Bild hochladen")
+        self.res = form.submit()
         form = self.res.forms[2]
-        self.res = form.submit(name=u"Löschen")
+        self.res = form.submit()
         self.res.mustcontain("Keine Bilder zu diesem Teil gefunden.",
                              no="#[0] (README-rlog.txt)")
         self.res = self.res.click(href=re.compile("course01/0/.*deadblobs$"))
         self.res.mustcontain("#[0] (README-rlog.txt)")
         form = self.res.forms[1]
-        self.res = form.submit(name="wiederherstellen")
+        self.res = form.submit()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         self.is_loggedin()
 
@@ -677,7 +677,7 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = ""
-        self.res = form.submit(name=u"Bild auswählen")
+        self.res = form.submit()
         form = self.res.forms[1]
         self.res.mustcontain(u"Kürzel nicht wohlgeformt!")
         self.is_loggedin()
