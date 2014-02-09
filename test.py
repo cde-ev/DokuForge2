@@ -982,8 +982,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
         self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
                              'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '\\@10\\,\\% sind ein Zehntel')
+        self.verifyExportsTo('10% sind ein Zehntel und mehr als 5 %.',
+                             '\\@10\\,\\% sind ein Zehntel und mehr als \\@5\\,\\%.')
         self.verifyExportsTo('Geschweifte Klammern { muessen } escaped werden.',
                              'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 

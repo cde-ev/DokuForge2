@@ -151,6 +151,21 @@ def formatDashes(word):
                          r'\1\\@~-- \2', word)
     yield word
 
+def percentSpacing(word):
+    """
+    Do spacing for the percent sign.
+    """
+    word = re.sub(r'(\d+) ?%', r'\\@\1\\,%', word)
+    yield word
+
+def ellipsisSpacing(word):
+    """
+    Do spacing for ellipsis.
+    """
+    word = re.sub(r'\[\.\.\.\]', r'[\\@$...$]', word)
+    word = re.sub(r'([^$]) ?\.\.\. ?', r'\1\\@~... ', word)
+    yield word
+
 def formatDate(word):
     """
     Do spacing for dates that consist of day, month and year.
@@ -197,21 +212,6 @@ def numberSpacing(word):
     word = re.sub(r'(\d) ?-{1,2} ?(\d)', r'\1\\@--\2', word)
     # 21. regiment
     word = re.sub(r'(\d+\.) ?([a-z])', r'\\@\1\\,\2', word)
-    yield word
-
-def ellipsisSpacing(word):
-    """
-    Do spacing for ellipsis.
-    """
-    word = re.sub(r'\[\.\.\.\]', r'[\\@$...$]', word)
-    word = re.sub(r'([^$]) ?\.\.\. ?', r'\1\\@~... ', word)
-    yield word
-
-def percentSpacing(word):
-    """
-    Do spacing for the percent sign.
-    """
-    word = re.sub(r'(\d+) ?%', r'\\@\1\\,%', word)
     yield word
 
 def unspaceAbbreviations(word):
@@ -276,13 +276,6 @@ def naturalNumbers(word):
                 value = value // 1000
             yield '%s%d%s' % (sign, value, result)
 
-def trailingBackslash(word):
-    """
-    Escape trailing backslashes.
-    """
-    word = re.sub(r'\\$', r'\\@\\ ', word)
-    yield word
-
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith('"'):
         yield '"`'
@@ -317,7 +310,14 @@ rightCurlyBracket = Escaper("}", r"\@\}")
 
 caret = Escaper("^", r"\@\caret{}")
 
-splitEllipsis = Escaper("...", r'\dots{}')
+ellipsis = Escaper("...", r'\dots{}')
+
+def trailingBackslash(word):
+    """
+    Escape trailing backslashes.
+    """
+    word = re.sub(r'\\$', r'\\@\\ ', word)
+    yield word
 
 class EscapeCommands:
     """
@@ -461,21 +461,26 @@ def applyMicrotypefeatures(wordlist, featurelist):
 
 def defaultMicrotype(text):
     separators = ' \t\n();,' # no point, might be in abbreviations
-    features = [formatDashes,
+    features = [# no splitting before the following features
+                formatDashes,
+                # no splitting at ' ' before the following featurs
                 SplitSeparators(separators[1:]), # separators without ' '
-                formatDate, pageReferences, lawReferences, numberSpacing,
-                ellipsisSpacing, percentSpacing, unspaceAbbreviations,
+                percentSpacing, ellipsisSpacing, unspaceAbbreviations,
+                # also no splitting at ',' allowed afterwards
+                formatDate, pageReferences, lawReferences,
+                numberSpacing, # must be after lawReferences
                 SplitSeparators(separators[:-1]), # separators without ','
+                # after splitting at all separators
                 percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket,
-                caret, splitEllipsis, # after curly brackets
+                caret, ellipsis, # caret, ellipsis after curly brackets
                 standardAbbreviations, fullStop, openQuotationMark,
                 closeQuotationMark, acronym, naturalNumbers, escapeCommands]
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text):
-    features = [percent, hashmark, splitEllipsis, naturalNumbers,
-            trailingBackslash, escapeMathCommands]
+    features = [percent, hashmark, ellipsis, naturalNumbers,
+                trailingBackslash, escapeMathCommands]
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
