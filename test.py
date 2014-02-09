@@ -22,6 +22,12 @@ from dokuforge.academy import Academy
 from dokuforge.user import UserDB
 from dokuforge.storage import CachingStorage
 
+try:
+    Upload = webtest.Upload
+except AttributeError:
+    def Upload(filename):
+        return (filename,)
+
 teststrings = [
     (u"simple string", u"simple string"),
     (u"some chars <>/& here", u"some chars &lt;&gt;/&amp; here"),
@@ -552,7 +558,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit(name=u"Bild auswählen")
         form = self.res.forms[1]
-        form["content"] = webtest.Upload("README-rlog.txt")
+        form["content"] = Upload("README-rlog.txt")
         self.res = form.submit(name="Bild hochladen")
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         self.is_loggedin()
@@ -568,7 +574,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit(name=u"Bild auswählen")
         form = self.res.forms[1]
-        form["content"] = webtest.Upload("README-rlog.txt")
+        form["content"] = Upload("README-rlog.txt")
         self.res = form.submit(name="Bild hochladen")
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
         self.res.mustcontain("Bildunterschrift/Kommentar: Shiny blob",
@@ -586,7 +592,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit(name=u"Bild auswählen")
         form = self.res.forms[1]
-        form["content"] = webtest.Upload("README-rlog.txt")
+        form["content"] = Upload("README-rlog.txt")
         self.res = form.submit(name="Bild hochladen")
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
         self.res = self.res.click(href=re.compile("course01/0/0/.*md5$"))
@@ -604,7 +610,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit(name=u"Bild auswählen")
         form = self.res.forms[1]
-        form["content"] = webtest.Upload("README-rlog.txt")
+        form["content"] = Upload("README-rlog.txt")
         self.res = form.submit(name="Bild hochladen")
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
         self.res = self.res.click(href=re.compile("course01/0/0/.*edit$"))
@@ -629,7 +635,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit(name=u"Bild auswählen")
         form = self.res.forms[1]
-        form["content"] = webtest.Upload("README-rlog.txt")
+        form["content"] = Upload("README-rlog.txt")
         self.res = form.submit(name="Bild hochladen")
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         form = self.res.forms[2]
@@ -649,7 +655,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit(name=u"Bild auswählen")
         form = self.res.forms[1]
-        form["content"] = webtest.Upload("README-rlog.txt")
+        form["content"] = Upload("README-rlog.txt")
         self.res = form.submit(name="Bild hochladen")
         form = self.res.forms[2]
         self.res = form.submit(name=u"Löschen")
