@@ -155,7 +155,7 @@ def formatDate(word):
     """
     Do spacing for dates that consist of day, month and year.
     """
-    date_pattern = '%s%s' % (2 * '([0-9]{2}\.) ?', '([0-9]{4})')
+    date_pattern = '%s%s' % (2 * '(\d{2}\.) ?', '(\d{4})')
     word = re.sub(date_pattern, '\\@\\1\\,\\@\\2\\,\\3', word)
     yield word
 
@@ -164,11 +164,11 @@ def pageReferences(word):
     Do spacing for page references.
     """
     # S. 4--6
-    word = re.sub('S\. ?([0-9]+) ?-+ ?([0-9])', '\\@S.\\,\\1--\\2', word)
+    word = re.sub('S\. ?(\d+) ?-+ ?(\d)', '\\@S.\\,\\1--\\2', word)
     # S. 4 ff.
-    word = re.sub('S\. ?([0-9]+) ?(f+)\.? ', '\\@S.\\,\\1\\,\\2. ', word)
+    word = re.sub('S\. ?(\d+) ?(f+)\.? ', '\\@S.\\,\\1\\,\\2. ', word)
     # S. 4
-    word = re.sub('S\. ?([0-9]+)', '\\@S.\\,\\1', word)
+    word = re.sub('S\. ?(\d+)', '\\@S.\\,\\1', word)
     yield word
 
 def lawReferences(word):
@@ -176,17 +176,17 @@ def lawReferences(word):
     Do spacing for law references.
     """
     # §§ 1 ff. --> §§ 1\,ff.
-    word = re.sub('([§]+ ?[0-9]+) ?(f+)\.? ', '\\1\\,\\2. ', word)
+    word = re.sub('([§]+ ?\d+) ?(f+)\.? ', '\\1\\,\\2. ', word)
     # §§ 10-15 --> §§ 10\,--\,15
-    word = re.sub('([§]+ ?[0-9]*)[ -]*-[ -]*([0-9])', '\\1\\,--\\,\\2', word)
+    word = re.sub('([§]+ ?\d*)[ -]*-[ -]*(\d)', '\\1\\,--\\,\\2', word)
     # § 1 Satz 2 --> § 1 Satz~2
-    word = re.sub('([§]+ ?[0-9]+ *[Absatz.]* *[0-9]*) (Satz) ?([0-9])',
+    word = re.sub('([§]+ ?\d+ *[Absatz.]* *\d*) (Satz) ?(\d)',
             '\\1 \\@\\2~\\3', word)
     # § 1 Abs. 1 --> § 1 Abs.~1
-    word = re.sub('([§]+ ?[0-9]+) (Abs\.|Absatz) ?([0-9])',
+    word = re.sub('([§]+ ?\d+) (Abs\.|Absatz) ?(\d)',
             '\\1 \\@\\2~\\3', word)
     # § 1 --> §\,1
-    word = re.sub('([§]+) ?([0-9]+)', '\\@\\1\\,\\2', word)
+    word = re.sub('([§]+) ?(\d+)', '\\@\\1\\,\\2', word)
     yield word
 
 def numberSpacing(word):
@@ -194,9 +194,9 @@ def numberSpacing(word):
     Do spacing for number ranges and between numbers and words.
     """
     # ^6--9
-    word = re.sub('([0-9]) ?-{1,2} ?([0-9])', '\\1\\@--\\2', word)
+    word = re.sub('(\d) ?-{1,2} ?(\d)', '\\1\\@--\\2', word)
     # 21. regiment
-    word = re.sub('([0-9]+\.) ?([a-z])', '\\@\\1\\,\\2', word)
+    word = re.sub('(\d+\.) ?([a-z])', '\\@\\1\\,\\2', word)
     yield word
 
 def ellipsisSpacing(word):
@@ -211,7 +211,7 @@ def percentSpacing(word):
     """
     Do spacing for the percent sign.
     """
-    word = re.sub('([0-9]+) ?%', '\\@\\1\\,%', word)
+    word = re.sub('(\d+) ?%', '\\@\\1\\,%', word)
     yield word
 
 def unspaceAbbreviations(word):
