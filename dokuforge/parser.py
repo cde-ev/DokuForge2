@@ -220,7 +220,7 @@ def unspaceAbbreviations(word):
     """
     word = word.replace('d. h.', 'd.h.')
     word = word.replace(' n. Chr.', ' n.Chr.')
-    #FIXME: the following breaks the non-unicode unittests
+    # FIXME: the following breaks the non-unicode unittests
     #word = word.replace(u' o. Ä.', u' o.Ä.')
     word = word.replace(' s. o.', ' s.o.')
     word = word.replace(' s. u.', ' s.u.')
@@ -250,12 +250,61 @@ def standardAbbreviations(word):
 
     yield abb.get(word, word)
 
+class UnitSpacing:
+    def __init__(self):
+        unit_prefixes = [
+                # SI prefixes
+                'Y', 'Z', 'E', 'P', 'T', 'G', 'M', 'k', 'h', 'da', 'd',
+                'c', 'm', r'µ', 'n', 'p', 'f', 'a', 'z', 'y'
+                ]
+
+        units = [
+                # SI units
+                'm', 'g', 's', 'A', 'K', 'mol', 'cd',
+                # derived SI units
+                'rad', 'sr', 'Hz', 'N', 'Pa', 'J', 'W', 'C', 'V', 'F',
+                r'Ω', 'S', 'Wb', 'T', 'H', 'lm', 'lx', 'Bq', 'Gy', 'Sv',
+                'kat', 't',
+                # more units
+                'l', 'eV',
+                ]
+
+        unprefixed_units = [
+                # cgs units
+                'Gal', 'dyn', 'Ba', 'erg', 'St', 'P', 'kayser', 'Q', 'I',
+                'U', 'E', 'p', 'B', 'H', r'μ', r'Θ', r'Φm', 'R', r'ρ',
+                'C', 'L', 'P',
+                # more units
+                'h', 'd', 'a', 'min', 'eV'
+                ]
+
+        units_without_spacing = [
+                r'°C'
+                ]
+
+        # FIXME: this does not work for unicode characters
+        unit_prefixes = '|'.join(unit_prefixes)
+        units = '|'.join(units)
+        unprefixed_units = '|'.join(unprefixed_units)
+        units_without_spacing = '|'.join(units_without_spacing)
+        re_units = r'(%s)?(%s)' % (unit_prefixes, units)
+        re_unprefixed_units = r'(%s)' % (unprefixed_units)
+        self.units_re = re.compile(r'(\d) ?((%s|%s)( |$|\.))'
+                % (re_units, re_unprefixed_units))
+        self.nospace_re = re.compile(r'(\d) ?((%s)( |$|\.))'
+                % units_without_spacing)
+
+    def __call__(self, word):
+        word = self.units_re.sub(r'\1\\,\2', word)
+        word = self.nospace_re.sub(r'\1\2', word)
+        yield word
+
+unitSpacing = UnitSpacing()
+
 def naturalNumbers(word):
     """
     Special Spacing for numbers.
     """
-    # FIXME we want some special spacing around numbers:
-    #       - a number followed by a unit wants a thin space: 'weight 67\,kg'
     if not re.match('^-?[0-9]+$', word):
         yield word
     else:
@@ -276,6 +325,13 @@ def naturalNumbers(word):
                 value = value // 1000
             yield '%s%d%s' % (sign, value, result)
 
+def fullStop(word):
+    if len(word) > 1 and word.endswith('.'):
+        yield word[:-1]
+        yield '.'
+    else:
+        yield word
+
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith('"'):
         yield '"`'
@@ -286,13 +342,6 @@ def closeQuotationMark(word):
     if len(word) > 1 and word.endswith('"'):
         yield word[:-1]
         yield '"\''
-    else:
-        yield word
-
-def fullStop(word):
-    if len(word) > 1 and word.endswith('.'):
-        yield word[:-1]
-        yield '.'
     else:
         yield word
 
@@ -310,7 +359,11 @@ rightCurlyBracket = Escaper("}", r"\@\}")
 
 caret = Escaper("^", r"\@\caret{}")
 
-ellipsis = Escaper("...", r'\dots{}')
+ellipsis = Escaper("...", r"\dots{}")
+
+def celsius(word):
+    word = re.sub(r'(\d)°C', r'\1$^\\circ$C', word)
+    yield word
 
 def trailingBackslash(word):
     """
@@ -332,7 +385,7 @@ class EscapeCommands:
 
     def __init__(self, allowed = ['\\ ', '\\,', '\\%', '\\dots', '\\ldots',
                                   '\\\\', '\\"', '\\acronym', '\\&', '\\#',
-                                  '\\caret', '\\{', '\\}', '\\@']):
+                                  '\\circ', '\\caret', '\\{', '\\}', '\\@']):
         """
         Initialize with the set of allowed commands. The default value
         represents those commands that are produced by the exporter itself.
@@ -467,13 +520,13 @@ def defaultMicrotype(text):
                 SplitSeparators(separators[1:]), # separators without ' '
                 percentSpacing, ellipsisSpacing, unspaceAbbreviations,
                 # also no splitting at ',' allowed afterwards
-                formatDate, pageReferences, lawReferences,
+                formatDate, pageReferences, lawReferences, unitSpacing,
                 numberSpacing, # must be after lawReferences
                 SplitSeparators(separators[:-1]), # separators without ','
                 # after splitting at all separators
                 percent, ampersand, hashmark, quote,
-                leftCurlyBracket, rightCurlyBracket,
-                caret, ellipsis, # caret, ellipsis after curly brackets
+                leftCurlyBracket, rightCurlyBracket, # before caret
+                caret, ellipsis, celsius, # celsius after caret
                 standardAbbreviations, fullStop, openQuotationMark,
                 closeQuotationMark, acronym, naturalNumbers, escapeCommands]
     return applyMicrotypefeatures([text], features)
