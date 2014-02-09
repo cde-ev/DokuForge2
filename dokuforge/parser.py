@@ -141,22 +141,22 @@ def formatDashes(word):
     """
     # for correct spacing " -- " but avoid non-spaced number ranges
     word = re.sub('([^.0-9]) -- ([^-.]+) -- ',
-                      '\\1 \\@--~\\2\\@~-- ', word)
+                      r'\1 \\@--~\2\\@~-- ', word)
     word = re.sub('([^.0-9]) -- ',
-                     '\\1\\@~-- ', word)
+                      r'\1\\@~-- ', word)
     # for missing spacing only substitute carefully
     word = re.sub('([^.0-9- @~])--([^- ][^-.]+)--([^0-9- ~])',
-                        '\\1 \\@--~\\2\\@~-- \\3', word)
+                         r'\1 \\@--~\2\\@~-- \3', word)
     word = re.sub('([^.0-9- @~])--([^0-9- ~])',
-                        '\\1\\@~-- \\2', word)
+                         r'\1\\@~-- \2', word)
     yield word
 
 def formatDate(word):
     """
     Do spacing for dates that consist of day, month and year.
     """
-    date_pattern = '%s%s' % (2 * '(\d{2}\.) ?', '(\d{4})')
-    word = re.sub(date_pattern, '\\@\\1\\,\\@\\2\\,\\3', word)
+    date_pattern = '%s%s' % (2 * r'(\d{2}\.) ?', r'(\d{4})')
+    word = re.sub(date_pattern, r'\\@\1\\,\\@\2\\,\3', word)
     yield word
 
 def pageReferences(word):
@@ -164,11 +164,11 @@ def pageReferences(word):
     Do spacing for page references.
     """
     # S. 4--6
-    word = re.sub('S\. ?(\d+) ?-+ ?(\d)', '\\@S.\\,\\1--\\2', word)
+    word = re.sub(r'S\. ?(\d+) ?-+ ?(\d)', r'\\@S.\\,\1--\2', word)
     # S. 4 ff.
-    word = re.sub('S\. ?(\d+) ?(f+)\.? ', '\\@S.\\,\\1\\,\\2. ', word)
+    word = re.sub(r'S\. ?(\d+) ?(f+)\.? ', r'\\@S.\\,\1\\,\2. ', word)
     # S. 4
-    word = re.sub('S\. ?(\d+)', '\\@S.\\,\\1', word)
+    word = re.sub(r'S\. ?(\d+)', r'\\@S.\\,\1', word)
     yield word
 
 def lawReferences(word):
@@ -176,17 +176,17 @@ def lawReferences(word):
     Do spacing for law references.
     """
     # §§ 1 ff. --> §§ 1\,ff.
-    word = re.sub('([§]+ ?\d+) ?(f+)\.? ', '\\1\\,\\2. ', word)
+    word = re.sub(r'([§]+ ?\d+) ?(f+)\.? ', r'\1\\,\2. ', word)
     # §§ 10-15 --> §§ 10\,--\,15
-    word = re.sub('([§]+ ?\d*)[ -]*-[ -]*(\d)', '\\1\\,--\\,\\2', word)
+    word = re.sub(r'([§]+ ?\d*)[ -]*-[ -]*(\d)', r'\1\\,--\\,\2', word)
     # § 1 Satz 2 --> § 1 Satz~2
-    word = re.sub('([§]+ ?\d+ *[Absatz.]* *\d*) (Satz) ?(\d)',
-            '\\1 \\@\\2~\\3', word)
+    word = re.sub(r'([§]+ ?\d+ *[Absatz.]* *\d*) (Satz) ?(\d)',
+            r'\1 \\@\2~\3', word)
     # § 1 Abs. 1 --> § 1 Abs.~1
-    word = re.sub('([§]+ ?\d+) (Abs\.|Absatz) ?(\d)',
-            '\\1 \\@\\2~\\3', word)
+    word = re.sub(r'([§]+ ?\d+) (Abs\.|Absatz) ?(\d)',
+            r'\1 \\@\2~\3', word)
     # § 1 --> §\,1
-    word = re.sub('([§]+) ?(\d+)', '\\@\\1\\,\\2', word)
+    word = re.sub(r'([§]+) ?(\d+)', r'\\@\1\\,\2', word)
     yield word
 
 def numberSpacing(word):
@@ -194,24 +194,24 @@ def numberSpacing(word):
     Do spacing for number ranges and between numbers and words.
     """
     # ^6--9
-    word = re.sub('(\d) ?-{1,2} ?(\d)', '\\1\\@--\\2', word)
+    word = re.sub(r'(\d) ?-{1,2} ?(\d)', r'\1\\@--\2', word)
     # 21. regiment
-    word = re.sub('(\d+\.) ?([a-z])', '\\@\\1\\,\\2', word)
+    word = re.sub(r'(\d+\.) ?([a-z])', r'\\@\1\\,\2', word)
     yield word
 
 def ellipsisSpacing(word):
     """
     Do spacing for ellipsis.
     """
-    word = re.sub('\[\.\.\.\]', '[\\@$...$]', word)
-    word = re.sub('([^$]) ?\.\.\. ?', '\\1\\@~... ', word)
+    word = re.sub(r'\[\.\.\.\]', r'[\\@$...$]', word)
+    word = re.sub(r'([^$]) ?\.\.\. ?', r'\1\\@~... ', word)
     yield word
 
 def percentSpacing(word):
     """
     Do spacing for the percent sign.
     """
-    word = re.sub('(\d+) ?%', '\\@\\1\\,%', word)
+    word = re.sub(r'(\d+) ?%', r'\\@\1\\,%', word)
     yield word
 
 def unspaceAbbreviations(word):
@@ -280,7 +280,7 @@ def trailingBackslash(word):
     """
     Escape trailing backslashes.
     """
-    word = re.sub('\\\\$', '\\@\\ ', word)
+    word = re.sub(r'\\$', r'\\@\\ ', word)
     yield word
 
 def openQuotationMark(word):
@@ -489,7 +489,7 @@ def wrap(text, subsequent_indent=''):
     Wraps text to width 70.
     """
     # triple @ to label linebreaks after long lines before wrapping
-    text = re.sub("([^\n]{160})\n", "\\1\\@\\@\\@\n", text)
+    text = re.sub(r'([^\n]{160})\n', r'\1\\@\\@\\@\n', text)
     return textwrap.fill(text, subsequent_indent=subsequent_indent,
             drop_whitespace = True, replace_whitespace = True,
             break_long_words = False, break_on_hyphens = False)
