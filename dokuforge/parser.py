@@ -128,7 +128,7 @@ def acronym(word):
     But don't mangle things like 'T-Shirt' or 'E-Mail'.
     """
     if len(word) > 1 and word.isalpha() and word.isupper():
-        word = '\\acronym{%s}' % word
+        word = u'\\acronym{%s}' % word
     yield word
 
 def  standardAbbreviations(word):
@@ -137,26 +137,26 @@ def  standardAbbreviations(word):
     """
     abb = { 
     # FIXME we want '~\dots{}' in nearly every case
-        '...' : '\\dots{}',
-        'bzw.' : 'bzw.',
-        'ca.' : 'ca.',
-        'd.h.' : 'd.\\,h.',
-        'etc.' : 'etc.',
-        'f.' : 'f.',
-        'ff.' : 'ff.',
-        'n.Chr.' : 'n.\\,Chr.',
-        u'o.Ä.' : u'o.\,Ä.',
-        's.o.' : 's.\\,o.',
-        'sog.' : 'sog.',
-        's.u.' : 's.\\,u.',
-        'u.a.' : 'u.\\,a.',
-        'v.Chr.' : 'v.\\,Chr.',
-        'vgl.' : 'vgl.',
-        'z.B.' : 'z.\\,B.'}
+        u'...': u'\\dots{}',
+        u'bzw.': u'bzw.',
+        u'ca.': u'ca.',
+        u'd.h.': u'd.\\,h.',
+        u'etc.': u'etc.',
+        u'f.': u'f.',
+        u'ff.': u'ff.',
+        u'n.Chr.': u'n.\\,Chr.',
+        u'o.Ä.': u'o.\\,Ä.',
+        u's.o.': u's.\\,o.',
+        u'sog.': u'sog.',
+        u's.u.': u's.\\,u.',
+        u'u.a.': u'u.\\,a.',
+        u'v.Chr.': u'v.\\,Chr.',
+        u'vgl.': u'vgl.',
+        u'z.B.': u'z.\\,B.'}
 
     yield abb.get(word, word)
 
-splitEllipsis = Escaper("...", "...")
+splitEllipsis = Escaper(u"...", u"...")
 # Replace the ellipsis symbol ... by \dots
 
 def naturalNumbers(word):
@@ -174,134 +174,134 @@ def naturalNumbers(word):
         value = int(word)
         if value < 10000:
             # no special typesetting for 4 digits only
-            yield "%d" % value
+            yield u"%d" % value
         else:
-            result = ''
+            result = u''
             while value >= 1000:
                 threedigits = value % 1000
-                result = '\\,%03d%s' % (threedigits, result)
+                result = u'\\,%03d%s' % (threedigits, result)
                 value = value // 1000
-            yield '%d%s' % (value, result)
+            yield u'%d%s' % (value, result)
 
 def openQuotationMark(word):
-    if len(word) > 1 and word.startswith('"'):
-        yield '"`'
+    if len(word) > 1 and word.startswith(u'"'):
+        yield u'"`'
         word = word[1:]
     yield word
 
 def closeQuotationMark(word):
-    if len(word) > 1 and word.endswith('"'):
+    if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
-        yield '"\''
+        yield u'"\''
     else:
         yield word
 
 def fullStop(word):
-    if len(word) > 1 and word.endswith('.'):
+    if len(word) > 1 and word.endswith(u'.'):
         yield word[:-1]
-        yield '.'
+        yield u'.'
     else:
         yield word
 
-percent = Escaper("%", r"\%")
+percent = Escaper(u"%", u"\\%")
 
-ampersand = Escaper("&", r"\&")
+ampersand = Escaper(u"&", u"\\&")
 
-hashmark = Escaper("#", r"\#")
+hashmark = Escaper(u"#", u"\\#")
 
-caret = Escaper("^", r"\caret{}")
+caret = Escaper(u"^", u"\\caret{}")
 
-quote = Escaper("'", "'")
+quote = Escaper(u"'", u"'")
 
 class EscapeCommands:
     """
     Mark all controll sequence tokens as forbidden, except
     a list of known good commands.
     """
-    escapechar = "\\"
-    allowed = [
+    escapechar = u"\\"
+    allowed = set(u"\\" + symbol for symbol in [
     # produced by our own microtypography or otherwise essential
-    '\\ ', '\\,', '\\%', '\\dots', '\\\\', '\\"', '\\acronym', '\\&',
-    '\\#', '\\caret',
+    u' ', u',', u'%', u'dots', u'\\', u'"', u'acronym', u'&',
+    u'#', u'caret',
     # other allowed commands; FIXME: complete and put to a separate file
     ## list of useful math commands mostly taken
     ## from 'A Guide To LaTeX' by Kopka
     ## greek letters
-    '\\alpha', '\\beta', '\\gamma', '\\delta', '\\epsilon', '\\zeta',
-    '\\eta', '\\theta', '\\iota', '\\kappa', '\\lambda', '\\mu',
-    '\\nu', '\\xi', '\\pi', '\\rho', '\\sigma', '\\tau', '\\upsilon',
-    '\\phi', '\\chi', '\\psi', '\\omega', '\\Gamma', '\\Delta',
-    '\\Theta', '\\Lambda', '\\Xi', '\\Pi', '\\Sigma', '\\Phi', '\\Psi',
-    '\\Omega', '\\varepsilon', '\\vartheta', '\\varpi', '\\varrho',
-    '\\varsigma', '\\varphi',
+    u'alpha', u'beta', u'gamma', u'delta', u'epsilon', u'zeta',
+    u'eta', u'theta', u'iota', u'kappa', u'lambda', u'mu',
+    u'nu', u'xi', u'pi', u'rho', u'sigma', u'tau', u'upsilon',
+    u'phi', u'chi', u'psi', u'omega', u'Gamma', u'Delta',
+    u'Theta', u'Lambda', u'Xi', u'Pi', u'Sigma', u'Phi', u'Psi',
+    u'Omega', u'varepsilon', u'vartheta', u'varpi', u'varrho',
+    u'varsigma', u'varphi',
     ## math layout
-    '\\frac', '\\sqrt', '\\sum', '\\int', '\\ldots', '\\cdots',
-    '\\vdots', '\\ddots', '\\oint', '\\prod', '\\coprod'
+    u'frac', u'sqrt', u'sum', u'int', u'ldots', u'cdots',
+    u'vdots', u'ddots', u'oint', u'prod', u'coprod'
     ## math symbols
-    '\\pm', '\\cap', '\\circ', '\\bigcirc' '\\mp', '\\cup', '\\bullet',
-    '\\Box' '\\times', '\\uplus', '\\diamond', '\\Diamond', '\\div',
-    '\\sqcap', '\\bigtriangleup', '\\cdot', '\\sqcup',
-    '\\bigtriangledown', '\\ast', '\\vee', '\\unlhd', '\\triangleleft',
-    '\\star', '\\wedge', '\\unrhd', '\\triangleright', '\\dagger',
-    '\\oplus', '\\oslash', '\\setminus', '\\ddagger', '\\ominus',
-    '\\odot', '\\wr', '\\amalg', '\\otimes',
+    u'pm', u'cap', u'circ', u'bigcirc' u'mp', u'cup', u'bullet',
+    u'Box' u'times', u'uplus', u'diamond', u'Diamond', u'div',
+    u'sqcap', u'bigtriangleup', u'cdot', u'sqcup',
+    u'bigtriangledown', u'ast', u'vee', u'unlhd', u'triangleleft',
+    u'star', u'wedge', u'unrhd', u'triangleright', u'dagger',
+    u'oplus', u'oslash', u'setminus', u'ddagger', u'ominus',
+    u'odot', u'wr', u'amalg', u'otimes',
     ## math relations
-    '\\le', '\\leq', '\\ge', '\\geq', '\\neq', '\\sim', '\\ll', '\\gg',
-    '\\doteq', '\\simeq', '\\subset', '\\supset', '\\approx', '\\asymp',
-    '\\subseteq', '\\supseteq', '\\cong', '\\smile', '\\sqsubset',
-    '\\sqsupset', '\\equiv', '\\frown', '\\sqsubseteq', '\\sqsupseteq',
-    '\\propto', '\\bowtie', '\\in', '\\ni', '\\prec', '\\succ',
-    '\\vdash', '\\dashv', '\\preceq', '\\succeq', '\\models', '\\perp',
-    '\\parallel', '\\mid',
+    u'le', u'leq', u'ge', u'geq', u'neq', u'sim', u'll', u'gg',
+    u'doteq', u'simeq', u'subset', u'supset', u'approx', u'asymp',
+    u'subseteq', u'supseteq', u'cong', u'smile', u'sqsubset',
+    u'sqsupset', u'equiv', u'frown', u'sqsubseteq', u'sqsupseteq',
+    u'propto', u'bowtie', u'in', u'ni', u'prec', u'succ',
+    u'vdash', u'dashv', u'preceq', u'succeq', u'models', u'perp',
+    u'parallel', u'mid',
     ## negations
-    '\\not', '\\notin',
+    u'not', u'notin',
     ## arrows
-    '\\leftarrow', '\\gets', '\\longleftarrow', '\\uparrow',
-    '\\Leftarrow', '\\Longleftarrow', '\\Uparrow', '\\rightarrow',
-    '\\to', '\\longrightarrow', '\\downarrow', '\\Rightarrow',
-    '\\Longrightarrow', '\\Downarrow', '\\leftrightarrow',
-    '\\longleftrightarrow', '\\updownarrow', '\\Leftrightarrow',
-    '\\Longleftrightarrow', '\\Updownarrow', '\\mapsto', '\\longmapsto',
-    '\\nearrow', '\\hookleftarrow', '\\hookrightarrow', '\\searrow',
-    '\\leftharpoonup', '\\rightharpoonup', '\\swarrow',
-    '\\leftharpoondown', '\\rightharpoondown', '\\nwarrow',
-    '\\rightleftharpoons', '\\leadsto',
+    u'leftarrow', u'gets', u'longleftarrow', u'uparrow',
+    u'Leftarrow', u'Longleftarrow', u'Uparrow', u'rightarrow',
+    u'to', u'longrightarrow', u'downarrow', u'Rightarrow',
+    u'Longrightarrow', u'Downarrow', u'leftrightarrow',
+    u'longleftrightarrow', u'updownarrow', u'Leftrightarrow',
+    u'Longleftrightarrow', u'Updownarrow', u'mapsto', u'longmapsto',
+    u'nearrow', u'hookleftarrow', u'hookrightarrow', u'searrow',
+    u'leftharpoonup', u'rightharpoonup', u'swarrow',
+    u'leftharpoondown', u'rightharpoondown', u'nwarrow',
+    u'rightleftharpoons', u'leadsto',
     ## various symbols
-    '\\aleph', '\\prime', '\\forall', '\\hbar', '\\emptyset',
-    '\\exists', '\\imath', '\\nablaa', '\\neg', '\\triangle', '\\jmath',
-    '\\surd', '\\flat', '\\clubsuit', '\\ell', '\\partial', '\\natural',
-    '\\diamondsuit', '\\wp', '\\top', '\\sharp', '\\heartsuit', '\\Re',
-    '\\bot', '\\spadesuit', '\\Im', '\\vdash', '\\angle', '\\Join',
-    '\\mho', '\\dashv', '\\backslash', '\\infty',
+    u'aleph', u'prime', u'forall', u'hbar', u'emptyset',
+    u'exists', u'imath', u'nablaa', u'neg', u'triangle', u'jmath',
+    u'surd', u'flat', u'clubsuit', u'ell', u'partial', u'natural',
+    u'diamondsuit', u'wp', u'top', u'sharp', u'heartsuit', u'Re',
+    u'bot', u'spadesuit', u'Im', u'vdash', u'angle', u'Join',
+    u'mho', u'dashv', u'backslash', u'infty',
     ## big symbols
-    '\\bigcap', '\\bigodot', '\\bigcup', '\\bigotimes', '\\bigsqcup',
-    '\\bigoplus', '\\bigvee', '\\biguplus', '\\bigwedge',
+    u'bigcap', u'bigodot', u'bigcup', u'bigotimes', u'bigsqcup',
+    u'bigoplus', u'bigvee', u'biguplus', u'bigwedge',
     ## function names
-    '\\arccos', '\\cosh', '\\det', '\\inf' '\\limsup', '\\Pr', '\\tan',
-    '\\arcsin', '\\cot', '\\dim', '\\ker', '\\ln', '\\sec', '\\tanh',
-    '\\arctan', '\\coth', '\\exp', '\\lg', '\\log', '\\sin', '\\arg',
-    '\\csc', '\\gcd', '\\lim', '\\max', '\\sinh', '\\cos', '\\deg',
-    '\\hom', '\\liminf', '\\min', '\\sup',
+    u'arccos', u'cosh', u'det', u'inf' u'limsup', u'Pr', u'tan',
+    u'arcsin', u'cot', u'dim', u'ker', u'ln', u'sec', u'tanh',
+    u'arctan', u'coth', u'exp', u'lg', u'log', u'sin', u'arg',
+    u'csc', u'gcd', u'lim', u'max', u'sinh', u'cos', u'deg',
+    u'hom', u'liminf', u'min', u'sup',
     ## accents
-    '\\hat', '\\breve', '\\grave', '\\bar', '\\check', '\\acute',
-    '\\ti1de', '\\vec', '\\dot', '\\ddot', '\\mathring',
+    u'hat', u'breve', u'grave', u'bar', u'check', u'acute',
+    u'ti1de', u'vec', u'dot', u'ddot', u'mathring',
     ## parens
-    '\\left', '\\right', '\\lfloor', '\\rfloor', '\\lceil', '\\rceil',
-    '\\langle', '\\rangle',
+    u'left', u'right', u'lfloor', u'rfloor', u'lceil', u'rceil',
+    u'langle', u'rangle',
     ## misc
-    '\\stackrel', '\\binom', '\\mathbb'
+    u'stackrel', u'binom', u'mathbb'
     # FIXME think about including environments, these can come up in complex
     # mathematical formulas, but they could also be abused (more in the "we
     # don't want users to make typesetting decisions" style of misuse, than
     # anything critical).
     # ## environments
-    # '\\begin', '\\end',
-    ]
+    # u'begin', u'end',
+    ])
 
     command_re = re.compile("(%s(?:[a-zA-Z]+|.))" % re.escape(escapechar))
 
     def forbid(self, word):
-        return '\\forbidden' + word
+        return u'\\forbidden' + word
 
     def __call__(self, word):
         for part in self.command_re.split(word):
@@ -312,7 +312,7 @@ class EscapeCommands:
                     # Oh, a backslash at end of input;
                     # maybe we broke into words incorrectly,
                     # so just return something safe.
-                    yield '\\@\\ '
+                    yield u'\\@\\textbackslash{}'
                 else:
                     yield self.forbid(part)
             else:
@@ -320,7 +320,7 @@ class EscapeCommands:
 
 escapeCommands = EscapeCommands()
 
-escapeEndEdnote = Escaper(r"\end{ednote}", "|end{ednote}")
+escapeEndEdnote = Escaper(u"\\end{ednote}", u"|end{ednote}")
 # Escpage the string \\end{ednote}, so that ednotes end
 # where we expect them to end.
 
@@ -336,15 +336,21 @@ def applyMicrotypefeatures(wordlist, featurelist):
     sequentially apply (in the sense wordlist >>= feature)
     the features to the wordlist. Return the concatenation
     of the result.
+    @type wordlist: [unicode]
     """
     for feature in featurelist:
         wordlistlist = []
         for word in wordlist:
+            assert isinstance(word, unicode)
             wordlistlist.append(feature(word))
         wordlist = itertools.chain(*wordlistlist)
     return ''.join(wordlist)
 
 def defaultMicrotype(text):
+    """
+    @type text: unicode
+    """
+    assert isinstance(text, unicode)
     # FIXME '-' should not be a separator so we are able to detect dashes '--'
     #       however this will break NaturalNumbers for negative inputs
     separators = ' \t,;()-\n' # no point, might be in abbreviations
@@ -449,6 +455,7 @@ class PLeaf(PTree):
     A piece of text that contains no further substructure.
     """
     def __init__(self, text):
+        assert isinstance(text, unicode)
         self.text = text
 
     def debug(self):
@@ -462,11 +469,11 @@ class PLeaf(PTree):
 
     def toHtml(self):
         result = self.text
-        result = re.sub('&', '&amp;', result)
-        result = re.sub('<', '&lt;', result)
-        result = re.sub('>', '&gt;', result)
-        result = re.sub('"', '&#34;', result)
-        result = re.sub("'", '&#39;', result)
+        result = result.replace(u'&', u'&amp;')
+        result = result.replace(u'<', u'&lt;')
+        result = result.replace(u'>', u'&gt;')
+        result = result.replace(u'"', u'&#34;')
+        result = result.replace(u"'", u'&#39;')
         return result
 
     def toDF(self):
@@ -492,7 +499,7 @@ class PEmph(PTree):
         return '<em>%s</em>' % self.text.toHtml()
 
     def toDF(self):
-        return '_%s_' % self.text.toDF()
+        return u'_%s_' % self.text.toDF()
 
     def toEstimate(self):
         return self.text.toEstimate()
@@ -508,13 +515,13 @@ class PMath(PTree):
         return ('math', self.text.text)
 
     def toTex(self):
-        return '$%1s$' % mathMicrotype(self.text.text)
+        return u'$%1s$' % mathMicrotype(self.text.text)
 
     def toHtml(self):
         return '$%1s$' % self.text.toHtml()
 
     def toDF(self):
-        return '$%1s$' % self.text.toDF()
+        return u'$%1s$' % self.text.toDF()
 
     def toEstimate(self):
         return self.text.toEstimate()
@@ -536,7 +543,7 @@ class PDisplayMath(PTree):
         return "<div class=\"displaymath\">$$%1s$$</div>" % self.text.toHtml()
 
     def toDF(self):
-        return '$$%1s$$' % self.text.toDF()
+        return u'$$%1s$$' % self.text.toDF()
 
     def toEstimate(self):
         return Estimate.fromText(self.text.text).fullline() + \
@@ -558,7 +565,7 @@ class PEdnote(PTree):
         return ('Ednote', self.text.text)
 
     def toTex(self):
-        return '\n\\begin{ednote}\n%s\n\\end{ednote}\n' % \
+        return u'\n\\begin{ednote}\n%s\n\\end{ednote}\n' % \
                 ednoteMicrotype(self.text.text)
 
     def toHtml(self):
@@ -567,12 +574,10 @@ class PEdnote(PTree):
     def toDF(self):
         # find a bracket combination not in the text
         text = self.text.toDF()
-        openbracket = '{'
-        closebracket = '}'
-        while text.find(closebracket) >= 0:
-            openbracket = openbracket + '{'
-            closebracket = closebracket + '}'
-        return '\n%s\n%s\n%s\n' % (openbracket, text, closebracket)
+        n = 1
+        while text.find(u'}' * n) >= 0:
+            n += 1
+        return u'\n%s\n%s\n%s\n' % (u'{' * n, text, u'}' * n)
 
     def toEstimate(self):
         return Estimate.fromEdnote(self.text.text)
@@ -588,13 +593,13 @@ class PParagraph(PTree):
         return self.it.isEmpty()
 
     def toTex(self):
-        return '\n' + wrap(self.it.toTex()) + '\n'
+        return u'\n%s\n' % wrap(self.it.toTex())
 
     def toHtml(self):
         return '\n<p>\n'  + self.it.toHtml() + '\n</p>\n'
 
     def toDF(self):
-        return '\n\n' + self.it.toDF() + '\n'
+        return u'\n\n%s\n' % self.it.toDF()
 
     def toEstimate(self):
         return self.it.toEstimate().fullline()
@@ -608,20 +613,15 @@ class PHeading(PTree):
         return ('Heading', self.level, self.getTitle())
 
     def toTex(self):
-        return '\n\\%ssection{%s}\n' % ("sub" * self.level, self.title.toTex())
+        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.title.toTex())
 
     def toHtml(self):
-        return ('\n<h%d>%s</h%d>\n' %
-                (self.level + 1, self.title.toHtml(), self.level + 1))
+        n = self.level + 1
+        return u'\n<h%d>%s</h%d>\n' % (n, self.title.toHtml(), n)
 
     def toDF(self):
-        result = '\n\n'
-        for _ in range(self.level + 1):
-            result = result + '['
-        result = result + self.title.toDF()
-        for _ in range(self.level + 1):
-            result = result + ']'
-        return result
+        n = self.level + 1
+        return u'\n\n%s%s%s' % (u'[' * n, self.title.toDF(), u']' * n)
 
     def getLevel(self):
         return self.level
@@ -643,13 +643,13 @@ class PAuthor(PTree):
         return ('Author', self.getAuthor())
 
     def toTex(self):
-        return '\\authors{%s}\n' % self.author.toTex()
+        return u'\\authors{%s}\n' % self.author.toTex()
 
     def toHtml(self):
-        return '<i>%s</i>' % self.author.toHtml()
+        return u'<i>%s</i>' % self.author.toHtml()
 
     def toDF(self):
-        return '\n(%s)' % self.author.toDF()
+        return u'\n(%s)' % self.author.toDF()
 
     def toEstimate(self):
         return Estimate.fromParagraph(self.getAuthor())
@@ -669,7 +669,7 @@ class PDescription(PTree):
         return '\n<p><b>' + self.key.toHtml() + '</b> ' + self.value.toHtml() + '\n</p>\n'
 
     def toDF(self):
-        return '\n\n*%1s* %s' % (self.key.toDF(), self.value.toDF())
+        return u'\n\n*%1s* %s' % (self.key.toDF(), self.value.toDF())
 
     def toEstimate(self):
         return self.key.toEstimate() + self.value.toEstimate()
@@ -688,14 +688,9 @@ class PItemize(PTree):
         return self.isEnum
 
     def toTex(self):
-        itemtype =  'itemize'
-        if self.isEnumerate():
-            itemtype = 'enumerate'
-        result = '\n\\begin{%s}' % itemtype
-        for item in self.items:
-            result = result + item.toTex()
-        result = result + ('\n\\end{%s}\n' % itemtype)
-        return result
+        itemtype = u'enumerate' if self.isEnumerate() else u'itemize'
+        body = u''.join(item.toTex() for item in self.items)
+        return u'\n\\begin{%s}%s\n\\end{%s}\n' % (itemtype, body, itemtype)
 
     def toHtml(self):
         itemtype =  'ul'
@@ -708,10 +703,7 @@ class PItemize(PTree):
         return result
 
     def toDF(self):
-        result = '\n'
-        for item in self.items:
-            result = result + item.toDF()
-        return result
+        return u"\n" + u"".join(item.toDF() for item in self.items)
 
     def toEstimate(self):
         return functools.reduce(lambda a, b: a + b + Estimate.emptyLines(0.5),
@@ -731,19 +723,20 @@ class PItem(PTree):
         return self.number is not None
 
     def toTex(self):
+        body = wrap(u'\\item ' + self.it.toTex(), subsequent_indent=u'  ')
         if self.number is None:
-            return '\n' + wrap('\\item ' + self.it.toTex(), subsequent_indent='  ')
+            return u'\n' + body
         else:
-            return '\n% ' + self.number + '\n' + wrap('\\item ' + self.it.toTex(), subsequent_indent='  ')
+            return u'\n%% %s\n%s' % (self.number, body)
 
     def toHtml(self):
         return '\n<li> ' + self.it.toHtml()
 
     def toDF(self):
         if self.number is None:
-            return '\n- ' + self.it.toDF()
+            return u'\n- ' + self.it.toDF()
         else:
-            return '\n' + self.number + '. ' + self.it.toDF()
+            return u'\n%s. %s' % (self.number, self.it.toDF())
 
     def toEstimate(self):
         return self.it.toEstimate()
@@ -757,7 +750,7 @@ class Chargroup:
     group, like an emphasis, or a math environment.
     """
     def __init__(self, initial=None):
-        self.text = ''
+        self.text = u''
         if initial is not None:
             self.append(initial)
 
@@ -813,22 +806,22 @@ class Emphgroup(Chargroup):
 
     @classmethod
     def startshere(self, char, lookahead=None):
-        return char == '_'
+        return char == u'_'
 
     def rejectcontinuation(self, char):
         if len(self.text) < 2:
             return False
-        return self.text.endswith('_')
+        return self.text.endswith(u'_')
 
     def enforcecontinuation(self, char):
         ## Force to get the closing _
         if self.rejectcontinuation(char):
             return False
-        return char == '_'
+        return char == u'_'
 
     def parse(self):
-        assert self.text.startswith("_")
-        if self.text.endswith("_"):
+        assert self.text.startswith(u"_")
+        if self.text.endswith(u"_"):
             return PEmph(self.text[1:-1])
         else:
             return PEmph(self.text[1:])
@@ -846,17 +839,17 @@ class Mathgroup(Chargroup):
 
     @classmethod
     def startshere(self, char, lookahead=None):
-        return char == '$' and not lookahead == '$'
+        return char == u'$' and lookahead != u'$'
 
     def append(self, chars):
         for c in chars:
             self.text = self.text + c
             self.count = self.count + 1
-            if c == '$' and self.count > 2:
+            if c == u'$' and self.count > 2:
                 if self.trailingbackslashs % 2 == 0:
                     self.done = True
 
-            if c == '\\':
+            if c == u'\\':
                 self.trailingbackslashs = self.trailingbackslashs + 1
             else:
                 self.trailingbackslashs = 0
@@ -869,9 +862,9 @@ class Mathgroup(Chargroup):
 
     def parse(self):
         result = self.text
-        if result.startswith('$'):
+        if result.startswith(u'$'):
             result = result[1:]
-        if result.endswith('$'):
+        if result.endswith(u'$'):
             result = result[:-1]
         return PMath(result)
 
@@ -890,13 +883,13 @@ class DisplayMathGroup(Chargroup):
 
     @classmethod
     def startshere(self, char, lookahead=None):
-        return char == '$' and lookahead == '$'
+        return char == u'$' and lookahead == u'$'
 
     def append(self, chars):
         for c in chars:
             self.text = self.text + c
             self.count = self.count + 1
-            if c == '$' and self.count > 2:
+            if c == u'$' and self.count > 2:
                 if self.trailingdollar == 1:
                     self.done = True
                 elif self.trailingbackslashs % 2 == 0:
@@ -905,7 +898,7 @@ class DisplayMathGroup(Chargroup):
                 else:
                     self.trailingbackslashs = 0
                     self.trailingdollar = 0
-            elif c == '\\':
+            elif c == u'\\':
                 self.trailingdollar = 0
                 self.trailingbackslashs += 1
             else:
@@ -920,12 +913,12 @@ class DisplayMathGroup(Chargroup):
 
     def parse(self):
         result = self.text
-        if result.startswith('$$'):
+        if result.startswith(u'$$'):
             result = result[2:]
-        if result.endswith('$$'):
+        if result.endswith(u'$$'):
             result = result[:-2]
-        if result.endswith('$'):
-            result = result + ' '
+        if result.endswith(u'$'):
+            result += u' '
         return PDisplayMath(result)
 
 
@@ -964,8 +957,11 @@ def groupchars(text, supportedgroups):
 
 
 def defaultInnerParse(lines):
+    """
+    @type lines: [unicode]
+    """
     features = [Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup]
-    text = '\n'.join(lines)
+    text = u'\n'.join(lines)
     groups = groupchars(text, features)
     if len(groups) == 1:
         return groups[0].parse()
@@ -1046,7 +1042,7 @@ class Paragraph(Linegroup):
         return PParagraph(defaultInnerParse(self.lines))
 
 def splitleftbracket(line):
-    openings = set(['(', '[', '{'])
+    openings = set([u'(', u'[', u'{'])
     bracket, rest = '', ''
     stillbracket = True
     for i in range(len(line)):
@@ -1061,8 +1057,8 @@ def splitleftbracket(line):
 
 def splitrightbracket(line):
     line = line.rstrip()
-    closings = set([')', ']', '}'])
-    bracket, rest = '', ''
+    closings = set([u')', u']', u'}'])
+    bracket, rest = u'', u''
     stillbracket = True
     for i in range(len(line)):
         c = line[len(line)-i-1]
@@ -1080,7 +1076,7 @@ def isMirrorBracket(firstline, lastline):
     Return True iff lastline ends with the matching
     bigbracket to the one the firstline starts with.
     """
-    closing = { '{' : '}', '(' : ')', '<' : '>', '[' : ']' }
+    closing = { u'{' : u'}', u'(' : u')', u'<' : u'>', u'[' : u']' }
 
     left = splitleftbracket(firstline)[0]
     right = splitrightbracket(lastline)[-1]
@@ -1110,7 +1106,7 @@ class Ednote(Linegroup):
 
     @classmethod
     def startshere(self, line, after=None):
-        return line.startswith('{')
+        return line.startswith(u'{')
 
     def enforcecontinuation(self, line):
         if len(self.lines) < 1:
@@ -1134,13 +1130,13 @@ class Ednote(Linegroup):
 
         start = splitleftbracket(self.lines[0])[1]
         if len(start) > 0:
-            start = start + '\n'
+            start += u'\n'
         end = splitrightbracket(self.lines[-1])[0]
 
         if len(self.lines) > 2 and len(end) != 0:
-            end = '\n' + end
+            end = u'\n' + end
 
-        return PEdnote(start + '\n'.join(self.lines[1:-1]) + end)
+        return PEdnote(start + u'\n'.join(self.lines[1:-1]) + end)
 
 
 class Heading(Linegroup):
@@ -1152,26 +1148,23 @@ class Heading(Linegroup):
 
     @classmethod
     def startshere(self, line, after=None):
-        return line.startswith('[') and not line.startswith('[[')
+        return line.startswith(u'[') and not line.startswith(u'[[')
 
     def enforcecontinuation(self, line):
         if isemptyline(line):
             return False
         if len(self.lines) < 1:
             return True
-        return ']' not in set(self.lines[-1])
+        return u']' not in set(self.lines[-1])
 
     def rejectcontinuation(self, line):
         return not self.enforcecontinuation(line)
 
     def getTitle(self):
-        title = ' '.join(self.lines)
-        while title.startswith('['):
-            title = title[1:]
-        while title.endswith((' ', '\t')):
-            title = title[:-1]
-        while title.endswith(']'):
-            title = title[:-1]
+        title = u' '.join(self.lines)
+        title = title.lstrip(u'[')
+        title = title.rstrip(u' \t')
+        title = title.rstrip(u']')
         return title
 
     def parse(self):
@@ -1186,7 +1179,7 @@ class Subheading(Heading):
 
     @classmethod
     def startshere(self, line, after=None):
-        return line.startswith('[[') and not line.startswith('[[[')
+        return line.startswith(u'[[') and not line.startswith(u'[[[')
 
     def parse(self):
         return PHeading(self.getTitle(), 1)
@@ -1200,26 +1193,23 @@ class Author(Linegroup):
 
     @classmethod
     def startshere(self, line, after=None):
-        return line.startswith('(') and isinstance(after, Heading)
+        return line.startswith(u'(') and isinstance(after, Heading)
 
     def enforcecontinuation(self, line):
         if isemptyline(line):
             return False
         if len(self.lines) < 1:
             return True
-        return ')' not in set(self.lines[-1])
+        return u')' not in set(self.lines[-1])
 
     def rejectcontinuation(self, line):
         return not self.enforcecontinuation(line)
 
     def parse(self):
-        author = ' '.join(self.lines)
-        while author.startswith('('):
-            author = author[1:]
-        while author.endswith((' ', '\t')):
-            author = author[:-1]
-        while author.endswith(')'):
-            author = author[:-1]
+        author = u' '.join(self.lines)
+        author = author.lstrip(u'(')
+        author = author.rstrip(u' \t')
+        author = author.rstrip(u')')
         return PAuthor(author)
 
 class Item(Linegroup):
@@ -1235,13 +1225,13 @@ class Item(Linegroup):
 
     @classmethod
     def startshere(self, line, after=None):
-        return line.startswith('- ')
+        return line.startswith(u'- ')
 
     def parse(self):
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines))
         firstline = self.lines[0]
-        if firstline.startswith('- '):
+        if firstline.startswith(u'- '):
             firstline = firstline[2:]
         withcleanedfirstline = [firstline]
         withcleanedfirstline.extend(self.lines[1:])
@@ -1283,18 +1273,18 @@ class Description(Linegroup):
 
     @classmethod
     def startshere(self, line, after=None):
-        return line.startswith('*')
+        return line.startswith(u'*')
 
     def parse(self):
         if len(self.lines) < 1:
             return PLeaf('')
-        text = '\n'.join(self.lines).strip()
-        while text.startswith('*'):
+        text = u'\n'.join(self.lines).strip()
+        while text.startswith(u'*'):
             text = text[1:]
-        keyrest = text.split('*', 1)
+        keyrest = text.split(u'*', 1)
         if len(keyrest) < 2:
             # No terminating *, fall back to use the first space
-            keyrest = text.split(' ', 1)
+            keyrest = text.split(u' ', 1)
         if len(keyrest) < 2:
             # No space either. Use line.
             keyrest = (text, "")
@@ -1369,6 +1359,9 @@ def groupItems(ptrees):
 dffeatures =  [Paragraph, Heading, Author, Subheading, Item, EnumerateItem, Description, Ednote]
 
 def dfLineGroupParser(text):
+    """
+    @type text: unicode
+    """
     groups = grouplines(text.splitlines(), dffeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)

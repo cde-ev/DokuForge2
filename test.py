@@ -78,13 +78,16 @@ class UserDBTests(DfTestCase):
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course42'))
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course4711'))
         self.academy = Academy(os.path.join(self.tmpdir, b'aca123'),
-                               lambda : ['abc', 'cde'])
+                               lambda : [u'abc', u'cde'])
         self.academy.setgroups([u'cde'])
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
 
     def getUser(self, user):
+        """
+        @type user: unicode
+        """
         self.userdb.load()
         return self.userdb.db.get(user)
 
@@ -98,7 +101,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_view_aca123 True,kurs_read_aca123_course42 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
@@ -110,7 +113,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_read_aca123 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, recursive=True))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
@@ -123,7 +126,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_view_aca123 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertFalse(user.allowedRead(self.academy, recursive=True))
 
     def testReadRevoke(self):
@@ -133,7 +136,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_read_aca123 True,kurs_read_aca123_course42 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
@@ -145,7 +148,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = kurs_write_aca123_course42 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertFalse(user.allowedWrite(self.academy))
         self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
         self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
@@ -157,7 +160,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_write_aca123 True,kurs_write_aca123_course42 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedWrite(self.academy))
         self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
@@ -169,7 +172,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = df_superadmin True,kurs_read_aca123_course42 False,kurs_write_aca123_course4711 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
         self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
@@ -183,7 +186,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_meta_aca123 True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
     def testMetaGroup(self):
@@ -193,7 +196,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = gruppe_meta_cde True
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
     def testMetaRevoke(self):
@@ -203,7 +206,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = gruppe_meta_cde True,akademie_meta_aca123 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertFalse(user.allowedMeta(self.academy))
 
     def testGlobalNonRevoke(self):
@@ -213,7 +216,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = df_meta True,akademie_meta_aca123 False
 """)
-        user = self.getUser("userfoo")
+        user = self.getUser(u"userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
 class DokuforgeWebTests(DfTestCase):
@@ -744,49 +747,49 @@ class AcademyTest(DfTestCase):
         self.assertEqual(set(names), set(namesfound))
 
     def testLegacyCoursePresent(self):
-        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.assertCourses([b'legacy', b'new01', b'new02'])
         self.assertDeadCourses([])
 
     def testDeleteCourse(self):
         self.academy.getCourse(u'new01').delete()
-        self.assertCourses([u'legacy', u'new02'])
-        self.assertDeadCourses([u'new01'])
+        self.assertCourses([b'legacy', b'new02'])
+        self.assertDeadCourses([b'new01'])
 
     def testDeleteLegacyCourse(self):
         self.academy.getCourse(u'legacy').delete()
-        self.assertCourses([u'new01', u'new02'])
-        self.assertDeadCourses([u'legacy'])
+        self.assertCourses([b'new01', b'new02'])
+        self.assertDeadCourses([b'legacy'])
 
     def testCourseDeleteUndelete(self):
         self.academy.getCourse(u'new01').delete()
-        self.assertDeadCourses([u'new01'])
+        self.assertDeadCourses([b'new01'])
         self.academy.getCourse(u'new01').undelete()
-        self.assertCourses([u'legacy', u'new01', u'new02'])
+        self.assertCourses([b'legacy', b'new01', b'new02'])
         self.assertDeadCourses([])
 
 class DokuforgeMockTests(DfTestCase):
+    def verify_idempotency(self, inp):
+        inp2 = dfLineGroupParser(inp).toDF()
+        inp3 = dfLineGroupParser(inp2).toDF()
+        self.assertEqual(inp2, inp3, "original input was %r" % inp)
+
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
         for _ in range(rounds):
             for l in range(minlength, maxlength):
-                inp = "".join(random.choice("aA \n*[()]1.$<>&\"{}_\\-")
+                inp = u"".join(random.choice(u"aA \n*[()]1.$<>&\"{}_\\-")
                               for _ in range(l))
-                inp2 = dfLineGroupParser(inp).toDF()
-                inp3 = dfLineGroupParser(inp2).toDF()
-                self.assertEqual(inp2, inp3, "original input was %r" % inp)
+                self.verify_idempotency(inp)
 
     def testParserIdempotency1(self):
-        inp = '_a\n[[[\n\n"'
-        inp2 = dfLineGroupParser(inp).toDF()
-        inp3 = dfLineGroupParser(inp2).toDF()
-        self.assertEqual(inp2, inp3)
+        self.verify_idempotency(u'_a\n[[[\n\n"')
 
     def testHeadingHtmlEscape(self):
-        out = dfLineGroupParser("[bad < html chars >]").toHtml().strip()
-        self.assertEqual(out, "<h1>bad &lt; html chars &gt;</h1>")
+        out = dfLineGroupParser(u"[bad < html chars >]").toHtml().strip()
+        self.assertEqual(out, u"<h1>bad &lt; html chars &gt;</h1>")
 
     def testAuthorHtmlEscape(self):
-        out = dfLineGroupParser("[ok]\n(bad < author >)").toHtml().strip()
-        self.assertEqual(out, "<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
+        out = dfLineGroupParser(u"[ok]\n(bad < author >)").toHtml().strip()
+        self.assertEqual(out, u"<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
 
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
@@ -794,56 +797,62 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.assertEquals(obtained, tex)
 
     def testItemize(self):
-        self.verifyExportsTo('- Text',
-                             '\\begin{itemize}\n\\item Text\n\\end{itemize}')
-        self.verifyExportsTo('-Text', '-Text')
+        self.verifyExportsTo(u'- Text',
+                             u'\\begin{itemize}\n\\item Text\n\\end{itemize}')
+        self.verifyExportsTo(u'-Text', u'-Text')
 
 
     def testQuotes(self):
-        self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
-                             'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
-        self.verifyExportsTo('"Am Anfang" ...',
-                             '"`Am Anfang"\' \\dots{}')
-        self.verifyExportsTo('... "vor Kommata", ...',
-                             '\\dots{} "`vor Kommata"\', \\dots{}')
-        self.verifyExportsTo('... und "am Ende".',
-                             '\\dots{} und "`am Ende"\'.')
-        self.verifyExportsTo('"Vor und"\n"nach" Zeilenumbrüchen.',
-                             '"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
+        self.verifyExportsTo(u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
+                             u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
+        self.verifyExportsTo(u'"Am Anfang" ...',
+                             u'"`Am Anfang"\' \\dots{}')
+        self.verifyExportsTo(u'... "vor Kommata", ...',
+                             u'\\dots{} "`vor Kommata"\', \\dots{}')
+        self.verifyExportsTo(u'... und "am Ende".',
+                             u'\\dots{} und "`am Ende"\'.')
+        self.verifyExportsTo(u'"Vor und"\n"nach" Zeilenumbrüchen.',
+                             u'"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
 
     def testAbbrev(self):
-        self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                             'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
-        self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., er...',
-                             'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., er\\dots{}')
+        self.verifyExportsTo(u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                             u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
+        self.verifyExportsTo(u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., er...',
+                             u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., er\\dots{}')
 
     def testAcronym(self):
-        self.verifyExportsTo('Bitte ACRONYME anders setzen.',
-                             'Bitte \\acronym{ACRONYME} anders setzen.')
-        self.verifyExportsTo('Unterscheide T-shirt und DNA-Sequenz.',
-                             'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
+        self.verifyExportsTo(u'Bitte ACRONYME anders setzen.',
+                             u'Bitte \\acronym{ACRONYME} anders setzen.')
+        self.verifyExportsTo(u'Unterscheide T-shirt und DNA-Sequenz.',
+                             u'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
 
     def testEscaping(self):
-        self.verifyExportsTo('Do not allow \\dangerous commands!',
-                             'Do not allow \\forbidden\\dangerous commands!')
-        self.verifyExportsTo('\\\\ok',
-                             '\\\\ok')
-        self.verifyExportsTo('\\\\\\bad',
-                             '\\\\\\forbidden\\bad')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\% sind ein Zehntel')
-        self.verifyExportsTo('f# ist eine Note',
-                             'f\# ist eine Note')
-        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
-                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
-        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+        self.verifyExportsTo(u'Do not allow \\dangerous commands!',
+                             u'Do not allow \\forbidden\\dangerous commands!')
+        self.verifyExportsTo(u'\\\\ok',
+                             u'\\\\ok')
+        self.verifyExportsTo(u'\\\\\\bad',
+                             u'\\\\\\forbidden\\bad')
+        self.verifyExportsTo(u'10% sind ein Zehntel',
+                             u'10\\% sind ein Zehntel')
+        self.verifyExportsTo(u'f# ist eine Note',
+                             u'f\# ist eine Note')
+        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
+                             u'$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
+                             u'Heinemann\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo(u'Escaping in math: $\\evilmath$, but $\\mathbb C$',
+                             u'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+
+    def testTrails(self):
+        self.verifyExportsTo(u'trailing space ',
+                             u'trailing space')
+        self.verifyExportsTo(u'trailing backslash \\',
+                             u'trailing backslash \\@\\textbackslash{}')
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
-"""
+u"""
 
 {{
 
@@ -856,7 +865,7 @@ Bobby Tables...
 }}
 
 """,
-"""\\begin{ednote}
+u"""\\begin{ednote}
 
 Bobby Tables...
 
@@ -866,6 +875,15 @@ Bobby Tables...
 
 \\end{ednote}""")
 
+    def testStructures(self):
+        self.verifyExportsTo(u'[foo]\n(bar)',
+                             u'\\section{foo}\n\\authors{bar}')
+        self.verifyExportsTo(u'[[foo]]\n\n(bar)',
+                             u'\\subsection{foo}\n\n(bar)')
+        self.verifyExportsTo(u'- item\n\n-nonitem',
+                             u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem')
+        self.verifyExportsTo(u'1. item',
+                             u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}')
     def testNumeralScope(self):
         self.verifyExportsTo(u'10\xb3 Meter sind ein km',
                              u'10\xb3 Meter sind ein km')
@@ -876,44 +894,45 @@ class DokuforgeTitleParserTests(DfTestCase):
         self.assertEquals(obtained, tex)
 
     def testEscaping(self):
-        self.verifyExportsTo('Do not allow \\dangerous commands!',
-                             'Do not allow \\forbidden\\dangerous commands!')
-        self.verifyExportsTo('\\\\ok',
-                             '\\\\ok')
-        self.verifyExportsTo('\\\\\\bad',
-                             '\\\\\\forbidden\\bad')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\% sind ein Zehntel')
-        self.verifyExportsTo('f# ist eine Note',
-                             'f\# ist eine Note')
-        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
-                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
-        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+        self.verifyExportsTo(u'Do not allow \\dangerous commands!',
+                             u'Do not allow \\forbidden\\dangerous commands!')
+        self.verifyExportsTo(u'\\\\ok',
+                             u'\\\\ok')
+        self.verifyExportsTo(u'\\\\\\bad',
+                             u'\\\\\\forbidden\\bad')
+        self.verifyExportsTo(u'10% sind ein Zehntel',
+                             u'10\\% sind ein Zehntel')
+        self.verifyExportsTo(u'f# ist eine Note',
+                             u'f\# ist eine Note')
+        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
+                             u'$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
+                             u'Heinemann\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo(u'Escaping in math: $\\evilmath$, but $\\mathbb C$',
+                             u'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfTitleParser(df).toTex().strip()
         self.assertEquals(obtained, tex)
 
     def testEscaping(self):
-        self.verifyExportsTo('Do not allow \\dangerous commands!',
-                             'Do not allow \\forbidden\\dangerous commands!')
-        self.verifyExportsTo('\\\\ok',
-                             '\\\\ok')
-        self.verifyExportsTo('\\\\\\bad',
-                             '\\\\\\forbidden\\bad')
-        self.verifyExportsTo('10% sind ein Zehntel',
-                             '10\\% sind ein Zehntel')
-        self.verifyExportsTo('f# ist eine Note',
-                             'f\# ist eine Note')
-        self.verifyExportsTo('$a^b$ ist gut, aber a^b ist schlecht',
-                             '$a^b$ ist gut, aber a\\caret{}b ist schlecht')
-        self.verifyExportsTo('Heinemann&Co. ist vielleicht eine Firma',
-                             'Heinemann\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+        self.verifyExportsTo(u'Do not allow \\dangerous commands!',
+                             u'Do not allow \\forbidden\\dangerous commands!')
+        self.verifyExportsTo(u'\\\\ok',
+                             u'\\\\ok')
+        self.verifyExportsTo(u'\\\\\\bad',
+                             u'\\\\\\forbidden\\bad')
+        self.verifyExportsTo(u'10% sind ein Zehntel',
+                             u'10\\% sind ein Zehntel')
+        self.verifyExportsTo(u'f# ist eine Note',
+                             u'f\# ist eine Note')
+        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
+                             u'$a^b$ ist gut, aber a\\caret{}b ist schlecht')
+        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
+                             u'Heinemann\&Co. ist vielleicht eine Firma')
+        self.verifyExportsTo(u'Escaping in math: $\\evilmath$, but $\\mathbb C$',
+                             u'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
 if __name__ == '__main__':
     unittest.main()

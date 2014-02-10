@@ -152,14 +152,14 @@ class User:
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
-            aca = aca.name
+            aca = aca.name.decode("ascii")
         if course is None:
             pass
         elif isinstance(course, LazyView):
             course = course["name"]
         else:
             assert isinstance(course, Course)
-            course = course.name
+            course = course.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if course is None:
             if self.revokedPermission(u"akademie_read_%s" % aca) or \
@@ -207,14 +207,14 @@ class User:
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
-            aca = aca.name
+            aca = aca.name.decode("ascii")
         if course is None:
             pass
         elif isinstance(course, LazyView):
             course = course["name"]
         else:
             assert isinstance(course, Course)
-            course = course.name
+            course = course.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if course is None:
             if self.revokedPermission(u"akademie_write_%s" % aca):
@@ -255,7 +255,7 @@ class User:
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
-            aca = aca.name
+            aca = aca.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if self.revokedPermission(u"akademie_meta_%s" % aca):
             return False
@@ -325,6 +325,7 @@ class UserDB:
     """
     Class for the user database
 
+    @type db: {unicode: User}
     @ivar db: dictionary containing (username, User object) pairs
     @ivar storage: storage.CachingStorage object holding the userdb
     @ivar timestamp: time of last update, this is compared to the mtime of

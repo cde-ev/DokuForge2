@@ -34,12 +34,10 @@ def randstring(n=6):
 def strtobool(s):
     """
     @returns: Boolean version of s
-    @type s: str
+    @type s: unicode
     @rtype: bool
     """
-    if s == "True" or s == "true" or s == "t":
-        return True
-    return False
+    return s in (u"True", u"true", u"t")
 
 class CheckError(StandardError):
     def __init__(self, msg, exp):
@@ -165,12 +163,12 @@ def validateInternalName(name):
     for the internal representation. This means matching a certain
     regexp. Otherwise raise a CheckError.
 
-    @type name: str
+    @type name: unicode
     @param name: name to check
     @raises CheckError:
     """
-    assert isinstance(name, str)
-    if re.match('^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
+    assert isinstance(name, unicode)
+    if re.match(u'^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
         raise CheckError(u"Interner Name nicht wohlgeformt!",
                          u"Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten, muss mit einem Buchstaben beginnen und darf nicht mehr als 200 Zeichen enthalten.")
 
