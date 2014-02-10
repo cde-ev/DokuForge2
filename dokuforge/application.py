@@ -39,7 +39,7 @@ from dokuforge.parser import dfLineGroupParser, Estimate
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
-    commitid = "unknown"
+    commitid = u"unknown"
 
 sysrand = random.SystemRandom()
 
@@ -1682,7 +1682,7 @@ class Application:
             allowMathChange = False
         params = dict(
             user = rs.user,
-            commitid=commitid.decode("utf8"),
+            commitid=commitid,
             form=rs.request.form,
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail),
