@@ -4,7 +4,10 @@ Simple server listening on http://localhost:8800/ with a traceback middleware
 and logging requests to stdout.
 """
 
-from ConfigParser import SafeConfigParser
+try:
+    from ConfigParser import SafeConfigParser
+except ImportError:
+    from configparser import SafeConfigParser
 import sys
 from wsgiref.simple_server import make_server
 
