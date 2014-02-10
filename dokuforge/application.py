@@ -16,7 +16,10 @@ import random
 import sqlite3
 import time
 import urllib
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    from urllib import parse as urlparse
 
 import jinja2
 import werkzeug.exceptions
