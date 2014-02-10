@@ -20,6 +20,10 @@ try:
     import urlparse
 except ImportError:
     from urllib import parse as urlparse
+try:
+    unicode
+except NameError:
+    unicode = str
 
 import jinja2
 import werkzeug.exceptions

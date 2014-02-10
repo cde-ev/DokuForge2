@@ -22,6 +22,10 @@ except AttributeError:
             raise subprocess.CalledProcessError()
         return output
 
+try:
+    unicode
+except NameError:
+    unicode = str
 
 sysrand = random.SystemRandom()
 

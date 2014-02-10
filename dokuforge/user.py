@@ -5,6 +5,11 @@ except ImportError:
     import configparser as ConfigParser
 import io
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
 sysrand = random.SystemRandom()
 
 from dokuforge.common import strtobool, epoch

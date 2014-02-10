@@ -13,6 +13,11 @@ try:
 except ImportError:
     commitid = "unknown"
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
 class Academy(StorageDir):
     """
     Backend for manipulating the file structres related to an academy

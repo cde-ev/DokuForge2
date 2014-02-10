@@ -6,6 +6,10 @@ import textwrap
 import math
 import re
 
+try:
+    unicode
+except NameError:
+    unicode = str
 
 ## How To Read This File?
 ##

@@ -1,5 +1,10 @@
 import os
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
 from werkzeug.datastructures import FileStorage
 
 from dokuforge.common import check_output
