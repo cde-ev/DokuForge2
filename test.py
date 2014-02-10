@@ -154,7 +154,7 @@ class TarWriterTests(DfTestCase):
 
 class UserDBTests(DfTestCase):
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
+        self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.storage = CachingStorage(self.tmpdir, b"db")
         self.userdb = UserDB(self.storage)
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course42'))
@@ -301,7 +301,7 @@ permissions = df_meta True,akademie_meta_aca123 False
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
+        self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.pathconfig = PathConfig()
         self.pathconfig.rootdir = self.tmpdir
         createexample.main(size=1, pc=self.pathconfig)
@@ -834,7 +834,7 @@ permissions = df_superadmin True,df_admin True
 
 class CourseTests(DfTestCase):
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')
+        self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.course = Course(os.path.join(self.tmpdir, b'example'))
         
     def tearDown(self):
@@ -854,7 +854,7 @@ class CourseTests(DfTestCase):
 
 class AcademyTest(DfTestCase):
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')
+        self.tmpdir = tempfile.mkdtemp(prefix=u'dokuforge').encode("ascii")
         os.makedirs(os.path.join(self.tmpdir, b'example/legacy'))
         self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
         self.academy.createCourse(u'new01', u'erster neuer Kurs')
