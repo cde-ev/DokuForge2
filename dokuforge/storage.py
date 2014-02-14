@@ -6,6 +6,10 @@ import shutil
 import time
 import subprocess
 import re
+try:
+    unicode
+except NameError:
+    unicode = str
 
 from dokuforge.common import check_output, utc, epoch
 from dokuforge.common import validateRcsRevision
@@ -158,8 +162,8 @@ class Storage(object):
         @param content: the content of the file
         @type message: str
         """
-        if isinstance(content, basestring):
-            assert isinstance(content, bytes)
+        assert not isinstance(content, unicode)
+        if isinstance(content, bytes):
             content = io.BytesIO(content)
         logger.debug("storing %r" % self.fullpath())
 
