@@ -37,7 +37,7 @@ def main(size=100, pc=PathConfig()):
         pass
     userdbstore = pc.userdbstore
     if size > 10:
-        userdbstore.store("""
+        userdbstore.store(b"""
 [arthur]
 status = cde_dokubeauftragter
 password = mypass
@@ -50,7 +50,7 @@ password = secret
 permissions = df_show True,akademie_read_za2011-1 True,kurs_write_ya2011-1_course01 True,kurs_write_za2011-1_course01 True,df_export True,df_superadmin True,akademie_write_pa2010 True,kurs_read_ya2011-1_course02 True,akademie_read_ya2011-1 True,kurs_read_za2011-1_course01 True,akademie_write_ya2011-1 True,kurs_read_za2011-1_course02 True,akademie_read_pa2010 True,df_admin True,kurs_read_ya2011-1_course01 True
 """)
     else:
-        userdbstore.store("""
+        userdbstore.store(b"""
 [bob]
 name = bob
 status = cde_dokuteam
@@ -58,7 +58,7 @@ password = secret
 permissions = df_show True,akademie_read_za2011-1 True,kurs_write_ya2011-1_course01 True,kurs_write_za2011-1_course01 True,df_export True,df_superadmin True,akademie_write_pa2010 True,kurs_read_ya2011-1_course02 True,akademie_read_ya2011-1 True,kurs_read_za2011-1_course01 True,akademie_write_ya2011-1 True,kurs_read_za2011-1_course02 True,akademie_read_pa2010 True,df_admin True,kurs_read_ya2011-1_course01 True
 """)
     mygroupstore = pc.groupstore
-    mygroupstore.store("""[cde]
+    mygroupstore.store(b"""[cde]
 title = CdE-Akademien
 
 [qed]
