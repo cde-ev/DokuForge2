@@ -382,18 +382,15 @@ class UserDB:
         if self.storage.timestamp() <= self.timestamp:
             return
         config = ConfigParser.SafeConfigParser()
-        content = io.BytesIO(self.storage.content())
+        content = io.StringIO(self.storage.content().decode("utf8"))
         ## update time, since we read the new content
         self.timestamp = self.storage.cachedtime
         config.readfp(content)
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():
-            permissions = dict((perm.strip().split(' ')[0].decode("utf8"),
-                                strtobool(perm.strip().split(' ')[1].decode("utf8")))
-                for perm in config.get(name, 'permissions').split(','))
-            self.addUser(name.decode("utf8"),
-                         config.get(name, 'status').decode("utf8"),
-                         config.get(name, 'password').decode("utf8"),
-                         permissions)
-
+            permissions = dict((perm.strip().split(u' ')[0],
+                                strtobool(perm.strip().split(u' ')[1]))
+                for perm in config.get(name, u'permissions').split(u','))
+            self.addUser(name, config.get(name, u'status'),
+                         config.get(name, u'password'), permissions)
