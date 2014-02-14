@@ -72,12 +72,13 @@ class PathConfig(object):
 
     @property
     def staticservepath(self):
-        return self.cp.get(self.section, u"staticservepath").encode(
-                config_encoding)
+        """Unicode property!"""
+        return self.cp.get(self.section, u"staticservepath")
 
     @property
     def mathjaxuri(self):
-        return self.cp.get(self.section, u"mathjaxuri").encode(config_encoding)
+        """Unicode property!"""
+        return self.cp.get(self.section, u"mathjaxuri")
 
     @property
     def userdb(self):

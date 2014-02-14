@@ -346,8 +346,11 @@ class Application:
         @type name: str
         @param name: filename to serve statically
         @returns: url for the file
+        @rtype: unicode
         """
         assert isinstance(name, str)
+        if not isinstance(name, unicode):
+            name = name.decode("ascii")
         ## If staticservepath is a full url, the join is the staticservepath.
         static = urlparse.urljoin(rs.request.url_root, self.staticservepath)
         return urlparse.urljoin(static, name)
@@ -358,8 +361,11 @@ class Application:
         @type name: str
         @param name: filename to serve from mathjax
         @returns: url for the file
+        @rtype: unicode
         """
         assert isinstance(name, str)
+        if not isinstance(name, unicode):
+            name = name.decode("ascii")
         ## If mathjaxuri is a full url, the join is the mathjaxuri.
         mathjax = urlparse.urljoin(rs.request.url_root, self.mathjaxuri)
         return urlparse.urljoin(mathjax, name)
