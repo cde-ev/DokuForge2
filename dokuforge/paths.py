@@ -62,14 +62,13 @@ class PathConfig(object):
     @property
     def sessiondbpath(self):
         """path to a sqlite3 database dedicated to storing session
-        cookies. Unless a forking server is used ":memory:" is fine."""
-        return self.cp.get(self.section, u"sessiondbpath").encode(
-                config_encoding)
+        cookies. Unless a forking server is used ":memory:" is fine.
+        Unlike most other properties, this is a unicode properties."""
+        return self.cp.get(self.section, u"sessiondbpath")
 
     @sessiondbpath.setter
     def sessiondbpath(self, value):
-        self.cp.set(self.section, u"sessiondbpath",
-                    value.decode(config_encoding))
+        self.cp.set(self.section, u"sessiondbpath", value)
 
     @property
     def staticservepath(self):
