@@ -442,12 +442,12 @@ class Application:
         """
         try:
             config = ConfigParser.SafeConfigParser()
-            config.readfp(io.BytesIO(self.groupstore.content()))
+            config.readfp(io.StringIO(self.groupstore.content().decode("utf8")))
         except ConfigParser.ParsingError as err:
             return {}
         ret = {}
         for group in config.sections():
-            ret[group.decode("utf8")] = config.get(group, 'title').decode("utf8")
+            ret[group] = config.get(group, u'title')
         return ret
 
     @Request.application
