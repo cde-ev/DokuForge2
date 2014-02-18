@@ -40,17 +40,17 @@ def rlogv(filename):
     else:
         return None
 
-rcsseparator='----------------------------' 
+rcsseparator = b'----------------------------'
 
 def rloghead(filename):
     """
     Get relevant information for the head revision of the given rcs file
 
     @type filename: bytes
-    @returns: a str-object dict with information about the head commit; in particular,
-              it will contain the keys 'revision', 'author', and 'date'.
-              All values are str, except for the 'date' key which has a
-              datetime object associated.
+    @returns: a bytes-object dict with information about the head commit; in
+              particular, it will contain the keys b'revision', b'author', and
+              b'date'. All values are bytes, except for the b'date' key which
+              has a datetime object associated.
     """
     assert isinstance(filename, bytes)
     logger.debug("rloghead: looking up head revision info for %r" % filename)
@@ -63,22 +63,24 @@ def rloghead(filename):
     answer = {}
 
     revision = rlogv(filename)
-    answer['revision'] = revision
-    rlog = check_output(["rlog","-q","-r%s" % revision,filename], env=RCSENV)
+    answer[b'revision'] = revision
+    rlog = check_output(["rlog","-q","-r%s" % revision.decode("ascii"),
+                         filename], env=RCSENV)
     lines = rlog.splitlines()
-    while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
+    while lines[0] != rcsseparator or lines[1].split()[0] != b'revision':
         lines.pop(0)
     lines.pop(0)
     lines.pop(0)
     stateline = lines.pop(0)
-    params = stateline.split(';')
+    params = stateline.split(b';')
     for param in params:
-        keyvalue = param.split(': ',1)
+        keyvalue = param.split(b': ', 1)
         if len(keyvalue) > 1:
             answer[keyvalue[0].lstrip()]=keyvalue[1]
 
-    date = datetime.datetime.strptime(answer["date"], "%Y/%m/%d %H:%M:%S")
-    answer["date"] = date.replace(tzinfo=utc)
+    date = datetime.datetime.strptime(answer[b"date"].decode("ascii"),
+                                      "%Y/%m/%d %H:%M:%S")
+    answer[b"date"] = date.replace(tzinfo=utc)
     return answer
 
 class LockDir:
@@ -212,9 +214,9 @@ class Storage(object):
     def commitstatus(self, havelock=None):
         """
         Obtain information about the last change made to this storage object.
-        @returns: a str-object dict with information about the head commit;
-                  in particular, it will contain the keys 'revision', 'author',
-                  and 'date'. All values are str, except for the 'date' key
+        @returns: a bytes-object dict with information about the head commit;
+                  in particular, it will contain the keys b'revision', b'author',
+                  and b'date'. All values are bytes, except for the b'date' key
                   which has a datetime object associated.
         """
         self.ensureexistence(havelock=havelock)

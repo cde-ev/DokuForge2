@@ -61,7 +61,7 @@ class Outline:
         Add information about the last commit. Must contain at
         least revision, date, and author
 
-        @type info: {str: unicode or datetime}
+        @type info: {unicode: unicode or datetime}
         """
         assert 'date' in info.keys()
         assert 'author'  in info.keys()
@@ -184,11 +184,12 @@ class Course(StorageDir):
     def getcommit(self, page):
         """
         @type page: int
-        @rtype: {str: unicode or datetime}
+        @rtype: {unicode: unicode or datetime}
         """
         page = (u"page%d" % page).encode("ascii")
         info = self.getstorage(page).commitstatus()
-        return dict((k, v) if k == "date" else (k, v.encode("utf8"))
+        return dict((k.decode("ascii"), v) if k == b"date"
+                    else (k.decode("ascii"), v.decode("utf8"))
                     for k, v in info.items())
 
     def listdeadpages(self):
