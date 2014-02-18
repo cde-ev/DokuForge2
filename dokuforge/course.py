@@ -569,7 +569,7 @@ class Course(StorageDir):
         blobname = self.getstorage(blobbase + b".filename")
         bloblabel.store(label.encode("utf8"), user = user)
         blobcomment.store(comment.encode("utf8"), user = user)
-        blobname.store(filename.encode("utf8"), user = user)
+        blobname.store(filename, user=user)
 
     def lastchange(self):
         return common.findlastchange([self.getcommit(p) for p in self.listpages()])
