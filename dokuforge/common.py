@@ -157,12 +157,12 @@ def validateBlobFilename(filename):
     check whether a filename for a blob is valid. This means matching a certain
     regexp. Otherwise raise a CheckError.
 
-    @type filename: str
+    @type filename: bytes
     @param filename: filename to check
     @raises InvalidBlobFilename:
     """
-    assert isinstance(filename, str)
-    if re.match('^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
+    assert isinstance(filename, bytes)
+    if re.match(b'^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
         raise InvalidBlobFilename(u"Dateiname nicht wohlgeformt!",
                                   u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen. Der Dateinahme darf nicht mehr als 200 Zeichen enthalten.")
 
