@@ -219,15 +219,15 @@ def validateUserConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser.SafeConfigParser()
     try:
-        parser.readfp(io.BytesIO(config.encode("utf8")))
+        parser.readfp(io.StringIO(config))
     except ConfigParser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
-            parser.get(name, 'permissions')
-            parser.get(name, 'status')
-            parser.get(name, 'password')
+            parser.get(name, u'permissions')
+            parser.get(name, u'status')
+            parser.get(name, u'password')
     except ConfigParser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
@@ -242,13 +242,13 @@ def validateGroupConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser.SafeConfigParser()
     try:
-        parser.readfp(io.BytesIO(config.encode("utf8")))
+        parser.readfp(io.StringIO(config))
     except ConfigParser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
-            parser.get(name, 'title')
+            parser.get(name, u'title')
     except ConfigParser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
