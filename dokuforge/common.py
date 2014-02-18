@@ -252,7 +252,7 @@ def validateGroupConfig(config):
     parser = ConfigParser.SafeConfigParser()
     try:
         parser.readfp(io.BytesIO(config.encode("utf8")))
-    except ConfigParser.ParsingError as err:
+    except ConfigParser.Error as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
