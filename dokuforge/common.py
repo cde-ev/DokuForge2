@@ -356,7 +356,7 @@ class TarWriter:
         if not isinstance(name, str):
             name = name.decode("iso8859-1")
         info = tarfile.TarInfo(self.prefix + name)
-        with file(filename) as infile:
+        with open(filename, "rb") as infile:
             infile.seek(0, 2)
             info.size = infile.tell()
             infile.seek(0)
