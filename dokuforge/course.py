@@ -593,7 +593,7 @@ class Course(StorageDir):
         yield the contents of the course as tex-export.
         """
         tex = u"\\course{%02d}{%s}" % (self.number,
-                                       dfTitleParser(self.gettitle()).toTex())
+                                       dfTitleParser(self.gettitle()).toTex().strip())
         for p in self.listpages():
             tex += u"\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
@@ -613,7 +613,7 @@ class Course(StorageDir):
                     tex += (u"%%%s(Binaerdatei \\verb|%s|" +
                             u" nicht als Bild eingebunden)\n") % \
                            (includegraphics, fileName)
-                tex += u"\\caption{%s}\n" %  dfCaptionParser(blob['comment']).toTex()
+                tex += u"\\caption{%s}\n" % dfCaptionParser(blob['comment']).toTex().strip()
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(self.name +
