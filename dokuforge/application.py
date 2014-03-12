@@ -759,9 +759,11 @@ class Application:
         @type topic: unicode
         """
         assert isinstance(topic, unicode)
-        topic = topic.encode("utf8")
-        if not topic in os.listdir(os.path.join(self.templatepath,
-                                                "style")):
+        strtopic = topic
+        if not isinstance(topic, str):
+            strtopic = topic.encode("utf8")
+        if not strtopic in os.listdir(os.path.join(self.templatepath,
+                                                   "style")):
             raise werkzeug.exceptions.NotFound()
         return self.render_styleguide(rs, topic)
 
@@ -1397,9 +1399,13 @@ class Application:
         @type rs: RequestState
         @type topic: unicode
         """
+        assert isinstance(topic, unicode)
+        strtopic = topic
+        if not isinstance(topic, str):
+            strtopic = topic.encode("utf8")
         params = dict(
             topic = topic,
-            includepath = os.path.join("style", topic)
+            includepath = os.path.join("style", strtopic)
             )
         return self.render("style.html", rs, params)
 
