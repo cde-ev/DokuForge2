@@ -891,7 +891,7 @@ Bobby Tables...
 class DokuforgeTitleParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfTitleParser(df).toTex().strip()
-        self.assertEquals(obtained, tex)
+        self.assertEqual(obtained, tex)
 
     def testEscaping(self):
         self.verifyExportsTo(u'Do not allow \\dangerous commands!',
@@ -914,7 +914,7 @@ class DokuforgeTitleParserTests(DfTestCase):
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfTitleParser(df).toTex().strip()
-        self.assertEquals(obtained, tex)
+        self.assertEqual(obtained, tex)
 
     def testEscaping(self):
         self.verifyExportsTo(u'Do not allow \\dangerous commands!',
