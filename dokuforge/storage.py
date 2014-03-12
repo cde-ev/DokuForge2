@@ -6,6 +6,10 @@ import shutil
 import time
 import subprocess
 import re
+try:
+    unicode
+except NameError:
+    unicode = str
 
 from dokuforge.common import check_output, utc, epoch
 from dokuforge.common import validateRcsRevision
@@ -24,29 +28,29 @@ def rlogv(filename):
 
     (needed, as rlog -v is a FreeBSD extension)
     @type filename: bytes
+    @rtype: bytes or None
     """
     assert isinstance(filename, bytes)
     logger.debug("rlogv: looking up revision for %r" % filename)
-    f = file(filename, mode = "r")
-    content = f.read()
-    f.close()
-    m = re.match(r'^\s*head\s*([0-9.]+)\s*;', content)
+    with open(filename, "rb") as f:
+        firstline = f.readline()
+    m = re.match(u'^\\s*head\\s*([0-9.]+)\\s*;', firstline.decode("ascii"))
     if m:
-        return m.groups()[0]
+        return m.groups()[0].encode("ascii")
     else:
         return None
 
-rcsseparator='----------------------------' 
+rcsseparator = b'----------------------------'
 
 def rloghead(filename):
     """
     Get relevant information for the head revision of the given rcs file
 
     @type filename: bytes
-    @returns: a str-object dict with information about the head commit; in particular,
-              it will contain the keys 'revision', 'author', and 'date'.
-              All values are str, except for the 'date' key which has a
-              datetime object associated.
+    @returns: a bytes-object dict with information about the head commit; in
+              particular, it will contain the keys b'revision', b'author', and
+              b'date'. All values are bytes, except for the b'date' key which
+              has a datetime object associated.
     """
     assert isinstance(filename, bytes)
     logger.debug("rloghead: looking up head revision info for %r" % filename)
@@ -59,22 +63,24 @@ def rloghead(filename):
     answer = {}
 
     revision = rlogv(filename)
-    answer['revision'] = revision
-    rlog = check_output(["rlog","-q","-r%s" % revision,filename], env=RCSENV)
+    answer[b'revision'] = revision
+    rlog = check_output(["rlog","-q","-r%s" % revision.decode("ascii"),
+                         filename], env=RCSENV)
     lines = rlog.splitlines()
-    while lines[0] != rcsseparator or lines[1].split()[0] != 'revision':
+    while lines[0] != rcsseparator or lines[1].split()[0] != b'revision':
         lines.pop(0)
     lines.pop(0)
     lines.pop(0)
     stateline = lines.pop(0)
-    params = stateline.split(';')
+    params = stateline.split(b';')
     for param in params:
-        keyvalue = param.split(': ',1)
+        keyvalue = param.split(b': ', 1)
         if len(keyvalue) > 1:
             answer[keyvalue[0].lstrip()]=keyvalue[1]
 
-    date = datetime.datetime.strptime(answer["date"], "%Y/%m/%d %H:%M:%S")
-    answer["date"] = date.replace(tzinfo=utc)
+    date = datetime.datetime.strptime(answer[b"date"].decode("ascii"),
+                                      "%Y/%m/%d %H:%M:%S")
+    answer[b"date"] = date.replace(tzinfo=utc)
     return answer
 
 class LockDir:
@@ -158,8 +164,8 @@ class Storage(object):
         @param content: the content of the file
         @type message: str
         """
-        if isinstance(content, basestring):
-            assert isinstance(content, bytes)
+        assert not isinstance(content, unicode)
+        if isinstance(content, bytes):
             content = io.BytesIO(content)
         logger.debug("storing %r" % self.fullpath())
 
@@ -167,9 +173,8 @@ class Storage(object):
             self.ensureexistence(havelock = gotlock)
             subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
                                   env=RCSENV)
-            objfile = file(self.fullpath(), mode = "w")
-            shutil.copyfileobj(content, objfile)
-            objfile.close()
+            with open(self.fullpath(), "wb") as objfile:
+                shutil.copyfileobj(content, objfile)
             args = ["ci", "-q", "-f", "-m%s" % message]
             if user is not None:
                 args.append("-w%s" % user)
@@ -183,7 +188,8 @@ class Storage(object):
                     logger.debug("creating rcs file %r" % self.fullpath())
                     subprocess.check_call(["rcs", "-q", "-i", "-t-created by store",
                                            self.fullpath()], env=RCSENV)
-                    file(self.fullpath(), mode = "w").close()
+                    with open(self.fullpath(), "wb"):
+                        pass
                     subprocess.check_call(["ci", "-q", "-f",
                                            "-minitial, implicit, empty commit",
                                            self.fullpath()], env=RCSENV)
@@ -191,9 +197,8 @@ class Storage(object):
     def asrcs(self, havelock=None):
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock=gotlock)
-            f = file(self.fullpath(postfix=b",v"), mode="r")
-            content = f.read()
-            f.close()
+            with open(self.fullpath(postfix=b",v"), "rb") as f:
+                content = f.read()
             return content
 
     def status(self, havelock=None):
@@ -209,9 +214,9 @@ class Storage(object):
     def commitstatus(self, havelock=None):
         """
         Obtain information about the last change made to this storage object.
-        @returns: a str-object dict with information about the head commit;
-                  in particular, it will contain the keys 'revision', 'author',
-                  and 'date'. All values are str, except for the 'date' key
+        @returns: a bytes-object dict with information about the head commit;
+                  in particular, it will contain the keys b'revision', b'author',
+                  and b'date'. All values are bytes, except for the b'date' key
                   which has a datetime object associated.
         """
         self.ensureexistence(havelock=havelock)
@@ -232,7 +237,7 @@ class Storage(object):
         that version is still the head revision.
 
         @returns: an opaque version string and the contents of the file
-        @rtype: (str, str)
+        @rtype: (bytes, str)
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
@@ -290,9 +295,8 @@ class Storage(object):
             except CalledProcessError:
                 raise RcsUserInputError(u"specified rcs version does not exist",
                                         u"can only happen in hand-crafted requests")
-            objfile = file(self.fullpath(), mode = "w")
-            objfile.write(newcontent)
-            objfile.close()
+            with open(self.fullpath(), "wb") as objfile:
+                objfile.write(newcontent)
             args = ["ci", "-f", "-q", "-u"]
             args.append("-mstoring original edit conflicting with %s in a branch" % currentversion)
             if user is not None:
@@ -304,9 +308,8 @@ class Storage(object):
             subprocess.call(["rcsmerge", "-q", "-r%s" % version,
                              self.fullpath()]) # Note: non-zero exit status is
                                                # OK!
-            objfile = file(self.fullpath(), mode = "r")
-            mergedcontent = objfile.read()
-            objfile.close()
+            with open(self.fullpath(), "rb") as objfile:
+                mergedcontent = objfile.read()
             os.unlink(self.fullpath())
             # 3) return new state
             return False, currentversion, mergedcontent

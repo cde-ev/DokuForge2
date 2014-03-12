@@ -49,7 +49,7 @@ class DfTestCase(unittest.TestCase):
         # a tar archive is a sequence of complete blocks
         self.assertTrue(len(octets) % blocksize == 0)
         # there is at least the terminating 0-block
-        self.assertTrue("\0\0\0\0\0\0\0\0\0\0" in octets)
+        self.assertTrue(b"\0\0\0\0\0\0\0\0\0\0" in octets)
 
     def assertIsTarGz(self, octets):
         f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
@@ -59,21 +59,21 @@ class TarWriterTests(DfTestCase):
     def testUncompressed(self):
         tarwriter = TarWriter()
         tar = b''
-        tar = tar + tarwriter.addChunk('myFile', 'contents')
+        tar = tar + tarwriter.addChunk(b'myFile', b'contents')
         tar = tar + tarwriter.close()
         self.assertIsTar(tar)
         
     def testGzip(self):
         tarwriter = TarWriter(gzip=True)
         tar = b''
-        tar = tar + tarwriter.addChunk('myFile', 'contents')
+        tar = tar + tarwriter.addChunk(b'myFile', b'contents')
         tar = tar + tarwriter.close()
         self.assertIsTarGz(tar)
 
 class UserDBTests(DfTestCase):
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
-        self.storage = CachingStorage(self.tmpdir,"db")
+        self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
+        self.storage = CachingStorage(self.tmpdir, b"db")
         self.userdb = UserDB(self.storage)
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course42'))
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course4711'))
@@ -222,7 +222,7 @@ permissions = df_meta True,akademie_meta_aca123 False
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge")
+        self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.pathconfig = PathConfig()
         self.pathconfig.rootdir = self.tmpdir
         createexample.main(size=1, pc=self.pathconfig)
@@ -709,7 +709,7 @@ permissions = df_superadmin True,df_admin True
 
 class CourseTests(DfTestCase):
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')
+        self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.course = Course(os.path.join(self.tmpdir, b'example'))
         
     def tearDown(self):
@@ -729,7 +729,7 @@ class CourseTests(DfTestCase):
 
 class AcademyTest(DfTestCase):
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix=b'dokuforge')
+        self.tmpdir = tempfile.mkdtemp(prefix=u'dokuforge').encode("ascii")
         os.makedirs(os.path.join(self.tmpdir, b'example/legacy'))
         self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
         self.academy.createCourse(u'new01', u'erster neuer Kurs')
@@ -794,7 +794,7 @@ class DokuforgeMockTests(DfTestCase):
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfLineGroupParser(df).toTex().strip()
-        self.assertEquals(obtained, tex)
+        self.assertEqual(obtained, tex)
 
     def testItemize(self):
         self.verifyExportsTo(u'- Text',

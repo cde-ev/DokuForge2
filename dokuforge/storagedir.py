@@ -1,6 +1,11 @@
 import os.path
 import re
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
 from dokuforge.storage import Storage
 from dokuforge.view import LazyView
 import dokuforge.common as common

@@ -11,7 +11,12 @@ from dokuforge.common import CheckError
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
-    commitid = "unknown"
+    commitid = u"unknown"
+
+try:
+    unicode
+except NameError:
+    unicode = str
 
 class Academy(StorageDir):
     """

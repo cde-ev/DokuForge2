@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import copy
 import datetime
 from hashlib import md5 as getmd5
@@ -13,7 +16,14 @@ import random
 import sqlite3
 import time
 import urllib
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    from urllib import parse as urlparse
+try:
+    unicode
+except NameError:
+    unicode = str
 
 import jinja2
 import werkzeug.exceptions
@@ -29,7 +39,7 @@ from dokuforge.parser import dfLineGroupParser, Estimate
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
-    commitid = "unknown"
+    commitid = u"unknown"
 
 sysrand = random.SystemRandom()
 
@@ -1678,7 +1688,7 @@ class Application:
             allowMathChange = False
         params = dict(
             user = rs.user,
-            commitid=commitid.decode("utf8"),
+            commitid=commitid,
             form=rs.request.form,
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
             basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail),

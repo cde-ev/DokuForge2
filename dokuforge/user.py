@@ -1,6 +1,14 @@
 import random
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import io
+
+try:
+    unicode
+except NameError:
+    unicode = str
 
 sysrand = random.SystemRandom()
 

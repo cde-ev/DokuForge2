@@ -1,4 +1,7 @@
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import io
 
 from dokuforge.storage import CachingStorage
@@ -82,11 +85,11 @@ class PathConfig(object):
 
     @property
     def userdb(self):
-        return UserDB(CachingStorage(self.admindir, "userdb"))
+        return UserDB(self.userdbstore)
 
     @property
     def userdbstore(self):
-        return CachingStorage(self.admindir, "userdb")
+        return CachingStorage(self.admindir, b"userdb")
 
     def loaduserdb(self):
         userdb = self.userdb
@@ -95,4 +98,4 @@ class PathConfig(object):
 
     @property
     def groupstore(self):
-        return CachingStorage(self.admindir, "groupdb")
+        return CachingStorage(self.admindir, b"groupdb")

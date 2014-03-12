@@ -9,7 +9,10 @@ from wsgitools.scgi.forkpool import SCGIServer
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig, config_encoding
 
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import io
 import sys
 import syslog
