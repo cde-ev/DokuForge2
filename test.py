@@ -256,11 +256,11 @@ class DokuforgeWebTests(DfTestCase):
     def testLoginFailedUsername(self):
         self.do_login(username="nonexistent")
         # FIXME: sane error message
-        self.assertEqual(self.res.body, "wrong password")
+        self.assertEqual(self.res.body, b"wrong password")
 
     def testLoginFailedPassword(self):
         self.do_login(password="wrong")
-        self.assertEqual(self.res.body, "wrong password")
+        self.assertEqual(self.res.body, b"wrong password")
 
     def testLoginClick(self):
         self.do_login()
@@ -705,7 +705,7 @@ permissions = df_superadmin True,df_admin True
         self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
         self.res = self.res.click(description="rcs")
         # FIXME: find a better check for a rcs file
-        self.assertTrue(self.res.body.startswith("head"))
+        self.assertTrue(self.res.body.startswith(b"head"))
 
 class CourseTests(DfTestCase):
     def setUp(self):
