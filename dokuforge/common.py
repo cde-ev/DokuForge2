@@ -305,6 +305,7 @@ class TarWriter:
         a slash.
         @type dirname: bytes
         """
+        assert isinstance(dirname, bytes)
         assert b"/" not in dirname
         if not isinstance(dirname, str):
             dirname = dirname.decode("iso8859-1")
