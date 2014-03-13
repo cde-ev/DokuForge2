@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 try:
-    import ConfigParser
+    import ConfigParser as configparser
+    from ConfigParser import SafeConfigParser as ConfigParser
 except ImportError:
-    import configparser as ConfigParser
+    import configparser
+    from configparser import ConfigParser
 import copy
 import datetime
 from hashlib import md5 as getmd5
@@ -457,9 +459,9 @@ class Application:
         @returns: a dict of all groups with their titles as values
         """
         try:
-            config = ConfigParser.SafeConfigParser()
+            config = ConfigParser()
             config.readfp(io.StringIO(self.groupstore.content().decode("utf8")))
-        except ConfigParser.ParsingError as err:
+        except configparser.ParsingError as err:
             return {}
         ret = {}
         for group in config.sections():
