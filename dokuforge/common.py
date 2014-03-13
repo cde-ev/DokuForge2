@@ -232,7 +232,12 @@ def validateUserConfig(config):
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
-            parser.get(name, u'permissions')
+            for perm in parser.get(name, u'permissions').split(u','):
+                if len(perm.strip().split(u' ')) != 2:
+                    raise CheckError(
+                        u"Fehler in Permissions.",
+                        u"Das Recht '%s' für '%s' ist nicht wohlgeformt." %
+                        (perm, name))
             parser.get(name, u'status')
             parser.get(name, u'password')
     except ConfigParser.NoOptionError as err:
