@@ -5,7 +5,8 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
-from dokuforge.parser import dfLineGroupParser, Estimate, PHeading
+from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
+from dokuforge.parser import Estimate, PHeading
 import dokuforge.common as common
 
 class Outline:
@@ -416,7 +417,7 @@ class Course(StorageDir):
         @returns: a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
         """
-        page = self.getstorage(b"page%d" % number)
+        page = self.getstorage((u"page%d" % number).encode("ascii"))
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -444,7 +445,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        page = self.getstorage(b"page%d" % number)
+        page = self.getstorage((u"page%d" % number).encode("ascii"))
         ok, version, mergedcontent = page.endedit(version.encode("utf8"),
                                                   newcontent.encode("utf8"),
                                                   user = user)
@@ -591,7 +592,8 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
-        tex = u"\\course{%02d}{%s}" % (self.number, self.gettitle())
+        tex = u"\\course{%02d}{%s}" % (self.number,
+                                       dfTitleParser(self.gettitle()).toTex())
         for p in self.listpages():
             tex += u"\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
@@ -600,14 +602,24 @@ class Course(StorageDir):
                 blob = self.viewblob(b)
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
-                tex += u"\\includegraphics[width=0.75\\textwidth]{%s/blob_%d_%s}\n" % \
-                    (self.name, b, blob['filename'])
-                tex += u"\\caption{%s}\n" % blob['comment']
+                fileName = blob['filename']
+                includegraphics = \
+                    (u"\\includegraphics" +
+                     u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
+                    (self.name, b, fileName)
+                if fileName.lower().endswith((".png", ".jpg", ".pdf")):
+                    tex += includegraphics
+                else:
+                    tex += (u"%%%s(Binaerdatei \\verb|%s|" +
+                            u" nicht als Bild eingebunden)\n") % \
+                           (includegraphics, fileName)
+                tex += u"\\caption{%s}\n" %  dfCaptionParser(blob['comment']).toTex()
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
-                yield tarwriter.addChunk(b"%s/blob_%d_%s" %
-                                         (self.name, b, str(blob['filename'])),
+                yield tarwriter.addChunk(self.name +
+                                         (u"/blob_%d_" % b).encode("ascii") +
+                                         str(blob['filename']),
                                          blob['data'])
 
-        yield tarwriter.addChunk(b"%s/chap.tex" % self.name,
+        yield tarwriter.addChunk(self.name + b"/chap.tex",
                                  tex.encode("utf8"))

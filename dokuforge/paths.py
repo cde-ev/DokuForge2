@@ -4,7 +4,11 @@ import io
 from dokuforge.storage import CachingStorage
 from dokuforge.user import UserDB
 
-default_config = """
+config_encoding = "iso-8859-1"
+# "iso-8859-1" is a safe choice in the sense that
+# b.decode(config_encoding).encode(config_encoding) is guarantueed to succeed.
+
+default_config = b"""
 [path]
 rootdir = ./work/example
 dfdir = %(rootdir)s/df
@@ -13,62 +17,68 @@ staticexportdir = %(rootdir)s/exportstatic
 sessiondbpath = :memory:
 staticservepath = static/
 mathjaxuri = %(staticservepath)s/mathjax/
-"""
+""".decode(config_encoding)
 
 class PathConfig(object):
-    section = "path"
+    section = u"path"
     def __init__(self,config=None):
         if config is None:
             self.cp = ConfigParser.SafeConfigParser()
-            self.cp.readfp(io.BytesIO(default_config))
+            self.cp.readfp(io.StringIO(default_config))
         else:
             self.cp = config
 
     def read(self, configfile):
         self.cp =ConfigParser.SafeConfigParser()
-        with file(configfile) as opencfg:
+        # can be switched to plain open when dropping support for Python2.X
+        with io.open(configfile, encoding=config_encoding) as opencfg:
             self.cp.readfp(opencfg)
 
     @property
     def rootdir(self):
-        return self.cp.get(self.section, "rootdir")
+        return self.cp.get(self.section, u"rootdir").encode(config_encoding)
 
     @rootdir.setter
     def rootdir(self, value):
-        return self.cp.set(self.section, "rootdir", value)
+        return self.cp.set(self.section, u"rootdir",
+                           value.decode(config_encoding))
 
     @property
     def dfdir(self):
         """path to directory storing all the documentation projects.
         Each directory within this directory represents one academy."""
-        return self.cp.get(self.section, "dfdir")
+        return self.cp.get(self.section, u"dfdir").encode(config_encoding)
 
     @property
     def admindir(self):
         """path to directory containing configuration files"""
-        return self.cp.get(self.section, "admindir")
+        return self.cp.get(self.section, u"admindir").encode(config_encoding)
 
     @property
     def staticexportdir(self):
-        return self.cp.get(self.section, "staticexportdir")
+        return self.cp.get(self.section, u"staticexportdir").encode(
+                config_encoding)
 
     @property
     def sessiondbpath(self):
         """path to a sqlite3 database dedicated to storing session
-        cookies. Unless a forking server is used ":memory:" is fine."""
-        return self.cp.get(self.section, "sessiondbpath")
+        cookies. Unless a forking server is used ":memory:" is fine.
+        Unlike most other properties, this is a unicode properties."""
+        return self.cp.get(self.section, u"sessiondbpath")
 
     @sessiondbpath.setter
     def sessiondbpath(self, value):
-        self.cp.set(self.section, "sessiondbpath", value)
+        self.cp.set(self.section, u"sessiondbpath", value)
 
     @property
     def staticservepath(self):
-        return self.cp.get(self.section, "staticservepath")
+        """Unicode property!"""
+        return self.cp.get(self.section, u"staticservepath")
 
     @property
     def mathjaxuri(self):
-        return self.cp.get(self.section, "mathjaxuri")
+        """Unicode property!"""
+        return self.cp.get(self.section, u"mathjaxuri")
 
     @property
     def userdb(self):

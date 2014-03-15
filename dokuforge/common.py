@@ -34,12 +34,10 @@ def randstring(n=6):
 def strtobool(s):
     """
     @returns: Boolean version of s
-    @type s: str
+    @type s: unicode
     @rtype: bool
     """
-    if s == "True" or s == "true" or s == "t":
-        return True
-    return False
+    return s in (u"True", u"true", u"t")
 
 class CheckError(StandardError):
     def __init__(self, msg, exp):
@@ -165,12 +163,12 @@ def validateInternalName(name):
     for the internal representation. This means matching a certain
     regexp. Otherwise raise a CheckError.
 
-    @type name: str
+    @type name: unicode
     @param name: name to check
     @raises CheckError:
     """
-    assert isinstance(name, str)
-    if re.match('^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
+    assert isinstance(name, unicode)
+    if re.match(u'^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
         raise CheckError(u"Interner Name nicht wohlgeformt!",
                          u"Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten, muss mit einem Buchstaben beginnen und darf nicht mehr als 200 Zeichen enthalten.")
 
@@ -221,15 +219,15 @@ def validateUserConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser.SafeConfigParser()
     try:
-        parser.readfp(io.BytesIO(config.encode("utf8")))
+        parser.readfp(io.StringIO(config))
     except ConfigParser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
-            parser.get(name, 'permissions')
-            parser.get(name, 'status')
-            parser.get(name, 'password')
+            parser.get(name, u'permissions')
+            parser.get(name, u'status')
+            parser.get(name, u'password')
     except ConfigParser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
@@ -244,13 +242,13 @@ def validateGroupConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser.SafeConfigParser()
     try:
-        parser.readfp(io.BytesIO(config.encode("utf8")))
+        parser.readfp(io.StringIO(config))
     except ConfigParser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
-            parser.get(name, 'title')
+            parser.get(name, u'title')
     except ConfigParser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
