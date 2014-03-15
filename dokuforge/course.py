@@ -606,10 +606,12 @@ class Course(StorageDir):
                 tex += u"\\caption{%s}\n" % blob['comment']
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
+                blobRSt = self.getstorage((u"blob%d" % b).encode("ascii"))
+                blobTimeStamp = blobRSt.commitstatus()['date'].timetuple()
                 yield tarwriter.addChunk(b"%s/blob_%d_%s" %
                                          (self.name, b, str(blob['filename'])),
                                          blob['data'],
-                                         int(calendar.timegm(self.getstorage((u"blob%d" % b).encode("ascii")).commitstatus()['date'].timetuple())))
+                                         int(calendar.timegm(blobTimeStamp)))
 
         yield tarwriter.addChunk(b"%s/chap.tex" % self.name,
                                  tex.encode("utf8"),
