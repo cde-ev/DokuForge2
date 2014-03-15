@@ -1,5 +1,5 @@
 import os
-import time
+import calendar
 
 from werkzeug.datastructures import FileStorage
 
@@ -609,8 +609,8 @@ class Course(StorageDir):
                 yield tarwriter.addChunk(b"%s/blob_%d_%s" %
                                          (self.name, b, str(blob['filename'])),
                                          blob['data'],
-                                         int(time.mktime(self.getstorage((u"blob%d" % b).encode("ascii")).commitstatus()['date'].timetuple())))
+                                         int(calendar.timegm(self.getstorage((u"blob%d" % b).encode("ascii")).commitstatus()['date'].timetuple())))
 
         yield tarwriter.addChunk(b"%s/chap.tex" % self.name,
                                  tex.encode("utf8"),
-                                 int(time.mktime(self.lastchange()['date'].timetuple())))
+                                 int(calendar.timegm(self.lastchange()['date'].timetuple())))
