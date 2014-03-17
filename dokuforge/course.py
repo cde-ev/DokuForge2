@@ -1,4 +1,5 @@
 import os
+import datetime
 
 try:
     unicode
@@ -625,7 +626,9 @@ class Course(StorageDir):
                 yield tarwriter.addChunk(self.name +
                                          (u"/blob_%d_" % b).encode("ascii") +
                                          str(blob['filename']),
-                                         blob['data'])
+                                         blob['data'],
+                                         self.lastchange()['date'])
 
         yield tarwriter.addChunk(self.name + b"/chap.tex",
-                                 tex.encode("utf8"))
+                                 tex.encode("utf8"),
+                                 self.lastchange()['date'])
