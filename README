@@ -20,12 +20,12 @@ Prerequisites:
    Debian: rcs
    FreeBSD: included in base system
    Gentoo: dev-vcs/rcs
- * mechanize
+ * webtest
    Required: only for the test suite
-   Homepage: http://wwwsearch.sourceforge.net/mechanize/
-   Debian: python-mechanize
-   FreeBSD: www/py-mechanize
-   Gentoo: dev-python/mechanize
+   Homepage: http://webtest.pythonpaste.org
+   Debian: python-webtest
+   FreeBSD: www/py-WebTest
+   Gentoo: dev-python/webtest
  * wsgitools
    Required: for using serve_* except serve_debug
    Homepage: http://www.subdivi.de/~helmut/wsgitools/
@@ -48,9 +48,9 @@ Prerequisites:
    Gentoo: dev-python/epydoc
 
  Short forms:
-  * Debian: aptitude install python-werkzeug python-jinja2 rcs python-mechanize python-epydoc libjs-mathjax
-  * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-mechanize devel/epydoc devel/py-wsgitools
-  * Gentoo: emerge dev-python/werkzeug dev-python/jinja dev-vcs/rcs dev-python/mechanize dev-python/epydoc
+  * Debian: aptitude install python-werkzeug python-jinja2 rcs python-webtest python-epydoc libjs-mathjax
+  * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-WebTest devel/epydoc devel/py-wsgitools
+  * Gentoo: emerge dev-python/werkzeug dev-python/jinja dev-vcs/rcs dev-python/webtest dev-python/epydoc
 
 Configuration:
 ~~~~~~~~~~~~~~

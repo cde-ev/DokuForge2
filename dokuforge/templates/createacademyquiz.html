@@ -12,7 +12,7 @@ Neue Akademie
 <form action="{{ buildurl("createacademy")|e }}" method="post" id="createacademy">
 	Interner Name: <input name="name" type="text" value="{{ form.get("name", "")|e }}"><br>
 	Titel: <input name="title" type="text" value="{{ form.get("title", "")|e }}"><br>
-        Gruppen: <select name="groups" multiple>
+        Gruppen: <select name="groups" multiple="multiple">
             {%- for group, title in allgroups.items() -%}
                 <option value="{{ group|e }}">{{ title|e }}</option>
             {%- endfor -%}

@@ -1,6 +1,14 @@
 import random
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import io
+
+try:
+    unicode
+except NameError:
+    unicode = str
 
 sysrand = random.SystemRandom()
 
@@ -152,14 +160,14 @@ class User:
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
-            aca = aca.name
+            aca = aca.name.decode("ascii")
         if course is None:
             pass
         elif isinstance(course, LazyView):
             course = course["name"]
         else:
             assert isinstance(course, Course)
-            course = course.name
+            course = course.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if course is None:
             if self.revokedPermission(u"akademie_read_%s" % aca) or \
@@ -207,14 +215,14 @@ class User:
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
-            aca = aca.name
+            aca = aca.name.decode("ascii")
         if course is None:
             pass
         elif isinstance(course, LazyView):
             course = course["name"]
         else:
             assert isinstance(course, Course)
-            course = course.name
+            course = course.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if course is None:
             if self.revokedPermission(u"akademie_write_%s" % aca):
@@ -255,7 +263,7 @@ class User:
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
-            aca = aca.name
+            aca = aca.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if self.revokedPermission(u"akademie_meta_%s" % aca):
             return False
@@ -325,6 +333,7 @@ class UserDB:
     """
     Class for the user database
 
+    @type db: {unicode: User}
     @ivar db: dictionary containing (username, User object) pairs
     @ivar storage: storage.CachingStorage object holding the userdb
     @ivar timestamp: time of last update, this is compared to the mtime of
@@ -381,18 +390,15 @@ class UserDB:
         if self.storage.timestamp() <= self.timestamp:
             return
         config = ConfigParser.SafeConfigParser()
-        content = io.BytesIO(self.storage.content())
+        content = io.StringIO(self.storage.content().decode("utf8"))
         ## update time, since we read the new content
         self.timestamp = self.storage.cachedtime
         config.readfp(content)
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():
-            permissions = dict((perm.strip().split(' ')[0].decode("utf8"),
-                                strtobool(perm.strip().split(' ')[1].decode("utf8")))
-                for perm in config.get(name, 'permissions').split(','))
-            self.addUser(name.decode("utf8"),
-                         config.get(name, 'status').decode("utf8"),
-                         config.get(name, 'password').decode("utf8"),
-                         permissions)
-
+            permissions = dict((perm.strip().split(u' ')[0],
+                                strtobool(perm.strip().split(u' ')[1]))
+                for perm in config.get(name, u'permissions').split(u','))
+            self.addUser(name, config.get(name, u'status'),
+                         config.get(name, u'password'), permissions)

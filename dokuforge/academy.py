@@ -11,7 +11,12 @@ from dokuforge.common import CheckError
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
-    commitid = "unknown"
+    commitid = u"unknown"
+
+try:
+    unicode
+except NameError:
+    unicode = str
 
 class Academy(StorageDir):
     """
@@ -98,9 +103,9 @@ class Academy(StorageDir):
         @raises werkzeug.exceptions.NotFound: if the course does not exist
         """
         assert isinstance(coursename, unicode)
-        coursename = coursename.encode("utf8")
         try:
             common.validateInternalName(coursename)
+            coursename = coursename.encode("utf8")
             common.validateExistence(self.path, coursename)
         except CheckError:
             raise werkzeug.exceptions.NotFound()
@@ -134,8 +139,8 @@ class Academy(StorageDir):
         """
         assert isinstance(name, unicode)
         assert isinstance(title, unicode)
-        name = name.encode("utf8")
         common.validateInternalName(name)
+        name = name.encode("utf8")
         common.validateNonExistence(self.path, name)
         common.validateTitle(title)
         Course(os.path.join(self.path, name)).settitle(title)

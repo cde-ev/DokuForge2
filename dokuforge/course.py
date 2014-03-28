@@ -1,5 +1,10 @@
 import os
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
 from werkzeug.datastructures import FileStorage
 
 from dokuforge.common import check_output
@@ -57,7 +62,7 @@ class Outline:
         Add information about the last commit. Must contain at
         least revision, date, and author
 
-        @type info: {str: unicode or datetime}
+        @type info: {unicode: unicode or datetime}
         """
         assert 'date' in info.keys()
         assert 'author'  in info.keys()
@@ -180,11 +185,12 @@ class Course(StorageDir):
     def getcommit(self, page):
         """
         @type page: int
-        @rtype: {str: unicode or datetime}
+        @rtype: {unicode: unicode or datetime}
         """
         page = (u"page%d" % page).encode("ascii")
         info = self.getstorage(page).commitstatus()
-        return dict((k, v) if k == "date" else (k, v.encode("utf8"))
+        return dict((k.decode("ascii"), v) if k == b"date"
+                    else (k.decode("ascii"), v.decode("utf8"))
                     for k, v in info.items())
 
     def listdeadpages(self):
@@ -417,7 +423,7 @@ class Course(StorageDir):
         @returns: a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
         """
-        page = self.getstorage(b"page%d" % number)
+        page = self.getstorage((u"page%d" % number).encode("ascii"))
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -445,7 +451,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        page = self.getstorage(b"page%d" % number)
+        page = self.getstorage((u"page%d" % number).encode("ascii"))
         ok, version, mergedcontent = page.endedit(version.encode("utf8"),
                                                   newcontent.encode("utf8"),
                                                   user = user)
@@ -564,7 +570,7 @@ class Course(StorageDir):
         blobname = self.getstorage(blobbase + b".filename")
         bloblabel.store(label.encode("utf8"), user = user)
         blobcomment.store(comment.encode("utf8"), user = user)
-        blobname.store(filename.encode("utf8"), user = user)
+        blobname.store(filename, user=user)
 
     def lastchange(self):
         return common.findlastchange([self.getcommit(p) for p in self.listpages()])
@@ -616,9 +622,10 @@ class Course(StorageDir):
                 tex += u"\\caption{%s}\n" %  dfCaptionParser(blob['comment']).toTex()
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
-                yield tarwriter.addChunk(b"%s/blob_%d_%s" %
-                                         (self.name, b, str(blob['filename'])),
+                yield tarwriter.addChunk(self.name +
+                                         (u"/blob_%d_" % b).encode("ascii") +
+                                         str(blob['filename']),
                                          blob['data'])
 
-        yield tarwriter.addChunk(b"%s/chap.tex" % self.name,
+        yield tarwriter.addChunk(self.name + b"/chap.tex",
                                  tex.encode("utf8"))
