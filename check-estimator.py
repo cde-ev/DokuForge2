@@ -37,7 +37,7 @@ def make_statistics(cases):
         print("{}/{}: actual: {}{}{} estimated: {} factor: {}".format(
             case.academy, case.course, case.length, sign, abs(case.correction),
             case.estimate, factor))
-    splitpoints = [.67, .8, .9, .95, 1.05, 1.1, 1.2, 1.5]
+    splitpoints = [.67, .8, .9, .95, 1.05, 1.1, 1.25, 1.5]
     buckets = [0] * (len(splitpoints) + 1)
     for factor in factors:
         test = [factor > point for point in splitpoints]
