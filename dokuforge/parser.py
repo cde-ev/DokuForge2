@@ -258,8 +258,8 @@ class UnitSpacing:
         unit_prefixes = [
                 # SI prefixes
                 u'Y', u'Z', u'E', u'P', u'T', u'G', u'M', u'k', u'h',
-                u'da', u'd', u'c', u'm', u'µ', u'n', u'p', u'f', u'a',
-                u'z', u'y'
+                u'da', u'd', u'c', u'm', u'µ', u'μ', u'n', u'p', u'f',
+                u'a', u'z', u'y'
                 ]
 
         units = [
@@ -276,8 +276,8 @@ class UnitSpacing:
         unprefixed_units = [
                 # cgs units
                 u'Gal', u'dyn', u'Ba', u'erg', u'St', u'P', u'kayser',
-                u'Q', u'I', u'U', u'E', u'p', u'B', u'H', u'μ', u'Θ',
-                u'Φm', u'R', u'ρ', u'C', u'L', u'P',
+                u'Q', u'I', u'U', u'E', u'p', u'B', u'H', u'µ', u'μ',
+                u'Θ', u'Φm', u'R', u'ρ', u'C', u'L', u'P',
                 # more units
                 u'h', u'd', u'a', u'min', u'eV'
                 ]
@@ -286,7 +286,6 @@ class UnitSpacing:
                 u'°C'
                 ]
 
-        # FIXME: this does not work for unicode characters
         unit_prefixes = '|'.join(unit_prefixes)
         units = '|'.join(units)
         unprefixed_units = '|'.join(unprefixed_units)

@@ -919,8 +919,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
     def testUnits(self):
         self.verifyExportsTo(u'Units: 21kg, 4MW, 1GeV, 13-14TeV, 5°C.',
                              u'Units: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C.')
-        self.verifyExportsTo(u'Decimal number with unit: 25,4mm.',
-                             u'Decimal number with unit: 25,4\\,mm.')
+        self.verifyExportsTo(u'Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
+                             u'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.')
         self.verifyExportsTo(u'Units: 21 kg, 4 MW, 1 GeV, 13-14 TeV, 5 °C.',
                              u'Units: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C.')
         self.verifyExportsTo(u'Decimal number with unit: 25,4 mm.',
