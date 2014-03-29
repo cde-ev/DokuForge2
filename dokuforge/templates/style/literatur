@@ -101,6 +101,7 @@ lautet die Syntax:</p>
   author	= "Brodersen, Kai",					"Name der Autoren"
   title		= "Gebet und Fluch, Zeichen und Traum.",		"Titel des Aufsatzes"
   editor	= "Brodersen, Kai",					"Name der Herausgeber"
+  edition	= "2",							"Auflage"
   booktitle	= "Briefe in die Unterwelt.",				"Name des Sammelwerkes/Lexikons"
   address	= "Münster",						"Ort der Veröffentlichung"
   year		= "2001",						"Jahr der Veröffentlichung"
@@ -112,7 +113,7 @@ lautet die Syntax:</p>
 <p><pre>
 @BOOKLET{mpgBericht,							"Kurzform"
   url 		= "http://www.mpg.de/180882/Jahresbericht",		"Internetadresse"
-  urldate	= "02.07.2012",						"Datum des Abrufes"
+  urldate	= "2012-07-22",						"Datum des Abrufes YYYY-MM-DD"
   title		= "Jahresbericht der Max-Planck-Gesellschaft 2010",	"Titel der Internetreferenz"
   author	= "Max-Planck-Gesellschaft,	%% optional %%		"Name des Autors
 }
