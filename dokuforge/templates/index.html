@@ -3,7 +3,7 @@
 Übersicht
 {% endblock %}
 {% block location %}
-{{ navbar([("groupindex", dict(group=group), allgroups[group]|e)]) }}
+{{ navbar([("groupindex", dict(group=group), allgroupsdict[group]|e)]) }}
 {% endblock %}
 {% block content %}
 <ul>
@@ -22,9 +22,9 @@
 </ul>
 <hr>
 <ul>
-{%- for onegroup in sortedgroups -%}
+{%- for onegroup in sortedkeys -%}
 {%- if user.allowedList(onegroup) -%}
-    <li><a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ allgroups[onegroup]|e }}</a></li>
+    <li><a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ allgroupsdict[onegroup]|e }}</a></li>
 {%- endif -%}
 {%- endfor -%}
 </ul>
