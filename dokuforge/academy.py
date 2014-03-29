@@ -170,7 +170,7 @@ class Academy(StorageDir):
             for chunk in course.rawExportIterator(tarwriter):
                 yield chunk
 
-    def texExportIterator(self, tarwriter, static=None):
+    def texExportIterator(self, tarwriter, static=None, course=None):
         """
         yield a tar archive containing the tex-export of the academy.
         """
@@ -186,8 +186,12 @@ for your reference
         if static is not None:
             for chunk in tarwriter.addDirChunk(b"", static, excludes=[b".svn"]):
                 yield chunk
+        if course is None:
+            coursesToExport = self.listCourses()
+        else:
+            coursesToExport = [self.getCourse(course)]
         contents = u""
-        for course in self.listCourses():
+        for course in coursesToExport:
             contents += u"\\include{%s/chap}\n" % course.name
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
