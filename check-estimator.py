@@ -54,7 +54,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 4:
         print(
 """Usage: check-estimator /path/to/data fitness-level /path/to/df2dir
-    where fitness-level is an integer from 0 to 5
+    where fitness-level is an integer from 0 to 4
     according to the following table).
 
     0: wrong data (possibly not texed yet)
