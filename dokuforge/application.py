@@ -102,7 +102,7 @@ class SessionHandler:
             cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
                              (now, sid))
             self.db.commit()
-        logger.debug("SessionHandler.get: cookie %r matches user %r", sid, 
+        logger.debug("SessionHandler.get: cookie %r matches user %r", sid,
                 username)
         self.db.commit()
         cur.close()
@@ -1026,13 +1026,13 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         def export_iterator(course):
-            tarwriter = common.TarWriter()
+            tarwriter = common.TarWriter(gzip=True)
             for chunk in course.rawExportIterator(tarwriter):
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(c)
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s_%s.tar" % (aca.name, c.name)
+                "attachment; filename=%s_%s.tar.gz" % (aca.name, c.name)
         return rs.response
 
     def do_rawacademy(self, rs, academy=None):
