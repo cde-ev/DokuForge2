@@ -280,6 +280,8 @@ class Application:
                  methods=("POST",), endpoint="relink"),
             rule("/docs/<identifier:academy>/<identifier:course>/!raw",
                  methods=("GET", "HEAD"), endpoint="raw"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!export",
+                 methods=("GET", "HEAD"), endpoint="exportcourse"),
             rule("/docs/<identifier:academy>/<identifier:course>/!title",
                  methods=("GET", "HEAD"), endpoint="coursetitle"),
             rule("/docs/<identifier:academy>/<identifier:course>/!title",
@@ -1010,6 +1012,35 @@ class Application:
         rs.response.data = c.getrcs(page)
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=%d,v" % (page)
+        return rs.response
+
+    def do_exportcourse(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
+        assert academy is not None and course is not None
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.mayExport(aca):
+            return werkzeug.exceptions.Forbidden()
+        rs.response.content_type = "application/octet-stream"
+        prefix = "texexport_%s_%s" % (aca.name, c.name)
+        def export_iterator(aca, static, prefix):
+            tarwriter = common.TarWriter(gzip=True)
+            tarwriter.pushd(prefix)
+            for chunk in aca.texExportIterator(tarwriter,
+                                               static=static,
+                                               course=course):
+                yield chunk
+            tarwriter.popd()
+            yield tarwriter.close()
+        rs.response.response = export_iterator(aca, self.staticexportdir,
+                                               prefix)
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=%s.tar.gz" % prefix
         return rs.response
 
     def do_raw(self, rs, academy=None, course=None):
