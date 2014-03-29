@@ -35,6 +35,7 @@ from wsgitools.digest import LazyDBAPI2Opener
 from dokuforge.academy import Academy
 import dokuforge.common as common
 from dokuforge.common import CheckError
+from dokuforge.user import User
 from dokuforge.parser import dfLineGroupParser, Estimate
 try:
     from dokuforge.versioninfo import commitid
@@ -1352,7 +1353,8 @@ class Application:
         self.check_login(rs)
         if not rs.user.isAdmin():
             return werkzeug.exceptions.Forbidden()
-        return self.do_file(rs, self.userdb.storage, "admin.html")
+        return self.do_file(rs, self.userdb.storage, "admin.html",
+                            extraparams = {'docstring' : User.__doc__})
 
     def do_adminsave(self, rs):
         """
