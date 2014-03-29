@@ -92,7 +92,7 @@ kursiv, noch fett,&nbsp;...).</p>
             <i>Vorname Nachname</i>
 	</td>
 </tr>
-<tr> 
+<tr>
 	<td>
             [Überschrift]<br>            (Vorname Nachname, Vorname Nachname und Vorname Nachname)        </td>
 	<td>
@@ -439,7 +439,7 @@ alte Version<br>
 &gt;&gt;&gt;&gt;&gt;&gt;&gt;<br>
 </p>
 <p>
-Eine Anmerkung für die alten Hasen: Im alten Dokuforge konnte dies nicht
+Eine Anmerkung für die alten Hasen: Im alten DokuForge konnte dies nicht
 passieren, da es Locks gab und immer nur einer eine Seite editieren
 durfte; daf&uuml;r gibt es jetzt die ganzen Probleme mit stale locks und
 dem ber&uuml;chtigtem &quot;Lock brechen&quot; nicht mehr.
