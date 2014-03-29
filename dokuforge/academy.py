@@ -175,6 +175,8 @@ class Academy(StorageDir):
         """
         yield a tar archive containing the tex-export of the academy.
         """
+        timeStampNow = datetime.datetime.utcnow()
+        timeStampNow.replace(tzinfo=common.utc)
         yield tarwriter.addChunk(b"WARNING",
 (u"""The precise semantics of the exporter is still
 subject to discussion and may change in future versions.
@@ -183,7 +185,7 @@ same exporter semantics, keep the following version string
 for your reference
 
 %s
-""" % commitid).encode("ascii"),datetime.datetime.utcnow())
+""" % commitid).encode("ascii"),timeStampNow)
         if static is not None:
             for chunk in tarwriter.addDirChunk(b"", static, excludes=[b".svn"]):
                 yield chunk
@@ -194,4 +196,4 @@ for your reference
                 yield chunk
         yield tarwriter.addChunk(b"contents.tex",
                                  contents.encode("utf8"),
-                                 datetime.datetime.utcnow())
+                                 timeStampNow)
