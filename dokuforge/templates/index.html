@@ -22,7 +22,7 @@
 </ul>
 <hr>
 <ul>
-{%- for onegroup in allgroups -%}
+{%- for onegroup in sortedgroups -%}
 {%- if user.allowedList(onegroup) -%}
     <li><a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ allgroups[onegroup]|e }}</a></li>
 {%- endif -%}

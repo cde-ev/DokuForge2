@@ -1436,9 +1436,11 @@ class Application:
         """
         if group is None:
             group = rs.user.defaultGroup()
+        tmp = self.listGroups()
         params = dict(
             academies=[academy.view() for academy in self.listAcademies()],
-            allgroups=self.listGroups(),
+            allgroups=tmp,
+            sortedgroups=sorted(tmp.keys()),
             group=group)
         return self.render("index.html", rs, params)
 
