@@ -594,6 +594,18 @@ class Course(StorageDir):
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
 
+    def _mangleBlobName(self, name):
+        """
+        Return a version of a file name, with the ending, if present,
+        converted to lower case. This helps in particular with images
+        exported by some camaras.
+
+        """
+        if '.' in name:
+            i = name.rfind('.')
+            return name[:i] + name[i:].lower()
+        return name
+
     def texExportIterator(self, tarwriter):
         """
         yield the contents of the course as tex-export.
@@ -608,12 +620,12 @@ class Course(StorageDir):
                 blob = self.viewblob(b)
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
-                fileName = blob['filename']
+                fileName = self._mangleBlobName(blob['filename'])
                 includegraphics = \
                     (u"\\includegraphics" +
                      u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
                     (self.name, b, fileName)
-                if fileName.lower().endswith((".png", ".jpg", ".pdf")):
+                if fileName.endswith((".png", ".jpg", ".pdf")):
                     tex += includegraphics
                 else:
                     tex += (u"%%%s(Binaerdatei \\verb|%s|" +
@@ -624,7 +636,7 @@ class Course(StorageDir):
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(self.name +
                                          (u"/blob_%d_" % b).encode("ascii") +
-                                         str(blob['filename']),
+                                         str(fileName),
                                          blob['data'])
 
         yield tarwriter.addChunk(self.name + b"/chap.tex",
