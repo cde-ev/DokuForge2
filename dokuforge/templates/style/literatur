@@ -20,7 +20,7 @@ wissenschaftlicher Praxis, ist aber optional.
 
 <h4><a name="littext">Eingabe der Literaturangaben im Text </a></h4>
 <p> Literaturangaben und Zitatnachweise im Text werden mithilfe eine Kurzform gesetzt,
- die Dokuforge signalisiert, welches Buch hier referenziert. Natürlich muss das so zitierte Buch unter
+ die DokuForge signalisiert, welches Buch hier referenziert. Natürlich muss das so zitierte Buch unter
 dieser Kurzform in der Bibliographie (= Literaturverzeichnis) aufgeführt werden, damit es eindeutig zugeordnet
 werden kann. Nach der Kurzform wird alles angegeben, was die zitierte Stelle näher spezifiziert, also meist eine Seitenzahl.
 
