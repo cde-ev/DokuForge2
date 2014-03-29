@@ -249,16 +249,6 @@ class Course(StorageDir):
         page = (u"page%d" % page).encode("ascii")
         return self.getstorage(page).asrcs()
 
-    def rawExportIterator(self, tarwriter):
-        """
-        @type tarwriter: TarWriter
-        @returns: a tar ball containing the full internal information about
-                this course
-        @rtype: iter(str)
-        """
-        for chunk in tarwriter.addDirChunk(self.name, self.path):
-            yield chunk
-
     def newpage(self, user=None):
         """
         create a new page in this course and return its internal number
