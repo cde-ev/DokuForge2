@@ -57,6 +57,7 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 {%- endif -%}
 <div class="courseoperations">
 {%- if user.mayExport(academy) %}
+<a href="{{ buildurl("exportcourse")|e }}">Exportieren</a>
 <a href="{{ buildurl("raw")|e }}">df2-Rohdaten</a>
 {%- endif -%}
 {%- if user.allowedMeta(academy) %}
