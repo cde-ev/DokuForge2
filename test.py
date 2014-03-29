@@ -942,8 +942,6 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verityExportsTo(u'Mit der Funktion |increase(i)| wird die Zahl |i| um eins erhöht.',
                              u'Mit der Funktion \\@\\lstinline|increase(i)| wird die Zahl \\@\\lstinline|i| um eins erhöht.')
 
-Mit der Funktion |increase(i)| wird die Zahl |i| um eins erhöht.
-
     def testEdnoteEscape(self):
         self.verifyExportsTo(
 u"""
