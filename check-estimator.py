@@ -26,7 +26,7 @@ def process_case(case, df2path):
 def make_statistics(cases):
     factors = []
     for case in cases:
-        factors.append(case.estimate / (case.length + case.correction))
+        factors.append((case.estimate + case.correction) / case.length)
     mean = sum(factors)/len(factors)
     stddev = math.sqrt(sum(x*x - mean for x in factors)/len(factors))
     print("== detailed results ==")
@@ -34,9 +34,9 @@ def make_statistics(cases):
         sign = '+'
         if case.correction < 0:
             sign = '-'
-        print("{}/{}: actual: {}{}{} estimated: {} factor: {}".format(
-            case.academy, case.course, case.length, sign, abs(case.correction),
-            case.estimate, factor))
+        print("{}/{}: actual: {} estimated: {}{}{} factor: {}".format(
+            case.academy, case.course, case.length, case.estimate, sign,
+            abs(case.correction), factor))
     splitpoints = [.67, .8, .9, .95, 1.05, 1.1, 1.25, 1.5]
     buckets = [0] * (len(splitpoints) + 1)
     for factor in factors:
