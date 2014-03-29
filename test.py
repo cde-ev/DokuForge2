@@ -820,7 +820,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                              u'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
         self.verifyExportsTo(u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
-                             u'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir, \\@d.\\,h.,')
+                             u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.,')
         self.verifyExportsTo(u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
                              u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.')
         self.verifyExportsTo(u'Dots in math $a_1,...,a_n$ should work without spacing.',
@@ -828,9 +828,9 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
                              u'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
         self.verifyExportsTo(u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
-                             u'Es ist \\@z.\\,B. so, \\@s.\\,o., \\@s.\\,u., \\@etc., dass wir,')
+                             u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,')
         self.verifyExportsTo(u'd. h., der Exporter bzw. oder ca. oder so.',
-                             u'\\@d.\\,h., der Exporter \\@bzw. oder \\@ca. oder so.')
+                             u'd.\\,h., der Exporter bzw. oder ca. oder so.')
 
     def testAcronym(self):
         self.verifyExportsTo(u'Bitte ACRONYME anders setzen.',
@@ -863,70 +863,86 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
     def testPageReferences(self):
-        self.verifyExportsTo(u'Auf S. 4 steht',
-                             u'Auf \\@S.\\,4 steht')
+        self.verifyExportsTo(u'Auf S. 4 Abs. 3 in Art. 7 steht',
+                             u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht')
+        self.verifyExportsTo(u'Auf Seite 4 Absatz 3 in Artikel 7 steht',
+                             u'Auf Seite~4 Absatz~3 in Artikel~7 steht')
         self.verifyExportsTo(u'Auf S.4-6 steht',
                              u'Auf \\@S.\\,4\\@--6 steht')
         self.verifyExportsTo(u'Auf S.4--6 steht',
-                             u'Auf \\@S.\\,4\\@--6 steht')
+                             u'Auf \\@S.\\,4--6 steht')
         self.verifyExportsTo(u'Auf S. 4f steht',
                              u'Auf \\@S.\\,4\\,f. steht')
         self.verifyExportsTo(u'Auf S. 4 ff. steht',
                              u'Auf \\@S.\\,4\\,ff. steht')
+        self.verifyExportsTo(u'Es fehlen Angaben zu S. Abs. Art.',
+                             u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.')
 
     def testSpacing(self):
         self.verifyExportsTo(u'A number range 6--9 is nice.',
-                             u'A number range 6\\@--9 is nice.')
-        self.verifyExportsTo(u'A number range 6 -- 9 is nice.',
-                             u'A number range 6\\@--9 is nice.')
-        self.verifyExportsTo(u'Now we do -- with all due respect -- an intersperse. Followed by an afterthougt -- here it comes. And another afterthought -- here you go. And a third afterthought -- again here we go. And a final -- even ultimate -- interjection.',
-                             u'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by\nan afterthougt\\@~-- here it comes. And another afterthought\\@~-- here\nyou go. And a third afterthought\\@~-- again here we go. And a final\n\\@--~even ultimate\\@~-- interjection.')
-        self.verifyExportsTo(u'Now we do--with all due respect--an intersperse. Followed by an afterthougt--here it comes. And another afterthought--here you go. And a third afterthought--again here we go. And a final--even ultimate--interjection.',
-                             u'Now we do \\@--~with all due respect\\@~-- an intersperse. Followed by\nan afterthougt\\@~-- here it comes. And another afterthought\\@~-- here\nyou go. And a third afterthought\\@~-- again here we go. And a final\n\\@--~even ultimate\\@~-- interjection.')
+                             u'A number range 6--9 is nice.')
+        self.verifyExportsTo(u'A number range 6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
+                             u'A number range 6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.')
+        self.verifyExportsTo(u'Now we do - with all due respect --, an intersperse.',
+                             u'Now we do \\@-- with all due respect \\@--, an intersperse.')
+        self.verifyExportsTo(u'Followed by an afterthougt -- here it comes.',
+                             u'Followed by an afterthougt \\@-- here it comes.')
+        self.verifyExportsTo(u'Followed by an afterthougt---here it comes.',
+                             u'Followed by an afterthougt\\@---here it comes.')
         self.verifyExportsTo(u'Here come some dots ...',
-                             u'Here come some dots\\@~\\dots{}')
+                             u'Here come some dots~\\dots{}')
         self.verifyExportsTo(u'Here come some dots...',
                              u'Here come some dots\\@~\\dots{}')
         self.verifyExportsTo(u'And dots ... in the middle.',
-                             u'And dots\\@~\\dots{} in the middle.')
+                             u'And dots~\\dots{} in the middle.')
         self.verifyExportsTo(u'And dots...in the middle.',
-                             u'And dots\\@~\\dots{} in the middle.')
+                             u'And dots\\@\\dots{}in the middle.')
         self.verifyExportsTo(u'And dots [...] for missing text.',
-                             u'And dots [\\@$\\dots{}$] for missing text.')
+                             u'And dots [\\dots\\kern-.16em] for missing text.')
 
     def testLawReferences(self):
         self.verifyExportsTo(u'In §§1ff. HGB steht',
-                             u'In \\@§§\\,1\\,ff. \\@\\acronym{HGB} steht')
+                             u'In §§\\,1\\,ff. \\@\\acronym{HGB} steht')
         self.verifyExportsTo(u'In § 1 f. HGB steht',
-                             u'In \\@§\\,1\\,f. \\@\\acronym{HGB} steht')
+                             u'In §\\,1\\,f. \\@\\acronym{HGB} steht')
         self.verifyExportsTo(u'In § 1 Abs. 1 HGB steht',
-                             u'In \\@§\\,1 \\@Abs.~1 \\@\\acronym{HGB} steht')
+                             u'In §\\,1 \\@Abs.\\,1 \\@\\acronym{HGB} steht')
         self.verifyExportsTo(u'In § 1 Absatz 1 Satz 2 HGB steht',
-                             u'In \\@§\\,1 \\@Absatz~1 \\@Satz~2 \\@\\acronym{HGB} steht')
+                             u'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht')
         self.verifyExportsTo(u'In §§ 10-15 HGB steht',
-                             u'In \\@§§\\,10\\,--\\,15 \\@\\acronym{HGB} steht')
+                             u'In §§\\,10\\@--15 \\@\\acronym{HGB} steht')
+        self.verifyExportsTo(u'Ein verlorener §',
+                             u'Ein verlorener \\@§')
 
     def testNumbers(self):
         self.verifyExportsTo(u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
                              u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.')
         self.verifyExportsTo(u'We are in the 21. regiment and again in the 21.regiment.',
-                             u'We are in the \\@21.\\,regiment and again in the \\@21.\\,regiment.')
+                             u'We are in the \\@21. regiment and again in the \\@21.regiment.')
 
     def testDates(self):
-        self.verifyExportsTo(u'The date is 19.10.2012 or 19. 10. 2012 for good.',
-                             u'The date is \\@19.\\,\\@10.\\,2012 or \\@19.\\,\\@10.\\,2012 for good.')
+        self.verifyExportsTo(u'The date is 19.5.2012 or 19. 10. 95 for good.',
+                             u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.')
 
     def testUnits(self):
-        self.verifyExportsTo(u'Units: 21kg, 4MW, 1GeV, 13-14TeV, 5°C.',
-                             u'Units: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C.')
+        self.verifyExportsTo(u'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
+                             u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13\\@--14\\,\\@TeV, 5\\,°C.')
         self.verifyExportsTo(u'Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
                              u'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.')
-        self.verifyExportsTo(u'Units: 21 kg, 4 MW, 1 GeV, 13-14 TeV, 5 °C.',
-                             u'Units: 21\\,kg, 4\\,MW, 1\\,GeV, 13\\@--14\\,TeV, 5$^\\circ$C.')
+        self.verifyExportsTo(u'Units: 21 kg, 4 MW, 1 mV, 13--14 TeV, 5 °C.',
+                             u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13--14\\,\\@TeV, 5\\,°C.')
         self.verifyExportsTo(u'Decimal number with unit: 25,4 mm.',
                              u'Decimal number with unit: 25,4\\,mm.')
-        self.verifyExportsTo(u'Percentages like 5% should be handled as nicely as 5 %.',
-                             u'Percentages like \\@5\\,\\% should be handled as nicely as \\@5\\,\\%.')
+        self.verifyExportsTo(u'Percentages like 5 % should be handled as nicely as 5%.',
+                             u'Percentages like \\@5\\,\\% should be handled as nicely as 5\\,\\%.')
+        self.verifyExportsTo(u'90° is a right angle.',
+                             u'90° is a right angle.')
+
+    def testCode(self):
+        self.verityExportsTo(u'Mit der Funktion |increase(i)| wird die Zahl |i| um eins erhöht.',
+                             u'Mit der Funktion \\@\\lstinline|increase(i)| wird die Zahl \\@\\lstinline|i| um eins erhöht.')
+
+Mit der Funktion |increase(i)| wird die Zahl |i| um eins erhöht.
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
