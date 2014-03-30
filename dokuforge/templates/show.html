@@ -9,7 +9,7 @@
 {% endblock %}
 {% block content %}
 Teil #{{ page|string }}
-[Version {{commit['revision'] | e }}, 
+[Version {{commit['revision'] | e }},
  zuletzt ge&auml;ndert von {{ commit['author'] | e }}
  am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
 ({{estimate.pages | round(2) | e}} Seiten,
@@ -18,6 +18,21 @@ Teil #{{ page|string }}
 {%- if page in course.pages -%}
 {%- set pageindex = course.pages.index(page) %}
 <hr>
+{%- if user.allowedWrite(academy, course) %}
+<a href="{{ buildurl("edit")|e }}">Editieren</a>
+&nbsp;
+{%- endif -%}
+<a href="{{ buildurl("rcs")|e }}">rcs</a>
+&nbsp;
+{%- if user.allowedWrite(academy, course) %}
+{%- if page in course.pages -%}
+{{ button(buildurl("delete"), "Löschen", dict()) }}
+{%- else -%}
+{{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
+{%- endif -%}
+{%- endif -%}
+
+<div class="rightCommands">
 {%- if pageindex > 0 -%}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
 {%- else -%}
@@ -38,6 +53,7 @@ Teil #{{ page|string }}
 <span class="inactiveNavigation">N&auml;chster Teil</span>
 
 {% endif %}
+</div>
 <hr>
 {% endif %}
 <div class="dokucontent">
@@ -46,20 +62,42 @@ Teil #{{ page|string }}
 </div>
 <hr>
 
-
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
 &nbsp;
 {%- endif -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
-<div class="rareCommands">
+
+<div class="rightCommands">
+{%- if pageindex > 0 -%}
+<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
+{%- else -%}
+<span class="inactiveNavigation">Vorheriger Teil</span>
+{%- endif -%}
+{% for otherpage in course.pages %}
+
+{% if otherpage==page -%}
+<b>{{loop.index|e}}</b>
+{%- else -%}
+<a href="{{ buildurl('page', {'page': otherpage})|e }}">{{loop.index|e}}</a>
+{%- endif -%}
+{%- endfor -%}
+{% if course.pages[pageindex+1] is defined %}
+
+<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">N&auml;chster Teil</a>
+{% else %}
+<span class="inactiveNavigation">N&auml;chster Teil</span>
+
+{% endif %}
+Diesen Teil
 {%- if user.allowedWrite(academy, course) %}
 {%- if page in course.pages -%}
-{{ button(buildurl("delete"), "Löschen", dict()) }}
+{{ button(buildurl("delete"), "löschen", dict()) }}
 {%- else -%}
 {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
 {%- endif -%}
 {%- endif -%}
+
 </div>
 
 <hr>
