@@ -849,6 +849,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'$\\\\\\@\\forbidden\\bad$')
         self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
                              u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo(u'Trailing \\',
+                             u'Trailing \\@\\backslash')
         self.verifyExportsTo(u'$Trailing \\$',
                              u'$Trailing \\@\\backslash$')
         self.verifyExportsTo(u'f# ist eine Note',
@@ -987,8 +989,8 @@ class DokuforgeTitleParserTests(DfTestCase):
         self.assertEquals(obtained, tex)
 
     def testEscaping(self):
-        self.verifyExportsTo(u'Do not allow \\dangerous commands!',
-                             u'Do not allow \\@\\forbidden\\dangerous commands!')
+        self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
+                             u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.')
         self.verifyExportsTo(u'Do not allow $a \\dangerous{b}$ commands!',
                              u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
         self.verifyExportsTo(u'\\\\ok, $\\\\ok$',
@@ -997,6 +999,8 @@ class DokuforgeTitleParserTests(DfTestCase):
                              u'$\\\\\\@\\forbidden\\bad$')
         self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
                              u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo(u'Trailing \\',
+                             u'Trailing \\@\\backslash')
         self.verifyExportsTo(u'$Trailing \\$',
                              u'$Trailing \\@\\backslash$')
         self.verifyExportsTo(u'f# ist eine Note',
@@ -1005,8 +1009,8 @@ class DokuforgeTitleParserTests(DfTestCase):
                              u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
         self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
                              u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'10% sind ein Zehntel',
-                             u'10\\,\\% sind ein Zehntel')
+        self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
+                             u'10\\,\\% sind ein Zehntel und mehr als \\@5\\,\\%.')
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
@@ -1016,8 +1020,8 @@ class DokuforgeCaptionParserTests(DfTestCase):
         self.assertEquals(obtained, tex)
 
     def testEscaping(self):
-        self.verifyExportsTo(u'Do not allow \\dangerous commands!',
-                             u'Do not allow \\@\\forbidden\\dangerous commands!')
+        self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
+                             u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.')
         self.verifyExportsTo(u'Do not allow $a \\dangerous{b}$ commands!',
                              u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
         self.verifyExportsTo(u'\\\\ok, $\\\\ok$',
@@ -1026,6 +1030,8 @@ class DokuforgeCaptionParserTests(DfTestCase):
                              u'$\\\\\\@\\forbidden\\bad$')
         self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
                              u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo(u'Trailing \\',
+                             u'Trailing \\@\\backslash')
         self.verifyExportsTo(u'$Trailing \\$',
                              u'$Trailing \\@\\backslash$')
         self.verifyExportsTo(u'f# ist eine Note',
@@ -1034,8 +1040,8 @@ class DokuforgeCaptionParserTests(DfTestCase):
                              u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
         self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
                              u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'10% sind ein Zehntel',
-                             u'10\\,\\% sind ein Zehntel')
+        self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
+                             u'10\\,\\% sind ein Zehntel und mehr als \\@5\\,\\%.')
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
