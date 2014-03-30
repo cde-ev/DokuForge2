@@ -923,9 +923,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'We are in the \\@21. regiment and again in the \\@21.regiment.')
 
     def testDates(self):
-        # FIXME: one \@ should be enough
         self.verifyExportsTo(u'The date is 19.5.2012 or 19. 10. 95 for good.',
-                             u'The date is \\@19.\\,\\@5.\\,2012 or \\@19.\\,\\@10.\\,95 for good.')
+                             u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.')
 
     def testUnits(self):
         self.verifyExportsTo(u'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
@@ -942,8 +941,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'90° is a right angle.')
 
     def testCode(self):
-        self.verifyExportsTo(u'|increase(i)| increases |i| by one.',
-                             u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i| by one.')
+        self.verifyExportsTo(u'|increase(i)| increases |i|, by one.',
+                             u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.')
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
