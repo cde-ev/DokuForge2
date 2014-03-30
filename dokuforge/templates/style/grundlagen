@@ -212,7 +212,7 @@ folgenden Punkte zu beachten!</p>
 <ul>
 <li><p>Die Dokumentation ist <em>einheitlich</em> in <em>neuer</em> deutscher Rechtschreibung zu verfassen.</p></li>
 <li><p>Vor drei Punkten (Ellipse) wird im Deutschen ein Leerzeichen gesetzt&nbsp;...</p></li>
-<li><p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur) eingegeben werden. Daraus werden später typografisch richtige Anführungszeichen setzen, auch wenn das in DokuForge noch nicht zu sehen ist.</p></li>
+<li><p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur) eingegeben werden. Daraus werden später typografisch richtige Anführungszeichen, auch wenn das in DokuForge noch nicht zu sehen ist.</p></li>
 <li><p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden hier zur Eingabe zwei Bindestriche &bdquo;--&ldquo;. Wichtig ist, dass Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen, während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt werden. Das heißt:</p>
 <table  width="80%">
 <tr>
@@ -450,9 +450,9 @@ Eine Anmerkung f&uuml;r Technik-Freaks: tatsaechlich wird bei dem
 Versuch, eine konfligierende &Auml;nderung hochzuladen diese Version
 in einem Branch gespeichert und erst dann mit <tt>rcsmerge</tt> ein
 Mergevorschlag erstellt. Insbesondere hat man nicht nur eine Chance
-f&uuml;r einen Merge und ein beim Mergen abschmierender browser ist
+f&uuml;r einen Merge, und ein beim Mergen abschmierender Browser ist
 keine Katastrophe, da man &uuml;ber den rcs-Export an alles
-herankommt, was man fuer einen erneuten merge-Versuch ben&ouml;tigt.
+herankommt, was man f&uuml;r einen erneuten merge-Versuch ben&ouml;tigt.
 </p>
 
 
