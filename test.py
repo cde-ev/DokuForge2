@@ -818,7 +818,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
 
     def testAbbrev(self):
         self.verifyExportsTo(u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                             u'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
+                             u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
         self.verifyExportsTo(u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
                              u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.,')
         self.verifyExportsTo(u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
@@ -826,7 +826,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Dots in math $a_1,...,a_n$ should work without spacing.',
                              u'Dots in math $a_1,\\dots{},a_n$ should work without spacing.')
         self.verifyExportsTo(u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
-                             u'Von 3760 \\@v.\\,Chr. bis 2012 \\@n.\\,Chr. und weiter')
+                             u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
         self.verifyExportsTo(u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
                              u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,')
         self.verifyExportsTo(u'd. h., der Exporter bzw. oder ca. oder so.',
@@ -850,7 +850,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
                              u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
         self.verifyExportsTo(u'$Trailing \\$',
-                             u'$Trailing \\@\\ $')
+                             u'$Trailing \\@\\backslash$')
         self.verifyExportsTo(u'f# ist eine Note',
                              u'f\\@\\# ist eine Note')
         self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
@@ -858,7 +858,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
                              u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'\\@10\\,\\% sind ein Zehntel und mehr als \\@5\\,\\%.')
+                             u'10\\,\\% sind ein Zehntel und mehr als \\@5\\,\\%.')
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
@@ -881,8 +881,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
     def testSpacing(self):
         self.verifyExportsTo(u'A number range 6--9 is nice.',
                              u'A number range 6--9 is nice.')
-        self.verifyExportsTo(u'A number range 6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
-                             u'A number range 6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.')
+        self.verifyExportsTo(u'6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
+                             u'6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.')
         self.verifyExportsTo(u'Now we do - with all due respect --, an intersperse.',
                              u'Now we do \\@-- with all due respect \\@--, an intersperse.')
         self.verifyExportsTo(u'Followed by an afterthougt -- here it comes.',
@@ -892,13 +892,13 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Here come some dots ...',
                              u'Here come some dots~\\dots{}')
         self.verifyExportsTo(u'Here come some dots...',
-                             u'Here come some dots\\@~\\dots{}')
+                             u'Here come some dots\\@\\dots{}')
         self.verifyExportsTo(u'And dots ... in the middle.',
                              u'And dots~\\dots{} in the middle.')
         self.verifyExportsTo(u'And dots...in the middle.',
                              u'And dots\\@\\dots{}in the middle.')
         self.verifyExportsTo(u'And dots [...] for missing text.',
-                             u'And dots [\\dots\\kern-.16em] for missing text.')
+                             u'And dots [\\dots{}\\kern-.16em] for missing text.')
 
     def testLawReferences(self):
         self.verifyExportsTo(u'In §§1ff. HGB steht',
@@ -911,8 +911,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht')
         self.verifyExportsTo(u'In §§ 10-15 HGB steht',
                              u'In §§\\,10\\@--15 \\@\\acronym{HGB} steht')
-        self.verifyExportsTo(u'Ein verlorener §',
-                             u'Ein verlorener \\@§')
+        self.verifyExportsTo(u'Ein verlorener § und noch ein §',
+                             u'Ein verlorener \\@§ und noch ein \\@§')
 
     def testNumbers(self):
         self.verifyExportsTo(u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
@@ -921,8 +921,9 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'We are in the \\@21. regiment and again in the \\@21.regiment.')
 
     def testDates(self):
+        # FIXME: one \@ should be enough
         self.verifyExportsTo(u'The date is 19.5.2012 or 19. 10. 95 for good.',
-                             u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.')
+                             u'The date is \\@19.\\,\\@5.\\,2012 or \\@19.\\,\\@10.\\,95 for good.')
 
     def testUnits(self):
         self.verifyExportsTo(u'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
@@ -939,8 +940,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'90° is a right angle.')
 
     def testCode(self):
-        self.verityExportsTo(u'Mit der Funktion |increase(i)| wird die Zahl |i| um eins erhöht.',
-                             u'Mit der Funktion \\@\\lstinline|increase(i)| wird die Zahl \\@\\lstinline|i| um eins erhöht.')
+        self.verifyExportsTo(u'|increase(i)| increases |i| by one.',
+                             u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i| by one.')
 
     def testEdnoteEscape(self):
         self.verifyExportsTo(
@@ -997,7 +998,7 @@ class DokuforgeTitleParserTests(DfTestCase):
         self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
                              u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
         self.verifyExportsTo(u'$Trailing \\$',
-                             u'$Trailing \\@\\ $')
+                             u'$Trailing \\@\\backslash$')
         self.verifyExportsTo(u'f# ist eine Note',
                              u'f\\@\\# ist eine Note')
         self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
@@ -1005,7 +1006,7 @@ class DokuforgeTitleParserTests(DfTestCase):
         self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
                              u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo(u'10% sind ein Zehntel',
-                             u'\\@10\\,\\% sind ein Zehntel')
+                             u'10\\,\\% sind ein Zehntel')
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
@@ -1026,7 +1027,7 @@ class DokuforgeCaptionParserTests(DfTestCase):
         self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
                              u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
         self.verifyExportsTo(u'$Trailing \\$',
-                             u'$Trailing \\@\\ $')
+                             u'$Trailing \\@\\backslash$')
         self.verifyExportsTo(u'f# ist eine Note',
                              u'f\\@\\# ist eine Note')
         self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
@@ -1034,7 +1035,7 @@ class DokuforgeCaptionParserTests(DfTestCase):
         self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
                              u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo(u'10% sind ein Zehntel',
-                             u'\\@10\\,\\% sind ein Zehntel')
+                             u'10\\,\\% sind ein Zehntel')
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 

@@ -143,93 +143,90 @@ def formatDashes(word):
     """
     Insert protected spaces before or after dashes.
     """
-    # for correct spacing " -- " but avoid non-spaced number ranges
-    word = re.sub('([^.0-9]) -- ([^-.]+) -- ',
-                      r'\1 \\@--~\2\\@~-- ', word)
-    word = re.sub('([^.0-9]) -- ',
-                      r'\1\\@~-- ', word)
-    # for missing spacing only substitute carefully
-    word = re.sub('([^.0-9- @~])--([^- ][^-.]+)--([^0-9- ~])',
-                         r'\1 \\@--~\2\\@~-- \3', word)
-    word = re.sub('([^.0-9- @~])--([^0-9- ~])',
-                         r'\1\\@~-- \2', word)
+    # replace " - " by " -- "
+    word = word.replace(u" - ", u" -- ")
+    # annotate "--" but do not touch number ranges
+    word = re.sub(r"(^|[^@0-9])--", r"\1\@--", word)
     yield word
 
 def percentSpacing(word):
     """
     Do spacing for the percent sign.
     """
-    word = re.sub(r'(\d+) ?%', r'\\@\1\\,%', word)
+    word = re.sub(r'(\d+)%', r'\1\\,%', word)
+    word = re.sub(r'(\d+) %', r'\\@\1\\,%', word)
     yield word
 
 def ellipsisSpacing(word):
     """
     Do spacing for ellipsis.
     """
-    word = re.sub(r'\[\.\.\.\]', r'[\\@$...$]', word)
-    word = re.sub(r'([^$]) ?\.\.\. ?', r'\1\\@~... ', word)
+    word = re.sub(r'\[\.\.\.\]', r'[...\kern-.16em]', word)
+    word = re.sub(r' +\.\.\.([ \t\n():;,"?!"]|$)', r'~...\1', word)
+    word = re.sub(r'(^|[^~[])\.\.\.', r'\1\@...', word)
     yield word
 
 def formatDate(word):
     """
     Do spacing for dates that consist of day, month and year.
     """
-    date_pattern = u'%s%s' % (2 * u'(\\d{2}\\.) ?', u'(\\d{4})')
-    word = re.sub(date_pattern, r'\\@\1\\,\\@\2\\,\3', word)
+    date_pattern = u'%s%s' % (2 * u'(\\d{1,2}\\.) ?', u'(\\d{2,4})')
+    word = re.sub(date_pattern, r'\\@\1\\,\2\\,\3', word)
     yield word
 
 def pageReferences(word):
     """
     Do spacing for page references.
     """
-    # S. 4--6
-    word = re.sub(r'S\. ?(\d+) ?-+ ?(\d)', r'\\@S.\\,\1--\2', word)
+    abb = "S|Abs|Art"
     # S. 4 ff.
-    word = re.sub(r'S\. ?(\d+) ?(f+)\.? ', r'\\@S.\\,\1\\,\2. ', word)
-    # S. 4
-    word = re.sub(r'S\. ?(\d+)', r'\\@S.\\,\1', word)
+    word = re.sub(r'(%s)\. ?(\d+) ?(f+)\.? ' % abb, r'\\@\1.\\,\2\\,\3. ', word)
+    # S. 4, Abs. 3, Art. 5
+    word = re.sub(r'(%s)\. ?(\d+)' % abb, r'\\@\1.\\,\2', word)
+    # annotation if no replacement took place
+    word = re.sub(r'(%s)\.($|[^\\])' % abb, r'\\@\1.\2', word)
+    # Seite 4, Absatz 3, Artikel 5
+    word = re.sub(r'(Seite|Satz|Absatz|Artikel) ?(\d+)', r'\1~\2', word)
     yield word
 
 def lawReferences(word):
     """
     Do spacing for law references.
     """
-    # §§ 1 ff. --> §§ 1\,ff.
-    word = re.sub(r'([§]+ ?\d+) ?(f+)\.? ', r'\1\\,\2. ', word)
-    # §§ 10-15 --> §§ 10\,--\,15
-    word = re.sub(r'([§]+ ?\d*)[ -]*-[ -]*(\d)', r'\1\\,--\\,\2', word)
-    # § 1 Satz 2 --> § 1 Satz~2
-    word = re.sub(r'([§]+ ?\d+ *[Absatz.]* *\d*) (Satz) ?(\d)',
-            r'\1 \\@\2~\3', word)
-    # § 1 Abs. 1 --> § 1 Abs.~1
-    word = re.sub(r'([§]+ ?\d+) (Abs\.|Absatz) ?(\d)',
-            r'\1 \\@\2~\3', word)
-    # § 1 --> §\,1
-    word = re.sub(r'([§]+) ?(\d+)', r'\\@\1\\,\2', word)
+    # §§ 1 ff. --> §§ 1\,ff. (use unicode for §)
+    word = re.sub(u'(§ ?\\d+) ?(f+)\\.? ', r'\1\\,\2. ', word)
+    # § 1 --> §\,1 (use unicode for §)
+    word = re.sub(u'(§) ?(\\d+)', r'\1\\,\2', word)
+    # annotation if no replacement took place (use unicode for §)
+    # FIXME: "if no replacement took place" instead of "(§$|§ )"
+    word = re.sub(u'(§$|§ )', u'\\@\\1', word)
     yield word
 
 def numberSpacing(word):
     """
     Do spacing for number ranges and between numbers and words.
     """
-    # ^6--9
-    word = re.sub(r'(\d) ?-{1,2} ?(\d)', r'\1\\@--\2', word)
-    # 21. regiment
-    word = re.sub(r'(\d+\.) ?([a-z])', r'\\@\1\\,\2', word)
+    # 6--9 (do nothing)
+    # in case of sloppy matching export 6\@--9
+    word = re.sub(r'(\d) -{1,2} ?(\d)', r'\1\\@--\2', word)
+    word = re.sub(r'(\d) ?-{1,2} (\d)', r'\1\\@--\2', word)
+    word = re.sub(r'(\d)-(\d)', r'\1\\@--\2', word)
+    # annotate "[number]."
+    word = re.sub(r'(^|[^@0-9])(\d+\.[^0-9])', r'\1\\@\2', word)
     yield word
 
 def unspaceAbbreviations(word):
     """
     Remove single spaces within known abbreviations.
     """
-    word = word.replace(u'd. h.', u'd.h.')
-    word = word.replace(u' n. Chr.', u' n.Chr.')
-    word = word.replace(u' o. Ä.', u' o.Ä.')
-    word = word.replace(u' s. o.', u' s.o.')
-    word = word.replace(u' s. u.', u' s.u.')
-    word = word.replace(u' u. a.', u' u.a.')
-    word = word.replace(u' v. Chr.', u' v.Chr.')
-    word = word.replace(u' z. B.', u' z.B.')
+    word = re.sub(u'(^| )d. h.', u'\\1d.h.', word)
+    word = re.sub(u'(^| )n. Chr.', u'\\1n.Chr.', word)
+    word = re.sub(u'(^| )o. Ä.', u'\\1o.Ä.', word)
+    word = re.sub(u'(^| )s. o.', u'\\1s.o.', word)
+    word = re.sub(u'(^| )s. u.', u'\\1s.u.', word)
+    word = re.sub(u'(^| )u. a.', u'\\1u.a.', word)
+    word = re.sub(u'(^| )v. Chr.', u'\\1v.Chr.', word)
+    word = re.sub(u'(^| )z. B.', u'\\1z.B.', word)
     yield word
 
 def standardAbbreviations(word):
@@ -237,19 +234,19 @@ def standardAbbreviations(word):
     Do spacing for standard abbreviations.
     """
     abb = { 
-        u'bzw.' : u'\\@bzw.',
-        u'ca.' : u'\\@ca.',
-        u'd.h.' : u'\\@d.\\,h.',
-        u'etc.' : u'\\@etc.',
-        u'n.Chr.' : u'\\@n.\\,Chr.',
-        u'o.Ä.' : u'\\@o.\\,Ä.',
-        u's.o.' : u'\\@s.\\,o.',
-        u'sog.' : u'\\@sog.',
-        u's.u.' : u'\\@s.\\,u.',
-        u'u.a.' : u'\\@u.\\,a.',
-        u'v.Chr.' : u'\\@v.\\,Chr.',
-        u'vgl.' : u'\\@vgl.',
-        u'z.B.' : u'\\@z.\\,B.'}
+        u'bzw.' : u'bzw.',
+        u'ca.' : u'ca.',
+        u'd.h.' : u'd.\\,h.',
+        u'etc.' : u'etc.',
+        u'n.Chr.' : u'n.\\,Chr.',
+        u'o.Ä.' : u'o.\\,Ä.',
+        u's.o.' : u's.\\,o.',
+        u'sog.' : u'sog.',
+        u's.u.' : u's.\\,u.',
+        u'u.a.' : u'u.\\,a.',
+        u'v.Chr.' : u'v.\\,Chr.',
+        u'vgl.' : u'vgl.',
+        u'z.B.' : u'z.\\,B.'}
 
     yield abb.get(word, word)
 
@@ -269,6 +266,8 @@ class UnitSpacing:
                 u'rad', u'sr', u'Hz', u'N', u'Pa', u'J', u'W', u'C', u'V',
                 u'F', u'Ω', u'S', u'Wb', u'T', u'H', u'lm', u'lx', u'Bq',
                 u'Gy', u'Sv', u'kat', u't',
+                # temperatures
+                u'°C', u'°F', u'°R', u'°Ré',
                 # more units
                 u'l', u'eV',
                 ]
@@ -282,24 +281,25 @@ class UnitSpacing:
                 u'h', u'd', u'a', u'min', u'eV'
                 ]
 
-        units_without_spacing = [
-                u'°C'
+        to_be_annotated = [
+                # possibly prefixed units
+                u'V', u'eV'
                 ]
 
         unit_prefixes = '|'.join(unit_prefixes)
         units = '|'.join(units)
         unprefixed_units = '|'.join(unprefixed_units)
-        units_without_spacing = '|'.join(units_without_spacing)
+        to_be_annotated = '|'.join(to_be_annotated)
         re_units = '(%s)?(%s)' % (unit_prefixes, units)
         re_unprefixed_units = '(%s)' % (unprefixed_units)
+        re_annotate = '(%s)?(%s)' % (unit_prefixes, to_be_annotated)
         self.units_re = re.compile(r'(\d) ?((%s|%s)( |$|\.))'
                 % (re_units, re_unprefixed_units))
-        self.nospace_re = re.compile(r'(\d) ?((%s)( |$|\.))'
-                % units_without_spacing)
+        self.annot_re = re.compile(r'(\d) ?((%s)( |$|\.))' % re_annotate)
 
     def __call__(self, word):
+        word = self.annot_re.sub(r'\1\\,\@\2', word)
         word = self.units_re.sub(r'\1\\,\2', word)
-        word = self.nospace_re.sub(r'\1\2', word)
         yield word
 
 unitSpacing = UnitSpacing()
@@ -364,15 +364,19 @@ caret = Escaper(u'^', u'\\@\\caret{}')
 
 ellipsis = Escaper(u'...', u'\\dots{}')
 
-def celsius(word):
-    word = re.sub(u'(\\d)°C', u'\\1$^\\\\circ$C', word)
+def formatCode(word):
+    """
+    Set lstinline for code within pipes
+    """
+    word = re.sub(r'(\|[^ |]+\|)([ \t\n():;,"?!"]|$)',
+                  r'\@\lstinline\1\2', word)
     yield word
 
 def trailingBackslash(word):
     """
     Escape trailing backslashes.
     """
-    word = re.sub(r'\\$', r'\\@\\ ', word)
+    word = re.sub(r'\\$', r'\\@\\backslash', word)
     yield word
 
 class EscapeCommands:
@@ -389,7 +393,8 @@ class EscapeCommands:
     def __init__(self, allowed = set(u"\\" + symbol for symbol in [
                                   u' ', u',', u'%', u'dots', u'ldots',
                                   u'\\', u'"', u'acronym', u'&', u'#',
-                                  u'circ', u'caret', u'{', u'}', u'@'])):
+                                  u'caret', u'{', u'}', u'@', u'kern',
+                                  u'backslash', u'lstinline'])):
         """
         Initialize with the set of allowed commands. The default value
         represents those commands that are produced by the exporter itself.
@@ -521,20 +526,21 @@ def applyMicrotypefeatures(wordlist, featurelist):
 def defaultMicrotype(text):
     separators = ' \t\n();,' # no point, might be in abbreviations
     features = [# no splitting before the following features
-                formatDashes,
-                # no splitting at ' ' before the following featurs
+                formatCode,
+                # no splitting at ' ' before the following features
                 SplitSeparators(separators[1:]), # separators without ' '
                 percentSpacing, ellipsisSpacing, unspaceAbbreviations,
                 # also no splitting at ',' allowed afterwards
                 formatDate, pageReferences, lawReferences, unitSpacing,
                 numberSpacing, # must be after lawReferences
+                formatDashes, # must be after numberSpacing
                 SplitSeparators(separators[:-1]), # separators without ','
                 # after splitting at all separators
                 percent, ampersand, hashmark, quote,
                 leftCurlyBracket, rightCurlyBracket, # before caret
-                caret, ellipsis, celsius, # celsius after caret
-                standardAbbreviations, fullStop, openQuotationMark,
-                closeQuotationMark, acronym, naturalNumbers, escapeCommands]
+                caret, ellipsis, standardAbbreviations, fullStop,
+                openQuotationMark, closeQuotationMark, acronym,
+                naturalNumbers, escapeCommands]
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text):
