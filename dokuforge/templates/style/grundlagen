@@ -233,33 +233,6 @@ folgenden Punkte zu beachten!</p>
 </table>
 </li>
 
-<li><p>Einheiten erkennt DokuForge auch. Sie müssen dafür lediglich mit einem Leerzeichen hinter ihre Zahl gesetzt werden.</p>
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-	<span class="tex2jax_ignore">
-        1 m ist noch nicht so viel.<br>
-        1 m$^2$ ist schon mehr.<br>
-        Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
-	</span>
-        </td>
-	<td>
-        1 m ist noch nicht so viel.<br>
-        1 m$^2$ ist schon mehr.<br>
-        Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
-        </td>
-</tr>
-</table>
-</li>
-
-<li><p>Im Gegensatz dazu gehört vor das Prozentzeichen und vor
-&bdquo;&deg;C&ldquo; kein Leerzeichen! Dieses bitte direkt an die Zahl
-schreiben.</p></li>
-
 <li><p>Große Zahlen bitte ohne Leerzeichen oder Punkte eingeben, da DokuForge
 sie nur dann automatisch formatieren kann. Also:</p>
 
