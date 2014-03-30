@@ -364,6 +364,23 @@ def applyMicrotypefeatures(wordlist, featurelist):
             finallist.append(word)
     return ''.join(finallist)
 
+def fancyFeature(word):
+    if word == u"MAGIC":
+        return [TerminalString(u"\\hereBeDragons"),
+                u"\\hereBeDragons"]
+    else:
+        return [word]
+
+def fancyMicrotype(text):
+    """
+    @type text: unicode
+    """
+    assert isinstance(text, unicode)
+    separators = ' \t,;()-\n'
+    features = [SplitSeparators(separators),
+                fancyFeature, escapeCommands]
+    return applyMicrotypefeatures([text], features)
+
 def defaultMicrotype(text):
     """
     @type text: unicode
