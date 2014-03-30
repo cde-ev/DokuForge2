@@ -30,7 +30,7 @@ except NameError:
 ##
 ## 4. If you're also interested in the micotypography for the TeX
 ##    export, the story is as follows. A microtype feature is a
-##    function str -> [str] taking a textual unit and returning
+##    function str -> [Either str str] taking a textual unit and returning
 ##    a list of textual units after the feature is applied, splitting
 ##    the original unit where approprate. A microtype is given
 ##    by a list of features and has the semantics of sucessively
@@ -108,6 +108,11 @@ class Estimate(collections.namedtuple("Estimate",
 
     __rmul__ = __mul__
 
+class TerminalString(object):
+    def __init__(self, s):
+        self.theString = s
+    def getString(self):
+        return self.theString
 
 def intersperse(iterable, delimiter):
     it = iter(iterable)
@@ -518,10 +523,19 @@ def applyMicrotypefeatures(wordlist, featurelist):
     for feature in featurelist:
         wordlistlist = []
         for word in wordlist:
-            assert isinstance(word, unicode)
-            wordlistlist.append(feature(word))
+            if isinstance(word, TerminalString):
+                wordlistlist.append([word])
+            else:
+                assert isinstance(word, unicode)
+                wordlistlist.append(feature(word))
         wordlist = itertools.chain(*wordlistlist)
-    return ''.join(wordlist)
+    finallist = []
+    for word in wordlist:
+        if isinstance(word, TerminalString):
+            finallist.append(word.getString())
+        else:
+            finallist.append(word)
+    return ''.join(finallist)
 
 def defaultMicrotype(text):
     separators = ' \t\n();,' # no point, might be in abbreviations
