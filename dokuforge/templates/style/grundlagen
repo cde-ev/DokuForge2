@@ -92,7 +92,7 @@ kursiv, noch fett,&nbsp;...).</p>
             <i>Vorname Nachname</i>
 	</td>
 </tr>
-<tr> 
+<tr>
 	<td>
             [Überschrift]<br>            (Vorname Nachname, Vorname Nachname und Vorname Nachname)        </td>
 	<td>
@@ -212,7 +212,7 @@ folgenden Punkte zu beachten!</p>
 <ul>
 <li><p>Die Dokumentation ist <em>einheitlich</em> in <em>neuer</em> deutscher Rechtschreibung zu verfassen.</p></li>
 <li><p>Vor drei Punkten (Ellipse) wird im Deutschen ein Leerzeichen gesetzt&nbsp;...</p></li>
-<li><p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur) eingegeben werden. DokuForge wird automatisch korrekte deutsche Anführungszeichen setzen.</p></li>
+<li><p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur) eingegeben werden. Daraus werden später typografisch richtige Anführungszeichen setzen, auch wenn das in DokuForge noch nicht zu sehen ist.</p></li>
 <li><p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden hier zur Eingabe zwei Bindestriche &bdquo;--&ldquo;. Wichtig ist, dass Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen, während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt werden. Das heißt:</p>
 <table  width="80%">
 <tr>
@@ -225,8 +225,8 @@ folgenden Punkte zu beachten!</p>
 	anders&nbsp;-- ohne Bindestrich. Das hat auch sicher 5--7 gute Gründe.
         </td>
 	<td>
-	&bdquo;DokuForge&ldquo; schreibt man --&nbsp;und dies verhält sich bei
-	&bdquo;Style-Guide&ldquo; anders&nbsp;-- ohne Bindestrich. Das hat auch
+	"DokuForge" schreibt man --&nbsp;und dies verhält sich bei
+	"Style-Guide" anders&nbsp;-- ohne Bindestrich. Das hat auch
 	sicher 5--7 gute Gründe.
         </td>
 </tr>
