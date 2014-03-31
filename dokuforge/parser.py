@@ -137,29 +137,59 @@ def acronym(word):
     But don't mangle things like 'T-Shirt' or 'E-Mail' while
     still allowing for compound nouns such as 'DNA-Sequenz'.
     """
-    wordlist = []
-    for part in word.split(u'-'):
-        if len(part) > 1 and part.isalpha() and part.isupper():
-            part = u'\\@\\acronym{%s}' % part
-        wordlist.append(part)
-    yield u'-'.join(wordlist)
+    pattern = r'([^-]+)'
+    concat_left = u''
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            m = m.groups()
+            concat_left += left
+            if len(matched) > 1 and matched.isalpha() and matched.isupper():
+                yield concat_left
+                yield TerminalString(u'\\@\\acronym{%s}' % matched)
+                concat_left = u''
+            else:
+                concat_left += matched
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    concat_left += word
+    yield concat_left
 
 def formatDashes(word):
     """
-    Annotate dashes
+    Replace " - " by " -- " and annotate dashes with "\\@"
     """
-    # replace " - " by " -- "
-    word = word.replace(u" - ", u" -- ")
-    # annotate "--" but do not touch number ranges
-    word = re.sub(r"(^|[^@0-9])--", r"\1\@--", word)
+    # match context in order to avoid touching number ranges or signs
+    pattern = r'(^|[^@0-9 ])( ?-+ ?)($|[^0-9 ])'
+    m = True
+    while m:
+        if m != True:
+            left, before, dash, after, word =  m.groups()
+            dash = dash.replace(u' - ', u' -- ')
+            if len(dash.strip(u' ')) > 1:
+                yield (left + before)
+                yield TerminalString(dash.replace(u'--', u'\\@--'))
+            else:
+                yield (left + before + dash)
+            word = after + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
 def percentSpacing(word):
     """
     Do spacing for the percent sign.
     """
-    word = re.sub(r'(\d+)%', r'\1\\,%', word)
-    word = re.sub(r'(\d+) %', r'\\@\1\\,%', word)
+    pattern = r'(\d+ ?)%'
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            yield left
+            if matched.endswith(u' '):
+                matched = u'\\@' + matched.rstrip(u' ')
+            yield TerminalString(matched + u'\\,')
+            yield u'%'
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
 def ellipsisSpacing(word):
@@ -189,41 +219,83 @@ def pageReferences(word):
     """
     Do spacing for page references.
     """
-    abb = "S|Abs|Art"
-    # S. 4 ff.
-    word = re.sub(r'(%s)\. ?(\d+) ?(f+)\.? ' % abb, r'\\@\1.\\,\2\\,\3. ', word)
-    # S. 4, Abs. 3, Art. 5
-    word = re.sub(r'(%s)\. ?(\d+)' % abb, r'\\@\1.\\,\2', word)
-    # annotation if no replacement took place
-    word = re.sub(r'(%s)\.($|[^\\])' % abb, r'\\@\1.\2', word)
-    # Seite 4, Absatz 3, Artikel 5
-    word = re.sub(r'(Seite|Satz|Absatz|Artikel) ?(\d+)', r'\1~\2', word)
+    abbr = r'S\.|Abs\.|Art\.'
+    full = r'Seite|Satz|Absatz|Artikel'
+    pattern = r'((?:%s|%s) ?)((?:\d+)? ?)((?:f+\.? )?)' % (abbr, full)
+    m = True
+    while m:
+        if m != True:
+            left, ref, number, ff, word =  m.groups()
+            yield left
+            if ref.rstrip(u' ').endswith(u'.'):
+                # abbreviation
+                ref = u'\\@' + ref
+                if number:
+                    ref = ref.rstrip(u' ') + u'\\,'
+                    if ff:
+                        number = number.rstrip(u' ')
+                        ff = u'\\,%s. ' % ff.rstrip(u' .')
+            else:
+                # unabbreviated reference
+                if len(number) > 0:
+                    ref = ref.rstrip(u' ') + u'~'
+            if ff:
+                yield TerminalString(ref + number + ff)
+            else:
+                # allow to match subsequent number ranges
+                yield TerminalString(ref)
+                word = number + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
 def lawReferences(word):
     """
     Do spacing for law references.
     """
-    # §§ 1 ff. --> §§ 1\,ff. (use unicode for §)
-    word = re.sub(u'(§ ?\\d+) ?(f+)\\.? ', r'\1\\,\2. ', word)
-    # § 1 --> §\,1 (use unicode for §)
-    word = re.sub(u'(§) ?(\\d+)', r'\1\\,\2', word)
-    # annotation if no replacement took place (use unicode for §)
-    # FIXME: "if no replacement took place" instead of "(§$|§ )"
-    word = re.sub(u'(§$|§ )', u'\\@\\1', word)
+    pattern = u'(§+ ?)((?:\\d+)? ?)((?:f+\\.? )?)' # unicode for §
+    m = True
+    while m:
+        if m != True:
+            left, par, number, ff, word =  m.groups()
+            yield left
+            if number:
+                par = par.rstrip(u' ') + u'\\,'
+                if ff:
+                    number = number.rstrip(u' ')
+                    ff = u'\\,%s. ' % ff.rstrip(u' .')
+            else:
+                par = u'\\@' + par
+            if ff:
+                yield TerminalString(par + number + ff)
+            else:
+                yield TerminalString(par)
+                # this allows to match subsequent number ranges
+                word = number + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
 def numberSpacing(word):
     """
     Do spacing for number ranges and between numbers and words.
     """
-    # 6--9 (do nothing)
-    # in case of sloppy matching export 6\@--9
-    word = re.sub(r'(\d) -{1,2} ?(\d)', r'\1\\@--\2', word)
-    word = re.sub(r'(\d) ?-{1,2} (\d)', r'\1\\@--\2', word)
-    word = re.sub(r'(\d)-(\d)', r'\1\\@--\2', word)
     # annotate "[number]."
     word = re.sub(r'(^|[^@0-9])(\d+\.[^0-9])', r'\1\\@\2', word)
+    # format number ranges
+    pattern = r'(\d)( ?-{1,2} ?)(\d)'
+    m = True
+    while m:
+        if m != True:
+            left, num1, matched, num2, word =  m.groups()
+            # also accept 6-9 and do not annotate 6--9
+            if matched == u'-' or matched != u'--':
+                matched = u'\\@--'
+            if matched.strip(u' ') == u'--':
+                yield (left + num1)
+                yield TerminalString(matched)
+                word = num2 + word
+            else:
+                yield (left + num1 + matched + num2)
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
 def unspaceAbbreviations(word):
@@ -292,25 +364,25 @@ class UnitSpacing:
                 u'h', u'd', u'a', u'min', u'eV'
                 ]
 
-        to_be_annotated = [
-                # possibly prefixed units
-                u'V', u'eV'
-                ]
-
         unit_prefixes = '|'.join(unit_prefixes)
         units = '|'.join(units)
         unprefixed_units = '|'.join(unprefixed_units)
-        to_be_annotated = '|'.join(to_be_annotated)
-        re_units = '(%s)?(%s)' % (unit_prefixes, units)
-        re_unprefixed_units = '(%s)' % (unprefixed_units)
-        re_annotate = '(%s)?(%s)' % (unit_prefixes, to_be_annotated)
-        self.units_re = re.compile(r'(\d) ?((%s|%s)( |$|\.))'
+        re_units = '(?:%s)?(?:%s)' % (unit_prefixes, units)
+        re_unprefixed_units = '(?:%s)' % (unprefixed_units)
+        self.units_re = re.compile(r'(.*?)(\d+) ?((?:%s|%s)(?: |$|\.))(.*)'
                 % (re_units, re_unprefixed_units))
-        self.annot_re = re.compile(r'(\d) ?((%s)( |$|\.))' % re_annotate)
 
     def __call__(self, word):
-        word = self.annot_re.sub(r'\1\\,\@\2', word)
-        word = self.units_re.sub(r'\1\\,\2', word)
+        m = True
+        while m:
+            if m != True:
+                left, number, unit, word =  m.groups()
+                yield (left + number)
+                if unit[-1].endswith(u'V') and len(unit) > 1:
+                    # annotation for 'mV', 'μV' etc.
+                    unit = u'\\@' + unit
+                yield TerminalString(u'\\,' + unit)
+            m = self.units_re.match(word)
         yield word
 
 unitSpacing = UnitSpacing()
@@ -392,13 +464,6 @@ def formatCode(word):
                 yield (left + matched)
             word = after + word
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
-    yield word
-
-def trailingBackslash(word):
-    """
-    Escape trailing backslashes.
-    """
-    word = re.sub(r'\\$', r'\\@\\backslash', word)
     yield word
 
 class EscapeCommands:
@@ -576,8 +641,7 @@ def defaultMicrotype(text):
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text):
-    features = [percent, hashmark, ellipsis, naturalNumbers,
-                trailingBackslash, escapeMathCommands]
+    features = [percent, hashmark, ellipsis, naturalNumbers, escapeMathCommands]
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
