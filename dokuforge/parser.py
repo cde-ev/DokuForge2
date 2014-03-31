@@ -32,7 +32,7 @@ except NameError:
 ##    export, the story is as follows. A microtype feature is a
 ##    function str -> [Either str str] taking a textual unit and returning
 ##    a list of textual units after the feature is applied, splitting
-##    the original unit where approprate. A microtype is given
+##    the original unit where appropriate. A microtype is given
 ##    by a list of features and has the semantics of sucessively
 ##    applying these features (in the sense of the list monad), and
 ##    finally concatenating the obtained tokens. In other words, the
@@ -146,7 +146,7 @@ def acronym(word):
 
 def formatDashes(word):
     """
-    Insert protected spaces before or after dashes.
+    Annotate dashes
     """
     # replace " - " by " -- "
     word = word.replace(u" - ", u" -- ")
@@ -175,8 +175,14 @@ def formatDate(word):
     """
     Do spacing for dates that consist of day, month and year.
     """
-    date_pattern = u'%s%s' % (2 * u'(\\d{1,2}\\.) ?', u'(\\d{2,4})')
-    word = re.sub(date_pattern, r'\\@\1\\,\2\\,\3', word)
+    date_pattern = r'%s%s' % (2 * r'(\d{1,2}\.) ?', r'(\d{2,4})')
+    m = True
+    while m:
+        if m != True:
+            left, day, month, year, word =  m.groups()
+            yield left
+            yield TerminalString(u'\\@%s\\,%s\\,%s' % (day, month, year))
+        m = re.match(r'(.*?)' + date_pattern + r'(.*)', word)
     yield word
 
 def pageReferences(word):
@@ -331,50 +337,61 @@ def naturalNumbers(word):
                 threedigits = value % 1000
                 result = u'\\,%03d%s' % (threedigits, result)
                 value = value // 1000
-            yield u'%s%d%s' % (sign, value, result)
+            yield TerminalString(u'%s%d%s' % (sign, value, result))
 
 def fullStop(word):
     if len(word) > 1 and word.endswith(u'.'):
         yield word[:-1]
-        yield u'.'
+        yield TerminalString(u'.')
     else:
         yield word
 
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith(u'"'):
-        yield u'"`'
+        yield TerminalString(u'"`')
         word = word[1:]
     yield word
 
 def closeQuotationMark(word):
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
-        yield u'"\''
+        yield TerminalString(u'"\'')
     else:
         yield word
 
-percent = Escaper(u'%', u'\\%')
+percent = Escaper(u'%', TerminalString(u'\\%'))
 
-ampersand = Escaper(u'&', u'\\@\\&')
+ampersand = Escaper(u'&', TerminalString(u'\\@\\&'))
 
-hashmark = Escaper(u'#', u'\\@\\#')
+hashmark = Escaper(u'#', TerminalString(u'\\@\\#'))
 
-quote = Escaper(u"'", u"\\@'")
+quote = Escaper(u"'", TerminalString(u"\\@'"))
 
-leftCurlyBracket = Escaper(u'{', u'\\@\\{')
+leftCurlyBracket = Escaper(u'{', TerminalString(u'\\@\\{'))
 
-rightCurlyBracket = Escaper(u'}', u'\\@\\}')
+rightCurlyBracket = Escaper(u'}', TerminalString(u'\\@\\}'))
 
-caret = Escaper(u'^', u'\\@\\caret{}')
+caret = Escaper(u'^', TerminalString(u'\\@\\caret{}'))
 
-ellipsis = Escaper(u'...', u'\\dots{}')
+ellipsis = Escaper(u'...', TerminalString(u'\\dots{}'))
 
 def formatCode(word):
     """
     Set lstinline for code within pipes
     """
-    word = re.sub(r'(\|[^ |]+\|)([ \t\n():;,"?!"]|$)',
-                  r'\@\lstinline\1\2', word)
+    pattern = r'(\|[^ |]+\|)(.|$)'
+    m = True
+    while m:
+        if m != True:
+            left, matched, after, word =  m.groups()
+            if after in [u'', u' ', u'\t', u'\n', u'(', u')',
+                    u':', u';', u',', u'"', u'?', u'!']:
+                yield left
+                yield TerminalString(u'\\@\\lstinline%s' % matched)
+            else:
+                yield (left + matched)
+            word = after + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
 def trailingBackslash(word):
@@ -398,8 +415,7 @@ class EscapeCommands:
     def __init__(self, allowed = set(u"\\" + symbol for symbol in [
                                   u' ', u',', u'%', u'dots', u'ldots',
                                   u'\\', u'"', u'acronym', u'&', u'#',
-                                  u'caret', u'{', u'}', u'@', u'kern',
-                                  u'backslash', u'lstinline'])):
+                                  u'caret', u'{', u'}', u'@', u'kern'])):
         """
         Initialize with the set of allowed commands. The default value
         represents those commands that are produced by the exporter itself.
@@ -415,7 +431,7 @@ class EscapeCommands:
                     # Oh, a backslash at end of input;
                     # maybe we broke into words incorrectly,
                     # so just return something safe.
-                    yield u'\\@\\backslash'
+                    yield TerminalString(u'\\@\\backslash')
                 else:
                     yield self.forbid(part)
             else:
@@ -538,23 +554,25 @@ def applyMicrotypefeatures(wordlist, featurelist):
     return ''.join(finallist)
 
 def defaultMicrotype(text):
-    separators = ' \t\n();,' # no point, might be in abbreviations
-    features = [# no splitting before the following features
-                formatCode,
-                # no splitting at ' ' before the following features
-                SplitSeparators(separators[1:]), # separators without ' '
-                percentSpacing, ellipsisSpacing, unspaceAbbreviations,
-                # also no splitting at ',' allowed afterwards
-                formatDate, pageReferences, lawReferences, unitSpacing,
-                numberSpacing, # must be after lawReferences
-                formatDashes, # must be after numberSpacing
-                SplitSeparators(separators[:-1]), # separators without ','
-                # after splitting at all separators
-                percent, ampersand, hashmark, quote,
-                leftCurlyBracket, rightCurlyBracket, # before caret
-                caret, ellipsis, standardAbbreviations, fullStop,
-                openQuotationMark, closeQuotationMark, acronym,
-                naturalNumbers, escapeCommands]
+    """
+    @type text: unicode
+    """
+    assert isinstance(text, unicode)
+    separators = ' \t,;()\n' # no point, might be in abbreviations
+    features = [formatCode,
+                ## no splitting at all before the previous features
+                SplitSeparators(separators[1:]), # separators except ' '
+                unspaceAbbreviations, unitSpacing, ellipsisSpacing,
+                percentSpacing, formatDate, pageReferences,
+                # keep order in the following line
+                lawReferences, numberSpacing, formatDashes,
+                ## no splitting at ' ' before the previous features
+                SplitSeparators(separators[0]), # separator ' ' only
+                percent, ampersand, hashmark, quote, leftCurlyBracket,
+                rightCurlyBracket, caret, ellipsis, standardAbbreviations,
+                # fullStop after ellipsis and standardAbbreviations
+                fullStop, openQuotationMark, closeQuotationMark, acronym,
+                naturalNumbers, escapeCommands] # escapeCommands at last
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text):
