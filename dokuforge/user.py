@@ -325,7 +325,6 @@ class User:
         @rtype: unicode
         """
         ret = self.status.split('_')[0]
-        assert(ret in (u"cde", u"jgw"))
         return ret
 
 class UserDB:
