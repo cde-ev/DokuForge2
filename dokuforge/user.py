@@ -1,8 +1,8 @@
 import random
 try:
-    import ConfigParser
+    from ConfigParser import SafeConfigParser as ConfigParser
 except ImportError:
-    import configparser as ConfigParser
+    from configparser import ConfigParser
 import io
 
 try:
@@ -389,7 +389,7 @@ class UserDB:
         ## if nothing is changed return
         if self.storage.timestamp() <= self.timestamp:
             return
-        config = ConfigParser.SafeConfigParser()
+        config = ConfigParser()
         content = io.StringIO(self.storage.content().decode("utf8"))
         ## update time, since we read the new content
         self.timestamp = self.storage.cachedtime

@@ -57,7 +57,7 @@ class StorageDir:
 
         @rtype: int
         """
-        digits = re.compile("[^0-9]*([0-9]+)")
+        digits = re.compile(b"[^0-9]*([0-9]+)")
         basename = os.path.basename(self.path)
         m = digits.match(basename)
         if m is None:

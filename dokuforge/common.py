@@ -6,9 +6,11 @@ import subprocess
 import re
 import os
 try:
-    import ConfigParser
+    import ConfigParser as configparser
+    from ConfigParser import SafeConfigParser as ConfigParser
 except ImportError:
-    import configparser as ConfigParser
+    import configparser
+    from configparser import ConfigParser
 import tarfile
 import datetime
 
@@ -224,10 +226,10 @@ def validateUserConfig(config):
     @type config: unicode
     """
     assert isinstance(config, unicode)
-    parser = ConfigParser.SafeConfigParser()
+    parser = ConfigParser()
     try:
         parser.readfp(io.StringIO(config))
-    except ConfigParser.ParsingError as err:
+    except configparser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
@@ -240,7 +242,7 @@ def validateUserConfig(config):
                         (perm, name))
             parser.get(name, u'status')
             parser.get(name, u'password')
-    except ConfigParser.NoOptionError as err:
+    except configparser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
@@ -252,16 +254,16 @@ def validateGroupConfig(config):
     @type config: unicode
     """
     assert isinstance(config, unicode)
-    parser = ConfigParser.SafeConfigParser()
+    parser = ConfigParser()
     try:
         parser.readfp(io.StringIO(config))
-    except ConfigParser.Error as err:
+    except configparser.Error as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
             parser.get(name, u'title')
-    except ConfigParser.NoOptionError as err:
+    except configparser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
@@ -310,6 +312,7 @@ class TarWriter:
         a slash.
         @type dirname: bytes
         """
+        assert isinstance(dirname, bytes)
         assert b"/" not in dirname
         if not isinstance(dirname, str):
             dirname = dirname.decode("iso8859-1")
