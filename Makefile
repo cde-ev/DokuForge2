@@ -3,6 +3,7 @@ PYTHON2 ?= python2
 else
 PYTHON2 ?= python
 endif
+PYTHON3 ?= python3
 
 all: doc setup
 
@@ -19,8 +20,11 @@ clean:
 
 check: test
 
-test: test.py
+test:test2 test3
+test2: test.py
 	${PYTHON2} test.py
+test3: test.py
+	${PYTHON3} test.py
 
 .coverage:$(wildcard dokuforge/*.py) test.py
 	${PYTHON2} -m coverage -x test.py
