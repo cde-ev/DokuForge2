@@ -15,7 +15,7 @@ setup:
 
 clean:
 	rm -rf html work __pycache__ dokuforge/__pycache__
-	rm -f *.pyc *~ dokuforge/*.pyc .coverage
+	rm -f *.pyc *~ dokuforge/*.pyc .coverage dokuforge/versioninfo.py
 
 check: test
 
