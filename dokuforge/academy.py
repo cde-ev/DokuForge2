@@ -165,11 +165,6 @@ class Academy(StorageDir):
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
 
-    def rawExportIterator(self, tarwriter):
-        for course in self.listCourses():
-            for chunk in course.rawExportIterator(tarwriter):
-                yield chunk
-
     def texExportIterator(self, tarwriter, static=None):
         """
         yield a tar archive containing the tex-export of the academy.
