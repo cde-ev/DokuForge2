@@ -14,7 +14,7 @@ setup:
 	${PYTHON2} createexample.py
 
 clean:
-	rm -rf html work
+	rm -rf html work __pycache__ dokuforge/__pycache__
 	rm -f *.pyc *~ dokuforge/*.pyc .coverage
 
 check: test
