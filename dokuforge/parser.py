@@ -196,9 +196,12 @@ def ellipsisSpacing(word):
     """
     Do spacing for ellipsis.
     """
-    word = re.sub(r'\[\.\.\.\]', r'[...\kern-.16em]', word)
-    word = re.sub(r' +\.\.\.([ \t\n():;,"?!"]|$)', r'~...\1', word)
-    word = re.sub(r'(^|[^~[])\.\.\.', r'\1\@...', word)
+    # '[...]'
+    word = re.sub(r'\[\.{3}\]', r'[...\kern-.16em]', word)
+    # ' ...(punctuation mark|whitespace|end of line)'
+    word = re.sub(r' +\.{3}([():;,"?!]|\s|$)', r'~...\1', word)
+    # annotate remaining occurances of ... with \@
+    word = re.sub(r'(^|[^~[])\.{3}', r'\1\@...', word)
     yield word
 
 def formatDate(word):
@@ -279,7 +282,7 @@ def numberSpacing(word):
     Do spacing for number ranges and between numbers and words.
     """
     # annotate "[number]."
-    word = re.sub(r'(^|[^@0-9])(\d+\.[^0-9])', r'\1\\@\2', word)
+    word = re.sub(r'(^|[^@0-9])(\d+\.\D)', r'\1\\@\2', word)
     # format number ranges
     pattern = r'(\d)( ?-{1,2} ?)(\d)'
     m = True
@@ -391,7 +394,7 @@ def naturalNumbers(word):
     """
     Special Spacing for numbers.
     """
-    if not re.match(u'^-?[0-9]+$', word):
+    if not re.match(u'^-?\d+$', word):
         yield word
     else:
         if word.startswith(u'-'):
@@ -648,7 +651,7 @@ def ednoteMicrotype(text):
     return applyMicrotypefeatures([text], [escapeEndEdnote])
 
 def isemptyline(line):
-    return re.match('^[ \t]*$', line)
+    return re.match('^\s*$', line)
 
 def wrap(text, subsequent_indent=''):
     """
@@ -1529,14 +1532,14 @@ class EnumerateItem(Linegroup):
 
     @classmethod
     def startshere(self, line, after=None):
-        return re.match('^[0-9]+\.[ \t]', line)
+        return re.match('^\d+\.\s', line)
 
     def parse(self):
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines), number="1")
         firstline = self.lines[0]
         number = "1"
-        m = re.match('^([0-9]+)\.[ \t]+(.*)$', firstline)
+        m = re.match('^(\d+)\.\s+(.*)$', firstline)
         if m is not None:
             number, firstline = m.group(1,2)
         withcleanedfirstline = [firstline]
