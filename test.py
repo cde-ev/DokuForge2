@@ -264,7 +264,7 @@ class DokuforgeWebTests(DfTestCase):
 
     def testLoginClick(self):
         self.do_login()
-        self.res = self.res.click(description="Dokuforge")
+        self.res = self.res.click(description="DokuForge")
         self.is_loggedin()
 
     def testLogout(self):
