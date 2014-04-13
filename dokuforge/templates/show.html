@@ -9,7 +9,7 @@
 {% endblock %}
 {% block content %}
 Teil #{{ page|string }}
-[Version {{commit['revision'] | e }},
+[Version {{commit['revision'] | e }}, 
  zuletzt ge&auml;ndert von {{ commit['author'] | e }}
  am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
 ({{estimate.pages | round(2) | e}} Seiten,
@@ -24,15 +24,7 @@ Teil #{{ page|string }}
 {%- endif -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
 &nbsp;
-{%- if user.allowedWrite(academy, course) %}
-{%- if page in course.pages -%}
-{{ button(buildurl("delete"), "Löschen", dict()) }}
-{%- else -%}
-{{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
-{%- endif -%}
-{%- endif -%}
-
-<div class="rightCommands">
+&nbsp;
 {%- if pageindex > 0 -%}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
 {%- else -%}
@@ -53,7 +45,16 @@ Teil #{{ page|string }}
 <span class="inactiveNavigation">N&auml;chster Teil</span>
 
 {% endif %}
+<div class="rareCommands">
+{%- if user.allowedWrite(academy, course) %}
+{%- if page in course.pages -%}
+{{ button(buildurl("delete"), "Löschen", dict()) }}
+{%- else -%}
+{{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
+{%- endif -%}
+{%- endif -%}
 </div>
+
 <hr>
 {% endif %}
 <div class="dokucontent">
@@ -62,13 +63,14 @@ Teil #{{ page|string }}
 </div>
 <hr>
 
+
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
 &nbsp;
 {%- endif -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
-
-<div class="rightCommands">
+&nbsp;
+&nbsp;
 {%- if pageindex > 0 -%}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
 {%- else -%}
@@ -89,15 +91,14 @@ Teil #{{ page|string }}
 <span class="inactiveNavigation">N&auml;chster Teil</span>
 
 {% endif %}
-Diesen Teil
+<div class="rareCommands">
 {%- if user.allowedWrite(academy, course) %}
 {%- if page in course.pages -%}
-{{ button(buildurl("delete"), "löschen", dict()) }}
+{{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- else -%}
 {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
 {%- endif -%}
 {%- endif -%}
-
 </div>
 
 <hr>

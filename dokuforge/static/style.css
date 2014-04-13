@@ -226,7 +226,8 @@ a:active {
     color: #880088;
 }
 
-.rightCommands {
+
+.rareCommands {
   display: inline-block;
   float: right;
 }
