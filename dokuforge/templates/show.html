@@ -20,11 +20,8 @@ Teil #{{ page|string }}
 <hr>
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
-&nbsp;
+&nbsp;&nbsp;&nbsp;
 {%- endif -%}
-<a href="{{ buildurl("rcs")|e }}">rcs</a>
-&nbsp;
-&nbsp;
 {%- if pageindex > 0 -%}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
 {%- else -%}
@@ -48,6 +45,8 @@ Teil #{{ page|string }}
 <div class="rareCommands">
 {%- if user.allowedWrite(academy, course) %}
 {%- if page in course.pages -%}
+<a href="{{ buildurl("rcs")|e }}">rcs</a>
+&nbsp;
 {{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- else -%}
 {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
@@ -66,11 +65,8 @@ Teil #{{ page|string }}
 
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
-&nbsp;
+&nbsp;&nbsp;&nbsp;
 {%- endif -%}
-<a href="{{ buildurl("rcs")|e }}">rcs</a>
-&nbsp;
-&nbsp;
 {%- if pageindex > 0 -%}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
 {%- else -%}
@@ -94,6 +90,8 @@ Teil #{{ page|string }}
 <div class="rareCommands">
 {%- if user.allowedWrite(academy, course) %}
 {%- if page in course.pages -%}
+<a href="{{ buildurl("rcs")|e }}">rcs</a>
+&nbsp;
 {{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- else -%}
 {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
