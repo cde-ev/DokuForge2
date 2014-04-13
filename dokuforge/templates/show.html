@@ -23,9 +23,9 @@ Teil #{{ page|string }}
 &nbsp;&nbsp;&nbsp;
 {%- endif -%}
 {%- if pageindex > 0 -%}
-<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
+<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>&nbsp;
 {%- else -%}
-<span class="inactiveNavigation">Vorheriger Teil</span>
+<span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
 {%- endif -%}
 {% for otherpage in course.pages %}
 
@@ -37,9 +37,9 @@ Teil #{{ page|string }}
 {%- endfor -%}
 {% if course.pages[pageindex+1] is defined %}
 
-<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">N&auml;chster Teil</a>
+&nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
 {% else %}
-<span class="inactiveNavigation">N&auml;chster Teil</span>
+&nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
 
 {% endif %}
 <div class="rareCommands">
@@ -68,9 +68,9 @@ Teil #{{ page|string }}
 &nbsp;&nbsp;&nbsp;
 {%- endif -%}
 {%- if pageindex > 0 -%}
-<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
+<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>&nbsp;
 {%- else -%}
-<span class="inactiveNavigation">Vorheriger Teil</span>
+<span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
 {%- endif -%}
 {% for otherpage in course.pages %}
 
@@ -82,9 +82,9 @@ Teil #{{ page|string }}
 {%- endfor -%}
 {% if course.pages[pageindex+1] is defined %}
 
-<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">N&auml;chster Teil</a>
+&nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
 {% else %}
-<span class="inactiveNavigation">N&auml;chster Teil</span>
+&nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
 
 {% endif %}
 <div class="rareCommands">
