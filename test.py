@@ -299,7 +299,7 @@ class DokuforgeWebTests(DfTestCase):
         self.res = self.res.click(href=re.compile("course01/$"))
         self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
         for (inputstr, outputstr) in teststrings:
-            self.res = self.res.click(description="Editieren")
+            self.res = self.res.click(description="Editieren", index=0)
             form = self.res.forms[1]
             form["content"] = inputstr
             self.res = form.submit(name="saveshow")
@@ -311,7 +311,7 @@ class DokuforgeWebTests(DfTestCase):
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
         self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(description="Editieren")
+        self.res = self.res.click(description="Editieren", index=1)
         form = self.res.forms[1]
         form["content"] = \
 """[Section]
@@ -641,7 +641,7 @@ permissions = df_superadmin True,df_admin True
         form["content"] = Upload("README-rlog.txt")
         self.res = form.submit()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
-        form = self.res.forms[2]
+        form = self.res.forms[3]
         self.res = form.submit()
         self.res.mustcontain("Keine Bilder zu diesem Teil gefunden.",
                              no="#[0] (README-rlog.txt)")
@@ -660,7 +660,7 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
         self.res = form.submit()
-        form = self.res.forms[2]
+        form = self.res.forms[3]
         self.res = form.submit()
         self.res.mustcontain("Keine Bilder zu diesem Teil gefunden.",
                              no="#[0] (README-rlog.txt)")
@@ -703,7 +703,7 @@ permissions = df_superadmin True,df_admin True
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
         self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(description="rcs")
+        self.res = self.res.click(description="rcs", index=0)
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.res.body.startswith("head"))
 
