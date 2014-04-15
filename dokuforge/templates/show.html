@@ -47,7 +47,7 @@ Teil #{{ page|string }}
 {%- if page in course.pages -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
 &nbsp;
-{{ button(buildurl("delete"), "L&ouml;schen", dict()) }}
+{{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- else -%}
 {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
 {%- endif -%}
@@ -92,7 +92,7 @@ Teil #{{ page|string }}
 {%- if page in course.pages -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
 &nbsp;
-{{ button(buildurl("delete"), "L&ouml;schen", dict()) }}
+{{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- else -%}
 {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
 {%- endif -%}
@@ -107,7 +107,7 @@ Zugeordnete Bilder:
 <li>
   <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e }})</a>
 {%- if user.allowedWrite(academy, course) %}
-{{ button(buildurl("blobdelete", {'blob': blob.number}), "L&ouml;schen", dict()) }}
+{{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
 {%- endif -%}
 </li>
 {%- endfor %}
