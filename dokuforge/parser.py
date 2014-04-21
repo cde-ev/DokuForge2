@@ -160,7 +160,7 @@ def formatDashes(word):
     Replace " - " by " -- " and annotate dashes with "\\@"
     """
     # match context in order to avoid touching number ranges or signs
-    pattern = r'(^|[^@0-9 ])( ?-+ ?)($|[^0-9 ])'
+    pattern = r'(^|[^@0-9- ])( ?-+ ?)($|[^0-9- ])'
     m = True
     while m:
         if m != True:
