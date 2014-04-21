@@ -160,7 +160,7 @@ def formatDashes(word):
     Replace " - " by " -- " and annotate dashes with "\\@"
     """
     # match context in order to avoid touching number ranges or signs
-    pattern = r'(^|[^@0-9- ])( ?-+ ?)($|[^0-9- ])'
+    pattern = r'(^|[^@ -])( ?-+ ?)($|[^0-9- ])'
     m = True
     while m:
         if m != True:
@@ -173,6 +173,8 @@ def formatDashes(word):
                 yield (left + before + dash)
             word = after + word
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    # annotate ranges such as 1a--3b with \@
+    word = re.sub(r'([^@0-9- ] ?)(--+ ?[0-9])', r'\1\\@\2', word)
     yield word
 
 def percentSpacing(word):
