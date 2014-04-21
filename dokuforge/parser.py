@@ -186,11 +186,11 @@ def percentSpacing(word):
     while m:
         if m != True:
             left, matched, word =  m.groups()
-            yield left
+            yield (left + matched.rstrip())
             if matched.endswith(u' '):
-                matched = u'\\@' + matched.rstrip(u' ')
-            yield TerminalString(matched + u'\\,')
-            yield u'%'
+                yield TerminalString(u'\\@\\,\\%')
+            else:
+                yield TerminalString(u'\\,\\%')
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 

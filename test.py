@@ -860,7 +860,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
                              u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'10\\,\\% sind ein Zehntel und mehr als \\@5\\,\\%.')
+                             u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.')
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
@@ -936,7 +936,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Decimal number with unit: 25,4 mm.',
                              u'Decimal number with unit: 25,4\\,mm.')
         self.verifyExportsTo(u'Percentages like 5 % should be handled as nicely as 5%.',
-                             u'Percentages like \\@5\\,\\% should be handled as nicely as 5\\,\\%.')
+                             u'Percentages like 5\\@\\,\\% should be handled as nicely as 5\\,\\%.')
         self.verifyExportsTo(u'90° is a right angle.',
                              u'90° is a right angle.')
 
@@ -1009,7 +1009,7 @@ class DokuforgeTitleParserTests(DfTestCase):
         self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
                              u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'10\\,\\% sind ein Zehntel und mehr als \\@5\\,\\%.')
+                             u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.')
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
@@ -1040,7 +1040,7 @@ class DokuforgeCaptionParserTests(DfTestCase):
         self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
                              u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
         self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'10\\,\\% sind ein Zehntel und mehr als \\@5\\,\\%.')
+                             u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.')
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
