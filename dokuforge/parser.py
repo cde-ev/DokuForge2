@@ -364,7 +364,7 @@ class UnitSpacing:
                 u'Q', u'I', u'U', u'E', u'p', u'B', u'H', u'µ', u'μ',
                 u'Θ', u'Φm', u'R', u'ρ', u'C', u'L', u'P',
                 # more units
-                u'h', u'd', u'a', u'min', u'eV'
+                u'eV'
                 ]
 
         unit_prefixes = '|'.join(unit_prefixes)
