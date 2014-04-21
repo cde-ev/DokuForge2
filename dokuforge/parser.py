@@ -305,14 +305,14 @@ def unspaceAbbreviations(word):
     """
     Remove single spaces within known abbreviations.
     """
-    word = re.sub(u'(^| )d. h.', u'\\1d.h.', word)
-    word = re.sub(u'(^| )n. Chr.', u'\\1n.Chr.', word)
-    word = re.sub(u'(^| )o. Ä.', u'\\1o.Ä.', word)
-    word = re.sub(u'(^| )s. o.', u'\\1s.o.', word)
-    word = re.sub(u'(^| )s. u.', u'\\1s.u.', word)
-    word = re.sub(u'(^| )u. a.', u'\\1u.a.', word)
-    word = re.sub(u'(^| )v. Chr.', u'\\1v.Chr.', word)
-    word = re.sub(u'(^| )z. B.', u'\\1z.B.', word)
+    word = re.sub(u'(^| )d\. h\.', u'\\1d.h.', word)
+    word = re.sub(u'(^| )n\. Chr\.', u'\\1n.Chr.', word)
+    word = re.sub(u'(^| )o\. Ä\.', u'\\1o.Ä.', word)
+    word = re.sub(u'(^| )s\. o\.', u'\\1s.o.', word)
+    word = re.sub(u'(^| )s\. u\.', u'\\1s.u.', word)
+    word = re.sub(u'(^| )u\. a\.', u'\\1u.a.', word)
+    word = re.sub(u'(^| )v\. Chr\.', u'\\1v.Chr.', word)
+    word = re.sub(u'(^| )z\. B\.', u'\\1z.B.', word)
     yield word
 
 def standardAbbreviations(word):
