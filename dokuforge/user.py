@@ -319,15 +319,13 @@ class User:
         return self.hasPermission(u"df_superadmin")
 
     def defaultGroup(self):
-        """
-        Return the default group of a user. Currently this is a trivial
-        function since we have just one possible group at the moment. This
-        could be expanded in the future.
+        """Return the default group of a user. This is the first part (separated by
+        underscore) of the status.
 
         @rtype: unicode
         """
-        # FIXME we should add support for jgw
-        return u"cde"
+        ret = self.status.split('_')[0]
+        return ret
 
 class UserDB:
     """
