@@ -13,6 +13,7 @@ except ImportError:
     from configparser import ConfigParser
 import tarfile
 import datetime
+import calendar
 
 try:
     check_output = subprocess.check_output
@@ -332,7 +333,7 @@ class TarWriter:
         self.io.truncate(0)
         return data
 
-    def addChunk(self, name, content):
+    def addChunk(self, name, content, lastchanged):
         """
         Add a file with given content and return some tar content generated
         along the way.
@@ -340,14 +341,17 @@ class TarWriter:
         @type name: bytes
         @type content: bytes
         @rtype: bytes
+        @lastchanged: datetime
         """
         assert isinstance(name, bytes)
         assert isinstance(content, bytes)
         if not isinstance(name, str):
             name = name.decode("iso8859-1")
+        assert isinstance(lastchanged, datetime.datetime)
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
+        info.mtime = calendar.timegm(lastchanged.utctimetuple())
         self.tar.addfile(info, io.BytesIO(content))
         return self.read()
 
@@ -365,6 +369,7 @@ class TarWriter:
         with open(filename, "rb") as infile:
             infile.seek(0, 2)
             info.size = infile.tell()
+            info.mtime = os.path.getmtime(filename)
             infile.seek(0)
             self.tar.addfile(info, infile)
         return self.read()

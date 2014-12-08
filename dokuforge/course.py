@@ -1,4 +1,5 @@
 import os
+import datetime
 
 try:
     unicode
@@ -612,6 +613,8 @@ class Course(StorageDir):
             tex += dfLineGroupParser(page).toTex()
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
+                blobbase = (u"blob%d" % b).encode("ascii")
+                blobdate = self.getstorage(blobbase).commitstatus()[b'date']
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
                 fileName = blob['filename']
@@ -631,7 +634,9 @@ class Course(StorageDir):
                 yield tarwriter.addChunk(self.name +
                                          (u"/blob_%d_" % b).encode("ascii") +
                                          str(blob['filename']),
-                                         blob['data'])
+                                         blob['data'],
+                                         blobdate)
 
         yield tarwriter.addChunk(self.name + b"/chap.tex",
-                                 tex.encode("utf8"))
+                                 tex.encode("utf8"),
+                                 self.lastchange()['date'])
