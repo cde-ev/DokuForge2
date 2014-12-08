@@ -206,6 +206,21 @@ class Course(StorageDir):
                 linkedpages = self.listpages(havelock = gotlockindex)
                 return [x for x in range(np) if x not in linkedpages]
 
+    def outlinedeadpages(self):
+        """
+        @returns: a list of the outlines of the pages not currently linked
+            in the index (shortened to headings).
+        @rtype: [Outline]
+        """
+        outlines = []
+        for p in self.listdeadpages():
+            outline = Outline(p)
+            parsed = dfLineGroupParser(self.showpage(p))
+            headings =  [x for x in parsed.parts if isinstance(x, PHeading)]
+            outline.addParsed(headings)
+            outlines.append(outline)
+        return outlines
+
     def listdeadblobs(self):
         """
         @returns: a list of the blobs not currently linked to the index
@@ -579,6 +594,7 @@ class Course(StorageDir):
             pages = self.listpages,
             deadpages = self.listdeadpages,
             outlines = self.outlinepages,
+            outlinesdead = self.outlinedeadpages,
             lastchange = self.lastchange,
             timestamp = self.timestamp)
         functions.update(extrafunctions)
