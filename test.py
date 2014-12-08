@@ -702,7 +702,7 @@ permissions = df_superadmin True,df_admin True
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course02/$"))
         self.res = self.res.click(description="df2-Rohdaten")
-        self.assertIsTar(self.res.body)
+        self.assertIsTarGz(self.res.body)
 
     def testRawPageExport(self):
         self.do_login()
