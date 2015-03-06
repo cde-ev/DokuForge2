@@ -374,8 +374,8 @@ class UnitSpacing:
         unprefixed_units = '|'.join(unprefixed_units)
         re_units = '(?:%s)?(?:%s)' % (unit_prefixes, units)
         re_unprefixed_units = '(?:%s)' % (unprefixed_units)
-        # unit is followed by (punctuation mark|whitespace|end of line)
-        after = '(?:[():;,"?!.]|\s|$)'
+        # unit is followed by (punctuation mark|slash|star|whitespace|end of line)
+        after = '(?:[():;,"?!./*]|\s|$)'
         self.units_re = re.compile(r'(.*?)(\d+) ?((?:%s|%s)%s)(.*)'
                 % (re_units, re_unprefixed_units, after))
 
