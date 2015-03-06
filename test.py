@@ -66,7 +66,7 @@ class TarWriterTests(DfTestCase):
         tar = tar + tarwriter.addChunk(b'myFile', b'contents', timeStampNow)
         tar = tar + tarwriter.close()
         self.assertIsTar(tar)
-        
+
     def testGzip(self):
         timeStampNow = datetime.datetime.utcnow()
         timeStampNow.replace(tzinfo=UTC())
@@ -565,6 +565,7 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        form["source"] = "from the internet"
         self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
@@ -581,12 +582,13 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        form["source"] = "from the internet"
         self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
         self.res = form.submit()
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
-        self.res.mustcontain("Bildunterschrift/Kommentar: Shiny blob",
+        self.res.mustcontain("Bildunterschrift/Kommentar: Shiny blob\nQuelle: from the internet",
                              "K&uuml;rzel: blob")
         self.is_loggedin()
 
@@ -599,6 +601,7 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        form["source"] = "from the internet"
         self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
@@ -617,6 +620,7 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        form["source"] = "from the internet"
         self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
@@ -642,6 +646,7 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        form["source"] = "from the internet"
         self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
@@ -662,6 +667,7 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
+        form["source"] = "from the internet"
         self.res = form.submit()
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
@@ -717,7 +723,7 @@ class CourseTests(DfTestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.course = Course(os.path.join(self.tmpdir, b'example'))
-        
+
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
 
@@ -740,7 +746,7 @@ class AcademyTest(DfTestCase):
         self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
         self.academy.createCourse(u'new01', u'erster neuer Kurs')
         self.academy.createCourse(u'new02', u'zweiter neuer Kurs')
-        
+
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
 

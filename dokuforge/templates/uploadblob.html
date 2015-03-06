@@ -14,6 +14,8 @@ Bildunterschrift/Kommentar:         <textarea disabled="disabled">{{form.get("co
         <input type="hidden" name="comment" value="{{form.get("comment", "")|e}}">
 K&uuml;rzel:	<textarea disabled="disabled">{{form.get("label", "")|e}}</textarea>
         <input type="hidden" name="label" value="{{form.get("label", "")|e}}">
+Quelle:	<textarea disabled="disabled">{{form.get("source", "")|e}}</textarea>
+        <input type="hidden" name="source" value="{{form.get("source", "")|e}}">
 	<input type="file" name="content">
 	<input type="submit" value="Bild hochladen">
 </form>

@@ -420,3 +420,9 @@ def findlastchange(changes):
     """
     return max(changes + [{'author': u'unkown', 'revision' : u'?',
                            'date' : epoch}], key=lambda x: x["date"])
+
+def combineCommentAndSource(rs):
+    combinedComment = rs.request.form["comment"] # FIXME: raises KeyError
+    combinedComment += "\nQuelle: "
+    combinedComment += rs.request.form["source"] # FIXME: raises KeyError
+    return combinedComment

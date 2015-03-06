@@ -15,6 +15,7 @@
 <form action="{{ buildurl("uploadblob")|e }}" method="post" >
   Bildunterschrift/Kommentar: <textarea name="comment">{{form.get("comment", "")|e}}</textarea>
   K&uuml;rzel: <textarea name="label">{{form.get("label", "")|e}}</textarea>
+  Quelle: <textarea name="source">{{form.get("source", "")|e}}</textarea>
 	<input type="submit" value="Bild auswählen">
 </form>
 Das K&uuml;rzel darf nur Kleinbuchstaben und Ziffern enthalten.

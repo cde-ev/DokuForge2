@@ -1166,7 +1166,7 @@ class Application:
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
-        usercomment = rs.request.form["comment"]
+        usercomment = common.combineCommentAndSource(rs)
         userlabel = rs.request.form["label"]
 
         try:
@@ -1191,7 +1191,7 @@ class Application:
         if not rs.user.allowedWrite(aca, c):
             return werkzeug.exceptions.Forbidden()
 
-        usercomment = rs.request.form["comment"] # FIXME: raises KeyError
+        usercomment = common.combineCommentAndSource(rs)
         userlabel = rs.request.form["label"] # FIXME: raises KeyError
         # a FileStorage is sufficiently file-like for store
         usercontent = rs.request.files["content"] # FIXME: raises KeyError
