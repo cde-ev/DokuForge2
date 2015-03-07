@@ -1499,12 +1499,17 @@ class Application:
         """
         courseview = thecourse.view()
         theestimate = Estimate.fromNothing()
+        theblobs = []
+        for page in thecourse.listpages():
+            theblobs.extend(thecourse.viewblob(i)
+                            for i in thecourse.listblobs(page))
         for x in courseview['outlines']:
             theestimate += x.estimate
         params = dict(
             academy=theacademy.view(),
             course=courseview,
-            estimate=theestimate)
+            estimate=theestimate,
+            blobs=theblobs)
         return self.render("course.html", rs, params)
 
     def render_addblob(self, rs, theacademy, thecourse, thepage, ok=None,

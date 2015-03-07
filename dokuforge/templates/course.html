@@ -55,6 +55,21 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 {%- else -%}
 <em>Keine Teile gefunden gefunden.</em><br>
 {%- endif -%}
+{%- if blobs %}
+Zugeordnete Bilder:
+<ul>
+{%- for blob in blobs %}
+<li>
+  <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e }})</a>
+{%- if user.allowedWrite(academy, course) %}
+{{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
+{%- endif -%}
+</li>
+{%- endfor %}
+</ul>
+{%- else -%}
+<em>Keine Bilder zu diesem Teil gefunden.</em>
+{%- endif -%}
 <div class="courseoperations">
 {%- if user.mayExport(academy) %}
 <a href="{{ buildurl("raw")|e }}">df2-Rohdaten</a>
