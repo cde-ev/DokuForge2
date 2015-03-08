@@ -357,7 +357,7 @@ class UnitSpacing:
                 # temperatures
                 u'°C', u'°F', u'°R', u'°Ré',
                 # more units
-                u'l', u'eV',
+                u'l', u'eV', u'€',
                 ]
 
         unprefixed_units = [
