@@ -136,8 +136,9 @@ def acronym(word):
     All-capital words should be displayed in smaller font.
     But don't mangle things like 'T-Shirt' or 'E-Mail' while
     still allowing for compound nouns such as 'DNA-Sequenz'.
+    A plural 's' as in 'EKGs' is allowed.
     """
-    pattern = r'([^-]+)'
+    pattern = r'([^-s]+)'
     concat_left = u''
     m = True
     while m:
