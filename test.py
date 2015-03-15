@@ -833,8 +833,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'd.\\,h., der Exporter bzw. oder ca. oder so.')
 
     def testAcronym(self):
-        self.verifyExportsTo(u'Bitte ACRONYME anders setzen.',
-                             u'Bitte \\@\\acronym{ACRONYME} anders setzen.')
+        self.verifyExportsTo(u'Bitte ACRONYME wie EKGs anders setzen.',
+                             u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.')
         self.verifyExportsTo(u'Unterscheide T-shirt und DNA-Sequenz.',
                              u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.')
 
