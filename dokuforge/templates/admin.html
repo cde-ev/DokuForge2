@@ -13,7 +13,7 @@ Nutzeradministration
    {% elif ok %}
    &Auml;nderungen erfolgreich gespeichert.
    {% else %}
-   <span class=important> {{ error.explanation }} </span>
+   <span class=important> {{ error.message, error.explanation }} </span>
    {% endif %}
    <div id="saveedittext">
       <textarea name="content">{{ content|e }}</textarea>
