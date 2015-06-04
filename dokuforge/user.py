@@ -26,28 +26,12 @@ def randpasswordstring(n=6):
     chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789'
     return ''.join(sysrand.choice(chars) for x in range(n))
 
-
-class User:
-    """
-    User-Class
-
-    @ivar name: name of the user
-    @ivar status: status of the user, valid values are as follows
-        - cde_dokubeauftragter
-        - cde_kursleiter
-        - cde_dokuteam
-        - jgw_dokubeauftragter
-        - jgw_kursleiter
-        - jgw_dokuteam
-    @ivar password: password of the user
-    @ivar permissions: dictionary of permissions, the key is the name of
-        the permission, the value is a boolean, True if the permission is
-        granted, False if explicitly revoked. Absence of a key means no
-        permission. Some permissions grant recursive permissions (like
-        akademie_read_y=True), if there is a more specific explicitly
-        revoked permission (like kurs_read_y_z=False) it takes precedence
-        over a recursively granted permission. The permissions are as
-        follows.
+PERMISSION_DOC = """
+        The permissions are as follows. Note that some permissions grant
+        recursive permissions (like akademie_read_y=True), if there is a
+        more specific explicitly revoked permission (like
+        kurs_read_y_z=False) it takes precedence over a recursively granted
+        permission.
          - kurs_x_y_z --
             x in {read, write}, y akademiename, z kursname
 
@@ -96,7 +80,27 @@ class User:
         two of which grant recursive privileges which can be revoked by a
         more explicit entry -- the most explicit applicable entry decides
         the actual privilege.
-    """
+"""
+
+class User:
+    __doc__ = ("""
+    User-Class
+
+    @ivar name: name of the user
+    @ivar status: status of the user, valid values are as follows
+        - cde_dokubeauftragter
+        - cde_kursleiter
+        - cde_dokuteam
+        - jgw_dokubeauftragter
+        - jgw_kursleiter
+        - jgw_dokuteam
+    @ivar password: password of the user
+    @ivar permissions: dictionary of permissions, the key is the name of
+        the permission, the value is a boolean, True if the permission is
+        granted, False if explicitly revoked. Absence of a key means no
+        permission.
+    """ + PERMISSION_DOC)
+
     def __init__(self, name, status, password, permissions):
         """
         User-Class Constructor
