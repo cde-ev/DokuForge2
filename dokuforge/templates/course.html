@@ -60,9 +60,9 @@ Zugeordnete Bilder:
 <ul>
 {%- for blob in blobs %}
 <li>
-  <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e }})</a>
+  <a href="{{ buildurl("showblob", {'blob': blob.number, 'page': blobpages[blob.number]})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e }})</a>
 {%- if user.allowedWrite(academy, course) %}
-{{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
+{{ button(buildurl("blobdelete", {'blob': blob.number, 'page': blobpages[blob.number]}), "Löschen", dict()) }}
 {%- endif -%}
 </li>
 {%- endfor %}

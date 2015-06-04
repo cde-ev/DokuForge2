@@ -1500,16 +1500,19 @@ class Application:
         courseview = thecourse.view()
         theestimate = Estimate.fromNothing()
         theblobs = []
+        blobpages = {}
         for page in thecourse.listpages():
-            theblobs.extend(thecourse.viewblob(i)
-                            for i in thecourse.listblobs(page))
+            for b in thecourse.listblobs(page):
+                blobpages[b] = page
+                theblobs.append(thecourse.viewblob(b))
         for x in courseview['outlines']:
             theestimate += x.estimate
         params = dict(
             academy=theacademy.view(),
             course=courseview,
             estimate=theestimate,
-            blobs=theblobs)
+            blobs=theblobs,
+            blobpages=blobpages)
         return self.render("course.html", rs, params)
 
     def render_addblob(self, rs, theacademy, thecourse, thepage, ok=None,
