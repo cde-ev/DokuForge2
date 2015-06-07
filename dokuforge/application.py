@@ -560,7 +560,7 @@ class Application:
         """
         content = filestore.asrcs()
         rs.response.content_type = "application/octet-stream"
-        rs.response.data = content.decode("utf8")
+        rs.response.data = content
         rs.response.headers['Content-Disposition'] = \
                 "attachement; filename=%s,v" %(filename)
         return rs.response
