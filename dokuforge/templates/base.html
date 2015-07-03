@@ -74,8 +74,20 @@ if (checkMathCookie() == true){
 </script>
 {% block mathjax %}
 <script type="text/x-mathjax-config">
-  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']]}});
-  MathJax.Hub.Config({tex2jax: {displayMath: [['$$','$$']]}});
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [['$','$']],
+          displayMath: [['$$','$$']]
+      },
+      TeX: {
+          Macros: {
+              newcommand: '{nonewcommand}',
+              renewcommand: '{norenewcommand}',
+              def: '{nodef}',
+              let: '{nolet}',
+          }
+      }
+  });
 </script>
 {% endblock %}
 </head>
