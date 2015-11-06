@@ -6,6 +6,10 @@ import textwrap
 import math
 import re
 
+try:
+    unicode
+except NameError:
+    unicode = str
 
 ## How To Read This File?
 ##
@@ -135,7 +139,7 @@ def  standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
     """
-    abb = { 
+    abb = {
     # FIXME we want '~\dots{}' in nearly every case
         u'...': u'\\dots{}',
         u'bzw.': u'bzw.',
@@ -1218,7 +1222,7 @@ class Item(Linegroup):
     - first
     - second
     - third
-    in Dokuforge.
+    in DokuForge.
     """
     def __init__(self):
         Linegroup.__init__(self)
@@ -1243,7 +1247,7 @@ class EnumerateItem(Linegroup):
     1. First
     2. Second
     3. and so on
-    in Dokuforge
+    in DokuForge
     """
     def __init__(self):
         Linegroup.__init__(self)
@@ -1355,7 +1359,7 @@ def groupItems(ptrees):
             pos += 1
     return result
 
-### Features used by Dokuforge
+### Features used by DokuForge
 dffeatures =  [Paragraph, Heading, Author, Subheading, Item, EnumerateItem, Description, Ednote]
 
 def dfLineGroupParser(text):

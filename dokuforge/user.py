@@ -1,6 +1,14 @@
 import random
-import ConfigParser
+try:
+    from ConfigParser import SafeConfigParser as ConfigParser
+except ImportError:
+    from configparser import ConfigParser
 import io
+
+try:
+    unicode
+except NameError:
+    unicode = str
 
 sysrand = random.SystemRandom()
 
@@ -311,15 +319,13 @@ class User:
         return self.hasPermission(u"df_superadmin")
 
     def defaultGroup(self):
-        """
-        Return the default group of a user. Currently this is a trivial
-        function since we have just one possible group at the moment. This
-        could be expanded in the future.
+        """Return the default group of a user. This is the first part (separated by
+        underscore) of the status.
 
         @rtype: unicode
         """
-        # FIXME we should add support for jgw
-        return u"cde"
+        ret = self.status.split('_')[0]
+        return ret
 
 class UserDB:
     """
@@ -381,7 +387,7 @@ class UserDB:
         ## if nothing is changed return
         if self.storage.timestamp() <= self.timestamp:
             return
-        config = ConfigParser.SafeConfigParser()
+        config = ConfigParser()
         content = io.StringIO(self.storage.content().decode("utf8"))
         ## update time, since we read the new content
         self.timestamp = self.storage.cachedtime

@@ -5,9 +5,15 @@ import random
 import subprocess
 import re
 import os
-import ConfigParser
+try:
+    import ConfigParser as configparser
+    from ConfigParser import SafeConfigParser as ConfigParser
+except ImportError:
+    import configparser
+    from configparser import ConfigParser
 import tarfile
 import datetime
+import calendar
 
 try:
     check_output = subprocess.check_output
@@ -19,6 +25,10 @@ except AttributeError:
             raise subprocess.CalledProcessError()
         return output
 
+try:
+    unicode
+except NameError:
+    unicode = str
 
 sysrand = random.SystemRandom()
 
@@ -39,9 +49,9 @@ def strtobool(s):
     """
     return s in (u"True", u"true", u"t")
 
-class CheckError(StandardError):
+class CheckError(Exception):
     def __init__(self, msg, exp):
-        StandardError.__init__(self, msg)
+        Exception.__init__(self, msg)
         assert isinstance(msg, unicode)
         assert isinstance(exp, unicode)
         self.message = msg
@@ -148,12 +158,12 @@ def validateBlobFilename(filename):
     check whether a filename for a blob is valid. This means matching a certain
     regexp. Otherwise raise a CheckError.
 
-    @type filename: str
+    @type filename: bytes
     @param filename: filename to check
     @raises InvalidBlobFilename:
     """
-    assert isinstance(filename, str)
-    if re.match('^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
+    assert isinstance(filename, bytes)
+    if re.match(b'^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
         raise InvalidBlobFilename(u"Dateiname nicht wohlgeformt!",
                                   u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen. Der Dateinahme darf nicht mehr als 200 Zeichen enthalten.")
 
@@ -217,18 +227,23 @@ def validateUserConfig(config):
     @type config: unicode
     """
     assert isinstance(config, unicode)
-    parser = ConfigParser.SafeConfigParser()
+    parser = ConfigParser()
     try:
         parser.readfp(io.StringIO(config))
-    except ConfigParser.ParsingError as err:
+    except configparser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
-            parser.get(name, u'permissions')
+            for perm in parser.get(name, u'permissions').split(u','):
+                if len(perm.strip().split(u' ')) != 2:
+                    raise CheckError(
+                        u"Fehler in Permissions.",
+                        u"Das Recht '%s' für '%s' ist nicht wohlgeformt." %
+                        (perm, name))
             parser.get(name, u'status')
             parser.get(name, u'password')
-    except ConfigParser.NoOptionError as err:
+    except configparser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
@@ -240,16 +255,16 @@ def validateGroupConfig(config):
     @type config: unicode
     """
     assert isinstance(config, unicode)
-    parser = ConfigParser.SafeConfigParser()
+    parser = ConfigParser()
     try:
         parser.readfp(io.StringIO(config))
-    except ConfigParser.ParsingError as err:
+    except configparser.Error as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
             parser.get(name, u'title')
-    except ConfigParser.NoOptionError as err:
+    except configparser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
@@ -260,26 +275,36 @@ def validateRcsRevision(versionnumber):
     """
     Check if versionnumber is a syntactically well-formed rcs version number
 
-    @type versionnumber: str
+    @type versionnumber: bytes
     @raises RcsUserInputError:
     """
-    assert isinstance(versionnumber, str)
-    if re.match('^[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}(\.[1-9][0-9]{0,10}\.[1-9][0-9]{0,10}){0,5}$', versionnumber) is None:
+    assert isinstance(versionnumber, bytes)
+    # Decoding with this encoding will not fail. Non-ascii bytes will be
+    # rejected by the regex.
+    versionnumber = versionnumber.decode("iso8859-1")
+    if re.match(u'^[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}(\\.[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}){0,5}$',
+                versionnumber) is None:
         raise RcsUserInputError(u"rcs version number syntactically malformed",
                                 u"can only happen in hand-crafted requests")
 
 class TarWriter:
     def __init__(self, gzip=False):
         self.io = io.BytesIO()
+        # tarfile requires the use of decoded strings, so choose any encoding
+        # that will never fail decoding arbitrary bytes. In particular choose
+        # the encoding used by wsgi: iso8859-1. Note that we do not rely on
+        # the decoded data to carry any meaning beyond being able to encode it.
         if gzip:
-            self.tar = tarfile.open(mode="w|gz", fileobj=self.io)
+            self.tar = tarfile.open(mode="w|gz", fileobj=self.io,
+                                    encoding="iso8859-1")
         else:
-            self.tar = tarfile.open(mode="w|", fileobj=self.io)
+            self.tar = tarfile.open(mode="w|", fileobj=self.io,
+                                    encoding="iso8859-1")
         self.dirs = []
 
     @property
     def prefix(self):
-        return b"".join(map(lambda s: s + b"/", self.dirs))
+        return "".join(map(lambda s: s + "/", self.dirs))
 
     def pushd(self, dirname):
         """Push a new directory on the directory stack. Further add* calls will
@@ -288,7 +313,10 @@ class TarWriter:
         a slash.
         @type dirname: bytes
         """
+        assert isinstance(dirname, bytes)
         assert b"/" not in dirname
+        if not isinstance(dirname, str):
+            dirname = dirname.decode("iso8859-1")
         self.dirs.append(dirname)
 
     def popd(self):
@@ -305,7 +333,7 @@ class TarWriter:
         self.io.truncate(0)
         return data
 
-    def addChunk(self, name, content):
+    def addChunk(self, name, content, lastchanged):
         """
         Add a file with given content and return some tar content generated
         along the way.
@@ -313,12 +341,17 @@ class TarWriter:
         @type name: bytes
         @type content: bytes
         @rtype: bytes
+        @lastchanged: datetime
         """
         assert isinstance(name, bytes)
         assert isinstance(content, bytes)
+        if not isinstance(name, str):
+            name = name.decode("iso8859-1")
+        assert isinstance(lastchanged, datetime.datetime)
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
+        info.mtime = calendar.timegm(lastchanged.utctimetuple())
         self.tar.addfile(info, io.BytesIO(content))
         return self.read()
 
@@ -330,10 +363,13 @@ class TarWriter:
         @type filename: bytes
         @rtype: bytes
         """
+        if not isinstance(name, str):
+            name = name.decode("iso8859-1")
         info = tarfile.TarInfo(self.prefix + name)
-        with file(filename) as infile:
+        with open(filename, "rb") as infile:
             infile.seek(0, 2)
             info.size = infile.tell()
+            info.mtime = os.path.getmtime(filename)
             infile.seek(0)
             self.tar.addfile(info, infile)
         return self.read()

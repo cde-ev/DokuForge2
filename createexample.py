@@ -3,6 +3,11 @@
 
 import os
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
 from werkzeug.datastructures import FileStorage
 
 from dokuforge.application import Application
@@ -32,7 +37,7 @@ def main(size=100, pc=PathConfig()):
         pass
     userdbstore = pc.userdbstore
     if size > 10:
-        userdbstore.store("""
+        userdbstore.store(b"""
 [arthur]
 status = cde_dokubeauftragter
 password = mypass
@@ -45,7 +50,7 @@ password = secret
 permissions = df_show True,akademie_read_za2011-1 True,kurs_write_ya2011-1_course01 True,kurs_write_za2011-1_course01 True,df_export True,df_superadmin True,akademie_write_pa2010 True,kurs_read_ya2011-1_course02 True,akademie_read_ya2011-1 True,kurs_read_za2011-1_course01 True,akademie_write_ya2011-1 True,kurs_read_za2011-1_course02 True,akademie_read_pa2010 True,df_admin True,kurs_read_ya2011-1_course01 True
 """)
     else:
-        userdbstore.store("""
+        userdbstore.store(b"""
 [bob]
 name = bob
 status = cde_dokuteam
@@ -53,7 +58,7 @@ password = secret
 permissions = df_show True,akademie_read_za2011-1 True,kurs_write_ya2011-1_course01 True,kurs_write_za2011-1_course01 True,df_export True,df_superadmin True,akademie_write_pa2010 True,kurs_read_ya2011-1_course02 True,akademie_read_ya2011-1 True,kurs_read_za2011-1_course01 True,akademie_write_ya2011-1 True,kurs_read_za2011-1_course02 True,akademie_read_pa2010 True,df_admin True,kurs_read_ya2011-1_course01 True
 """)
     mygroupstore = pc.groupstore
-    mygroupstore.store("""[cde]
+    mygroupstore.store(b"""[cde]
 title = CdE-Akademien
 
 [qed]
@@ -82,9 +87,18 @@ And even a mathematical limmerick!
 $$\int_1^{\sqrt[3]{3}} z^2 dz \cdot \cos(\\frac{3\pi}{9}) = \ln(\sqrt[3]{e})$$
 """, 
         u"init")
-        aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "academy.py", stream=file("./dokuforge/academy.py",mode="r")), u"Ein lustiges Bild", u"myx", user=u"init")
-        aca.getCourse(u'course01').attachblob(1, FileStorage(filename = "storage.py", stream=file("./dokuforge/storage.py", mode="r")), u"Ein anderes lustiges Bild", u"somey", user=u"init")
-        aca.getCourse(u'course01').attachblob(0, FileStorage(filename = "course.py", stream=file("./dokuforge/course.py", mode="r")), u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
+        aca.getCourse(u'course01').attachblob(0,
+                FileStorage(filename="academy.py",
+                            stream=open("./dokuforge/academy.py", mode="rb")),
+                u"Ein lustiges Bild", u"myx", user=u"init")
+        aca.getCourse(u'course01').attachblob(1,
+                FileStorage(filename="storage.py",
+                            stream=open("./dokuforge/storage.py", mode="rb")),
+                u"Ein anderes lustiges Bild", u"somey", user=u"init")
+        aca.getCourse(u'course01').attachblob(0,
+                FileStorage(filename="course.py",
+                            stream=open("./dokuforge/course.py", mode="rb")),
+                u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
     if size > 25:
         aca = createaca(app, u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
                         [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),

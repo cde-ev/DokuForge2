@@ -41,7 +41,7 @@ class LazyView(Mapping):
         except KeyError:
             try:
                 value = self._functions[key]()
-            except Exception, exc:
+            except Exception as exc:
                 # Jinja2 swallows some exceptions such as KeyErrors.
                 # So log them here to see them.
                 logger.warn("Processing absent key %r of a LazyView. "

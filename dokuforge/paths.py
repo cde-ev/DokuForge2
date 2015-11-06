@@ -1,4 +1,7 @@
-import ConfigParser
+try:
+    from ConfigParser import SafeConfigParser as ConfigParser
+except ImportError:
+    from configparser import ConfigParser
 import io
 
 from dokuforge.storage import CachingStorage
@@ -23,13 +26,13 @@ class PathConfig(object):
     section = u"path"
     def __init__(self,config=None):
         if config is None:
-            self.cp = ConfigParser.SafeConfigParser()
+            self.cp = ConfigParser()
             self.cp.readfp(io.StringIO(default_config))
         else:
             self.cp = config
 
     def read(self, configfile):
-        self.cp =ConfigParser.SafeConfigParser()
+        self.cp = ConfigParser()
         # can be switched to plain open when dropping support for Python2.X
         with io.open(configfile, encoding=config_encoding) as opencfg:
             self.cp.readfp(opencfg)
@@ -82,11 +85,11 @@ class PathConfig(object):
 
     @property
     def userdb(self):
-        return UserDB(CachingStorage(self.admindir, "userdb"))
+        return UserDB(self.userdbstore)
 
     @property
     def userdbstore(self):
-        return CachingStorage(self.admindir, "userdb")
+        return CachingStorage(self.admindir, b"userdb")
 
     def loaduserdb(self):
         userdb = self.userdb
@@ -95,4 +98,4 @@ class PathConfig(object):
 
     @property
     def groupstore(self):
-        return CachingStorage(self.admindir, "groupdb")
+        return CachingStorage(self.admindir, b"groupdb")

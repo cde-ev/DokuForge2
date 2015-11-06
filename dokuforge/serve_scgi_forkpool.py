@@ -9,7 +9,10 @@ from wsgitools.scgi.forkpool import SCGIServer
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig, config_encoding
 
-import ConfigParser
+try:
+    from ConfigParser import SafeConfigParser as ConfigParser
+except ImportError:
+    from configparser import ConfigParser
 import io
 import sys
 import syslog
@@ -44,7 +47,7 @@ def parsesize(s):
     return int(float(s) * f)
 
 def main(configfile):
-    config = ConfigParser.SafeConfigParser()
+    config = ConfigParser()
     with io.open(configfile, encoding=config_encoding) as openconfig:
         config.readfp(openconfig)
     port = int(config.get(u'scgi', u'port'))
