@@ -9,7 +9,7 @@
 {% endblock %}
 {% block content %}
 Teil #{{ page|string }}
-[Version {{commit['revision'] | e }}, 
+[Version {{commit['revision'] | e }},
  zuletzt ge&auml;ndert von {{ commit['author'] | e }}
  am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
 ({{estimate.pages | round(2) | e}} Seiten,
@@ -43,10 +43,10 @@ Teil #{{ page|string }}
 
 {% endif %}
 <div class="rareCommands">
-{%- if user.allowedWrite(academy, course) %}
-{%- if page in course.pages -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
 &nbsp;
+{%- if user.allowedWrite(academy, course) %}
+{%- if page in course.pages -%}
 {{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- else -%}
 {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
@@ -88,10 +88,10 @@ Teil #{{ page|string }}
 
 {% endif %}
 <div class="rareCommands">
-{%- if user.allowedWrite(academy, course) %}
-{%- if page in course.pages -%}
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
 &nbsp;
+{%- if user.allowedWrite(academy, course) %}
+{%- if page in course.pages -%}
 {{ button(buildurl("delete"), "Löschen", dict()) }}
 {%- else -%}
 {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
