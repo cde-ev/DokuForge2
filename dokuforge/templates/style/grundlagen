@@ -92,7 +92,7 @@ kursiv, noch fett,&nbsp;...).</p>
             <i>Vorname Nachname</i>
 	</td>
 </tr>
-<tr> 
+<tr>
 	<td>
             [Überschrift]<br>            (Vorname Nachname, Vorname Nachname und Vorname Nachname)        </td>
 	<td>
@@ -212,7 +212,7 @@ folgenden Punkte zu beachten!</p>
 <ul>
 <li><p>Die Dokumentation ist <em>einheitlich</em> in <em>neuer</em> deutscher Rechtschreibung zu verfassen.</p></li>
 <li><p>Vor drei Punkten (Ellipse) wird im Deutschen ein Leerzeichen gesetzt&nbsp;...</p></li>
-<li><p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur) eingegeben werden. DokuForge wird automatisch korrekte deutsche Anführungszeichen setzen.</p></li>
+<li><p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur) eingegeben werden. Daraus werden später typografisch richtige Anführungszeichen, auch wenn das in DokuForge noch nicht zu sehen ist.</p></li>
 <li><p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden hier zur Eingabe zwei Bindestriche &bdquo;--&ldquo;. Wichtig ist, dass Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen, während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt werden. Das heißt:</p>
 <table  width="80%">
 <tr>
@@ -221,44 +221,17 @@ folgenden Punkte zu beachten!</p>
 </tr>
 <tr>
 	<td>
-	"DokuForge" schreibt man --&nbsp;und dies verhält sich bei "Style-Guide"
+	&quot;DokuForge&quot; schreibt man --&nbsp;und dies verhält sich bei &quot;Style-Guide&quot;
 	anders&nbsp;-- ohne Bindestrich. Das hat auch sicher 5--7 gute Gründe.
         </td>
 	<td>
-	&bdquo;DokuForge&ldquo; schreibt man --&nbsp;und dies verhält sich bei
-	&bdquo;Style-Guide&ldquo; anders&nbsp;-- ohne Bindestrich. Das hat auch
+	&quot;DokuForge&quot; schreibt man --&nbsp;und dies verhält sich bei
+	&quot;Style-Guide&quot; anders&nbsp;-- ohne Bindestrich. Das hat auch
 	sicher 5--7 gute Gründe.
         </td>
 </tr>
 </table>
 </li>
-
-<li><p>Einheiten erkennt DokuForge auch. Sie müssen dafür lediglich mit einem Leerzeichen hinter ihre Zahl gesetzt werden.</p>
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-	<span class="tex2jax_ignore">
-        1 m ist noch nicht so viel.<br>
-        1 m$^2$ ist schon mehr.<br>
-        Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
-	</span>
-        </td>
-	<td>
-        1 m ist noch nicht so viel.<br>
-        1 m$^2$ ist schon mehr.<br>
-        Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
-        </td>
-</tr>
-</table>
-</li>
-
-<li><p>Im Gegensatz dazu gehört vor das Prozentzeichen und vor
-&bdquo;&deg;C&ldquo; kein Leerzeichen! Dieses bitte direkt an die Zahl
-schreiben.</p></li>
 
 <li><p>Große Zahlen bitte ohne Leerzeichen oder Punkte eingeben, da DokuForge
 sie nur dann automatisch formatieren kann. Also:</p>
@@ -306,7 +279,7 @@ folgendermaßen eingeben:</p>
 
 <li><p>Bitte gebt Brüche in der Form &bdquo;1/2&ldquo; ein und nicht als &bdquo;&frac12;&ldquo;!
 
-<li><p>Abkürzungen sind, wie schon erwähnt, manchmal etwas problematisch. Daher
+<li><p>Abkürzungen sind manchmal etwas problematisch. Daher
 gibt es eine Liste erlaubter Abkürzungen. Alles andere, was man versucht sein
 könnte abzukürzen, kann man meistens genauso gut ausschreiben oder sehr schön
 umformulieren.</p>
@@ -439,7 +412,7 @@ alte Version<br>
 &gt;&gt;&gt;&gt;&gt;&gt;&gt;<br>
 </p>
 <p>
-Eine Anmerkung für die alten Hasen: Im alten Dokuforge konnte dies nicht
+Eine Anmerkung für die alten Hasen: Im alten DokuForge konnte dies nicht
 passieren, da es Locks gab und immer nur einer eine Seite editieren
 durfte; daf&uuml;r gibt es jetzt die ganzen Probleme mit stale locks und
 dem ber&uuml;chtigtem &quot;Lock brechen&quot; nicht mehr.
@@ -450,9 +423,9 @@ Eine Anmerkung f&uuml;r Technik-Freaks: tatsaechlich wird bei dem
 Versuch, eine konfligierende &Auml;nderung hochzuladen diese Version
 in einem Branch gespeichert und erst dann mit <tt>rcsmerge</tt> ein
 Mergevorschlag erstellt. Insbesondere hat man nicht nur eine Chance
-f&uuml;r einen Merge und ein beim Mergen abschmierender browser ist
+f&uuml;r einen Merge, und ein beim Mergen abschmierender Browser ist
 keine Katastrophe, da man &uuml;ber den rcs-Export an alles
-herankommt, was man fuer einen erneuten merge-Versuch ben&ouml;tigt.
+herankommt, was man f&uuml;r einen erneuten merge-Versuch ben&ouml;tigt.
 </p>
 
 

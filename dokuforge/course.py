@@ -1,4 +1,5 @@
 import os
+import datetime
 
 try:
     unicode
@@ -206,6 +207,21 @@ class Course(StorageDir):
                 linkedpages = self.listpages(havelock = gotlockindex)
                 return [x for x in range(np) if x not in linkedpages]
 
+    def outlinedeadpages(self):
+        """
+        @returns: a list of the outlines of the pages not currently linked
+            in the index (shortened to headings).
+        @rtype: [Outline]
+        """
+        outlines = []
+        for p in self.listdeadpages():
+            outline = Outline(p)
+            parsed = dfLineGroupParser(self.showpage(p))
+            headings =  [x for x in parsed.parts if isinstance(x, PHeading)]
+            outline.addParsed(headings)
+            outlines.append(outline)
+        return outlines
+
     def listdeadblobs(self):
         """
         @returns: a list of the blobs not currently linked to the index
@@ -248,16 +264,6 @@ class Course(StorageDir):
             return ""
         page = (u"page%d" % page).encode("ascii")
         return self.getstorage(page).asrcs()
-
-    def rawExportIterator(self, tarwriter):
-        """
-        @type tarwriter: TarWriter
-        @returns: a tar ball containing the full internal information about
-                this course
-        @rtype: iter(str)
-        """
-        for chunk in tarwriter.addDirChunk(self.name, self.path):
-            yield chunk
 
     def newpage(self, user=None):
         """
@@ -589,6 +595,7 @@ class Course(StorageDir):
             pages = self.listpages,
             deadpages = self.listdeadpages,
             outlines = self.outlinepages,
+            outlinesdead = self.outlinedeadpages,
             lastchange = self.lastchange,
             timestamp = self.timestamp)
         functions.update(extrafunctions)
@@ -599,13 +606,15 @@ class Course(StorageDir):
         yield the contents of the course as tex-export.
         """
         tex = u"\\course{%02d}{%s}" % (self.number,
-                                       dfTitleParser(self.gettitle()).toTex())
+                                       dfTitleParser(self.gettitle()).toTex().strip())
         for p in self.listpages():
             tex += u"\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
             tex += dfLineGroupParser(page).toTex()
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
+                blobbase = (u"blob%d" % b).encode("ascii")
+                blobdate = self.getstorage(blobbase).commitstatus()[b'date']
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
                 fileName = blob['filename']
@@ -619,13 +628,15 @@ class Course(StorageDir):
                     tex += (u"%%%s(Binaerdatei \\verb|%s|" +
                             u" nicht als Bild eingebunden)\n") % \
                            (includegraphics, fileName)
-                tex += u"\\caption{%s}\n" %  dfCaptionParser(blob['comment']).toTex()
+                tex += u"\\caption{%s}\n" % dfCaptionParser(blob['comment']).toTex().strip()
                 tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(self.name +
                                          (u"/blob_%d_" % b).encode("ascii") +
                                          str(blob['filename']),
-                                         blob['data'])
+                                         blob['data'],
+                                         blobdate)
 
         yield tarwriter.addChunk(self.name + b"/chap.tex",
-                                 tex.encode("utf8"))
+                                 tex.encode("utf8"),
+                                 self.lastchange()['date'])

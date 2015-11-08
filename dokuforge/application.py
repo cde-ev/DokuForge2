@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 try:
-    import ConfigParser
+    import ConfigParser as configparser
+    from ConfigParser import SafeConfigParser as ConfigParser
 except ImportError:
-    import configparser as ConfigParser
+    import configparser
+    from configparser import ConfigParser
 import copy
 import datetime
 from hashlib import md5 as getmd5
@@ -102,7 +104,7 @@ class SessionHandler:
             cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
                              (now, sid))
             self.db.commit()
-        logger.debug("SessionHandler.get: cookie %r matches user %r", sid, 
+        logger.debug("SessionHandler.get: cookie %r matches user %r", sid,
                 username)
         self.db.commit()
         cur.close()
@@ -457,9 +459,9 @@ class Application:
         @returns: a dict of all groups with their titles as values
         """
         try:
-            config = ConfigParser.SafeConfigParser()
+            config = ConfigParser()
             config.readfp(io.StringIO(self.groupstore.content().decode("utf8")))
-        except ConfigParser.ParsingError as err:
+        except configparser.ParsingError as err:
             return {}
         ret = {}
         for group in config.sections():
@@ -759,9 +761,11 @@ class Application:
         @type topic: unicode
         """
         assert isinstance(topic, unicode)
-        topic = topic.encode("utf8")
-        if not topic in os.listdir(os.path.join(self.templatepath,
-                                                "style")):
+        strtopic = topic
+        if not isinstance(topic, str):
+            strtopic = topic.encode("utf8")
+        if not strtopic in os.listdir(os.path.join(self.templatepath,
+                                                   "style")):
             raise werkzeug.exceptions.NotFound()
         return self.render_styleguide(rs, topic)
 
@@ -1026,13 +1030,13 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         def export_iterator(course):
-            tarwriter = common.TarWriter()
+            tarwriter = common.TarWriter(gzip=True)
             for chunk in course.rawExportIterator(tarwriter):
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(c)
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s_%s.tar" % (aca.name, c.name)
+                "attachment; filename=%s_%s.tar.gz" % (aca.name, c.name)
         return rs.response
 
     def do_rawacademy(self, rs, academy=None):
@@ -1069,7 +1073,7 @@ class Application:
         if not rs.user.mayExport(aca):
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
-        prefix = "texexport_%s" % aca.name
+        prefix = b"texexport_" + aca.name
         def export_iterator(aca, static, prefix):
             tarwriter = common.TarWriter(gzip=True)
             tarwriter.pushd(prefix)
@@ -1397,9 +1401,13 @@ class Application:
         @type rs: RequestState
         @type topic: unicode
         """
+        assert isinstance(topic, unicode)
+        strtopic = topic
+        if not isinstance(topic, str):
+            strtopic = topic.encode("utf8")
         params = dict(
             topic = topic,
-            includepath = os.path.join("style", topic)
+            includepath = os.path.join("style", strtopic)
             )
         return self.render("style.html", rs, params)
 

@@ -50,6 +50,16 @@ class StorageDir:
         """
         return os.path.basename(self.path)
 
+    def rawExportIterator(self, tarwriter):
+        """
+        @type tarwriter: TarWriter
+        @returns: a tar ball containing the full internal information about
+                this storage dir
+        @rtype: iter(str)
+        """
+        for chunk in tarwriter.addDirChunk(self.name, self.path):
+            yield chunk
+
     @property
     def number(self):
         """
@@ -57,7 +67,7 @@ class StorageDir:
 
         @rtype: int
         """
-        digits = re.compile("[^0-9]*([0-9]+)")
+        digits = re.compile(b"[^0-9]*([0-9]+)")
         basename = os.path.basename(self.path)
         m = digits.match(basename)
         if m is None:
