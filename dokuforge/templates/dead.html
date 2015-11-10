@@ -8,11 +8,18 @@
 	   ("showdeadpages", {}, "Attic")])}}
 {% endblock %}
 {% block content %}
-{%- if course.deadpages %}
+{%- if course.outlinesdead %}
 <ul>
-	{%- for page in course.deadpages %}
-	<li> #{{ page|string }}
-         {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
+	{%- for page in course.outlinesdead %}
+	<li> #{{ page.number|string }}
+         {{ button(buildurl("relink"), "wiederherstellen", dict(number=page.number)) }}
+         {%- for (type, title) in page.items() -%}
+	            {%- if type == "heading" -%}
+	                <div class="tocheading">{{title|e}}</div>
+	            {%- elif type == "subheading" -%}
+	                <div class="tocsubheading">{{title|e}}</div>
+	            {%- endif -%}
+         {%- endfor -%}
 	</li>
 	{%- endfor %}
 </ul>

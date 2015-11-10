@@ -6,11 +6,14 @@ import subprocess
 import re
 import os
 try:
-    import ConfigParser
+    import ConfigParser as configparser
+    from ConfigParser import SafeConfigParser as ConfigParser
 except ImportError:
-    import configparser as ConfigParser
+    import configparser
+    from configparser import ConfigParser
 import tarfile
 import datetime
+import calendar
 
 try:
     check_output = subprocess.check_output
@@ -224,10 +227,10 @@ def validateUserConfig(config):
     @type config: unicode
     """
     assert isinstance(config, unicode)
-    parser = ConfigParser.SafeConfigParser()
+    parser = ConfigParser()
     try:
         parser.readfp(io.StringIO(config))
-    except ConfigParser.ParsingError as err:
+    except configparser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
@@ -240,7 +243,7 @@ def validateUserConfig(config):
                         (perm, name))
             parser.get(name, u'status')
             parser.get(name, u'password')
-    except ConfigParser.NoOptionError as err:
+    except configparser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
@@ -252,16 +255,16 @@ def validateGroupConfig(config):
     @type config: unicode
     """
     assert isinstance(config, unicode)
-    parser = ConfigParser.SafeConfigParser()
+    parser = ConfigParser()
     try:
         parser.readfp(io.StringIO(config))
-    except ConfigParser.Error as err:
+    except configparser.Error as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
             parser.get(name, u'title')
-    except ConfigParser.NoOptionError as err:
+    except configparser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
@@ -310,6 +313,7 @@ class TarWriter:
         a slash.
         @type dirname: bytes
         """
+        assert isinstance(dirname, bytes)
         assert b"/" not in dirname
         if not isinstance(dirname, str):
             dirname = dirname.decode("iso8859-1")
@@ -329,7 +333,7 @@ class TarWriter:
         self.io.truncate(0)
         return data
 
-    def addChunk(self, name, content):
+    def addChunk(self, name, content, lastchanged):
         """
         Add a file with given content and return some tar content generated
         along the way.
@@ -337,14 +341,17 @@ class TarWriter:
         @type name: bytes
         @type content: bytes
         @rtype: bytes
+        @lastchanged: datetime
         """
         assert isinstance(name, bytes)
         assert isinstance(content, bytes)
         if not isinstance(name, str):
             name = name.decode("iso8859-1")
+        assert isinstance(lastchanged, datetime.datetime)
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
+        info.mtime = calendar.timegm(lastchanged.utctimetuple())
         self.tar.addfile(info, io.BytesIO(content))
         return self.read()
 
@@ -362,6 +369,7 @@ class TarWriter:
         with open(filename, "rb") as infile:
             infile.seek(0, 2)
             info.size = infile.tell()
+            info.mtime = os.path.getmtime(filename)
             infile.seek(0)
             self.tar.addfile(info, infile)
         return self.read()

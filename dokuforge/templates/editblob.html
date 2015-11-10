@@ -13,13 +13,13 @@
 {% block content %}
 
 {{ threeway(ok, "Bitte Blob bearbeiten.", "Blob erfolgreich geändert.", error.message, error.explanation) }}
-<p>Der Dateiname darf keine Sonderzeichen enthalten (erlaubt sind nur '.' und '_') und nicht zu lang sein.</p>
 <form action="{{ buildurl("editblob", dict(blob=blob.number))|e }}" method="post" id="editblob">
   Bildunterschrift/Kommentar: <textarea name="comment">{{ (form.comment if form.comment is defined else blob.comment)|e }}</textarea>
   K&uuml;rzel: <textarea name="label">{{ (form.label if form.label is defined else blob.label)|e }}</textarea>
   Dateiname: <textarea name="name">{{ (form.name if form.name is defined else blob.filename)|e }}</textarea>
 	<input type="submit" name="saveshow" value="Speichern">
 </form>
-Das K&uuml;rzel darf nur Kleinbuchstaben und Ziffern enthalten.
+Das K&uuml;rzel darf nur Kleinbuchstaben und Ziffern enthalten.<br>
+Der Dateiname darf keine Sonderzeichen enthalten (erlaubt sind nur '.' und '_') und nicht zu lang sein.
 
 {% endblock %}

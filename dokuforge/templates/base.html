@@ -8,7 +8,7 @@
 {%- endmacro -%}
 
 {%- macro navbar(entries) -%}
-Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
+Navigation: <a href="{{ buildurl("index")|e }}">DokuForge</a>
 {%- for (point, args, title) in entries -%}
 {%- if url == '' -%}
 {# comment to protect space #} &gt; {{ title|e}}
@@ -35,7 +35,7 @@ Navigation: <a href="{{ buildurl("index")|e }}">Dokuforge</a>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("style.css")|e }}" media="all">
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("print.css")|e }}" media="print">
-	<title>Dokuforge2</title>
+	<title>DokuForge2</title>
 <script type="text/javascript">
 function checkMathCookie()
 {
@@ -74,8 +74,20 @@ if (checkMathCookie() == true){
 </script>
 {% block mathjax %}
 <script type="text/x-mathjax-config">
-  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']]}});
-  MathJax.Hub.Config({tex2jax: {displayMath: [['$$','$$']]}});
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [['$','$']],
+          displayMath: [['$$','$$']]
+      },
+      TeX: {
+          Macros: {
+              newcommand: '{nonewcommand}',
+              renewcommand: '{norenewcommand}',
+              def: '{nodef}',
+              let: '{nolet}',
+          }
+      }
+  });
 </script>
 {% endblock %}
 </head>
@@ -84,7 +96,7 @@ if (checkMathCookie() == true){
 {%- block header %}
  <div id="header">
    <div id="headings">
-	 <h1 id="dokuforgetitle">Dokuforge</h1>
+	 <h1 id="dokuforgetitle">DokuForge</h1>
 	 <div id="subheading">
 	   {%- block subheading %}Startseite{% endblock -%}
 	 </div>
@@ -145,12 +157,12 @@ Dies sollte nicht sichtbar sein.
 {%- block footer %}
    <div id="footer">
    	Kontakt: team (at) dokuforge.de<br>
-   	Dokuforge – Ein Projekt des CdE e.V.
+   	DokuForge – Ein Projekt des CdE e.V.
    </div>
 {% endblock -%}
 </div>
 </body>
-<!-- Dokuforge revision is {{ commitid }}. -->
+<!-- DokuForge revision is {{ commitid }}. -->
 </html>
 {# vim:syntax=jinja
 #}

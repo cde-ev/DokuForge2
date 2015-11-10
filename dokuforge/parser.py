@@ -326,20 +326,24 @@ def standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
     """
-    abb = { 
-        u'bzw.' : u'bzw.',
-        u'ca.' : u'ca.',
-        u'd.h.' : u'd.\\,h.',
-        u'etc.' : u'etc.',
-        u'n.Chr.' : u'n.\\,Chr.',
-        u'o.Ä.' : u'o.\\,Ä.',
-        u's.o.' : u's.\\,o.',
-        u'sog.' : u'sog.',
-        u's.u.' : u's.\\,u.',
-        u'u.a.' : u'u.\\,a.',
-        u'v.Chr.' : u'v.\\,Chr.',
-        u'vgl.' : u'vgl.',
-        u'z.B.' : u'z.\\,B.'}
+    abb = {
+        # dots are converted to TerminalString by ellipsis Escaper
+        # u'...': u'\\dots{}',
+        u'bzw.': u'bzw.',
+        u'ca.': u'ca.',
+        u'd.h.': u'd.\\,h.',
+        u'etc.': u'etc.',
+        u'f.': u'f.',
+        u'ff.': u'ff.',
+        u'n.Chr.': u'n.\\,Chr.',
+        u'o.Ä.': u'o.\\,Ä.',
+        u's.o.': u's.\\,o.',
+        u'sog.': u'sog.',
+        u's.u.': u's.\\,u.',
+        u'u.a.': u'u.\\,a.',
+        u'v.Chr.': u'v.\\,Chr.',
+        u'vgl.': u'vgl.',
+        u'z.B.': u'z.\\,B.'}
 
     yield abb.get(word, word)
 
@@ -1509,7 +1513,7 @@ class Item(Linegroup):
     - first
     - second
     - third
-    in Dokuforge.
+    in DokuForge.
     """
     def __init__(self):
         Linegroup.__init__(self)
@@ -1534,7 +1538,7 @@ class EnumerateItem(Linegroup):
     1. First
     2. Second
     3. and so on
-    in Dokuforge
+    in DokuForge
     """
     def __init__(self):
         Linegroup.__init__(self)
@@ -1646,7 +1650,7 @@ def groupItems(ptrees):
             pos += 1
     return result
 
-### Features used by Dokuforge
+### Features used by DokuForge
 dffeatures =  [Paragraph, Heading, Author, Subheading, Item, EnumerateItem, Description, Ednote]
 
 def dfLineGroupParser(text):
