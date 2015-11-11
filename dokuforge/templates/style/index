@@ -24,9 +24,9 @@ was möglich ist bzw. wie du etwas eingeben sollst.</p>
 <li><a href="/style/literatur">Literatur</a></li>
 <li><a href="/style/konflikte">Hilfe, ein Konflikt!</a></li>
 </ul>
-<p>Falls du dich schon mit DokuForge auskennst, findest du hier einen
+<p>Falls du dich schon mit DokuForge auskennst, findest du
+<a href="{{ staticjoin('so_gehts_cheatsheet.pdf')|e }}"> hier einen
 übersichtlichen Spickzettel für die Eingabe-Syntax.</p>
-<p><strong>TODO</strong>: Hier Link zur Style-Guide Kurzreferenz einbauen.</p>
 <h2>Schokolade</h2>
 <p>Sonderwünsche bedeuten oft viel Handarbeit. Wenn sich ein
 Dokuteam-Mitglied diese Arbeit macht, um die Doku euren Vorstellungen
