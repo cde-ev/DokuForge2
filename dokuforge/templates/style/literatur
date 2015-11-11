@@ -1,84 +1,55 @@
 <div class="body">
-<h2>Literatur</h2>
-
-<p>Literaturangaben</p>
-<p><em> Warum Literaturangaben?</em> Literaturangaben sind immer dann notwendig, wenn man ein wörtliches Zitat bzw. einen
-direkten Verweis auf einen Dritten in seinem Text benutzt. Zitate müssen im eigenen Text mit Anführungszeichen
-gekennzeichnet werden. </p>
-
-<p><em>In welchem Maß muss bzw. kann Literatur angegeben werden?</em>
-Grundsätzlich müssen Zitate und direkte Verweise im Text mit einer Referenz
-auf das entsprechende Werk und die entsprechende Stelle (meist in Form einer
-Seitenzahl) versehen werden. Alle referenzierten Werke werden im
-Literaturverzeichnis gesammelt, wo sie mit allen Angaben (Autor, Titel,
-Erscheinungsjahr, Verlag, etc.) aufgeführt werden. Oftmals ist es sinnvoll,
-die verwendete, aber nicht direkt zitierte Literatur ebenfalls im
-Literaturverzeichnis anzugeben. Dies erleichtert dem Leser, sich eingehend
-mit den verfassten Texte auseinanderzusetzen, und entspricht guter
-wissenschaftlicher Praxis, ist aber optional.
-</p>
-
-<h4><a name="littext">Eingabe der Literaturangaben im Text </a></h4>
-<p> Literaturangaben und Zitatnachweise im Text werden mithilfe eine Kurzform gesetzt,
- die DokuForge signalisiert, welches Buch hier referenziert. Natürlich muss das so zitierte Buch unter
-dieser Kurzform in der Bibliographie (= Literaturverzeichnis) aufgeführt werden, damit es eindeutig zugeordnet
-werden kann. Nach der Kurzform wird alles angegeben, was die zitierte Stelle näher spezifiziert, also meist eine Seitenzahl.
-
-Ein Verweis auf Seite 112 in ein Werk mit dem Kurzform "fischer97" sieht
-folgendermaßen aus (wichtig ist dabei die Auszeichnung "LITERATUR:" die
-verwendet wird um eine Referenz zu kennzeichnen).</p>
-
-<p style="margin-left: 3em"> "Dies ist ein Zitat eines Werkes."
-(LITERATUR:fischer97 112) </p>
-
-<p>Alle so zitierten Werke müssen auf jeden Fall mit vollständigen Angaben
-(siehe Auflistung unten) an das Ende des jeweiligen Teils gestellt
-werden. Wir werden später je Kurs ein Gesamtverzeichnis erstellen, das am
-Schluss der entsprechenden Kursdoku stehen wird.  Die Angabe zu obigem Zitat
-könnte etwa wie folgt aussehen (beachte die Kurzform "fischer97" am
-Anfang).  </p>
-
-<pre style="margin-left: 3em">
-<table cellspacing="0px">
- <colgroup> 
-  <col width="100">
-  <col width="5">
-  <col width="150">
- </colgroup>
-<tbody>
- <tr><td colspan="3">@BOOK{fischer97, </td></tr>
- <tr> <td width="20%">  title</td><td>=</td> <td>"Lineare Algebra", </td> </tr
- <tr> <td>  author</td><td>=</td> <td>"Fischer, Gerd", </td>  </tr>
- <tr> <td>  year</td><td>=</td> <td>"1997", </td> <td></td></tr>
- <tr> <td>  address</td><td>=</td> <td>"Berlin", </td>  </tr>
- <tr> <td>  publisher </td><td>=</td> <td>"Vieweg Studium", </tr>
- <tr><td colspan="4">} </td></tr>
-</tbody>
+<h1>Literatur</h1>
+<h2>Verweis auf Literaturquellen im Text</h2>
+<p>Wenn du im Text auf eine Literaturquelle oder eine Internetseite verweisen willst, dann 
+geschieht das mit einer Literaturangabe. Das gilt auch für Abbildungen, Tabellen und dergleichen, 
+für die ihr in der Doku eine Quelle nennen wollt.</p>
+<p>Wo du im Text auf eine Literaturquelle verweisen willst, fügst du ein <code>LITERATUR:kuerzel</code> ein. 
+<code>kuerzel</code> ist dabei ein von dir für die Quelle vergebenes Kürzel.</p>
+<table  width="80%">
+<tr>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
+</tr>
+<tr>
+    <td>
+        <code>In ihrem Buch The Meme Machine LITERATUR:blackmore2000, 
+geht die englische Psychologin Susan Blackmore von der Grundannahme aus, 
+dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit 
+zur Imitation eine entscheidende Wendung nahm.</code>
+        </td>
+    <td>
+        In ihrem Buch The Meme Machine [1], 
+geht die englische Psychologin Susan Blackmore von der Grundannahme aus, 
+dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit 
+zur Imitation eine entscheidende Wendung nahm.
+        </td>
+</tr>
 </table>
-</pre>
 
-<h4><a name="litsatz">Eingabe der Literaturdaten </a></h4>
-<p> Die Angaben für das Literaturverzeichnis werden in eine Ednote gesetzt, wobei dafür idealerweise eine Seite am Ende des
-jeweiligen Kurses angelegt wird. Dort wird dann die gesamte Literatur des Kurses gesammelt. Im Literaturverzeichnis
-kann die Literatur auch wahlweise getrennt pro Kurskapitel angegeben werden. Das Literaturverzeichnis baut
-ihr in der folgenden Form in eine Ednote ein: </p>
-<ul><p><pre>
-{({ LITERATUR
-
- Hier stehen die Literaturangaben...
-
-})}
-</pre></p></ul>
-<!-- Die Literatureingabe erfolgt direkt im (zugegebenermaßen) etwas kryptischen BibLaTeX-Stil.
-(dieser sollte aber soweit verständlich sein).-->
-<p>
-Die entsprechenden Literaturangaben werden folgendermaßen umgesetzt, hier am Beispiel von verschiedenen häufig vorkommenden
-Publikationsformen. (Für die Erfahrenen sei gesagt, dass zum Satz BibLaTeX verwendet wird.) <!--Für viele Referenzen
-gibt es bereits vorgefertigte Vorlagen, die man natürlich verwenden kann.--> Die Angabe in der ersten Zeile ist die eindeutige
-Kurzform, die für Verweise im Text verwendet wird. Mehrere Autoren werden mit einem "and" verknüfpt.</p>
-
-<ul><li><p> Im Fall einer Monographie/Buch lautet die Syntax:</p>
-<p><pre>
+<h2>Literaturverzeichnis</h2>
+<p>Es genügt nicht, einfach nur <code>LITERATUR:blackmore2000</code> im Text zu verwenden. 
+Du musst am Ende der Doku noch angeben, auf was <code>LITERATUR:blackmore2000</code> 
+verweist. Dazu fügst du am Ende der Doku eine Ednote ein, in der die 
+bibliographischen Angaben zu den Quellen stehen. (Für die Profis: Wir verwenden 
+BibLaTeX mit Biber, dessen Syntax ist hier in einer Ednote gewünscht)</p>
+<p>Beispiel:
+<pre>
+{[{LITERATURANGABEN
+@BOOK{blackmore2000,  % Kürzel für diese Literaturquelle lautet "blackmore2000"
+             title     = "The Meme Machine",   % Titel des Buchs
+             author    = "Blackmore, Susan",   % Autor
+             year      = "2000",               % Jahr der Veröffentlichung
+             address   = "Oxford",             % Ort
+             publisher = "Oxford Paperbacks",  % Verlag
+}
+}]}
+</pre></p>
+<p>Beachte, dass die Ednote mit <code>{[{</code> geöffnet und mit <code>}]}</code> geschlossen werden muss, 
+da die Ednote selbst auch geschweifte Klammern enthält.</p>
+<h2>Beispiele für gebräuchliche Arten von Literaturquellen</h2>
+<p>Im Fall einer Monographie bzw. eines Buches lautet die Syntax:</p>
+<pre>
 <table cellspacing="0px">
  <colgroup> 
   <col width="100">
@@ -98,11 +69,12 @@ Kurzform, die für Verweise im Text verwendet wird. Mehrere Autoren werden mit e
  <tr><td colspan="4">} </td></tr>
 </tbody>
 </table>
-</pre></p></li></ul>
+</pre>
 
-<ul><li><p> Im Fall eines Artikels in einer Zeitschrift/Journal lautet die Syntax (bei Zeitungsartikeln bitte das
-vollständige Datum angeben):</p>
-<p><pre>
+<p>Im Fall eines Artikels in einer Zeitschrift bzw. einem Journal lautet
+die Syntax (bei Zeitungsartikeln bitte das vollständige Datum
+angeben):</p>
+<pre>
 <table cellspacing="0px">
  <colgroup> 
   <col width="100">
@@ -121,11 +93,11 @@ vollständige Datum angeben):</p>
  <tr><td colspan="4">} </td></tr>
 </tbody>
 </table>
-</pre></p></li></ul>
+</pre>
 
-<ul><li><p> Im Fall eines Aufsatzes in einem Sammelwerk (hierunter fallen auch Artikel in Lexika)
-lautet die Syntax:</p>
-<p><pre>
+<p>Im Fall eines Aufsatzes in einem Sammelwerk (hierunter fallen auch
+Artikel in Lexika) lautet die Syntax:</p>
+<pre>
 <table cellspacing="0px">
  <colgroup> 
   <col width="100">
@@ -145,10 +117,10 @@ lautet die Syntax:</p>
  <tr><td colspan="4">} </td></tr>
 </tbody>
 </table>
-</pre></p></li></ul>
+</pre>
 
-<ul><li><p> Im Fall einer URL bzw. Internetreferenz lautet die Syntax:</p>
-<p><pre>
+<p>Im Fall einer URL bzw. Internetreferenz lautet die Syntax:</p>
+<pre>
 <table cellspacing="0px">
  <colgroup> 
   <col width="100">
@@ -165,10 +137,11 @@ lautet die Syntax:</p>
  <tr><td colspan="4">} </td></tr>
 </tbody>
 </table>
-</pre></p></li></ul>
+</pre>
 
-<p> Die obigen Beispiele dienen zur Illustration der Verwendung der Literaturangaben. In der Kürze ist es natürlich
-nicht möglich, alle Spezialfälle abzudecken. Wenn ihr eine Literaturangabe habt, die ihr in keines der oben genannten
-Schemata packen könnt, dann schreibt die fertig formatierte Literaturangabe in eine eigene Ednote. Um die endgültige
-Formatierung kümmern wir uns dann in der Redaktion.</p>
-</div>
+<p>Die Beispiele dienen zur Illustration der Verwendung der
+Literaturangaben. In der Kürze ist es natürlich nicht möglich, alle
+Spezialfälle abzudecken. Wenn du eine Literaturangabe hast, die du
+in keines der oben genannten Schemata packen kannst, dann schreib die
+fertig formatierte Literaturangabe in eine eigene Ednote. Um die
+endgültige Formatierung kümmern wir uns dann in der Redaktion.</p></div>

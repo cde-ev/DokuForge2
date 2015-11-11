@@ -1,64 +1,53 @@
-    
-    <div class="body">
-              <h2>Richtlinien für die Erstellung der Dokumentation</h2>
-            
+<div class="body">
+<!-- Vorsicht mit dem Ersetzen der Anführungszeichen, wenn HTML im
+Markdown enthalten ist! -->
 
+<!-- sed -e "s/\"\(\w\)/„\1/" -e "s/\(\w\)\"/\1“/" foo.md -->
 
-
-
-<p>
-  An dieser Stelle haben wir ein paar Regeln für die Erstellung der
-  Dokumentation zusammengestellt.
-</p> 
-
-<p>
-  Das Ziel dieser Regeln ist es, die Dokumentation später möglichst einheitlich
-  aussehen zu lassen. Deswegen möchten wir euch bitten, diese Regeln zu
-  beachten, da wir sonst später eure Texte nachbearbeiten müssen, was sehr viel
-  Zeit kostet.
-</p>
-
-<p>
-  Vielen Dank!
-</p>
-
-<h3>Der Style-Guide &ndash; Inhalt</h3>
-
-<ol>
-  <li>
-    <p><a href="/style/intro">Intro</a></p>
-        <p>Über die Geschichte, den Sinn und die Philosophie von DokuForge.</p>
-  </li>
-  <li>
-    <p><a href="/style/hilfe">Leitfaden</a></p>
-        <p>Kurzer Leitfaden für die Benutzung von DokuForge.</p>
-  </li>
-  <li>
-    <p><a href="/style/grundlagen">Grundlagen im Umgang mit DokuForge</a></p>
-        <p>Hier werden die wichtigsten Aspekte zur Bedienung von DokuForge
-       erklärt und Hinweise, was beim Schreiben der Dokus unbedingt zu
-       beachten ist gegeben. Diese Seite sollte von <em>jedem</em> gelesen
-       werden.</p>
-  </li>
-  <li>
-    <p><a href="/style/abbildungen">Abbildungen</a></p>
-        <p>Wer Abbildungen einfügen möchte, sollte sich diese Seite zu Herzen nehmen.</p>
-  </li>
-  <li>
-    <p><a href="/style/mathe">Mathematik-Umgebung</a></p>
-        <p>Dieses Thema ist so umfangreich, dass wir ihm ebenfalls eine eigene Seite
-       gewidmet haben.</p>
-  </li>
-  <li>
-    <p><a href="/style/literatur">Literatur</a></p>
-        <p>Für das komplexe Thema der Literaturangaben gibt es hier die
-        entsprechenden Hinweise.</p>
-  </li>
-  <li>
-    <p><a href="/style/spezielles">Sonstiges</a></p>
-        <p>Auf dieser Seite haben wir das Meiste von dem zusammengetragen,
-       was wiederholt vorkommt, aber nicht in das normale Eingabeschema
-       passt: Gedichte, Tabellen, Fremdsprachen, ...  </p>
-  </li></ol>
-
-    </div>
+<h1>DokuForge: So geht's</h1>
+<p>Hier erfährst du, was bei der Eingabe der Texte in DokuForge zu
+beachten ist.</p>
+<p>Im ersten Abschnitt ("Bedienung von DokuForge") erhältst du die
+wichtigsten Hinweise zur Eingabe der Texte. Bitte lies sie dir
+gründlich durch.</p>
+<p>Sonderwünsche, zu denen hier keine Erklärung aufgeführt ist,
+kennzeichne bitte mit einer Ednote (mehr dazu findest du im Abschnitt
+"Bedienung von DokuForge") und mache verständlich, was du haben
+möchtest. Frag bitte auch per E-Mail an team (at) dokuforge.de nach,
+was möglich ist bzw. wie du etwas eingeben sollst.</p>
+<ul>
+<li><a href="/style/grundlagen">Bedienung von DokuForge</a></li>
+<li><a href="/style/mathe">Mathematik</a></li>
+<li><a href="/style/tabellen">Tabellen</a></li>
+<li><a href="/style/abbildungen">Abbildungen</a></li>
+<li><a href="/style/gedichte">Gedichte und paralleler Text</a></li>
+<li><a href="/style/literatur">Literatur</a></li>
+<li><a href="/style/konflikte">Hilfe, ein Konflikt!</a></li>
+</ul>
+<p>Falls du dich schon mit DokuForge auskennst, findest du hier einen
+übersichtlichen Spickzettel für die Eingabe-Syntax.</p>
+<p><strong>TODO</strong>: Hier Link zur Style-Guide Kurzreferenz einbauen.</p>
+<h2>Schokolade</h2>
+<p>Sonderwünsche bedeuten oft viel Handarbeit. Wenn sich ein
+Dokuteam-Mitglied diese Arbeit macht, um die Doku euren Vorstellungen
+entsprechend zu gestalten, dann sind ein bis zwei Tafeln Schokolade
+zum nächsten Dokuteamtreffen (nächste Akademie, erster Abend, meist
+23:00 Uhr) sehr motivierend.</p>
+<h2>Wozu DokuForge?</h2>
+<p>Ein wesentlicher Bestandteil der Deutschen SchülerAkademien und
+infolgedessen auch der JGW- und CdE-Akademien ist die Dokumentation
+der Kursarbeit. Aufarbeitung des Stoffes, die Darstellung für andere,
+Erinnerung für sich selbst und die Mitkursteilnehmer sind nur einige
+der Aspekte, die das Konzept Dokumentation so außerordentlich sinnvoll
+machen und ihren großen Erfolg erklären.</p>
+<p>Zur Erfassung der Dokumentation dient DokuForge. Es kann von jedem
+benutzt werden und ist einfach zu bedienen. Über ein Webinterface
+geben die Dokubeauftragten eines Kurses ihre Texte ein, die von ihrem
+Kurs geschrieben wurden. Die Benutzer liefern die Inhalte, das
+Dokuteam kümmert sich dann um die endgültige Formatierung und
+Typographie.</p>
+<p>Deshalb gibt es bewusst nur sehr wenige und dafür wohlüberlegte
+Formatierungsmöglichkeiten in DokuForge. Formatierung bedeutet hier
+nur, Text als etwas Bestimmtes (z.B. als normaler Inhalt, Überschrift
+oder Hervorhebung) auszuzeichnen, und nicht, etwas z.B. fett oder
+kursiv zu setzen.</p></div>
