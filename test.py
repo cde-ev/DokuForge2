@@ -870,6 +870,19 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
 
+    def testPrevetEvilUTF8(self):
+        self.verifyExportsTo(u'Bla … blub bloink.',
+                             u'Bla \\@\\dots{} blub bloink.')
+        self.verifyExportsTo(u'Bla – blub — bloink.',
+                             u'Bla \\@-- blub \\@--- bloink.')
+        self.verifyExportsTo(u'Bla „blub“ bloink.',
+                             u'Bla \\@"`blub\\@"\' bloink.')
+        self.verifyExportsTo(u'Bla »blub« bloink.',
+                             u'Bla \\@"`blub\\@"\' bloink.')
+        self.verifyExportsTo(u'Bla ‚blub‘ bloink.',
+                             u'Bla \\@\\glq blub\\@\\grq\\ bloink.')
+
+
     def testPageReferences(self):
         self.verifyExportsTo(u'Auf S. 4 Abs. 3 in Art. 7 steht',
                              u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht')
