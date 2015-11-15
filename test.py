@@ -875,13 +875,12 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'Bla \\@\\dots{} blub bloink.')
         self.verifyExportsTo(u'Bla – blub — bloink.',
                              u'Bla \\@-- blub \\@--- bloink.')
-        self.verifyExportsTo(u'Bla „blub“ bloink.',
-                             u'Bla \\@"`blub\\@"\' bloink.')
+        self.verifyExportsTo(u'Bla „blub“ ”bloink“.',
+                             u'Bla \\@"`blub\\@"\' \\@"`bloink\\@"\'.')
         self.verifyExportsTo(u'Bla »blub« bloink.',
                              u'Bla \\@"`blub\\@"\' bloink.')
-        self.verifyExportsTo(u'Bla ‚blub‘ bloink.',
-                             u'Bla \\@\\glq blub\\@\\grq\\ bloink.')
-
+        self.verifyExportsTo(u'Bla ‚blub‘ ‚bloink’.',
+                             u'Bla \\@\\glq blub\\@\\grq{} \\@\\glq bloink\\@\\grq{}.')
 
     def testPageReferences(self):
         self.verifyExportsTo(u'Auf S. 4 Abs. 3 in Art. 7 steht',

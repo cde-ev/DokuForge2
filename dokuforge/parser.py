@@ -472,6 +472,8 @@ UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
 
 UTF8glqq = Escaper(u'„', TerminalString(u'\\@"`'))
 
+UTF8elqq = Escaper(u'”', TerminalString(u'\\@"`'))
+
 UTF8grqq = Escaper(u'“', TerminalString(u'\\@"\''))
 
 UTF8flqq = Escaper(u'«', TerminalString(u'\\@"\''))# this is French left, but German right, so we expect the latter
@@ -480,7 +482,9 @@ UTF8frqq = Escaper(u'»', TerminalString(u'\\@"`'))
 
 UTF8glq = Escaper(u'‚', TerminalString(u'\\@\\glq '))
 
-UTF8grq = Escaper(u'‘', TerminalString(u'\\@\\grq\\'))
+UTF8grq = Escaper(u'‘', TerminalString(u'\\@\\grq{}'))
+
+UTF8erq = Escaper(u'’', TerminalString(u'\\@\\grq{}'))
 
 
 def formatCode(word):
@@ -672,7 +676,8 @@ def defaultMicrotype(text):
                 percent, ampersand, hashmark, quote, leftCurlyBracket,
                 rightCurlyBracket, caret, ellipsis, standardAbbreviations,
                 UTF8ellipsis, UTF8endash, UTF8emdash,
-                UTF8glqq, UTF8grqq, UTF8flqq, UTF8frqq, UTF8glq, UTF8grq,
+                UTF8glqq, UTF8elqq, UTF8grqq, UTF8flqq, UTF8frqq,
+                UTF8glq, UTF8grq, UTF8erq,
                 # fullStop after ellipsis and standardAbbreviations
                 fullStop, openQuotationMark, closeQuotationMark, acronym,
                 naturalNumbers, escapeCommands] # escapeCommands at last
