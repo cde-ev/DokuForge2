@@ -108,6 +108,7 @@ class Estimate(collections.namedtuple("Estimate",
 
     __rmul__ = __mul__
 
+# class for strings that shall not be modified further
 class TerminalString(object):
     def __init__(self, s):
         self.theString = s
@@ -463,6 +464,25 @@ caret = Escaper(u'^', TerminalString(u'\\@\\caret{}'))
 
 ellipsis = Escaper(u'...', TerminalString(u'\\dots{}'))
 
+UTF8ellipsis = Escaper(u'…', TerminalString(u'\\@\\dots{}'))
+
+UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
+
+UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
+
+UTF8glqq = Escaper(u'„', TerminalString(u'\\@"`'))
+
+UTF8grqq = Escaper(u'“', TerminalString(u'\\@"\''))
+
+UTF8flqq = Escaper(u'«', TerminalString(u'\\@"\''))# this is French left, but German right, so we expect the latter
+
+UTF8frqq = Escaper(u'»', TerminalString(u'\\@"`'))
+
+UTF8glq = Escaper(u'‚', TerminalString(u'\\@\\glq '))
+
+UTF8grq = Escaper(u'‘', TerminalString(u'\\@\\grq\\'))
+
+
 def formatCode(word):
     """
     Set lstinline for code within pipes
@@ -651,6 +671,8 @@ def defaultMicrotype(text):
                 SplitSeparators(separators[0]), # separator ' ' only
                 percent, ampersand, hashmark, quote, leftCurlyBracket,
                 rightCurlyBracket, caret, ellipsis, standardAbbreviations,
+                UTF8ellipsis, UTF8endash, UTF8emdash,
+                UTF8glqq, UTF8grqq, UTF8flqq, UTF8frqq, UTF8glq, UTF8grq,
                 # fullStop after ellipsis and standardAbbreviations
                 fullStop, openQuotationMark, closeQuotationMark, acronym,
                 naturalNumbers, escapeCommands] # escapeCommands at last
