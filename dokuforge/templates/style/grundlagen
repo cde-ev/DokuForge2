@@ -165,7 +165,7 @@ Anführungszeichen gesetzt.</p>
 <h2><a name="bindestrich"></a> Bindestrich</h2>
 <p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und
 Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden
-hier zur Eingabe zwei Bindestriche: „--“. Wichtig ist, dass
+hier zur Eingabe zwei Bindestriche: "--". Wichtig ist, dass
 Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen,
 während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt
 werden.</p>
@@ -190,7 +190,7 @@ werden.</p>
 <h2><a name="einheiten"></a> Einheiten</h2>
 <p>Einheiten werden automatisch erkannt. Sie müssen dafür lediglich durch
 ein Leerzeichen getrennt hinter die zugehörige Zahl gesetzt werden. Im
-Gegensatz dazu gehört vor das Prozentzeichen und vor „°C“ kein
+Gegensatz dazu gehört vor das Prozentzeichen und vor "°C" kein
 Leerzeichen! Dieses bitte direkt an die Zahl schreiben.</p>
 <table>
 <tr>
@@ -213,7 +213,7 @@ Leerzeichen! Dieses bitte direkt an die Zahl schreiben.</p>
 </tr>
 </table>
 
-<p>Das Dollarzeichen „$“ kann DokuForge übrigens nicht darstellen. Dieses
+<p>Das Dollarzeichen "$" kann DokuForge übrigens nicht darstellen. Dieses
 ist nämlich für mathematische Formeln reserviert. Bitte entweder eine
 Ednote oder die Abkürzung USD verwenden.</p>
 <h2><a name="zahlen"></a> Zahlen</h2>
@@ -250,7 +250,7 @@ Dollarzeichen (d.h. als mathematische Formel).</p>
 </table>
 
 <h2><a name="brueche"></a> Brüche</h2>
-<p>Bitte gebt Brüche in der Form „1/2“ ein und nicht als „½“.</p>
+<p>Bitte gebt Brüche in der Form "1/2" ein und nicht als "½".</p>
 <h2><a name="abkuerzungen"></a> Abkürzungen</h2>
 <p>Abkürzungen sind manchmal etwas problematisch. Daher gibt es eine
 Liste erlaubter Abkürzungen. Alles andere, was man versucht sein

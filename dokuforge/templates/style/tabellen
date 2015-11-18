@@ -5,10 +5,10 @@ Ednote. Dabei hast du zwei Möglichkeiten: Erstens kannst du sie durch
 das Einfügen von Leerzeichen an den richtigen Stellen nach ASCII-Art
 formatieren, wobei deutlich werden sollte, was wie zusammengehört.</p>
 <p>Zweitens kanst du auch, wenn du dich hier schon etwas auskennst, in so einer
-ASCII-Art-Tabelle noch ein paar „&amp;“ und „\\“ an die richtigen Stellen setzen,
-ein „\begin{tabular}“ und ein „\toprule“ oben drüber und ein
-„\bottomrule“ sowie ein „\end{tabular}“ unten drunter. Bei Bedarf noch
-ein „\midrule“ zwischendrin (wir verwenden booktabs.sty).</p>
+ASCII-Art-Tabelle noch ein paar "&amp;" und "\\" an die richtigen Stellen setzen,
+ein "\begin{tabular}" und ein "\toprule" oben drüber und ein
+"\bottomrule" sowie ein "\end{tabular}" unten drunter. Bei Bedarf noch
+ein "\midrule" zwischendrin (wir verwenden booktabs.sty).</p>
 <p>Zu einer Tabelle gehört außerdem eine Tabellenüberschrift, auf die
 du dich im Idealfall im Text beziehst.</p>
 <pre>
@@ -42,4 +42,4 @@ drittletzte Silbe &  x   &   --   &    --  \\
 <p>Damit die Ednote im zweiten Beispiel nicht zu früh durch eine
 schließende Klammer beendet wird, muss diese mit einer
 Klammerkombination geöffnet und geschlossen werden, siehe dazu auch
-den Abschnitt über Ednotes. Hier wurde „{( foobar )}“ gewählt.</p></div>
+den Abschnitt über Ednotes. Hier wurde "{( foobar )}" gewählt.</p></div>
