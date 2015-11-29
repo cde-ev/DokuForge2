@@ -578,15 +578,17 @@ permissions = df_superadmin True,df_admin True
                                    'fig_platzhalter.jpg',
                                    'fig_platzhalter.png',
                                    'Fuzzi-Hut-Logo.eps',
+                                   'Fuzzi-Hut-Logo2.EPS',
                                    'Fuzzi-Hut-Logo.pdf',
-                                   'Fuzzi-Hut-Logo.svg']
+                                   'Fuzzi-Hut-Logo.svg',
+                                   'Fuzzi-Hut-Logo2.SVG']
 
-        imageFilenamesToBeChanged = {'fig_platzhalter2.JPEG' : 'fig_platzhalter2.JPEG',
-                                     'fig_platzhalter2.JPG'  : 'fig_platzhalter2.JPG' ,
-                                     'fig_platzhalter2.PNG'  : 'fig_platzhalter2.PNG' ,
-                                     'Fuzzi-Hut-Logo2.EPS'   : 'Fuzzi-Hut-Logo2.EPS'  ,
-                                     'Fuzzi-Hut-Logo2.PDF'   : 'Fuzzi-Hut-Logo2.PDF'  ,
-                                     'Fuzzi-Hut-Logo2.SVG'   : 'Fuzzi-Hut-Logo2.SVG'   }
+        # note that fig_platzhalter2.jpg will not become duplicate in export
+        # as it gets prefixed by blob_#
+        imageFilenamesToBeChanged = {'fig_platzhalter2.JPEG' : 'fig_platzhalter2.jpg' ,
+                                     'fig_platzhalter2.JPG'  : 'fig_platzhalter2.jpg' ,
+                                     'fig_platzhalter2.PNG'  : 'fig_platzhalter2.png' ,
+                                     'Fuzzi-Hut-Logo2.PDF'   : 'Fuzzi-Hut-Logo2.pdf'   }
 
         imageFilenames = imageFilenamesUnchanged + imageFilenamesToBeChanged.keys()
 
