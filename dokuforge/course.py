@@ -603,15 +603,17 @@ class Course(StorageDir):
 
     def _mangleBlobName(self, name):
         """
-        Return a version of a file name, with the ending, if present,
-        converted to lower case. This helps in particular with images
-        exported by some camaras.
-
+        For image file types recognized by pdflatex, convert file ending
+        to lower case, and shorten jpeg to jpg. This helps in particular
+        with images exported by some camaras.
         """
-        if '.' in name:
-            i = name.rfind('.')
-            return name[:i] + name[i:].lower()
-        return name
+        nameLower = name.lower()
+        nameMangled = name
+        if nameLower.endswith('.jpeg'):
+            nameMangled = name[:-4]+'jpg'
+        elif nameLower.endswith(('.jpg', '.pdf', '.png')):
+            nameMangled = name[:-3] + name[-3:].lower()
+        return nameMangled
 
     def texExportIterator(self, tarwriter):
         """
