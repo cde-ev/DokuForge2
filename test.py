@@ -574,8 +574,7 @@ permissions = df_superadmin True,df_admin True
         self.is_loggedin()
 
     def testAddDifferentImageBlobs(self):
-        imageFilenamesUnchanged = ['fig_platzhalter.jpeg',
-                                   'fig_platzhalter.jpg',
+        imageFilenamesUnchanged = ['fig_platzhalter.jpg',
                                    'fig_platzhalter.png',
                                    'Fuzzi-Hut-Logo.eps',
                                    'Fuzzi-Hut-Logo2.EPS',
@@ -585,7 +584,8 @@ permissions = df_superadmin True,df_admin True
 
         # note that fig_platzhalter2.jpg will not become duplicate in export
         # as it gets prefixed by blob_#
-        imageFilenamesToBeChanged = {'fig_platzhalter2.JPEG' : 'fig_platzhalter2.jpg' ,
+        imageFilenamesToBeChanged = {'fig_platzhalter.jpeg'  : 'fig_platzhalter.jpg'  ,
+                                     'fig_platzhalter2.JPEG' : 'fig_platzhalter2.jpg' ,
                                      'fig_platzhalter2.JPG'  : 'fig_platzhalter2.jpg' ,
                                      'fig_platzhalter2.PNG'  : 'fig_platzhalter2.png' ,
                                      'Fuzzi-Hut-Logo2.PDF'   : 'Fuzzi-Hut-Logo2.pdf'   }
