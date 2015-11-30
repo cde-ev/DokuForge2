@@ -636,6 +636,8 @@ class Course(StorageDir):
                     (u"\\includegraphics" +
                      u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
                     (self.name, b, fileName)
+                if fileName != blob['filename']:
+                    tex += (u"%% Original-Dateiname: %s\n" % blob['filename'])
                 if fileName.endswith((".png", ".jpg", ".pdf")):
                     tex += includegraphics
                 else:
