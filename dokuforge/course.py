@@ -645,7 +645,7 @@ class Course(StorageDir):
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(self.name +
                                          (u"/blob_%d_" % b).encode("ascii") +
-                                         str(blob['filename']),
+                                         bytes(fileName),
                                          blob['data'],
                                          blobdate)
 
