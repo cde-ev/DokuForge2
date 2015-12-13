@@ -579,6 +579,7 @@ permissions = df_superadmin True,df_admin True
                                    'Fuzzi-Hut-Logo.eps',
                                    'Fuzzi-Hut-Logo2.EPS',
                                    'Fuzzi-Hut-Logo.pdf',
+                                   'Fuzzi-Hut-Logo.Komisch-pdf',
                                    'Fuzzi-Hut-Logo.svg',
                                    'Fuzzi-Hut-Logo2.SVG']
 
