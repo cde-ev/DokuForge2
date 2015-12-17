@@ -12,6 +12,7 @@ import unittest
 from wsgiref.validate import validator
 import webtest
 import datetime
+import tarfile
 
 import createexample
 from dokuforge import buildapp
@@ -571,6 +572,66 @@ permissions = df_superadmin True,df_admin True
         self.res = form.submit()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         self.is_loggedin()
+
+    def testAddDifferentImageBlobs(self):
+        imageFilenamesUnchanged = ['fig_platzhalter.jpg',
+                                   'fig_platzhalter.png',
+                                   'Fuzzi-Hut-Logo.eps',
+                                   'Fuzzi-Hut-Logo2.EPS',
+                                   'Fuzzi-Hut-Logo.pdf',
+                                   'Fuzzi-Hut-Logo.Komisch-pdf',
+                                   'Fuzzi-Hut-Logo.svg',
+                                   'Fuzzi-Hut-Logo2.SVG']
+
+        # note that fig_platzhalter2.jpg will not become duplicate in export
+        # as it gets prefixed by blob_#
+        imageFilenamesToBeChanged = {'fig_platzhalter.jpeg'  : 'fig_platzhalter.jpg'  ,
+                                     'fig_platzhalter2.JPEG' : 'fig_platzhalter2.jpg' ,
+                                     'fig_platzhalter2.JPG'  : 'fig_platzhalter2.jpg' ,
+                                     'fig_platzhalter2.PNG'  : 'fig_platzhalter2.png' ,
+                                     'Fuzzi-Hut-Logo2.PDF'   : 'Fuzzi-Hut-Logo2.pdf'   }
+
+        imageFilenames = imageFilenamesUnchanged + imageFilenamesToBeChanged.keys()
+
+        self.do_login()
+        os.chdir('testData')
+        counter=0 # to achieve distinct labels
+        for imageFilename in imageFilenames:
+            self.res = self.res.click(description="X-Akademie")
+            self.res = self.res.click(href=re.compile("course01/$"))
+            self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+            self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+            form = self.res.forms[1]
+            form["comment"] = "Kommentar"
+            form["label"] = "blob"+str(counter)
+            self.res = form.submit()
+            form = self.res.forms[1]
+            form["content"] = Upload(imageFilename)
+            self.res = form.submit()
+            counter = counter+1
+        os.chdir('..')
+
+        expectedFilenamesInExport = imageFilenamesUnchanged + imageFilenamesToBeChanged.values()
+
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(description="Exportieren")
+        tarFile = tarfile.open(mode='r',fileobj=io.BytesIO(self.res.body))
+        memberNames = tarFile.getnames()
+        filenamesInExport = []
+        for m in memberNames:
+            filenamesInExport.append( m.split('/')[-1] )
+
+        # check if all expected file names are present
+        # note that they are prefixed by blob_#_ when exporting
+        allFound = True
+        for expectedFilename in expectedFilenamesInExport:
+            found = False
+            for f in filenamesInExport:
+                if f.endswith(expectedFilename):
+                    found = True
+            allFound &= found
+
+        self.assertTrue(allFound)
 
     def testShowBlob(self):
         self.do_login()
