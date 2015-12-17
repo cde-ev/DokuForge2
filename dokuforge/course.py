@@ -605,7 +605,7 @@ class Course(StorageDir):
         """
         For image file types recognized by pdflatex, convert file ending
         to lower case, and shorten jpeg to jpg. This helps in particular
-        with images exported by some camaras.
+        with images exported by some cameras.
         """
         nameLower = name.lower()
         nameMangled = name
