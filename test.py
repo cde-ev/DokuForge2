@@ -878,7 +878,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo(u'Bla „blub“ ”bloink“.',
                              u'Bla \\@"`blub\\@"\' \\@"`bloink\\@"\'.')
         self.verifyExportsTo(u'Bla »blub« bloink.',
-                             u'Bla \\@"`blub\\@"\' bloink.')
+                             u'Bla \\@»blub\\@« bloink.')
         self.verifyExportsTo(u'Bla ‚blub‘ ‚bloink’.',
                              u'Bla \\@\\glq blub\\@\\grq{} \\@\\glq bloink\\@\\grq{}.')
 

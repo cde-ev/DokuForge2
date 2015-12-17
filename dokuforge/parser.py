@@ -476,9 +476,9 @@ UTF8elqq = Escaper(u'”', TerminalString(u'\\@"`'))
 
 UTF8grqq = Escaper(u'“', TerminalString(u'\\@"\''))
 
-UTF8flqq = Escaper(u'«', TerminalString(u'\\@"\''))# this is French left, but German right, so we expect the latter
+UTF8flqq = Escaper(u'«', TerminalString(u'\\@«'))
 
-UTF8frqq = Escaper(u'»', TerminalString(u'\\@"`'))
+UTF8frqq = Escaper(u'»', TerminalString(u'\\@»'))
 
 UTF8glq = Escaper(u'‚', TerminalString(u'\\@\\glq '))
 
