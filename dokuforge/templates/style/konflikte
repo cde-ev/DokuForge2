@@ -1,0 +1,24 @@
+<div class="body">
+<h1>Konflikte</h1>
+<p>Wenn du einen Text zum Editieren öffnest, bekommst du eine aktuelle
+Kopie des Textes. Falls mehrere Personen das gleichzeitig tun und
+jeweils ihre Änderungen zu speichern versuchen, so erzeugt dies
+einen Konflikt. Keine Panik, dabei gehen keinerlei Änderungen
+verloren. Aber ihr müsst schauen, wie sich die beiden
+unterschiedlichen Versionen wieder vereinen lassen, und erneut
+speichern. Dabei sind die einzelnen Konfliktstellen wie folgt
+gekennzeichnet:</p>
+<pre>
+<<<<<<<
+neue Version
+=======
+alte Version
+>>>>>>>
+</pre>
+
+<p>Du musst hier entscheiden, welche der beiden Versionen hier übernommen
+wird. Entferne die falsche Version sowie &lt;&lt;&lt;&lt;&lt;&lt;&lt;, ======= und &gt;&gt;&gt;&gt;&gt;&gt;&gt;.</p>
+<p>Es kann gelegentlich passieren, dass Konflikte auftreten, ohne dass es
+zwei konkurrierende Versionen gibt. In solchen Fällen fehlen &lt;&lt;&lt;&lt;&lt;&lt;&lt;,
+======= und &gt;&gt;&gt;&gt;&gt;&gt;&gt;. Hier musst du einfach noch einmal auf Speichern
+klicken.</p></div>
