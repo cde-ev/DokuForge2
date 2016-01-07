@@ -904,6 +904,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.')
         self.verifyExportsTo(u'Unterscheide T-shirt und DNA-Sequenz.',
                              u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.')
+        self.verifyExportsTo(u'Wahlergebnis fuer die SPD: 9% (NRW).',
+                             u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).')
 
     def testEscaping(self):
         self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
