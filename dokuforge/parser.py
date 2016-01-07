@@ -145,15 +145,21 @@ def acronym(word):
     while m:
         if m != True:
             plural_s = u''
+            punctuation=u''
             left, matched, word =  m.groups()
             m = m.groups()
             concat_left += left
             if len(matched) > 2 and matched[-1] == u's':
                 matched = matched[:-1]
                 plural_s = u's'
+            if len(matched) > 2 and matched[:-1].isalpha():
+                if matched[:-1].isupper() and matched[-1].isalpha()==False:
+                    punctuation=matched[-1]
+                    matched = matched[:-1]
             if len(matched) > 1 and matched.isalpha() and matched.isupper():
                 yield concat_left
-                yield TerminalString(u'\\@\\acronym{%s}' % (matched+plural_s))
+                yield TerminalString(u'\\@\\acronym{%s}%s' % (matched+plural_s,\
+                                                              punctuation))
                 concat_left = u''
             else:
                 concat_left += matched+plural_s
