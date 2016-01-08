@@ -139,27 +139,21 @@ def acronym(word):
     still allowing for compound nouns such as 'DNA-Sequenz'.
     A plural 's' as in 'EKGs' is allowed.
     """
-    pattern = r'([^-]+)'
+    pattern = r'(\w+)' # only alphanumeric characters or underscore
     concat_left = u''
     m = True
     while m:
         if m != True:
             plural_s = u''
-            punctuation=u''
             left, matched, word =  m.groups()
             m = m.groups()
             concat_left += left
             if len(matched) > 2 and matched[-1] == u's':
                 matched = matched[:-1]
                 plural_s = u's'
-            if len(matched) > 2 and matched[:-1].isalpha():
-                if matched[:-1].isupper() and matched[-1].isalpha()==False:
-                    punctuation=matched[-1]
-                    matched = matched[:-1]
             if len(matched) > 1 and matched.isalpha() and matched.isupper():
                 yield concat_left
-                yield TerminalString(u'\\@\\acronym{%s}%s' % (matched+plural_s,\
-                                                              punctuation))
+                yield TerminalString(u'\\@\\acronym{%s}' % (matched+plural_s))
                 concat_left = u''
             else:
                 concat_left += matched+plural_s
