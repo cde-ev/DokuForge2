@@ -144,20 +144,19 @@ def acronym(word):
     m = True
     while m:
         if m != True:
-            plural_s = u''
             left, matched, word =  m.groups()
             m = m.groups()
             concat_left += left
-            if len(matched) > 2 and matched[-1] == u's':
-                matched = matched[:-1]
-                plural_s = u's'
-            if len(matched) > 1 and matched.isalpha() and matched.isupper():
+            # check if matched part consists of two or more uppercase
+            # letters, possibly followed by a plural 's'
+            if (len(matched.rstrip(u's')) > 1 and matched.isalpha() and
+                    matched.rstrip(u's').isupper()):
                 yield concat_left
-                yield TerminalString(u'\\@\\acronym{%s}' % (matched+plural_s))
+                yield TerminalString(u'\\@\\acronym{%s}' % matched)
                 concat_left = u''
             else:
-                concat_left += matched+plural_s
-        # the unicode flag modifies the pattern \w
+                concat_left += matched
+        # the unicode flag modifies the pattern \w (alphanumeric characters)
         m = re.match(r'(.*?)' + pattern + r'(.*)', word, flags=re.UNICODE)
     concat_left += word
     yield concat_left
