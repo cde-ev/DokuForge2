@@ -157,7 +157,8 @@ def acronym(word):
                 concat_left = u''
             else:
                 concat_left += matched+plural_s
-        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+        # the unicode flag modifies the pattern \w
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word, flags=re.UNICODE)
     concat_left += word
     yield concat_left
 
