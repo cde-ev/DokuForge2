@@ -149,7 +149,7 @@ def acronym(word):
             concat_left += left
             # check if matched part consists of two or more uppercase
             # letters, possibly followed by a plural 's'
-            if (len(matched.rstrip(u's')) > 1 and matched.isalpha() and
+            if (len(matched.rstrip(u's')) > 1 and
                     matched.rstrip(u's').isupper()):
                 yield concat_left
                 yield TerminalString(u'\\@\\acronym{%s}' % matched)
