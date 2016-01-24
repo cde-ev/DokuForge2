@@ -66,7 +66,7 @@ drücken. Einmal reicht nicht!</p>
 
 <h2><a name="ueberschriften"></a> Überschriften</h2>
 <p>Eine Überschrift steht am Anfang einer Zeile und wird in eckige
-Klammern gesetzt. Sie wird dabei nicht nummeriert -- dies geschieht
+Klammern gesetzt. Sie wird dabei nicht nummeriert &ndash; dies geschieht
 später automatisch. Deshalb bitte nicht auf eine Kapitelnummer
 verweisen, sondern auf den Titel. Beispiel: "Wie in der Einleitung
 dargestellt."</p>
@@ -180,9 +180,9 @@ werden.</p>
     anders&nbsp;-- ohne Bindestrich. Das hat auch sicher 5--7 gute Gründe.
         </td>
     <td>
-    &bdquo;DokuForge&ldquo; schreibt man --&nbsp;und dies verhält sich bei
-    &bdquo;Style-Guide&ldquo; anders&nbsp;-- ohne Bindestrich. Das hat auch
-    sicher 5--7 gute Gründe.
+    &bdquo;DokuForge&ldquo; schreibt man &ndash;&nbsp;und dies verhält sich bei
+    &bdquo;Style-Guide&ldquo; anders&nbsp;&ndash; ohne Bindestrich. Das hat auch
+    sicher 5&ndash;7 gute Gründe.
         </td>
 </tr>
 </table>
@@ -293,7 +293,7 @@ Gliedern (es werden später korrekte kleine Zwischenräume gesetzt).</p>
 </ul>
 <h2><a name="ednotes"></a> Ednotes</h2>
 <p>Falls du uns (denen, die die Doku endgültig setzen) etwas mitteilen
-oder Besonderheiten wie Gedichte oder Tabellen nutzen willst (siehe
+oder Besonderheiten wie Tabellen oder Gedichte nutzen willst (siehe
 dazu die entsprechenden Abschnitte), kannst du es in einem separaten
 Absatz in geschweifte Klammern schreiben. Diese sogenannte Ednote
 sieht zum Beispiel so aus:</p>
@@ -328,7 +328,8 @@ Breite des Eingabefeldes) selbst umbrichst.</p>
 <p>Wenn du in den Ednotes geschweifte Klammern verwendest, genügt eine
 einfach geschweifte Klammer nicht, um eine Ednote auszuzeichnen. Du
 kannst die Ednote dann mit einer beliebigen Kombination von Klammern,
-aber beginnend mit einer geschweiften, öffnen:</p>
+aber beginnend mit einer geschweiften, öffnen und mit schließenden
+Klammern in umgekehrter Reihenfolge beenden:</p>
 <table  width="80%">
 <tr>
     <td width="40%">Eingabe:</td>

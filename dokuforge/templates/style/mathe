@@ -8,9 +8,8 @@
 </ul>
 <h2><a name="grundlagen"></a> Grundlagen</h2>
 <p>Zur Formeldarstellung wird in DokuForge eine Untermenge von LaTeX
-verwendet. Grundsätzlich sind die meisten Mathematikbefehle, die im
-Kopka beschrieben werden, erlaubt. Es können bei Bedarf kursspezifisch
-neue Befehle erlaubt bzw. definiert werden.</p>
+verwendet. Viele gängige Mathematikbefehle sind erlaub. Es können bei
+Bedarf kursspezifisch neue Befehle erlaubt bzw. definiert werden.</p>
 <p>Die wichtigsten LaTeX-Mathematikbefehle können beispielsweise hier
 nachgeschlagen werden:
 <a href="http://web.ift.uib.no/Teori/KURS/WRK/TeX/symALL.html">LaTeX-Symbole</a>.</p>
@@ -119,8 +118,8 @@ $$\begin{align}
 <p>Auf dieses "Label" kann man später im Text verweisen: Wie man in
 Gleichung EQ:equals sieht, ist ...</p>
 <h2><a name="def_satz_bew"></a> Definitionen, Sätze und Beweise</h2>
-<p>Mathematiker lieben es, ihre Dokumentationen mit Definitionen, Sätzen
-und Beweisen zu pflastern. Daher verwenden wir folgende Syntax:</p>
+<p>Um Definitionen, Sätze oder Beweise einzugeben, verwenden wir
+folgende Syntax:</p>
 <p>{DEF}</p>
 <p>Das ist eine Defintion.</p>
 <p>{END}</p>

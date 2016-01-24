@@ -1,15 +1,15 @@
 <div class="body">
 <h2>Warum?</h2>
 <p>In DokuForge können Abbildungen verwendet werden. Normaler Fließtext
-ist für uns i.d.R. mit wenig Aufwand verbunden.  Grafiken aller Art
+ist für uns in der Regel mit wenig Aufwand verbunden.  Grafiken aller Art
 bringen hingegen ein klein wenig oder ziemlich viel Mehraufwand mit
 sich – hierbei entscheidet die Qualität der Grafik, ob wir einfach nur
 ein Bild einfügen oder ob wir ein paar Stunden Arbeit aufwenden
 müssen. Um letzteren Fall zu vermeiden, bitten wir dich unsere
 Hinweise zu beachten.</p>
-<h2>Rastergrafik vs. Vektorgrafik</h2>
+<h2>Rastergrafik oder Vektorgrafik?</h2>
 <p>Abhängig von der Art der Grafik verwenden wir Vektorgrafiken oder Rastergrafiken.</p>
-<p><strong>Rastergrafiken</strong> steht einfach für jeden Bildpunkt einzeln drin, welche Farbe er hat. Wenn man eine Pixelgrafik vergrößert, sieht man die Ecken und Kanten der Bildpunkte: Die Bildpunkte "wachsen" praktisch mit, das große Bild enthält nicht mehr Information oder Auflösung als das kleine Ursprungsbild.</p>
+<p>In <strong>Rastergrafiken</strong> steht einfach für jeden Bildpunkt einzeln drin, welche Farbe er hat. Wenn man eine Pixelgrafik vergrößert, sieht man die Ecken und Kanten der Bildpunkte: Die Bildpunkte "wachsen" praktisch mit, das große Bild enthält nicht mehr Information oder Auflösung als das kleine Ursprungsbild.</p>
 <p>Bei <strong>Vektorgrafiken</strong> ist das Bild durch Objekte beschrieben. Beispielsweise steht da "schwarze Linie von der Koordinate (x1,y1) zur Koordinate (x2,y2)". Oder "an der Koordinate (x,y) den Buchstaben 'a' aus der Schriftart 'b'". Diese Angaben behalten ihre Gültigkeit, auch wenn man das Koordinatensystem skaliert. Man kann Vektorgrafiken beliebig vergrößern, ohne dass man jemals Pixel sieht. Eine Linie von A nach B bleibt einfach eine Linie von A nach B.</p>
 <p><strong>Fotos</strong> sollten als JPG (ein Rastergrafik-Format) hochgeladen werden. Bitte ladet das Bild in der originalen Auflösung hoch. Verkleinern 
 können wir selber. Wir benötigen etwa 100 Pixel pro Zentimeter Druckgröße. Bilder, die schlechter aufgelöst sind, können wir nicht abdrucken.</p>
