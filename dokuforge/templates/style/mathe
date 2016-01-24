@@ -16,7 +16,7 @@ nachgeschlagen werden:
 <p>Die Vorschau von Formeln wird im Browser erzeugt, was je nach Umfang
 der Formeln, Browser und Computer mit beträchtlichem Rechenaufwand
 verbunden sein kann. Aus diesem Grund ist die Vorschau standardmäßig
-deaktiviert. Sie kann durch einen Klick auf den "Mathe"-Link in der
+deaktiviert. Sie kann durch einen Klick auf den &quot;Mathe&quot;-Link in der
 Menüleiste rechts oben aktiviert werden. Damit dies funktioniert, muss
 JavaScript im Browser aktiviert sein.</p>
 <p>DokuForge unterstützt zwei Arten von Formeln — solche im Fließtext und
@@ -58,8 +58,8 @@ solche, die abgesetzt werden.</p>
 <p>In abgesetzten Formeln ist es auch möglich, Umgebungen zu nutzen, die
 Mehrzeiligkeit unterstützen. Meistens ist die align-Umgebung das
 Mittel der Wahl. Dabei werden die Gleichheitszeichen aneinander
-ausgerichtet, indem vor jedes ein kaufmännisches "und" gesetzt
-wird. Zeilenumbrüche werden durch "\\" erzeugt.</p>
+ausgerichtet, indem vor jedes ein kaufmännisches &quot;und&quot; gesetzt
+wird. Zeilenumbrüche werden durch &quot;\\&quot; erzeugt.</p>
 <table  width="80%">
 <tr>
         <td width="40%">Eingabe:</td>
@@ -86,7 +86,7 @@ $$\begin{align}
 </table>
 
 <p>Jede Zeile (und damit natürlich auch eine alleinstehende Gleichung)
-kann mit Hilfe von "\label{...}" am Ende der Zeile mit einem "Label"
+kann mit Hilfe von &quot;\label{...}&quot; am Ende der Zeile mit einem &quot;Label&quot;
 versehen werden.</p>
 <table  width="80%">
 <tr>
@@ -115,7 +115,7 @@ $$\begin{align}
 </tr>
 </table>
 
-<p>Auf dieses "Label" kann man später im Text verweisen: Wie man in
+<p>Auf dieses &quot;Label&quot; kann man später im Text verweisen: Wie man in
 Gleichung EQ:equals sieht, ist ...</p>
 <h2><a name="def_satz_bew"></a> Definitionen, Sätze und Beweise</h2>
 <p>Um Definitionen, Sätze oder Beweise einzugeben, verwenden wir

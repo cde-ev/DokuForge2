@@ -9,11 +9,11 @@ müssen. Um letzteren Fall zu vermeiden, bitten wir dich unsere
 Hinweise zu beachten.</p>
 <h2>Rastergrafik oder Vektorgrafik?</h2>
 <p>Abhängig von der Art der Grafik verwenden wir Vektorgrafiken oder Rastergrafiken.</p>
-<p>In <strong>Rastergrafiken</strong> steht einfach für jeden Bildpunkt einzeln drin, welche Farbe er hat. Wenn man eine Pixelgrafik vergrößert, sieht man die Ecken und Kanten der Bildpunkte: Die Bildpunkte "wachsen" praktisch mit, das große Bild enthält nicht mehr Information oder Auflösung als das kleine Ursprungsbild.</p>
-<p>Bei <strong>Vektorgrafiken</strong> ist das Bild durch Objekte beschrieben. Beispielsweise steht da "schwarze Linie von der Koordinate (x1,y1) zur Koordinate (x2,y2)". Oder "an der Koordinate (x,y) den Buchstaben 'a' aus der Schriftart 'b'". Diese Angaben behalten ihre Gültigkeit, auch wenn man das Koordinatensystem skaliert. Man kann Vektorgrafiken beliebig vergrößern, ohne dass man jemals Pixel sieht. Eine Linie von A nach B bleibt einfach eine Linie von A nach B.</p>
+<p>In <strong>Rastergrafiken</strong> steht einfach für jeden Bildpunkt einzeln drin, welche Farbe er hat. Wenn man eine Pixelgrafik vergrößert, sieht man die Ecken und Kanten der Bildpunkte: Die Bildpunkte &quot;wachsen&quot; praktisch mit, das große Bild enthält nicht mehr Information oder Auflösung als das kleine Ursprungsbild.</p>
+<p>Bei <strong>Vektorgrafiken</strong> ist das Bild durch Objekte beschrieben. Beispielsweise steht da &quot;schwarze Linie von der Koordinate (x1,y1) zur Koordinate (x2,y2)&quot;. Oder &quot;an der Koordinate (x,y) den Buchstaben 'a' aus der Schriftart 'b'&quot;. Diese Angaben behalten ihre Gültigkeit, auch wenn man das Koordinatensystem skaliert. Man kann Vektorgrafiken beliebig vergrößern, ohne dass man jemals Pixel sieht. Eine Linie von A nach B bleibt einfach eine Linie von A nach B.</p>
 <p><strong>Fotos</strong> sollten als JPG (ein Rastergrafik-Format) hochgeladen werden. Bitte ladet das Bild in der originalen Auflösung hoch. Verkleinern 
 können wir selber. Wir benötigen etwa 100 Pixel pro Zentimeter Druckgröße. Bilder, die schlechter aufgelöst sind, können wir nicht abdrucken.</p>
-<p><strong>Screenshots</strong> und <strong>Scans von Strichzeichnungen</strong> sollten als PNG vorliegen. Auch hier gelten die obigen Hinweise zur Auflösung (siehe "Fotos").</p>
+<p><strong>Screenshots</strong> und <strong>Scans von Strichzeichnungen</strong> sollten als PNG vorliegen. Auch hier gelten die obigen Hinweise zur Auflösung (siehe &quot;Fotos&quot;).</p>
 <p><strong>Diagramme</strong>, <strong>technische Zeichnungen</strong>, <strong>Graphen/Plots</strong>, <strong>Strichzeichnungen</strong> und alle anderen Arten sollten als Vektorgrafiken 
 hochgeladen werden. Wir bevorzugen dafür die Formate EPS, SVG, PostScript und TikZ. 
 PDF geht auch. Aber bitte keine Rastergrafiken einfach als PDF abspeichern – dann fühlen wir uns veräppelt. Bitte stell uns bei 
@@ -25,15 +25,15 @@ stets die Quelle an.</p>
 <p>Wenn die Grafik nicht von einem Kursteilnehmer oder Dokuteammitglied erstellt wurde, benötigen wir die Erlaubnis, diese Grafik abzudrucken und 
 auf der Doku-DVD verwenden zu dürfen. Diese Erlaubnis musst du selbst einholen. Ohne diese Erlaubnis können wir die Grafik nicht abdrucken.</p>
 <h2>Bilder hochladen und einbinden</h2>
-<p>Grafiken können über "neues Bild hochladen" am Ende einer Seite zu dem jeweiligen Kapitel hochgeladen werden. Beim Hochladen werdet ihr 
+<p>Grafiken können über &quot;neues Bild hochladen&quot; am Ende einer Seite zu dem jeweiligen Kapitel hochgeladen werden. Beim Hochladen werdet ihr 
 nach einem Kürzel gefragt. Die Kürzel dürfen ausschließlich Kleinbuchstaben und Zahlen enthalten.</p>
 <p>Auf die genaue Positionierung der Bilder habt ihr keinen Einfluss. 
-Bilder sind Fließobjekte, daher ist keine "Hier"-Positionierung möglich. 
+Bilder sind Fließobjekte, daher ist keine &quot;Hier&quot;-Positionierung möglich. 
 Die Bilder werden in der Nähe ihrer ersten Referenz eingebunden werden, 
 ihre Position kann sich aber durch Seitenumbrüche, andere Abbildungen etc. verschieben.
-Bitte verweist aus diesem Grund nicht direkt auf Abbildungen ("in folgender Abbildung"), 
+Bitte verweist aus diesem Grund nicht direkt auf Abbildungen (&quot;in folgender Abbildung&quot;), 
 sondern bindet Abbildungen über eine Referenz ein. Das heißt: In eurem Text verweist ihr 
-über eine Referenz der Form "In ABBILDUNG:Kürzel sieht man ..." auf das entsprechende Bild.</p>
+über eine Referenz der Form &quot;In ABBILDUNG:Kürzel sieht man ...&quot; auf das entsprechende Bild.</p>
 <p>Das sieht dann z.B. so aus:</p>
 <table  width="80%">
 <tr>
