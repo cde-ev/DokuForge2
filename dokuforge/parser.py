@@ -563,8 +563,8 @@ escapeMathCommands = EscapeCommands(
     u'frac', u'sqrt', u'sum', u'int', u'ldots', u'cdots',
     u'vdots', u'ddots', u'oint', u'prod', u'coprod'
     ## math symbols
-    u'pm', u'cap', u'circ', u'bigcirc' u'mp', u'cup', u'bullet',
-    u'Box' u'times', u'uplus', u'diamond', u'Diamond', u'div',
+    u'pm', u'cap', u'circ', u'bigcirc', u'mp', u'cup', u'bullet',
+    u'Box', u'times', u'uplus', u'diamond', u'Diamond', u'div',
     u'sqcap', u'bigtriangleup', u'cdot', u'sqcup',
     u'bigtriangledown', u'ast', u'vee', u'unlhd', u'triangleleft',
     u'star', u'wedge', u'unrhd', u'triangleright', u'dagger',
@@ -602,7 +602,7 @@ escapeMathCommands = EscapeCommands(
     u'bigcap', u'bigodot', u'bigcup', u'bigotimes', u'bigsqcup',
     u'bigoplus', u'bigvee', u'biguplus', u'bigwedge',
     ## function names
-    u'arccos', u'cosh', u'det', u'inf' u'limsup', u'Pr', u'tan',
+    u'arccos', u'cosh', u'det', u'inf', u'limsup', u'Pr', u'tan',
     u'arcsin', u'cot', u'dim', u'ker', u'ln', u'sec', u'tanh',
     u'arctan', u'coth', u'exp', u'lg', u'log', u'sin', u'arg',
     u'csc', u'gcd', u'lim', u'max', u'sinh', u'cos', u'deg',
