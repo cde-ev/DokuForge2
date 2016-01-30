@@ -920,6 +920,10 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'$\\\\\\@\\forbidden\\bad$')
         self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
                              u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
+        self.verifyExportsTo(u'$\\circ$ $\\cap\\inf$ $\\times$',
+                             u'$\\circ$ $\\cap\\inf$ $\\times$' )
+        self.verifyExportsTo(u'$$\\circ \\cap \\inf \\times$$',
+                             u'\\[\\circ \\cap \\inf \\times\\]')
         self.verifyExportsTo(u'Trailing \\',
                              u'Trailing \\@\\backslash')
         self.verifyExportsTo(u'$Trailing \\$',
