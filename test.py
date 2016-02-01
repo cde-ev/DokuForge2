@@ -934,6 +934,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.')
         self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
                              u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
+        self.verifyExportsTo(u'Tilde~ist unklar. $Auch~hier$.',
+                             u'Tilde\\@~ist unklar. $Auch\\@~hier$.')
 
     def testPrevetEvilUTF8(self):
         self.verifyExportsTo(u'Bla … blub bloink.',
