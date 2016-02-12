@@ -1076,62 +1076,20 @@ class DokuforgeTitleParserTests(DfTestCase):
         obtained = dfTitleParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
+    titleTests = [ TestStrings.escaping ]
+
     def testEscaping(self):
-        self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
-                             u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.')
-        self.verifyExportsTo(u'Do not allow $a \\dangerous{b}$ commands!',
-                             u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
-        self.verifyExportsTo(u'\\\\ok, $\\\\ok$',
-                             u'\\\\ok, $\\\\ok$')
-        self.verifyExportsTo(u'$\\\\\\bad$',
-                             u'$\\\\\\@\\forbidden\\bad$')
-        self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
-                             u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
-        self.verifyExportsTo(u'Trailing \\',
-                             u'Trailing \\@\\backslash')
-        self.verifyExportsTo(u'$Trailing \\$',
-                             u'$Trailing \\@\\backslash$')
-        self.verifyExportsTo(u'f# ist eine Note',
-                             u'f\\@\\# ist eine Note')
-        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
-                             u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
-        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
-                             u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.')
-        self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
-                             u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
+        [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in self.titleTests ]
 
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfCaptionParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
+    captionTests = [ TestStrings.escaping ]
+
     def testEscaping(self):
-        self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
-                             u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.')
-        self.verifyExportsTo(u'Do not allow $a \\dangerous{b}$ commands!',
-                             u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
-        self.verifyExportsTo(u'\\\\ok, $\\\\ok$',
-                             u'\\\\ok, $\\\\ok$')
-        self.verifyExportsTo(u'$\\\\\\bad$',
-                             u'$\\\\\\@\\forbidden\\bad$')
-        self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
-                             u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
-        self.verifyExportsTo(u'Trailing \\',
-                             u'Trailing \\@\\backslash')
-        self.verifyExportsTo(u'$Trailing \\$',
-                             u'$Trailing \\@\\backslash$')
-        self.verifyExportsTo(u'f# ist eine Note',
-                             u'f\\@\\# ist eine Note')
-        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
-                             u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
-        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
-                             u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.')
-        self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
-                             u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
+        [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in self.captionTests ]
 
 if __name__ == '__main__':
     unittest.main()
