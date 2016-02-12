@@ -858,200 +858,171 @@ class DokuforgeMockTests(DfTestCase):
         out = dfLineGroupParser(u"[ok]\n(bad < author >)").toHtml().strip()
         self.assertEqual(out, u"<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
 
-class DokuforgeMicrotypeUnitTests(DfTestCase):
-    def verifyExportsTo(self, df, tex):
-        obtained = dfLineGroupParser(df).toTex().strip()
-        self.assertEqual(obtained, tex)
+class TestStrings:
+    itemize = [[u'- Text',
+                u'\\begin{itemize}\n\\item Text\n\\end{itemize}'],
+               [u'-Text',
+                u'-Text']]
 
-    itemizeTestStrings = [[u'- Text',
-                           u'\\begin{itemize}\n\\item Text\n\\end{itemize}'],
-                          [u'-Text',
-                           u'-Text']]
-    def testItemize(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.itemizeTestStrings]
+    quotes = [ [u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
+                u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
+               [u'"Am Anfang" des Texts',
+                u'"`Am Anfang"\' des Texts'],
+               [u'in der Mitte "vor Kommata", im Text',
+                u'in der Mitte "`vor Kommata"\', im Text'],
+               [u'und "am Ende".',
+                u'und "`am Ende"\'.'],
+               [u'"Vor und"\n"nach" Zeilenumbrüchen.',
+                u'"`Vor und"\' "`nach"\' Zeilenumbrüchen.'],
+               [u'Markus\' single quote',
+                u'Markus\\@\' single quote']]
 
-    quotesTestStrings = [ [u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
-                           u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
-                          [u'"Am Anfang" des Texts',
-                           u'"`Am Anfang"\' des Texts'],
-                          [u'in der Mitte "vor Kommata", im Text',
-                           u'in der Mitte "`vor Kommata"\', im Text'],
-                          [u'und "am Ende".',
-                           u'und "`am Ende"\'.'],
-                          [u'"Vor und"\n"nach" Zeilenumbrüchen.',
-                           u'"`Vor und"\' "`nach"\' Zeilenumbrüchen.'],
-                          [u'Markus\' single quote',
-                           u'Markus\\@\' single quote']]
-    def testQuotes(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.quotesTestStrings]
+    abbrev = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
+               [u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
+                u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.,'],
+               [u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
+                u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
+               [u'Dots in math $a_1,...,a_n$ should work without spacing.',
+                u'Dots in math $a_1,\\dots{},a_n$ should work without spacing.'],
+               [u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
+                u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
+               [u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
+                u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
+               [u'd. h., der Exporter bzw. oder ca. oder so.',
+                u'd.\\,h., der Exporter bzw. oder ca. oder so.'] ]
 
-    abbrevTestStrings = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                           u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
-                          [u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
-                           u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.,'],
-                          [u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
-                           u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
-                          [u'Dots in math $a_1,...,a_n$ should work without spacing.',
-                           u'Dots in math $a_1,\\dots{},a_n$ should work without spacing.'],
-                          [u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
-                           u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
-                          [u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
-                           u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
-                          [u'd. h., der Exporter bzw. oder ca. oder so.',
-                           u'd.\\,h., der Exporter bzw. oder ca. oder so.'] ]
+    acronym = [ [u'Bitte ACRONYME wie EKGs anders setzen.',
+                 u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
+                [u'Unterscheide T-shirt und DNA-Sequenz.',
+                 u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.'],
+                [u'Wahlergebnis fuer die SPD: 9% (NRW).',
+                 u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
+                [u'FDP? CDU! CSU. ÖVP.',
+                 u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.'] ]
 
-    def testAbbrev(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.abbrevTestStrings]
+    escaping = [ [u'Forbid \\mathbb and \\dangerous outside math.',
+                  u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
+                 [u'Do not allow $a \\dangerous{b}$ commands!',
+                  u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!'],
+                 [u'\\\\ok, $\\\\ok$',
+                  u'\\\\ok, $\\\\ok$'],
+                 [u'$\\\\\\bad$',
+                  u'$\\\\\\@\\forbidden\\bad$'],
+                 [u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
+                  u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$'],
+                 [u'Trailing \\',
+                  u'Trailing \\@\\backslash'],
+                 [u'$Trailing \\$',
+                  u'$Trailing \\@\\backslash$'],
+                 [u'f# ist eine Note',
+                  u'f\\@\\# ist eine Note'],
+                 [u'$a^b$ ist gut, aber a^b ist schlecht',
+                  u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht'],
+                 [u'Heinemann&Co. ist vielleicht eine Firma',
+                  u'Heinemann\\@\\&Co. ist vielleicht eine Firma'],
+                 [u'10% sind ein Zehntel und mehr als 5 %.',
+                  u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.'],
+                 [u'Geschweifte Klammern { muessen } escaped werden.',
+                  u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'] ]
 
-    acronymTestStrings = [ [u'Bitte ACRONYME wie EKGs anders setzen.',
-                            u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
-                           [u'Unterscheide T-shirt und DNA-Sequenz.',
-                            u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.'],
-                           [u'Wahlergebnis fuer die SPD: 9% (NRW).',
-                            u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
-                           [u'FDP? CDU! CSU. ÖVP.',
-                            u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.'] ]
+    evilUTF8 = [ [u'Bla … blub bloink.',
+                  u'Bla \\@\\dots{} blub bloink.'],
+                 [u'Bla – blub — bloink.',
+                  u'Bla \\@-- blub \\@--- bloink.'],
+                 [u'Bla „blub“ ”bloink“.',
+                  u'Bla \\@"`blub\\@"\' \\@"`bloink\\@"\'.'],
+                 [u'Bla »blub« bloink.',
+                  u'Bla \\@»blub\\@« bloink.'],
+                 [u'Bla ‚blub‘ ‚bloink’.',
+                  u'Bla \\@\\glq blub\\@\\grq{} \\@\\glq bloink\\@\\grq{}.'] ]
 
-    def testAcronym(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.acronymTestStrings]
+    pageReferences = [ [u'Auf S. 4 Abs. 3 in Art. 7 steht',
+                        u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
+                       [u'Auf Seite 4 Absatz 3 in Artikel 7 steht',
+                        u'Auf Seite~4 Absatz~3 in Artikel~7 steht'],
+                       [u'Auf S.4-6 steht',
+                        u'Auf \\@S.\\,4\\@--6 steht'],
+                       [u'Auf S.4--6 steht',
+                        u'Auf \\@S.\\,4--6 steht'],
+                       [u'Auf S. 4f steht',
+                        u'Auf \\@S.\\,4\\,f. steht'],
+                       [u'Auf S. 4 ff. steht',
+                        u'Auf \\@S.\\,4\\,ff. steht'],
+                       [u'Es fehlen Angaben zu S. Abs. Art.',
+                        u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.'] ]
 
-    escapingTestStrings = [ [u'Forbid \\mathbb and \\dangerous outside math.',
-                             u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
-                            [u'Do not allow $a \\dangerous{b}$ commands!',
-                             u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!'],
-                            [u'\\\\ok, $\\\\ok$',
-                             u'\\\\ok, $\\\\ok$'],
-                            [u'$\\\\\\bad$',
-                             u'$\\\\\\@\\forbidden\\bad$'],
-                            [u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
-                             u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$'],
-                            [u'Trailing \\',
-                             u'Trailing \\@\\backslash'],
-                            [u'$Trailing \\$',
-                             u'$Trailing \\@\\backslash$'],
-                            [u'f# ist eine Note',
-                             u'f\\@\\# ist eine Note'],
-                            [u'$a^b$ ist gut, aber a^b ist schlecht',
-                             u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht'],
-                            [u'Heinemann&Co. ist vielleicht eine Firma',
-                             u'Heinemann\\@\\&Co. ist vielleicht eine Firma'],
-                            [u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.'],
-                            [u'Geschweifte Klammern { muessen } escaped werden.',
-                             u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'] ]
+    spacing = [ [u'A number range 6--9 is nice.',
+                 u'A number range 6--9 is nice.'],
+                [u'6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
+                 u'6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.'],
+                [u'Now we do - with all due respect --, an intersperse.',
+                 u'Now we do \\@-- with all due respect \\@--, an intersperse.'],
+                [u'Followed by an afterthougt -- here it comes.',
+                 u'Followed by an afterthougt \\@-- here it comes.'],
+                [u'Followed by an afterthougt---here it comes.',
+                 u'Followed by an afterthougt\\@---here it comes.'],
+                [u'Here come some dots ...',
+                 u'Here come some dots~\\dots{}'],
+                [u'Here come some dots...',
+                 u'Here come some dots\\@\\dots{}'],
+                [u'And dots ... in the middle.',
+                 u'And dots~\\dots{} in the middle.'],
+                [u'And dots...in the middle.',
+                 u'And dots\\@\\dots{}in the middle.'],
+                [u'And dots [...] for missing text.',
+                 u'And dots [\\dots{}\\kern-.16em] for missing text.'] ]
 
-    def testEscaping(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.escapingTestStrings]
+    lawReference = [ [u'In §§1ff. HGB steht',
+                      u'In §§\\,1\\,ff. \\@\\acronym{HGB} steht'],
+                     [u'In § 1 f. HGB steht',
+                      u'In §\\,1\\,f. \\@\\acronym{HGB} steht'],
+                     [u'In § 1 Abs. 1 HGB steht',
+                      u'In §\\,1 \\@Abs.\\,1 \\@\\acronym{HGB} steht'],
+                     [u'In § 1 Absatz 1 Satz 2 HGB steht',
+                      u'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht'],
+                     [u'In §§ 10-15 HGB steht',
+                      u'In §§\\,10\\@--15 \\@\\acronym{HGB} steht'],
+                     [u'Ein verlorener § und noch ein §',
+                      u'Ein verlorener \\@§ und noch ein \\@§'] ]
 
+    numbers = [ [u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
+                 u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
+                [u'We are in the 21. regiment and again in the 21.regiment.',
+                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'] ]
 
-    evilUTF8TestStrings = [ [u'Bla … blub bloink.',
-                             u'Bla \\@\\dots{} blub bloink.'],
-                            [u'Bla – blub — bloink.',
-                             u'Bla \\@-- blub \\@--- bloink.'],
-                            [u'Bla „blub“ ”bloink“.',
-                             u'Bla \\@"`blub\\@"\' \\@"`bloink\\@"\'.'],
-                            [u'Bla »blub« bloink.',
-                             u'Bla \\@»blub\\@« bloink.'],
-                            [u'Bla ‚blub‘ ‚bloink’.',
-                             u'Bla \\@\\glq blub\\@\\grq{} \\@\\glq bloink\\@\\grq{}.'] ]
+    dates = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
+               u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
 
-    def testPrevetEvilUTF8(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.evilUTF8TestStrings]
+    units = [ [u'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
+               u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13\\@--14\\,\\@TeV, 5\\,°C.'],
+              [u'Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
+               u'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.'],
+              [u'Units: 21 kg, 4 MW, 1 mV, 13--14 TeV, 5 °C.',
+               u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13--14\\,\\@TeV, 5\\,°C.'],
+              [u'Decimal number with unit: 25,4 mm.',
+               u'Decimal number with unit: 25,4\\,mm.'],
+              [u'Percentages like 5 % should be handled as nicely as 5%.',
+               u'Percentages like 5\\@\\,\\% should be handled as nicely as 5\\,\\%.'],
+              [u'90° is a right angle.',
+               u'90° is a right angle.'] ]
 
-    pageReferencesTestStrings = [ [u'Auf S. 4 Abs. 3 in Art. 7 steht',
-                                   u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
-                                  [u'Auf Seite 4 Absatz 3 in Artikel 7 steht',
-                                   u'Auf Seite~4 Absatz~3 in Artikel~7 steht'],
-                                  [u'Auf S.4-6 steht',
-                                   u'Auf \\@S.\\,4\\@--6 steht'],
-                                  [u'Auf S.4--6 steht',
-                                   u'Auf \\@S.\\,4--6 steht'],
-                                  [u'Auf S. 4f steht',
-                                   u'Auf \\@S.\\,4\\,f. steht'],
-                                  [u'Auf S. 4 ff. steht',
-                                   u'Auf \\@S.\\,4\\,ff. steht'],
-                                  [u'Es fehlen Angaben zu S. Abs. Art.',
-                                   u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.'] ]
+    code = [ [u'|increase(i)| increases |i|, by one.',
+              u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
 
-    def testPageReferences(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.pageReferencesTestStrings]
+    structures = [ [u'[foo]\n(bar)',
+                    u'\\section{foo}\n\\authors{bar}'],
+                   [u'[[foo]]\n\n(bar)',
+                    u'\\subsection{foo}\n\n(bar)'],
+                   [u'- item\n\n-nonitem',
+                    u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem'],
+                   [u'1. item',
+                    u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}'] ]
 
-    spacingTestStrings = [ [u'A number range 6--9 is nice.',
-                            u'A number range 6--9 is nice.'],
-                           [u'6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
-                            u'6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.'],
-                           [u'Now we do - with all due respect --, an intersperse.',
-                            u'Now we do \\@-- with all due respect \\@--, an intersperse.'],
-                           [u'Followed by an afterthougt -- here it comes.',
-                            u'Followed by an afterthougt \\@-- here it comes.'],
-                           [u'Followed by an afterthougt---here it comes.',
-                            u'Followed by an afterthougt\\@---here it comes.'],
-                           [u'Here come some dots ...',
-                            u'Here come some dots~\\dots{}'],
-                           [u'Here come some dots...',
-                            u'Here come some dots\\@\\dots{}'],
-                           [u'And dots ... in the middle.',
-                            u'And dots~\\dots{} in the middle.'],
-                           [u'And dots...in the middle.',
-                            u'And dots\\@\\dots{}in the middle.'],
-                           [u'And dots [...] for missing text.',
-                            u'And dots [\\dots{}\\kern-.16em] for missing text.'] ]
+    numericalScope = [ [u'10\xb3 Meter sind ein km',
+                        u'10\xb3 Meter sind ein km'] ]
 
-    def testSpacing(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.spacingTestStrings]
-
-    lawReferenceTestStrings = [ [u'In §§1ff. HGB steht',
-                                 u'In §§\\,1\\,ff. \\@\\acronym{HGB} steht'],
-                                [u'In § 1 f. HGB steht',
-                                 u'In §\\,1\\,f. \\@\\acronym{HGB} steht'],
-                                [u'In § 1 Abs. 1 HGB steht',
-                                 u'In §\\,1 \\@Abs.\\,1 \\@\\acronym{HGB} steht'],
-                                [u'In § 1 Absatz 1 Satz 2 HGB steht',
-                                 u'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht'],
-                                [u'In §§ 10-15 HGB steht',
-                                 u'In §§\\,10\\@--15 \\@\\acronym{HGB} steht'],
-                                [u'Ein verlorener § und noch ein §',
-                                 u'Ein verlorener \\@§ und noch ein \\@§'] ]
-
-    def testLawReferences(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.lawReferenceTestStrings]
-
-    numbersTestStrings = [ [u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
-                            u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
-                           [u'We are in the 21. regiment and again in the 21.regiment.',
-                            u'We are in the \\@21. regiment and again in the \\@21.regiment.'] ]
-
-    def testNumbers(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.numbersTestStrings]
-
-    datesTestStrings = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
-                          u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
-
-    def testDates(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.datesTestStrings]
-
-    unitsTestStrings = [ [u'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
-                          u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13\\@--14\\,\\@TeV, 5\\,°C.'],
-                         [u'Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
-                          u'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.'],
-                         [u'Units: 21 kg, 4 MW, 1 mV, 13--14 TeV, 5 °C.',
-                          u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13--14\\,\\@TeV, 5\\,°C.'],
-                         [u'Decimal number with unit: 25,4 mm.',
-                          u'Decimal number with unit: 25,4\\,mm.'],
-                         [u'Percentages like 5 % should be handled as nicely as 5%.',
-                          u'Percentages like 5\\@\\,\\% should be handled as nicely as 5\\,\\%.'],
-                         [u'90° is a right angle.',
-                          u'90° is a right angle.'] ]
-    def testUnits(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.unitsTestStrings]
-
-    codeTestStrings = [ [u'|increase(i)| increases |i|, by one.',
-                         u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
-
-    def testCode(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.codeTestStrings]
-
-    ednoteEscapeTestStrings = [ [u"""
+    ednoteEscape = [ [u"""
 
 {{
 
@@ -1074,26 +1045,31 @@ Bobby Tables...
 
 \\end{ednote}""" ] ]
 
-    def testEdnoteEscape(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.ednoteEscapeTestStrings]
+class DokuforgeMicrotypeUnitTests(DfTestCase):
+    def verifyExportsTo(self, df, tex):
+        obtained = dfLineGroupParser(df).toTex().strip()
+        self.assertEqual(obtained, tex)
 
-    structuresTestStrings = [ [u'[foo]\n(bar)',
-                               u'\\section{foo}\n\\authors{bar}'],
-                              [u'[[foo]]\n\n(bar)',
-                               u'\\subsection{foo}\n\n(bar)'],
-                              [u'- item\n\n-nonitem',
-                               u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem'],
-                              [u'1. item',
-                               u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}'] ]
+    lineGroupTests = [ TestStrings.itemize,
+                       TestStrings.quotes,
+                       TestStrings.abbrev,
+                       TestStrings.acronym,
+                       TestStrings.escaping,
+                       TestStrings.evilUTF8,
+                       TestStrings.pageReferences,
+                       TestStrings.spacing,
+                       TestStrings.lawReference,
+                       TestStrings.numbers,
+                       TestStrings.dates,
+                       TestStrings.units,
+                       TestStrings.code,
+                       TestStrings.ednoteEscape,
+                       TestStrings.structures,
+                       TestStrings.numericalScope ]
 
-    def testStructures(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.structuresTestStrings]
+    def testLineGroupParser(self):
+        [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in self.lineGroupTests ]
 
-    numericalScopeTestStrings = [ [u'10\xb3 Meter sind ein km',
-                                   u'10\xb3 Meter sind ein km'] ]
-
-    def testNumeralScope(self):
-        [self.verifyExportsTo(t[0],t[1]) for t in self.numericalScopeTestStrings]
 
 class DokuforgeTitleParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
