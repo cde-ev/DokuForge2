@@ -1702,7 +1702,7 @@ def dfTitleParser(text):
 captionfeatures =  [Paragraph, Item, EnumerateItem, Description, Ednote]
 
 def dfCaptionParser(text):
-    groups = grouplines(text.splitlines(), dffeatures)
+    groups = grouplines(text.splitlines(), captionfeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
