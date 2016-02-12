@@ -1104,7 +1104,7 @@ class DokuforgeTitleParserTests(DfTestCase):
 
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
-        obtained = dfTitleParser(df).toTex().strip()
+        obtained = dfCaptionParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
     def testEscaping(self):
