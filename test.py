@@ -858,7 +858,11 @@ class DokuforgeMockTests(DfTestCase):
         out = dfLineGroupParser(u"[ok]\n(bad < author >)").toHtml().strip()
         self.assertEqual(out, u"<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
 
-class TestStrings:
+class ExporterTestStrings:
+    """
+    Input and expected output for testing exporter.
+    """
+
     itemize = [[u'- Text',
                 u'\\begin{itemize}\n\\item Text\n\\end{itemize}'],
                [u'-Text',
@@ -1050,22 +1054,22 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         obtained = dfLineGroupParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    lineGroupTests = [ TestStrings.itemize,
-                       TestStrings.quotes,
-                       TestStrings.abbrev,
-                       TestStrings.acronym,
-                       TestStrings.escaping,
-                       TestStrings.evilUTF8,
-                       TestStrings.pageReferences,
-                       TestStrings.spacing,
-                       TestStrings.lawReference,
-                       TestStrings.numbers,
-                       TestStrings.dates,
-                       TestStrings.units,
-                       TestStrings.code,
-                       TestStrings.ednoteEscape,
-                       TestStrings.structures,
-                       TestStrings.numericalScope ]
+    lineGroupTests = [ ExporterTestStrings.itemize,
+                       ExporterTestStrings.quotes,
+                       ExporterTestStrings.abbrev,
+                       ExporterTestStrings.acronym,
+                       ExporterTestStrings.escaping,
+                       ExporterTestStrings.evilUTF8,
+                       ExporterTestStrings.pageReferences,
+                       ExporterTestStrings.spacing,
+                       ExporterTestStrings.lawReference,
+                       ExporterTestStrings.numbers,
+                       ExporterTestStrings.dates,
+                       ExporterTestStrings.units,
+                       ExporterTestStrings.code,
+                       ExporterTestStrings.structures,
+                       ExporterTestStrings.numericalScope,
+                       ExporterTestStrings.ednoteEscape ]
 
     def testLineGroupParser(self):
         [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in self.lineGroupTests ]
@@ -1076,7 +1080,17 @@ class DokuforgeTitleParserTests(DfTestCase):
         obtained = dfTitleParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    titleTests = [ TestStrings.escaping ]
+    titleTests = [ ExporterTestStrings.quotes,
+                   ExporterTestStrings.abbrev,
+                   ExporterTestStrings.acronym,
+                   ExporterTestStrings.escaping,
+                   ExporterTestStrings.evilUTF8,
+                   ExporterTestStrings.spacing,
+                   ExporterTestStrings.lawReference,
+                   ExporterTestStrings.numbers,
+                   ExporterTestStrings.dates,
+                   ExporterTestStrings.units,
+                   ExporterTestStrings.numericalScope ]
 
     def testEscaping(self):
         [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in self.titleTests ]
@@ -1086,7 +1100,21 @@ class DokuforgeCaptionParserTests(DfTestCase):
         obtained = dfCaptionParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    captionTests = [ TestStrings.escaping ]
+    captionTests = [ ExporterTestStrings.itemize,
+                     ExporterTestStrings.quotes,
+                     ExporterTestStrings.abbrev,
+                     ExporterTestStrings.acronym,
+                     ExporterTestStrings.escaping,
+                     ExporterTestStrings.evilUTF8,
+                     ExporterTestStrings.pageReferences,
+                     ExporterTestStrings.spacing,
+                     ExporterTestStrings.lawReference,
+                     ExporterTestStrings.numbers,
+                     ExporterTestStrings.dates,
+                     ExporterTestStrings.units,
+                     ExporterTestStrings.code,
+                     ExporterTestStrings.numericalScope,
+                     ExporterTestStrings.ednoteEscape ]
 
     def testEscaping(self):
         [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in self.captionTests ]
