@@ -863,10 +863,14 @@ class ExporterTestStrings:
     Input and expected output for testing exporter.
     """
 
-    itemize = [[u'- Text',
-                u'\\begin{itemize}\n\\item Text\n\\end{itemize}'],
-               [u'-Text',
-                u'-Text']]
+    itemizeAndCo = [[u'- Text',
+                     u'\\begin{itemize}\n\\item Text\n\\end{itemize}'],
+                    [u'-Text',
+                     u'-Text'],
+                    [u'- item\n\n-nonitem',
+                     u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem'],
+                    [u'1. item',
+                     u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}'] ]
 
     quotes = [ [u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                 u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
@@ -881,20 +885,20 @@ class ExporterTestStrings:
                [u'Markus\' single quote',
                 u'Markus\\@\' single quote']]
 
-    abbrev = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
-               [u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
-                u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.,'],
-               [u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
-                u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
-               [u'Dots in math $a_1,...,a_n$ should work without spacing.',
-                u'Dots in math $a_1,\\dots{},a_n$ should work without spacing.'],
-               [u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
-                u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
-               [u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
-                u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
-               [u'd. h., der Exporter bzw. oder ca. oder so.',
-                u'd.\\,h., der Exporter bzw. oder ca. oder so.'] ]
+    abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                      u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
+                     [u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
+                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.,'],
+                     [u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
+                      u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
+                     [u'Dots in math $a_1,...,a_n$ should work without spacing.',
+                      u'Dots in math $a_1,\\dots{},a_n$ should work without spacing.'],
+                     [u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
+                      u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
+                     [u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
+                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
+                     [u'd. h., der Exporter bzw. oder ca. oder so.',
+                      u'd.\\,h., der Exporter bzw. oder ca. oder so.'] ]
 
     acronym = [ [u'Bitte ACRONYME wie EKGs anders setzen.',
                  u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
@@ -1014,14 +1018,10 @@ class ExporterTestStrings:
     code = [ [u'|increase(i)| increases |i|, by one.',
               u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
 
-    structures = [ [u'[foo]\n(bar)',
-                    u'\\section{foo}\n\\authors{bar}'],
-                   [u'[[foo]]\n\n(bar)',
-                    u'\\subsection{foo}\n\n(bar)'],
-                   [u'- item\n\n-nonitem',
-                    u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem'],
-                   [u'1. item',
-                    u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}'] ]
+    sectionsAndAuthors = [ [u'[foo]\n(bar)',
+                            u'\\section{foo}\n\\authors{bar}'],
+                           [u'[[foo]]\n\n(bar)',
+                            u'\\subsection{foo}\n\n(bar)'] ]
 
     numericalScope = [ [u'10\xb3 Meter sind ein km',
                         u'10\xb3 Meter sind ein km'] ]
@@ -1054,7 +1054,7 @@ class ExporterTestCases:
     Which tests should be run for the separate parsers?
     """
     testsEverywhere = [ ExporterTestStrings.quotes,
-                        ExporterTestStrings.abbrev,
+                        ExporterTestStrings.abbreviation,
                         ExporterTestStrings.acronym,
                         ExporterTestStrings.escaping,
                         ExporterTestStrings.evilUTF8,
@@ -1066,13 +1066,14 @@ class ExporterTestCases:
                         ExporterTestStrings.units,
                         ExporterTestStrings.numericalScope ]
 
+    # Text vs. Titles
     testsInText = testsEverywhere + \
-                  [ ExporterTestStrings.itemize,
+                  [ ExporterTestStrings.itemizeAndCo,
                     ExporterTestStrings.code,
                     ExporterTestStrings.ednoteEscape ]
 
     lineGroupTests = testsInText + \
-                     [ ExporterTestStrings.structures ]
+                     [ ExporterTestStrings.sectionsAndAuthors ]
 
     titleTests = testsEverywhere
 
