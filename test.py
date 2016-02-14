@@ -908,6 +908,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).')
         self.verifyExportsTo(u'FDP? CDU! CSU. ÖVP.',
                              u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.')
+        self.verifyExportsTo(u'Das ZNS.',
+                             u'Das \\@\\acronym{ZNS}.')
 
     def testEscaping(self):
         self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
