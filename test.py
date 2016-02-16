@@ -960,8 +960,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'Auf \\@S.\\,4--6 steht')
         self.verifyExportsTo(u'Auf S. 4f steht',
                              u'Auf \\@S.\\,4\\,f. steht')
-        self.verifyExportsTo(u'Auf S. 4 ff. steht',
-                             u'Auf \\@S.\\,4\\,ff. steht')
+        self.verifyExportsTo(u'S. 4 ff. besagt',
+                             u'\\@S.\\,4\\,ff. besagt')
         self.verifyExportsTo(u'Es fehlen Angaben zu S. Abs. Art.',
                              u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.')
 
