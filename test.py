@@ -970,8 +970,6 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'A number range 6--9 is nice.')
         self.verifyExportsTo(u'6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
                              u'6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.')
-        self.verifyExportsTo(u'Or 23–42 or 23– 42 or 23 –42.',
-                             u'Or 23\\@--42 or 23\\@--42 or 23\\@--42.')
         self.verifyExportsTo(u'Now we do - with all due respect --, an intersperse.',
                              u'Now we do \\@-- with all due respect \\@--, an intersperse.')
         self.verifyExportsTo(u'Followed by an afterthougt -- here it comes.',
