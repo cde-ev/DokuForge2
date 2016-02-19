@@ -908,6 +908,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).')
         self.verifyExportsTo(u'FDP? CDU! CSU. ÖVP.',
                              u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.')
+        self.verifyExportsTo(u'Das ZNS.',
+                             u'Das \\@\\acronym{ZNS}.')
 
     def testEscaping(self):
         self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
@@ -958,8 +960,8 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
                              u'Auf \\@S.\\,4--6 steht')
         self.verifyExportsTo(u'Auf S. 4f steht',
                              u'Auf \\@S.\\,4\\,f. steht')
-        self.verifyExportsTo(u'Auf S. 4 ff. steht',
-                             u'Auf \\@S.\\,4\\,ff. steht')
+        self.verifyExportsTo(u'S. 4 ff. besagt',
+                             u'\\@S.\\,4\\,ff. besagt')
         self.verifyExportsTo(u'Es fehlen Angaben zu S. Abs. Art.',
                              u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.')
 

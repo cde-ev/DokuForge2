@@ -256,7 +256,7 @@ def pageReferences(word):
                 # allow to match subsequent number ranges
                 yield TerminalString(ref)
                 word = number + word
-        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+        m = re.match(r'(^|.*?\s)' + pattern + r'(.*)', word)
     yield word
 
 def lawReferences(word):
