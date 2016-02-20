@@ -907,7 +907,9 @@ class ExporterTestStrings:
                 [u'Wahlergebnis fuer die SPD: 9% (NRW).',
                  u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
                 [u'FDP? CDU! CSU. ÖVP.',
-                 u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.'] ]
+                 u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.'],
+                [u'Das ZNS.',
+                 u'Das \\@\\acronym{ZNS}.'] ]
 
     escaping = [ [u'Forbid \\mathbb and \\dangerous outside math.',
                   u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
@@ -955,8 +957,8 @@ class ExporterTestStrings:
                         u'Auf \\@S.\\,4--6 steht'],
                        [u'Auf S. 4f steht',
                         u'Auf \\@S.\\,4\\,f. steht'],
-                       [u'Auf S. 4 ff. steht',
-                        u'Auf \\@S.\\,4\\,ff. steht'],
+                       [u'S. 4 ff. besagt',
+                        u'\\@S.\\,4\\,ff. besagt'],
                        [u'Es fehlen Angaben zu S. Abs. Art.',
                         u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.'] ]
 
