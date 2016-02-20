@@ -256,7 +256,7 @@ def pageReferences(word):
                 # allow to match subsequent number ranges
                 yield TerminalString(ref)
                 word = number + word
-        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+        m = re.match(r'(^|.*?\s)' + pattern + r'(.*)', word)
     yield word
 
 def lawReferences(word):
@@ -1702,7 +1702,7 @@ def dfTitleParser(text):
 captionfeatures =  [Paragraph, Item, EnumerateItem, Description, Ednote]
 
 def dfCaptionParser(text):
-    groups = grouplines(text.splitlines(), dffeatures)
+    groups = grouplines(text.splitlines(), captionfeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
