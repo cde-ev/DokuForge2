@@ -30,9 +30,9 @@ except NameError:
 ##
 ## 4. If you're also interested in the micotypography for the TeX
 ##    export, the story is as follows. A microtype feature is a
-##    function str -> [str] taking a textual unit and returning
+##    function str -> [Either str str] taking a textual unit and returning
 ##    a list of textual units after the feature is applied, splitting
-##    the original unit where approprate. A microtype is given
+##    the original unit where appropriate. A microtype is given
 ##    by a list of features and has the semantics of sucessively
 ##    applying these features (in the sense of the list monad), and
 ##    finally concatenating the obtained tokens. In other words, the
@@ -108,6 +108,12 @@ class Estimate(collections.namedtuple("Estimate",
 
     __rmul__ = __mul__
 
+# class for strings that shall not be modified further
+class TerminalString(object):
+    def __init__(self, s):
+        self.theString = s
+    def getString(self):
+        return self.theString
 
 def intersperse(iterable, delimiter):
     it = iter(iterable)
@@ -129,19 +135,201 @@ class Escaper:
 def acronym(word):
     """
     All-capital words should be displayed in smaller font.
-    But don't mangle things like 'T-Shirt' or 'E-Mail'.
+    But don't mangle things like 'T-Shirt' or 'E-Mail' while
+    still allowing for compound nouns such as 'DNA-Sequenz'.
+    A plural 's' as in 'EKGs' is allowed.
     """
-    if len(word) > 1 and word.isalpha() and word.isupper():
-        word = u'\\acronym{%s}' % word
+    pattern = r'(\w+)' # only alphanumeric characters or underscore
+    concat_left = u''
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            m = m.groups()
+            concat_left += left
+            # check if matched part consists of two or more uppercase
+            # letters, possibly followed by a plural 's'
+            if (len(matched.rstrip(u's')) > 1 and
+                    matched.rstrip(u's').isupper()):
+                yield concat_left
+                yield TerminalString(u'\\@\\acronym{%s}' % matched)
+                concat_left = u''
+            else:
+                concat_left += matched
+        # the unicode flag modifies the pattern \w (alphanumeric characters)
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word, flags=re.UNICODE)
+    concat_left += word
+    yield concat_left
+
+def formatDashes(word):
+    """
+    Replace " - " by " -- " and annotate dashes with "\\@"
+    """
+    # match context in order to avoid touching number ranges or signs
+    pattern = r'(^|[^@ -])( ?-+ ?)($|[^0-9- ])'
+    m = True
+    while m:
+        if m != True:
+            left, before, dash, after, word =  m.groups()
+            dash = dash.replace(u' - ', u' -- ')
+            if len(dash.strip(u' ')) > 1:
+                yield (left + before)
+                yield TerminalString(dash.replace(u'--', u'\\@--'))
+            else:
+                yield (left + before + dash)
+            word = after + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    # annotate ranges such as 1a--3b with \@
+    word = re.sub(r'([^@0-9- ] ?)(--+ ?[0-9])', r'\1\\@\2', word)
     yield word
 
-def  standardAbbreviations(word):
+def percentSpacing(word):
+    """
+    Do spacing for the percent sign.
+    """
+    pattern = r'(\d+ ?)%'
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            yield (left + matched.rstrip())
+            if matched.endswith(u' '):
+                yield TerminalString(u'\\@\\,\\%')
+            else:
+                yield TerminalString(u'\\,\\%')
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
+def ellipsisSpacing(word):
+    """
+    Do spacing for ellipsis.
+    """
+    # '[...]'
+    word = re.sub(r'\[\.{3}\]', r'[...\kern-.16em]', word)
+    # ' ...(punctuation mark|whitespace|end of line)'
+    word = re.sub(r' +\.{3}([():;,"?!]|\s|$)', r'~...\1', word)
+    # annotate remaining occurances of ... with \@
+    word = re.sub(r'(^|[^~[])\.{3}', r'\1\@...', word)
+    yield word
+
+def formatDate(word):
+    """
+    Do spacing for dates that consist of day, month and year.
+    """
+    date_pattern = r'%s%s' % (2 * r'(\d{1,2}\.) ?', r'(\d{2,4})')
+    m = True
+    while m:
+        if m != True:
+            left, day, month, year, word =  m.groups()
+            yield left
+            yield TerminalString(u'\\@%s\\,%s\\,%s' % (day, month, year))
+        m = re.match(r'(.*?)' + date_pattern + r'(.*)', word)
+    yield word
+
+def pageReferences(word):
+    """
+    Do spacing for page references.
+    """
+    abbr = r'S\.|Abs\.|Art\.'
+    full = r'Seite|Satz|Absatz|Artikel'
+    pattern = r'((?:%s|%s) ?)((?:\d+)? ?)((?:f+\.? )?)' % (abbr, full)
+    m = True
+    while m:
+        if m != True:
+            left, ref, number, ff, word =  m.groups()
+            yield left
+            if ref.rstrip(u' ').endswith(u'.'):
+                # abbreviation
+                ref = u'\\@' + ref
+                if number:
+                    ref = ref.rstrip(u' ') + u'\\,'
+                    if ff:
+                        number = number.rstrip(u' ')
+                        ff = u'\\,%s. ' % ff.rstrip(u' .')
+            else:
+                # unabbreviated reference
+                if len(number) > 0:
+                    ref = ref.rstrip(u' ') + u'~'
+            if ff:
+                yield TerminalString(ref + number + ff)
+            else:
+                # allow to match subsequent number ranges
+                yield TerminalString(ref)
+                word = number + word
+        m = re.match(r'(^|.*?\s)' + pattern + r'(.*)', word)
+    yield word
+
+def lawReferences(word):
+    """
+    Do spacing for law references.
+    """
+    pattern = u'(§+ ?)((?:\\d+)? ?)((?:f+\\.? )?)' # unicode for §
+    m = True
+    while m:
+        if m != True:
+            left, par, number, ff, word =  m.groups()
+            yield left
+            if number:
+                par = par.rstrip(u' ') + u'\\,'
+                if ff:
+                    number = number.rstrip(u' ')
+                    ff = u'\\,%s. ' % ff.rstrip(u' .')
+            else:
+                par = u'\\@' + par
+            if ff:
+                yield TerminalString(par + number + ff)
+            else:
+                yield TerminalString(par)
+                # this allows to match subsequent number ranges
+                word = number + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
+def numberSpacing(word):
+    """
+    Do spacing for number ranges and between numbers and words.
+    """
+    # annotate "[number]."
+    word = re.sub(r'(^|[^@0-9])(\d+\.\D)', r'\1\\@\2', word)
+    # format number ranges
+    pattern = r'(\d)( ?-{1,2} ?)(\d)'
+    m = True
+    while m:
+        if m != True:
+            left, num1, matched, num2, word =  m.groups()
+            # also accept 6-9 and do not annotate 6--9
+            if matched == u'-' or matched != u'--':
+                matched = u'\\@--'
+            if matched.strip(u' ') == u'--':
+                yield (left + num1)
+                yield TerminalString(matched)
+                word = num2 + word
+            else:
+                yield (left + num1 + matched + num2)
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
+def unspaceAbbreviations(word):
+    """
+    Remove single spaces within known abbreviations.
+    """
+    word = re.sub(u'(^| )d\. h\.', u'\\1d.h.', word)
+    word = re.sub(u'(^| )n\. Chr\.', u'\\1n.Chr.', word)
+    word = re.sub(u'(^| )o\. Ä\.', u'\\1o.Ä.', word)
+    word = re.sub(u'(^| )s\. o\.', u'\\1s.o.', word)
+    word = re.sub(u'(^| )s\. u\.', u'\\1s.u.', word)
+    word = re.sub(u'(^| )u\. a\.', u'\\1u.a.', word)
+    word = re.sub(u'(^| )v\. Chr\.', u'\\1v.Chr.', word)
+    word = re.sub(u'(^| )z\. B\.', u'\\1z.B.', word)
+    yield word
+
+def standardAbbreviations(word):
     """
     Do spacing for standard abbreviations.
     """
     abb = {
-    # FIXME we want '~\dots{}' in nearly every case
-        u'...': u'\\dots{}',
+        # dots are converted to TerminalString by ellipsis Escaper
+        # u'...': u'\\dots{}',
         u'bzw.': u'bzw.',
         u'ca.': u'ca.',
         u'd.h.': u'd.\\,h.',
@@ -160,62 +348,163 @@ def  standardAbbreviations(word):
 
     yield abb.get(word, word)
 
-splitEllipsis = Escaper(u"...", u"...")
-# Replace the ellipsis symbol ... by \dots
+class UnitSpacing:
+    def __init__(self):
+        unit_prefixes = [
+                # SI prefixes
+                u'Y', u'Z', u'E', u'P', u'T', u'G', u'M', u'k', u'h',
+                u'da', u'd', u'c', u'm', u'µ', u'μ', u'n', u'p', u'f',
+                u'a', u'z', u'y'
+                ]
+
+        units = [
+                # SI units
+                u'm', u'g', u's', u'A', u'K', u'mol', u'cd',
+                # derived SI units
+                u'rad', u'sr', u'Hz', u'N', u'Pa', u'J', u'W', u'C', u'V',
+                u'F', u'Ω', u'S', u'Wb', u'T', u'H', u'lm', u'lx', u'Bq',
+                u'Gy', u'Sv', u'kat', u't',
+                # temperatures
+                u'°C', u'°F', u'°R', u'°Ré',
+                # more units
+                u'l', u'eV', u'€',
+                ]
+
+        unprefixed_units = [
+                # cgs units
+                u'Gal', u'dyn', u'Ba', u'erg', u'St', u'P', u'kayser',
+                u'Q', u'I', u'U', u'E', u'p', u'B', u'H', u'µ', u'μ',
+                u'Θ', u'Φm', u'R', u'ρ', u'C', u'L', u'P',
+                # more units
+                u'eV'
+                ]
+
+        unit_prefixes = '|'.join(unit_prefixes)
+        units = '|'.join(units)
+        unprefixed_units = '|'.join(unprefixed_units)
+        re_units = '(?:%s)?(?:%s)' % (unit_prefixes, units)
+        re_unprefixed_units = '(?:%s)' % (unprefixed_units)
+        # unit is followed by (punctuation mark|slash|star|whitespace|end of line)
+        after = '(?:[():;,"?!./*]|\s|$)'
+        self.units_re = re.compile(r'(.*?)(\d+) ?((?:%s|%s)%s)(.*)'
+                % (re_units, re_unprefixed_units, after))
+
+    def __call__(self, word):
+        m = True
+        while m:
+            if m != True:
+                left, number, unit, word =  m.groups()
+                yield (left + number)
+                if unit[-1].endswith(u'V') and len(unit) > 1:
+                    # annotation for 'mV', 'μV' etc.
+                    unit = u'\\@' + unit
+                yield TerminalString(u'\\,' + unit)
+            m = self.units_re.match(word)
+        yield word
+
+unitSpacing = UnitSpacing()
 
 def naturalNumbers(word):
     """
     Special Spacing for numbers.
     """
-    # FIXME negative numbers only work because '-' currently is a separator
-    # FIXME we want some special spacing around numbers:
-    #       - a number followed by a dot wants a thin space: '21.\,regiment'
-    #       - a number followed by a unit wants a thin space: 'weight 67\,kg'
-    #       - a number followed by a percent sign wants a thin space: '51\,\%'
-    if not re.match('^[0-9]+$', word):
+    if not re.match(u'^-?\d+$', word):
         yield word
     else:
+        if word.startswith(u'-'):
+            sign = u'\\@$-$'
+            word = word[1:]
+        else:
+            sign = u''
         value = int(word)
         if value < 10000:
             # no special typesetting for 4 digits only
-            yield u"%d" % value
+            yield u"%s%d" % (sign, value)
         else:
             result = u''
             while value >= 1000:
                 threedigits = value % 1000
                 result = u'\\,%03d%s' % (threedigits, result)
                 value = value // 1000
-            yield u'%d%s' % (value, result)
+            yield TerminalString(u'%s%d%s' % (sign, value, result))
+
+def fullStop(word):
+    if len(word) > 1 and word.endswith(u'.'):
+        yield word[:-1]
+        yield TerminalString(u'.')
+    else:
+        yield word
 
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith(u'"'):
-        yield u'"`'
+        yield TerminalString(u'"`')
         word = word[1:]
     yield word
 
 def closeQuotationMark(word):
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
-        yield u'"\''
+        yield TerminalString(u'"\'')
     else:
         yield word
 
-def fullStop(word):
-    if len(word) > 1 and word.endswith(u'.'):
-        yield word[:-1]
-        yield u'.'
-    else:
-        yield word
+percent = Escaper(u'%', TerminalString(u'\\%'))
 
-percent = Escaper(u"%", u"\\%")
+ampersand = Escaper(u'&', TerminalString(u'\\@\\&'))
 
-ampersand = Escaper(u"&", u"\\&")
+hashmark = Escaper(u'#', TerminalString(u'\\@\\#'))
 
-hashmark = Escaper(u"#", u"\\#")
+quote = Escaper(u"'", TerminalString(u"\\@'"))
 
-caret = Escaper(u"^", u"\\caret{}")
+leftCurlyBracket = Escaper(u'{', TerminalString(u'\\@\\{'))
 
-quote = Escaper(u"'", u"'")
+rightCurlyBracket = Escaper(u'}', TerminalString(u'\\@\\}'))
+
+caret = Escaper(u'^', TerminalString(u'\\@\\caret{}'))
+
+ellipsis = Escaper(u'...', TerminalString(u'\\dots{}'))
+
+UTF8ellipsis = Escaper(u'…', TerminalString(u'\\@\\dots{}'))
+
+UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
+
+UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
+
+UTF8glqq = Escaper(u'„', TerminalString(u'\\@"`'))
+
+UTF8elqq = Escaper(u'”', TerminalString(u'\\@"`'))
+
+UTF8grqq = Escaper(u'“', TerminalString(u'\\@"\''))
+
+UTF8flqq = Escaper(u'«', TerminalString(u'\\@«'))
+
+UTF8frqq = Escaper(u'»', TerminalString(u'\\@»'))
+
+UTF8glq = Escaper(u'‚', TerminalString(u'\\@\\glq '))
+
+UTF8grq = Escaper(u'‘', TerminalString(u'\\@\\grq{}'))
+
+UTF8erq = Escaper(u'’', TerminalString(u'\\@\\grq{}'))
+
+
+def formatCode(word):
+    """
+    Set lstinline for code within pipes
+    """
+    pattern = r'(\|[^ |]+\|)(.|$)'
+    m = True
+    while m:
+        if m != True:
+            left, matched, after, word =  m.groups()
+            if after in [u'', u' ', u'\t', u'\n', u'(', u')',
+                    u':', u';', u',', u'"', u'?', u'!']:
+                yield left
+                yield TerminalString(u'\\@\\lstinline%s' % matched)
+            else:
+                yield (left + matched)
+            word = after + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
 
 class EscapeCommands:
     """
@@ -223,10 +512,42 @@ class EscapeCommands:
     a list of known good commands.
     """
     escapechar = u"\\"
+    command_re = re.compile("(%s(?:[a-zA-Z]+|.|$))" % re.escape(escapechar))
+
+    def forbid(self, word):
+        return u'\\@\\forbidden' + word
+
+    def __init__(self, allowed = set(u"\\" + symbol for symbol in [
+                                  u' ', u',', u'%', u'dots', u'ldots',
+                                  u'\\', u'"', u'acronym', u'&', u'#',
+                                  u'caret', u'{', u'}', u'@', u'kern'])):
+        """
+        Initialize with the set of allowed commands. The default value
+        represents those commands that are produced by the exporter itself.
+        """
+        self.allowed = allowed
+
+    def __call__(self, word):
+        for part in self.command_re.split(word):
+            if part.startswith(self.escapechar):
+                if part in self.allowed:
+                    yield part
+                elif part == self.escapechar:
+                    # Oh, a backslash at end of input;
+                    # maybe we broke into words incorrectly,
+                    # so just return something safe.
+                    yield TerminalString(u'\\@\\backslash')
+                else:
+                    yield self.forbid(part)
+            else:
+                yield part
+
+escapeCommands = EscapeCommands()
+escapeMathCommands = EscapeCommands(
     allowed = set(u"\\" + symbol for symbol in [
     # produced by our own microtypography or otherwise essential
     u' ', u',', u'%', u'dots', u'\\', u'"', u'acronym', u'&',
-    u'#', u'caret',
+    u'#', u'caret', u'{', u'}', u'@',
     # other allowed commands; FIXME: complete and put to a separate file
     ## list of useful math commands mostly taken
     ## from 'A Guide To LaTeX' by Kopka
@@ -242,8 +563,8 @@ class EscapeCommands:
     u'frac', u'sqrt', u'sum', u'int', u'ldots', u'cdots',
     u'vdots', u'ddots', u'oint', u'prod', u'coprod'
     ## math symbols
-    u'pm', u'cap', u'circ', u'bigcirc' u'mp', u'cup', u'bullet',
-    u'Box' u'times', u'uplus', u'diamond', u'Diamond', u'div',
+    u'pm', u'cap', u'circ', u'bigcirc', u'mp', u'cup', u'bullet',
+    u'Box', u'times', u'uplus', u'diamond', u'Diamond', u'div',
     u'sqcap', u'bigtriangleup', u'cdot', u'sqcup',
     u'bigtriangledown', u'ast', u'vee', u'unlhd', u'triangleleft',
     u'star', u'wedge', u'unrhd', u'triangleright', u'dagger',
@@ -281,7 +602,7 @@ class EscapeCommands:
     u'bigcap', u'bigodot', u'bigcup', u'bigotimes', u'bigsqcup',
     u'bigoplus', u'bigvee', u'biguplus', u'bigwedge',
     ## function names
-    u'arccos', u'cosh', u'det', u'inf' u'limsup', u'Pr', u'tan',
+    u'arccos', u'cosh', u'det', u'inf', u'limsup', u'Pr', u'tan',
     u'arcsin', u'cot', u'dim', u'ker', u'ln', u'sec', u'tanh',
     u'arctan', u'coth', u'exp', u'lg', u'log', u'sin', u'arg',
     u'csc', u'gcd', u'lim', u'max', u'sinh', u'cos', u'deg',
@@ -299,33 +620,11 @@ class EscapeCommands:
     # don't want users to make typesetting decisions" style of misuse, than
     # anything critical).
     # ## environments
-    # u'begin', u'end',
-    ])
+    # '\\begin', '\\end',
+    ]))
 
-    command_re = re.compile("(%s(?:[a-zA-Z]+|.))" % re.escape(escapechar))
-
-    def forbid(self, word):
-        return u'\\forbidden' + word
-
-    def __call__(self, word):
-        for part in self.command_re.split(word):
-            if part.startswith(self.escapechar):
-                if part in self.allowed:
-                    yield part
-                elif part == self.escapechar:
-                    # Oh, a backslash at end of input;
-                    # maybe we broke into words incorrectly,
-                    # so just return something safe.
-                    yield u'\\@\\textbackslash{}'
-                else:
-                    yield self.forbid(part)
-            else:
-                yield part
-
-escapeCommands = EscapeCommands()
-
-escapeEndEdnote = Escaper(u"\\end{ednote}", u"|end{ednote}")
-# Escpage the string \\end{ednote}, so that ednotes end
+escapeEndEdnote = Escaper(u"\\end{ednote}", u"\\@|end{ednote}")
+# Escape the string \\end{ednote}, so that ednotes end
 # where we expect them to end.
 
 class SplitSeparators:
@@ -345,42 +644,61 @@ def applyMicrotypefeatures(wordlist, featurelist):
     for feature in featurelist:
         wordlistlist = []
         for word in wordlist:
-            assert isinstance(word, unicode)
-            wordlistlist.append(feature(word))
+            if isinstance(word, TerminalString):
+                wordlistlist.append([word])
+            else:
+                assert isinstance(word, unicode)
+                wordlistlist.append(feature(word))
         wordlist = itertools.chain(*wordlistlist)
-    return ''.join(wordlist)
+    finallist = []
+    for word in wordlist:
+        if isinstance(word, TerminalString):
+            finallist.append(word.getString())
+        else:
+            finallist.append(word)
+    return ''.join(finallist)
 
 def defaultMicrotype(text):
     """
     @type text: unicode
     """
     assert isinstance(text, unicode)
-    # FIXME '-' should not be a separator so we are able to detect dashes '--'
-    #       however this will break NaturalNumbers for negative inputs
-    separators = ' \t,;()-\n' # no point, might be in abbreviations
-    features = [SplitSeparators(separators),
-                splitEllipsis, percent, ampersand, caret, hashmark, quote,
-                standardAbbreviations, fullStop, openQuotationMark,
-                closeQuotationMark, acronym, naturalNumbers, escapeCommands]
+    separators = ' \t,;()\n' # no point, might be in abbreviations
+    features = [formatCode,
+                ## no splitting at all before the previous features
+                SplitSeparators(separators[1:]), # separators except ' '
+                unspaceAbbreviations, unitSpacing, ellipsisSpacing,
+                percentSpacing, formatDate, pageReferences,
+                # keep order in the following line
+                lawReferences, numberSpacing, formatDashes,
+                ## no splitting at ' ' before the previous features
+                SplitSeparators(separators[0]), # separator ' ' only
+                percent, ampersand, hashmark, quote, leftCurlyBracket,
+                rightCurlyBracket, caret, ellipsis, standardAbbreviations,
+                UTF8ellipsis, UTF8endash, UTF8emdash,
+                UTF8glqq, UTF8elqq, UTF8grqq, UTF8flqq, UTF8frqq,
+                UTF8glq, UTF8grq, UTF8erq,
+                # fullStop after ellipsis and standardAbbreviations
+                fullStop, openQuotationMark, closeQuotationMark, acronym,
+                naturalNumbers, escapeCommands] # escapeCommands at last
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text):
-    # FIXME we want to substitute '...' -> '\dots{}' in math mode too
-    features = [percent, hashmark, naturalNumbers, escapeCommands]
+    features = [percent, hashmark, ellipsis, naturalNumbers, escapeMathCommands]
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
     return applyMicrotypefeatures([text], [escapeEndEdnote])
 
 def isemptyline(line):
-    return re.match('^[ \t]*$', line)
+    return re.match('^\s*$', line)
 
 def wrap(text, subsequent_indent=''):
     """
     Wraps text to width 70.
     """
     # triple @ to label linebreaks after long lines before wrapping
-    text = re.sub("([^\n]{160})\n", "\\1\\@\\@\\@\n", text)
+    text = re.sub(r'([^\n]{160})\n', r'\1\\@\\@\\@\n', text)
     return textwrap.fill(text, subsequent_indent=subsequent_indent,
             drop_whitespace = True, replace_whitespace = True,
             break_long_words = False, break_on_hyphens = False)
@@ -1254,14 +1572,14 @@ class EnumerateItem(Linegroup):
 
     @classmethod
     def startshere(self, line, after=None):
-        return re.match('^[0-9]+\.[ \t]', line)
+        return re.match('^\d+\.\s', line)
 
     def parse(self):
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines), number="1")
         firstline = self.lines[0]
         number = "1"
-        m = re.match('^([0-9]+)\.[ \t]+(.*)$', firstline)
+        m = re.match('^(\d+)\.\s+(.*)$', firstline)
         if m is not None:
             number, firstline = m.group(1,2)
         withcleanedfirstline = [firstline]
@@ -1384,7 +1702,7 @@ def dfTitleParser(text):
 captionfeatures =  [Paragraph, Item, EnumerateItem, Description, Ednote]
 
 def dfCaptionParser(text):
-    groups = grouplines(text.splitlines(), dffeatures)
+    groups = grouplines(text.splitlines(), captionfeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)

@@ -601,6 +601,20 @@ class Course(StorageDir):
         functions.update(extrafunctions)
         return StorageDir.view(self, functions)
 
+    def _mangleBlobName(self, name):
+        """
+        For image file types recognized by pdflatex, convert file ending
+        to lower case, and shorten jpeg to jpg. This helps in particular
+        with images exported by some cameras.
+        """
+        nameLower = name.lower()
+        nameMangled = name
+        if nameLower.endswith('.jpeg'):
+            nameMangled = name[:-4]+'jpg'
+        elif nameLower.endswith(('.jpg', '.pdf', '.png')):
+            nameMangled = name[:-3] + name[-3:].lower()
+        return nameMangled
+
     def texExportIterator(self, tarwriter):
         """
         yield the contents of the course as tex-export.
@@ -617,12 +631,14 @@ class Course(StorageDir):
                 blobdate = self.getstorage(blobbase).commitstatus()[b'date']
                 tex += u"\n\n%% blob %d\n" % b
                 tex += u"\\begin{figure}\n\centering\n"
-                fileName = blob['filename']
+                fileName = self._mangleBlobName(blob['filename'])
                 includegraphics = \
                     (u"\\includegraphics" +
                      u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
                     (self.name, b, fileName)
-                if fileName.lower().endswith((".png", ".jpg", ".pdf")):
+                if fileName != blob['filename']:
+                    tex += (u"%% Original-Dateiname: %s\n" % blob['filename'])
+                if fileName.endswith((".png", ".jpg", ".pdf")):
                     tex += includegraphics
                 else:
                     tex += (u"%%%s(Binaerdatei \\verb|%s|" +
@@ -633,7 +649,7 @@ class Course(StorageDir):
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(self.name +
                                          (u"/blob_%d_" % b).encode("ascii") +
-                                         str(blob['filename']),
+                                         bytes(fileName),
                                          blob['data'],
                                          blobdate)
 
