@@ -938,7 +938,9 @@ class ExporterTestStrings:
                  [u'10% sind ein Zehntel und mehr als 5 %.',
                   u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.'],
                  [u'Geschweifte Klammern { muessen } escaped werden.',
-                  u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'] ]
+                  u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'],
+                 [u'Matrix $\\begin{pmatrix} a & b \\ c & d \\end{pmatrix}$.',
+                  u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden& b \\ c \\@\\forbidden& d\n\\@\\forbidden\\end{pmatrix}$.'] ] # note: linebreak after d
 
     evilUTF8 = [ [u'Bla … blub bloink.',
                   u'Bla \\@\\dots{} blub bloink.'],
