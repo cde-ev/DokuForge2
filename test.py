@@ -940,7 +940,9 @@ class ExporterTestStrings:
                  [u'Geschweifte Klammern { muessen } escaped werden.',
                   u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'],
                  [u'Matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$.',
-                  u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'] ]
+                  u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'],
+                 [u'$$\\begin{align} a &= b \\\\ c &= d\\end{align}$$',
+                  u'\\[\\@\\forbidden\\begin{align} a \\@\\forbidden\\&= b \\\\ c \\@\\forbidden\\&=\nd\\@\\forbidden\\end{align}\\]'] ]
 
     evilUTF8 = [ [u'Bla … blub bloink.',
                   u'Bla \\@\\dots{} blub bloink.'],
