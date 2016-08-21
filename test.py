@@ -858,180 +858,183 @@ class DokuforgeMockTests(DfTestCase):
         out = dfLineGroupParser(u"[ok]\n(bad < author >)").toHtml().strip()
         self.assertEqual(out, u"<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
 
-class DokuforgeMicrotypeUnitTests(DfTestCase):
-    def verifyExportsTo(self, df, tex):
-        obtained = dfLineGroupParser(df).toTex().strip()
-        self.assertEqual(obtained, tex)
+class ExporterTestStrings:
+    """
+    Input and expected output for testing exporter.
+    """
 
-    def testItemize(self):
-        self.verifyExportsTo(u'- Text',
-                             u'\\begin{itemize}\n\\item Text\n\\end{itemize}')
-        self.verifyExportsTo(u'-Text', u'-Text')
+    itemizeAndCo = [[u'- Text',
+                     u'\\begin{itemize}\n\\item Text\n\\end{itemize}'],
+                    [u'-Text',
+                     u'-Text'],
+                    [u'- item\n\n-nonitem',
+                     u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem'],
+                    [u'1. item',
+                     u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}'] ]
 
+    quotes = [ [u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
+                u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
+               [u'"Am Anfang" des Texts',
+                u'"`Am Anfang"\' des Texts'],
+               [u'in der Mitte "vor Kommata", im Text',
+                u'in der Mitte "`vor Kommata"\', im Text'],
+               [u'und "am Ende".',
+                u'und "`am Ende"\'.'],
+               [u'"Vor und"\n"nach" Zeilenumbrüchen.',
+                u'"`Vor und"\' "`nach"\' Zeilenumbrüchen.'],
+               [u'Markus\' single quote',
+                u'Markus\\@\' single quote']]
 
-    def testQuotes(self):
-        self.verifyExportsTo(u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
-                             u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
-        self.verifyExportsTo(u'"Am Anfang" des Texts',
-                             u'"`Am Anfang"\' des Texts')
-        self.verifyExportsTo(u'in der Mitte "vor Kommata", im Text',
-                             u'in der Mitte "`vor Kommata"\', im Text')
-        self.verifyExportsTo(u'und "am Ende".',
-                             u'und "`am Ende"\'.')
-        self.verifyExportsTo(u'"Vor und"\n"nach" Zeilenumbrüchen.',
-                             u'"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
-        self.verifyExportsTo(u'Markus\' single quote',
-                             u'Markus\\@\' single quote')
+    abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                      u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
+                     [u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
+                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.,'],
+                     [u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
+                      u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
+                     [u'Dots in math $a_1,...,a_n$ should work without spacing.',
+                      u'Dots in math $a_1,\\dots{},a_n$ should work without spacing.'],
+                     [u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
+                      u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
+                     [u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
+                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
+                     [u'd. h., der Exporter bzw. oder ca. oder so.',
+                      u'd.\\,h., der Exporter bzw. oder ca. oder so.'] ]
 
-    def testAbbrev(self):
-        self.verifyExportsTo(u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                             u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
-        self.verifyExportsTo(u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
-                             u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.,')
-        self.verifyExportsTo(u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
-                             u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.')
-        self.verifyExportsTo(u'Dots in math $a_1,...,a_n$ should work without spacing.',
-                             u'Dots in math $a_1,\\dots{},a_n$ should work without spacing.')
-        self.verifyExportsTo(u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
-                             u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
-        self.verifyExportsTo(u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
-                             u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,')
-        self.verifyExportsTo(u'd. h., der Exporter bzw. oder ca. oder so.',
-                             u'd.\\,h., der Exporter bzw. oder ca. oder so.')
+    acronym = [ [u'Bitte ACRONYME wie EKGs anders setzen.',
+                 u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
+                [u'Unterscheide T-shirt und DNA-Sequenz.',
+                 u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.'],
+                [u'Wahlergebnis fuer die SPD: 9% (NRW).',
+                 u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
+                [u'FDP? CDU! CSU. ÖVP.',
+                 u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.'],
+                [u'Das ZNS.',
+                 u'Das \\@\\acronym{ZNS}.'] ]
 
-    def testAcronym(self):
-        self.verifyExportsTo(u'Bitte ACRONYME wie EKGs anders setzen.',
-                             u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.')
-        self.verifyExportsTo(u'Unterscheide T-shirt und DNA-Sequenz.',
-                             u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.')
-        self.verifyExportsTo(u'Wahlergebnis fuer die SPD: 9% (NRW).',
-                             u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).')
-        self.verifyExportsTo(u'FDP? CDU! CSU. ÖVP.',
-                             u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.')
+    escaping = [ [u'Forbid \\mathbb and \\dangerous outside math.',
+                  u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
+                 [u'Do not allow $a \\dangerous{b}$ commands!',
+                  u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!'],
+                 [u'\\\\ok, $\\\\ok$',
+                  u'\\\\ok, $\\\\ok$'],
+                 [u'$\\\\\\bad$',
+                  u'$\\\\\\@\\forbidden\\bad$'],
+                 [u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
+                  u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$'],
+                 [u'$\\circ$ $\\cap\\inf$ $\\times$',
+                  u'$\\circ$ $\\cap\\inf$ $\\times$' ],
+                 [u'$$\\circ \\cap \\inf \\times$$',
+                  u'\\[\\circ \\cap \\inf \\times\\]'],
+                 [u'Trailing \\',
+                  u'Trailing \\@\\backslash'],
+                 [u'$Trailing \\$',
+                  u'$Trailing \\@\\backslash$'],
+                 [u'f# ist eine Note',
+                  u'f\\@\\# ist eine Note'],
+                 [u'$a^b$ ist gut, aber a^b ist schlecht',
+                  u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht'],
+                 [u'Heinemann&Co. ist vielleicht eine Firma',
+                  u'Heinemann\\@\\&Co. ist vielleicht eine Firma'],
+                 [u'10% sind ein Zehntel und mehr als 5 %.',
+                  u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.'],
+                 [u'Geschweifte Klammern { muessen } escaped werden.',
+                  u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'],
+                 [u'Tilde~ist unklar. $Auch~hier$.',
+                  u'Tilde\\@~ist unklar. $Auch\\@~hier$.'] ]
 
-    def testEscaping(self):
-        self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
-                             u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.')
-        self.verifyExportsTo(u'Do not allow $a \\dangerous{b}$ commands!',
-                             u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
-        self.verifyExportsTo(u'\\\\ok, $\\\\ok$',
-                             u'\\\\ok, $\\\\ok$')
-        self.verifyExportsTo(u'$\\\\\\bad$',
-                             u'$\\\\\\@\\forbidden\\bad$')
-        self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
-                             u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
-        self.verifyExportsTo(u'Trailing \\',
-                             u'Trailing \\@\\backslash')
-        self.verifyExportsTo(u'$Trailing \\$',
-                             u'$Trailing \\@\\backslash$')
-        self.verifyExportsTo(u'f# ist eine Note',
-                             u'f\\@\\# ist eine Note')
-        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
-                             u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
-        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
-                             u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.')
-        self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
-                             u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
-        self.verifyExportsTo(u'Tilde~ist unklar. $Auch~hier$.',
-                             u'Tilde\\@~ist unklar. $Auch\\@~hier$.')
+    evilUTF8 = [ [u'Bla … blub bloink.',
+                  u'Bla \\@\\dots{} blub bloink.'],
+                 [u'Bla – blub — bloink.',
+                  u'Bla \\@-- blub \\@--- bloink.'],
+                 [u'Bla „blub“ ”bloink“.',
+                  u'Bla \\@"`blub\\@"\' \\@"`bloink\\@"\'.'],
+                 [u'Bla »blub« bloink.',
+                  u'Bla \\@»blub\\@« bloink.'],
+                 [u'Bla ‚blub‘ ‚bloink’.',
+                  u'Bla \\@\\glq blub\\@\\grq{} \\@\\glq bloink\\@\\grq{}.'] ]
 
-    def testPrevetEvilUTF8(self):
-        self.verifyExportsTo(u'Bla … blub bloink.',
-                             u'Bla \\@\\dots{} blub bloink.')
-        self.verifyExportsTo(u'Bla – blub — bloink.',
-                             u'Bla \\@-- blub \\@--- bloink.')
-        self.verifyExportsTo(u'Bla „blub“ ”bloink“.',
-                             u'Bla \\@"`blub\\@"\' \\@"`bloink\\@"\'.')
-        self.verifyExportsTo(u'Bla »blub« bloink.',
-                             u'Bla \\@»blub\\@« bloink.')
-        self.verifyExportsTo(u'Bla ‚blub‘ ‚bloink’.',
-                             u'Bla \\@\\glq blub\\@\\grq{} \\@\\glq bloink\\@\\grq{}.')
+    pageReferences = [ [u'Auf S. 4 Abs. 3 in Art. 7 steht',
+                        u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
+                       [u'Auf Seite 4 Absatz 3 in Artikel 7 steht',
+                        u'Auf Seite~4 Absatz~3 in Artikel~7 steht'],
+                       [u'Auf S.4-6 steht',
+                        u'Auf \\@S.\\,4\\@--6 steht'],
+                       [u'Auf S.4--6 steht',
+                        u'Auf \\@S.\\,4--6 steht'],
+                       [u'Auf S. 4f steht',
+                        u'Auf \\@S.\\,4\\,f. steht'],
+                       [u'S. 4 ff. besagt',
+                        u'\\@S.\\,4\\,ff. besagt'],
+                       [u'Es fehlen Angaben zu S. Abs. Art.',
+                        u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.'] ]
 
-    def testPageReferences(self):
-        self.verifyExportsTo(u'Auf S. 4 Abs. 3 in Art. 7 steht',
-                             u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht')
-        self.verifyExportsTo(u'Auf Seite 4 Absatz 3 in Artikel 7 steht',
-                             u'Auf Seite~4 Absatz~3 in Artikel~7 steht')
-        self.verifyExportsTo(u'Auf S.4-6 steht',
-                             u'Auf \\@S.\\,4\\@--6 steht')
-        self.verifyExportsTo(u'Auf S.4--6 steht',
-                             u'Auf \\@S.\\,4--6 steht')
-        self.verifyExportsTo(u'Auf S. 4f steht',
-                             u'Auf \\@S.\\,4\\,f. steht')
-        self.verifyExportsTo(u'Auf S. 4 ff. steht',
-                             u'Auf \\@S.\\,4\\,ff. steht')
-        self.verifyExportsTo(u'Es fehlen Angaben zu S. Abs. Art.',
-                             u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.')
+    spacing = [ [u'A number range 6--9 is nice.',
+                 u'A number range 6--9 is nice.'],
+                [u'6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
+                 u'6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.'],
+                [u'Now we do - with all due respect --, an intersperse.',
+                 u'Now we do \\@-- with all due respect \\@--, an intersperse.'],
+                [u'Followed by an afterthougt -- here it comes.',
+                 u'Followed by an afterthougt \\@-- here it comes.'],
+                [u'Followed by an afterthougt---here it comes.',
+                 u'Followed by an afterthougt\\@---here it comes.'],
+                [u'Here come some dots ...',
+                 u'Here come some dots~\\dots{}'],
+                [u'Here come some dots...',
+                 u'Here come some dots\\@\\dots{}'],
+                [u'And dots ... in … the middle.',
+                 u'And dots~\\dots{} in~\\dots{} the middle.'],
+                [u'And dots...in the middle.',
+                 u'And dots\\@\\dots{}in the middle.'],
+                [u'And dots [...] for missing text.',
+                 u'And dots [\\dots{}\\kern-.16em] for missing text.'] ]
 
-    def testSpacing(self):
-        self.verifyExportsTo(u'A number range 6--9 is nice.',
-                             u'A number range 6--9 is nice.')
-        self.verifyExportsTo(u'6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
-                             u'6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.')
-        self.verifyExportsTo(u'Now we do - with all due respect --, an intersperse.',
-                             u'Now we do \\@-- with all due respect \\@--, an intersperse.')
-        self.verifyExportsTo(u'Followed by an afterthougt -- here it comes.',
-                             u'Followed by an afterthougt \\@-- here it comes.')
-        self.verifyExportsTo(u'Followed by an afterthougt---here it comes.',
-                             u'Followed by an afterthougt\\@---here it comes.')
-        self.verifyExportsTo(u'Here come some dots ...',
-                             u'Here come some dots~\\dots{}')
-        self.verifyExportsTo(u'Here come some dots...',
-                             u'Here come some dots\\@\\dots{}')
-        self.verifyExportsTo(u'And dots ... in … the middle.',
-                             u'And dots~\\dots{} in~\\dots{} the middle.')
-        self.verifyExportsTo(u'And dots...in the middle.',
-                             u'And dots\\@\\dots{}in the middle.')
-        self.verifyExportsTo(u'And dots [...] for missing text.',
-                             u'And dots [\\dots{}\\kern-.16em] for missing text.')
+    lawReference = [ [u'In §§1ff. HGB steht',
+                      u'In §§\\,1\\,ff. \\@\\acronym{HGB} steht'],
+                     [u'In § 1 f. HGB steht',
+                      u'In §\\,1\\,f. \\@\\acronym{HGB} steht'],
+                     [u'In § 1 Abs. 1 HGB steht',
+                      u'In §\\,1 \\@Abs.\\,1 \\@\\acronym{HGB} steht'],
+                     [u'In § 1 Absatz 1 Satz 2 HGB steht',
+                      u'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht'],
+                     [u'In §§ 10-15 HGB steht',
+                      u'In §§\\,10\\@--15 \\@\\acronym{HGB} steht'],
+                     [u'Ein verlorener § und noch ein §',
+                      u'Ein verlorener \\@§ und noch ein \\@§'] ]
 
-    def testLawReferences(self):
-        self.verifyExportsTo(u'In §§1ff. HGB steht',
-                             u'In §§\\,1\\,ff. \\@\\acronym{HGB} steht')
-        self.verifyExportsTo(u'In § 1 f. HGB steht',
-                             u'In §\\,1\\,f. \\@\\acronym{HGB} steht')
-        self.verifyExportsTo(u'In § 1 Abs. 1 HGB steht',
-                             u'In §\\,1 \\@Abs.\\,1 \\@\\acronym{HGB} steht')
-        self.verifyExportsTo(u'In § 1 Absatz 1 Satz 2 HGB steht',
-                             u'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht')
-        self.verifyExportsTo(u'In §§ 10-15 HGB steht',
-                             u'In §§\\,10\\@--15 \\@\\acronym{HGB} steht')
-        self.verifyExportsTo(u'Ein verlorener § und noch ein §',
-                             u'Ein verlorener \\@§ und noch ein \\@§')
+    numbers = [ [u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
+                 u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
+                [u'We are in the 21. regiment and again in the 21.regiment.',
+                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'] ]
 
-    def testNumbers(self):
-        self.verifyExportsTo(u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
-                             u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.')
-        self.verifyExportsTo(u'We are in the 21. regiment and again in the 21.regiment.',
-                             u'We are in the \\@21. regiment and again in the \\@21.regiment.')
+    dates = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
+               u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
 
-    def testDates(self):
-        self.verifyExportsTo(u'The date is 19.5.2012 or 19. 10. 95 for good.',
-                             u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.')
+    units = [ [u'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
+               u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13\\@--14\\,\\@TeV, 5\\,°C.'],
+              [u'Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
+               u'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.'],
+              [u'Units: 21 kg, 4 MW, 1 mV, 13--14 TeV, 5 °C.',
+               u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13--14\\,\\@TeV, 5\\,°C.'],
+              [u'Decimal number with unit: 25,4 mm.',
+               u'Decimal number with unit: 25,4\\,mm.'],
+              [u'Percentages like 5 % should be handled as nicely as 5%.',
+               u'Percentages like 5\\@\\,\\% should be handled as nicely as 5\\,\\%.'],
+              [u'90° is a right angle.',
+               u'90° is a right angle.'] ]
 
-    def testUnits(self):
-        self.verifyExportsTo(u'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
-                             u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13\\@--14\\,\\@TeV, 5\\,°C.')
-        self.verifyExportsTo(u'Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
-                             u'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.')
-        self.verifyExportsTo(u'Units: 21 kg, 4 MW, 1 mV, 13--14 TeV, 5 °C.',
-                             u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13--14\\,\\@TeV, 5\\,°C.')
-        self.verifyExportsTo(u'Decimal number with unit: 25,4 mm.',
-                             u'Decimal number with unit: 25,4\\,mm.')
-        self.verifyExportsTo(u'Percentages like 5 % should be handled as nicely as 5%.',
-                             u'Percentages like 5\\@\\,\\% should be handled as nicely as 5\\,\\%.')
-        self.verifyExportsTo(u'90° is a right angle.',
-                             u'90° is a right angle.')
+    code = [ [u'|increase(i)| increases |i|, by one.',
+              u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
 
-    def testCode(self):
-        self.verifyExportsTo(u'|increase(i)| increases |i|, by one.',
-                             u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.')
+    sectionsAndAuthors = [ [u'[foo]\n(bar)',
+                            u'\\section{foo}\n\\authors{bar}'],
+                           [u'[[foo]]\n\n(bar)',
+                            u'\\subsection{foo}\n\n(bar)'] ]
 
-    def testEdnoteEscape(self):
-        self.verifyExportsTo(
-u"""
+    numericalScope = [ [u'10\xb3 Meter sind ein km',
+                        u'10\xb3 Meter sind ein km'] ]
+
+    ednoteEscape = [ [u"""
 
 {{
 
@@ -1052,82 +1055,62 @@ Bobby Tables...
 
 \\herebedragons
 
-\\end{ednote}""")
+\\end{ednote}""" ] ]
 
-    def testStructures(self):
-        self.verifyExportsTo(u'[foo]\n(bar)',
-                             u'\\section{foo}\n\\authors{bar}')
-        self.verifyExportsTo(u'[[foo]]\n\n(bar)',
-                             u'\\subsection{foo}\n\n(bar)')
-        self.verifyExportsTo(u'- item\n\n-nonitem',
-                             u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem')
-        self.verifyExportsTo(u'1. item',
-                             u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}')
-    def testNumeralScope(self):
-        self.verifyExportsTo(u'10\xb3 Meter sind ein km',
-                             u'10\xb3 Meter sind ein km')
+class ExporterTestCases:
+    """
+    Which tests should be run for the separate parsers?
+    """
+    testsEverywhere = [ ExporterTestStrings.quotes,
+                        ExporterTestStrings.abbreviation,
+                        ExporterTestStrings.acronym,
+                        ExporterTestStrings.escaping,
+                        ExporterTestStrings.evilUTF8,
+                        ExporterTestStrings.pageReferences,
+                        ExporterTestStrings.spacing,
+                        ExporterTestStrings.lawReference,
+                        ExporterTestStrings.numbers,
+                        ExporterTestStrings.dates,
+                        ExporterTestStrings.units,
+                        ExporterTestStrings.numericalScope ]
+
+    # Text vs. Titles
+    testsInText = testsEverywhere + \
+                  [ ExporterTestStrings.itemizeAndCo,
+                    ExporterTestStrings.code,
+                    ExporterTestStrings.ednoteEscape ]
+
+    lineGroupTests = testsInText + \
+                     [ ExporterTestStrings.sectionsAndAuthors ]
+
+    titleTests = testsEverywhere
+
+    captionTests = testsInText
+
+class DokuforgeMicrotypeUnitTests(DfTestCase):
+    def verifyExportsTo(self, df, tex):
+        obtained = dfLineGroupParser(df).toTex().strip()
+        self.assertEqual(obtained, tex)
+
+    def testLineGroupParser(self):
+        [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in ExporterTestCases.lineGroupTests ]
+
 
 class DokuforgeTitleParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfTitleParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    def testEscaping(self):
-        self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
-                             u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.')
-        self.verifyExportsTo(u'Do not allow $a \\dangerous{b}$ commands!',
-                             u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
-        self.verifyExportsTo(u'\\\\ok, $\\\\ok$',
-                             u'\\\\ok, $\\\\ok$')
-        self.verifyExportsTo(u'$\\\\\\bad$',
-                             u'$\\\\\\@\\forbidden\\bad$')
-        self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
-                             u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
-        self.verifyExportsTo(u'Trailing \\',
-                             u'Trailing \\@\\backslash')
-        self.verifyExportsTo(u'$Trailing \\$',
-                             u'$Trailing \\@\\backslash$')
-        self.verifyExportsTo(u'f# ist eine Note',
-                             u'f\\@\\# ist eine Note')
-        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
-                             u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
-        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
-                             u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.')
-        self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
-                             u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
+    def testTitleParser(self):
+        [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in ExporterTestCases.titleTests ]
 
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
-        obtained = dfTitleParser(df).toTex().strip()
+        obtained = dfCaptionParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    def testEscaping(self):
-        self.verifyExportsTo(u'Forbid \\mathbb and \\dangerous outside math.',
-                             u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.')
-        self.verifyExportsTo(u'Do not allow $a \\dangerous{b}$ commands!',
-                             u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!')
-        self.verifyExportsTo(u'\\\\ok, $\\\\ok$',
-                             u'\\\\ok, $\\\\ok$')
-        self.verifyExportsTo(u'$\\\\\\bad$',
-                             u'$\\\\\\@\\forbidden\\bad$')
-        self.verifyExportsTo(u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
-                             u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$')
-        self.verifyExportsTo(u'Trailing \\',
-                             u'Trailing \\@\\backslash')
-        self.verifyExportsTo(u'$Trailing \\$',
-                             u'$Trailing \\@\\backslash$')
-        self.verifyExportsTo(u'f# ist eine Note',
-                             u'f\\@\\# ist eine Note')
-        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
-                             u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht')
-        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
-                             u'Heinemann\\@\\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'10% sind ein Zehntel und mehr als 5 %.',
-                             u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.')
-        self.verifyExportsTo(u'Geschweifte Klammern { muessen } escaped werden.',
-                             u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.')
+    def testCaptionParser(self):
+        [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in ExporterTestCases.captionTests ]
 
 if __name__ == '__main__':
     unittest.main()
