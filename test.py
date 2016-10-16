@@ -1032,6 +1032,9 @@ class ExporterTestStrings:
     numericalScope = [ [u'10\xb3 Meter sind ein km',
                         u'10\xb3 Meter sind ein km'] ]
 
+    codeAndLengthyParagraph = [ [u'Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet\nlirem ipsum dolor sit amet lorem ipsum dolor sit amet\nlurem ipsum dolor sit amet.',
+                                 u'Larem ipsum dolor sit amet \\@\\lstinline|rhoncus| lerem ipsum dolor sit\namet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum\ndolor sit amet.'] ]
+
     ednoteEscape = [ [u"""
 
 {{
@@ -1076,7 +1079,8 @@ class ExporterTestCases:
     testsInText = testsEverywhere + \
                   [ ExporterTestStrings.itemizeAndCo,
                     ExporterTestStrings.code,
-                    ExporterTestStrings.ednoteEscape ]
+                    ExporterTestStrings.ednoteEscape,
+                    ExporterTestStrings.codeAndLengthyParagraph  ]
 
     lineGroupTests = testsInText + \
                      [ ExporterTestStrings.sectionsAndAuthors ]
