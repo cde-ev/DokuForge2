@@ -462,6 +462,8 @@ rightCurlyBracket = Escaper(u'}', TerminalString(u'\\@\\}'))
 
 caret = Escaper(u'^', TerminalString(u'\\@\\caret{}'))
 
+spacedEllipsis = Escaper(u'~...', TerminalString(u'~\\dots{}'))
+
 ellipsis = Escaper(u'...', TerminalString(u'\\dots{}'))
 
 tilde = Escaper(u'~', TerminalString(u'\\@~'))
@@ -676,7 +678,7 @@ def defaultMicrotype(text):
                 ## no splitting at ' ' before the previous features
                 SplitSeparators(separators[0]), # separator ' ' only
                 percent, ampersand, hashmark, quote, leftCurlyBracket,
-                rightCurlyBracket, caret, ellipsis, tilde,
+                rightCurlyBracket, caret, spacedEllipsis, ellipsis, tilde,
                 standardAbbreviations,
                 UTF8ellipsis, UTF8endash, UTF8emdash,
                 UTF8glqq, UTF8elqq, UTF8grqq, UTF8flqq, UTF8frqq,
@@ -687,7 +689,7 @@ def defaultMicrotype(text):
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text):
-    features = [percent, hashmark, ellipsis, tilde,
+    features = [percent, hashmark, spacedEllipsis, ellipsis, tilde,
                 naturalNumbers, escapeMathCommands]
     return applyMicrotypefeatures([text], features)
 
