@@ -614,13 +614,10 @@ escapeMathCommands = EscapeCommands(
     u'left', u'right', u'lfloor', u'rfloor', u'lceil', u'rceil',
     u'langle', u'rangle',
     ## misc
-    u'stackrel', u'binom', u'mathbb'
-    # FIXME think about including environments, these can come up in complex
-    # mathematical formulas, but they could also be abused (more in the "we
-    # don't want users to make typesetting decisions" style of misuse, than
-    # anything critical).
-    # ## environments
-    # '\\begin', '\\end',
+    u'stackrel', u'binom', u'mathbb',
+    ## environments
+    u'begin{gathered', u'end{gathered',
+    u'begin{aligned', u'end{aligned',
     ]))
 
 escapeEndEdnote = Escaper(u"\\end{ednote}", u"\\@|end{ednote}")
