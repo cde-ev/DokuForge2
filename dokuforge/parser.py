@@ -512,7 +512,7 @@ class EscapeCommands:
     a list of known good commands.
     """
     escapechar = u"\\"
-    command_re = re.compile("(%s(?:[a-zA-Z]+|.|$))" % re.escape(escapechar))
+    command_re = re.compile("(%s(?:[a-zA-Z{]+|.|$))" % re.escape(escapechar))
 
     def forbid(self, word):
         return u'\\@\\forbidden' + word
