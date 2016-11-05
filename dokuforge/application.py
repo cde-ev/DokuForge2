@@ -38,8 +38,10 @@ from dokuforge.academy import Academy
 import dokuforge.common as common
 from dokuforge.common import CheckError
 from dokuforge.parser import dfLineGroupParser, Estimate
-from subprocess import check_output
-commitid = check_output(["git", "show", "-s", "--format=%H"]).strip()
+try:
+    from dokuforge.versioninfo import commitid
+except ImportError:
+    commitid = u"unknown"
 
 sysrand = random.SystemRandom()
 

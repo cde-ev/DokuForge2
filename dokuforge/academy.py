@@ -9,8 +9,10 @@ from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
 from dokuforge.common import CheckError
-from subprocess import check_output
-commitid = check_output(["git", "show", "-s", "--format=%H"]).strip()
+try:
+    from dokuforge.versioninfo import commitid
+except ImportError:
+    commitid = u"unknown"
 
 try:
     unicode
