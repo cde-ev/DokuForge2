@@ -206,8 +206,8 @@ def ellipsisSpacing(word):
     """
     # '[...]'
     word = re.sub(r'\[\.{3}\]', r'[...\kern-.16em]', word)
-    # ' ...(punctuation mark|whitespace|end of line)'
-    word = re.sub(r' +\.{3}([():;,"?!]|\s|$)', r'~...\1', word)
+    # ' ...(whitespace|end of line)'
+    word = re.sub(r' +\.{3}(\s|$)', r'~...\1', word)
     # annotate remaining occurances of ... with \@
     word = re.sub(r'(^|[^~[])\.{3}', r'\1\@...', word)
     yield word
@@ -384,8 +384,8 @@ class UnitSpacing:
         unprefixed_units = '|'.join(unprefixed_units)
         re_units = '(?:%s)?(?:%s)' % (unit_prefixes, units)
         re_unprefixed_units = '(?:%s)' % (unprefixed_units)
-        # unit is followed by (punctuation mark|slash|star|whitespace|end of line)
-        after = '(?:[():;,"?!./*]|\s|$)'
+        # unit is followed by (full stop|slash|star|whitespace|end of line)
+        after = '(?:[./*]|\s|$)'
         self.units_re = re.compile(r'(.*?)(\d+) ?((?:%s|%s)%s)(.*)'
                 % (re_units, re_unprefixed_units, after))
 
