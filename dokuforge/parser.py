@@ -200,16 +200,6 @@ def percentSpacing(word):
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
-def ellipsisSpacing(word):
-    """
-    Do spacing for ellipsis.
-    """
-    # '[...]'
-    word = re.sub(r'\[\.{3}\]', r'[...\kern-.16em]', word)
-    # ' ...(punctuation mark|whitespace|end of line)'
-    word = re.sub(r' +\.{3}([():;,"?!]|\s|$)', r'~...\1', word)
-    yield word
-
 def formatDate(word):
     """
     Do spacing for dates that consist of day, month and year.
@@ -327,7 +317,6 @@ def standardAbbreviations(word):
     """
     abb = {
         # dots are converted to TerminalString by ellipsis Escaper
-        # u'...': u'\\dots{}',
         u'bzw.': u'bzw.',
         u'ca.': u'ca.',
         u'd.h.': u'd.\\,h.',
@@ -460,11 +449,15 @@ rightCurlyBracket = Escaper(u'}', TerminalString(u'\\@\\}'))
 
 caret = Escaper(u'^', TerminalString(u'\\@\\caret{}'))
 
-spacedEllipsis = Escaper(u'~...', TerminalString(u'~\\@\\dots{}'))
+spacedEllipsis = Escaper(u' ...', TerminalString(u'~\\@\\dots{}'))
+
+bracketEllipsis = Escaper(u'[...]', TerminalString(u'[\\@\\dots{}\kern-.16em]'))
 
 ellipsis = Escaper(u'...', TerminalString(u'\\@\\dots{}'))
 
 tilde = Escaper(u'~', TerminalString(u'\\@~'))
+
+spacedUTF8ellipsis = Escaper(u' …', TerminalString(u'~\\@\\dots{}'))
 
 UTF8ellipsis = Escaper(u'…', TerminalString(u'\\@\\dots{}'))
 
@@ -669,16 +662,19 @@ def defaultMicrotype(text):
     features = [formatCode,
                 ## no splitting at all before the previous features
                 SplitSeparators(separators[1:]), # separators except ' '
-                unspaceAbbreviations, unitSpacing, ellipsisSpacing,
+                unspaceAbbreviations, unitSpacing,
                 percentSpacing, formatDate, pageReferences,
                 # keep order in the following line
                 lawReferences, numberSpacing, formatDashes,
+                # ellipses with spacing before splitting at spaces
+                bracketEllipsis, spacedEllipsis, ellipsis,
+                spacedUTF8ellipsis, UTF8ellipsis,
                 ## no splitting at ' ' before the previous features
                 SplitSeparators(separators[0]), # separator ' ' only
                 percent, ampersand, hashmark, quote, leftCurlyBracket,
-                rightCurlyBracket, caret, spacedEllipsis, ellipsis, tilde,
+                rightCurlyBracket, caret, tilde,
                 standardAbbreviations,
-                UTF8ellipsis, UTF8endash, UTF8emdash,
+                UTF8endash, UTF8emdash,
                 UTF8glqq, UTF8elqq, UTF8grqq, UTF8flqq, UTF8frqq,
                 UTF8glq, UTF8grq, UTF8erq,
                 # fullStop after ellipsis and standardAbbreviations
