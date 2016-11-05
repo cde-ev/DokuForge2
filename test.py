@@ -892,7 +892,7 @@ class ExporterTestStrings:
                      [u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
                       u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
                      [u'Dots in math $a_1,...,a_n$ should work without spacing.',
-                      u'Dots in math $a_1,\\dots{},a_n$ should work without spacing.'],
+                      u'Dots in math $a_1,\\@\\dots{},a_n$ should work without spacing.'],
                      [u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
                      [u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
@@ -938,10 +938,12 @@ class ExporterTestStrings:
                  [u'10% sind ein Zehntel und mehr als 5 %.',
                   u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.'],
                  [u'Geschweifte Klammern { muessen } escaped werden.',
-                  u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'] ]
+                  u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'],
+                 [u'Tilde~ist unklar. $Auch~hier$.',
+                  u'Tilde\\@~ist unklar. $Auch\\@~hier$.'] ]
 
     evilUTF8 = [ [u'Bla … blub bloink.',
-                  u'Bla \\@\\dots{} blub bloink.'],
+                  u'Bla~\\@\\dots{} blub bloink.'],
                  [u'Bla – blub — bloink.',
                   u'Bla \\@-- blub \\@--- bloink.'],
                  [u'Bla „blub“ ”bloink“.',
@@ -977,15 +979,15 @@ class ExporterTestStrings:
                 [u'Followed by an afterthougt---here it comes.',
                  u'Followed by an afterthougt\\@---here it comes.'],
                 [u'Here come some dots ...',
-                 u'Here come some dots~\\dots{}'],
+                 u'Here come some dots~\\@\\dots{}'],
                 [u'Here come some dots...',
                  u'Here come some dots\\@\\dots{}'],
-                [u'And dots ... in the middle.',
-                 u'And dots~\\dots{} in the middle.'],
+                [u'And dots ... in … the middle.',
+                 u'And dots~\\@\\dots{} in~\\@\\dots{} the middle.'],
                 [u'And dots...in the middle.',
                  u'And dots\\@\\dots{}in the middle.'],
                 [u'And dots [...] for missing text.',
-                 u'And dots [\\dots{}\\kern-.16em] for missing text.'] ]
+                 u'And dots [\\@\\dots{}\\kern-.16em] for missing text.'] ]
 
     lawReference = [ [u'In §§1ff. HGB steht',
                       u'In §§\\,1\\,ff. \\@\\acronym{HGB} steht'],
