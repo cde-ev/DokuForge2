@@ -666,7 +666,7 @@ def defaultMicrotype(text):
                 percentSpacing, formatDate, pageReferences,
                 # keep order in the following line
                 lawReferences, numberSpacing, formatDashes,
-                # ellipses with spacing before splitting at spaces
+                # ellipses with and without spacing before splitting at spaces
                 bracketEllipsis, spacedEllipsis, ellipsis,
                 spacedUTF8ellipsis, UTF8ellipsis,
                 ## no splitting at ' ' before the previous features
