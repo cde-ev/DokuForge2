@@ -987,7 +987,7 @@ class ExporterTestStrings:
                 [u'And dots...in the middle.',
                  u'And dots\\@\\dots{}in the middle.'],
                 [u'And dots [...] for missing text.',
-                 u'And dots [\\dots{}\\kern-.16em] for missing text.'] ]
+                 u'And dots [\\@\\dots{}\\kern-.16em] for missing text.'] ]
 
     lawReference = [ [u'In §§1ff. HGB steht',
                       u'In §§\\,1\\,ff. \\@\\acronym{HGB} steht'],
