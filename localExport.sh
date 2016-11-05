@@ -43,8 +43,11 @@ svn export $EXPORTSTATICDIR $EXPORTSTATICCLEANDIR
 
 # perform actual export, this can take a few seconds without output
 echo "Exporting ..."
+printf 'commitid = "%s"' `git show -s --format=%H` > dokuforge/versioninfo.py \
+    || rm dokuforge/versioninfo.py
 python -m dokuforge.export $DFWORKDIR $EXPORTSTATICCLEANDIR $ACANAME
 echo "Done."
+rm dokuforge/versioninfo.py
 
 # unpack export
 tar -C $EXPORTDIR -xvf $EXPORTEDACAFILENAME
