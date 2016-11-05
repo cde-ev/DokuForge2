@@ -442,9 +442,16 @@ def openQuotationMark(word):
     yield word
 
 def closeQuotationMark(word):
-    if len(word) > 1 and word.endswith(u'"'):
-        yield word[:-1]
-        yield TerminalString(u'"\'')
+    if len(word) > 1:
+        if word.endswith(u'"'):
+            yield word[:-1]
+            yield TerminalString(u'"\'')
+        elif word[-1] in u'-!)?:' and word[:-1].endswith(u'"'):
+            yield word[:-2]
+            yield TerminalString(u'"\'')
+            yield word[-1]
+        else:
+            yield word
     else:
         yield word
 
