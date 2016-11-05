@@ -208,8 +208,6 @@ def ellipsisSpacing(word):
     word = re.sub(r'\[\.{3}\]', r'[...\kern-.16em]', word)
     # ' ...(punctuation mark|whitespace|end of line)'
     word = re.sub(r' +\.{3}([():;,"?!]|\s|$)', r'~...\1', word)
-    # annotate remaining occurances of ... with \@
-    word = re.sub(r'(^|[^~[])\.{3}', r'\1\@...', word)
     yield word
 
 def formatDate(word):
@@ -462,9 +460,9 @@ rightCurlyBracket = Escaper(u'}', TerminalString(u'\\@\\}'))
 
 caret = Escaper(u'^', TerminalString(u'\\@\\caret{}'))
 
-spacedEllipsis = Escaper(u'~...', TerminalString(u'~\\dots{}'))
+spacedEllipsis = Escaper(u'~...', TerminalString(u'~\\@\\dots{}'))
 
-ellipsis = Escaper(u'...', TerminalString(u'\\dots{}'))
+ellipsis = Escaper(u'...', TerminalString(u'\\@\\dots{}'))
 
 tilde = Escaper(u'~', TerminalString(u'\\@~'))
 
