@@ -14,7 +14,6 @@ EXPORTSTATICDIR=$2
 EXPORTSTATICCLEANDIR=`mktemp -d --dry-run`
 EXPORTEDACAFILENAME=texexport_$ACANAME.tar
 EXPORTEDACADIR=$EXPORTDIR/texexport_$ACANAME
-COMMITID=`git show -s --format=%H`
 
 echo $EXPORTDIR
 echo $ACANAME
@@ -52,13 +51,3 @@ tar -C $EXPORTDIR -xvf $EXPORTEDACAFILENAME
 
 # clean up files created during exporting
 rm -rf $DFACADIR $EXPORTEDACAFILENAME $EXPORTSTATICCLEANDIR
-
-# add warning about exporter version
-echo "The precise semantics of the exporter is still"              >  $EXPORTEDACADIR/WARNING
-echo "subject to discussion and may change in future versions."    >> $EXPORTEDACADIR/WARNING
-echo "If you think you might need to reproduce an export with the" >> $EXPORTEDACADIR/WARNING
-echo "same exporter semantics, keep the following version string"  >> $EXPORTEDACADIR/WARNING
-echo "for your reference."                                         >> $EXPORTEDACADIR/WARNING
-echo >> $EXPORTEDACADIR/WARNING
-echo $COMMITID >> $EXPORTEDACADIR/WARNING
-
