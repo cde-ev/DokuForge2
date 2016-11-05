@@ -9,6 +9,10 @@ from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
 from dokuforge.common import CheckError
+try:
+    from dokuforge.versioninfo import commitid
+except ImportError:
+    commitid = u"unknown"
 
 try:
     unicode
@@ -168,6 +172,15 @@ class Academy(StorageDir):
         """
         timeStampNow = datetime.datetime.utcnow()
         timeStampNow.replace(tzinfo=common.utc)
+        yield tarwriter.addChunk(b"WARNING",
+(u"""The precise semantics of the exporter is still
+subject to discussion and may change in future versions.
+If you think you might need to reproduce an export with the
+same exporter semantics, keep the following version string
+for your reference
+
+%s
+""" % commitid).encode("ascii"),timeStampNow)
         if static is not None:
             for chunk in tarwriter.addDirChunk(b"", static, excludes=[b".svn"]):
                 yield chunk
