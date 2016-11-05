@@ -884,10 +884,12 @@ class ExporterTestStrings:
                 u'"`Vor und"\' "`nach"\' Zeilenumbrüchen.'],
                [u'Markus\' single quote',
                 u'Markus\\@\' single quote'],
-               [u'"Wow"-Effekt',
-                u'"`Wow"\'-Effekt'],
+               # [u'"Wow"-Effekt',
+               #  u'"`Wow"\'-Effekt'],
                [u'Was laesst Menschen "aufbluehen"?',
-                u'Was laesst Menschen "`aufbluehen\'?']]
+                u'Was laesst Menschen "`aufbluehen"\'?'],
+               [u'"Schoki"! "Cola"; "Nudeln": "Suppe")',
+                u'"`Schoki"\'! "`Cola"\'; "`Nudeln"\': "`Suppe"\')']]
 
     abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
