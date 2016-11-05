@@ -663,10 +663,10 @@ def defaultMicrotype(text):
     @type text: unicode
     """
     assert isinstance(text, unicode)
-    separators = ' \t,;()\n' # no point, might be in abbreviations
+    separators = ' \t,;:()!?\n-' # no point, might be in abbreviations
     features = [formatCode,
                 ## no splitting at all before the previous features
-                SplitSeparators(separators[1:]), # separators except ' '
+                SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing, ellipsisSpacing,
                 percentSpacing, formatDate, pageReferences,
                 # keep order in the following line
@@ -679,8 +679,11 @@ def defaultMicrotype(text):
                 UTF8glqq, UTF8elqq, UTF8grqq, UTF8flqq, UTF8frqq,
                 UTF8glq, UTF8grq, UTF8erq,
                 # fullStop after ellipsis and standardAbbreviations
-                fullStop, openQuotationMark, closeQuotationMark, acronym,
-                naturalNumbers, escapeCommands] # escapeCommands at last
+                fullStop, acronym, naturalNumbers,
+                ## no splitting at '-' before numbers
+                SplitSeparators(separators[-1]), # separator '-' only
+                openQuotationMark, closeQuotationMark,
+                escapeCommands] # escapeCommands at last
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text):
