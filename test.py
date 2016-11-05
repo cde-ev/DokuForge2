@@ -943,7 +943,7 @@ class ExporterTestStrings:
                   u'Tilde\\@~ist unklar. $Auch\\@~hier$.'] ]
 
     evilUTF8 = [ [u'Bla … blub bloink.',
-                  u'Bla \\@\\dots{} blub bloink.'],
+                  u'Bla~\\@\\dots{} blub bloink.'],
                  [u'Bla – blub — bloink.',
                   u'Bla \\@-- blub \\@--- bloink.'],
                  [u'Bla „blub“ ”bloink“.',
