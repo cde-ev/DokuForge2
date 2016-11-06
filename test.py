@@ -925,6 +925,8 @@ class ExporterTestStrings:
                   u'\\begin{align*}\na + b &= c \\\\a - b &= d\n\\end{align*}]'],
                  [u'$$\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\n\\\\abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}$$',
                   u'\\begin{align*}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\n\\\\abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align*}]'],
+                 [u'Bla $$\\begin{align}\na + b &= c\n\\\\a - b &= d \\end{align}$$ Blub',
+                  u'Bla\n\\begin{align*}\na + b &= c \\\\a - b &= d\n\\end{align*}]\nBlub'],
                  [u'$\\circ$ $\\cap\\inf$ $\\times$',
                   u'$\\circ$ $\\cap\\inf$ $\\times$' ],
                  [u'$$\\circ \\cap \\inf \\times$$',
