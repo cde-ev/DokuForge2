@@ -864,13 +864,13 @@ class ExporterTestStrings:
     """
 
     itemizeAndCo = [[u'- Text',
-                     u'\\begin{itemize}\n\\item Text\n\\end{itemize}'],
+                     u'\n\\begin{itemize}\n\\item Text\n\\end{itemize}\n'],
                     [u'-Text',
                      u'-Text'],
                     [u'- item\n\n-nonitem',
-                     u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem'],
+                     u'\n\\begin{itemize}\n\\item item\n\end{itemize}\n-nonitem'],
                     [u'1. item',
-                     u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}'] ]
+                     u'\n\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}\n'] ]
 
     quotes = [ [u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                 u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
@@ -1031,9 +1031,9 @@ class ExporterTestStrings:
               u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
 
     sectionsAndAuthors = [ [u'[foo]\n(bar)',
-                            u'\\section{foo}\n\\authors{bar}'],
+                            u'\n\\section{foo}\n\\authors{bar}\n'],
                            [u'[[foo]]\n\n(bar)',
-                            u'\\subsection{foo}\n\n(bar)'] ]
+                            u'\n\\subsection{foo}\n(bar)'] ]
 
     numericalScope = [ [u'10\xb3 Meter sind ein km',
                         u'10\xb3 Meter sind ein km'] ]
@@ -1051,7 +1051,8 @@ Bobby Tables...
 }}
 
 """,
-u"""\\begin{ednote}
+u"""
+\\begin{ednote}
 
 Bobby Tables...
 
@@ -1059,7 +1060,8 @@ Bobby Tables...
 
 \\herebedragons
 
-\\end{ednote}""" ] ]
+\\end{ednote}
+""" ] ]
 
 class ExporterTestCases:
     """
@@ -1093,7 +1095,7 @@ class ExporterTestCases:
 
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
-        obtained = dfLineGroupParser(df).toTex().strip()
+        obtained = dfLineGroupParser(df).toTex()
         self.assertEqual(obtained, tex)
 
     def testLineGroupParser(self):
@@ -1102,7 +1104,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
 
 class DokuforgeTitleParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
-        obtained = dfTitleParser(df).toTex().strip()
+        obtained = dfTitleParser(df).toTex()
         self.assertEqual(obtained, tex)
 
     def testTitleParser(self):
@@ -1110,7 +1112,7 @@ class DokuforgeTitleParserTests(DfTestCase):
 
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
-        obtained = dfCaptionParser(df).toTex().strip()
+        obtained = dfCaptionParser(df).toTex()
         self.assertEqual(obtained, tex)
 
     def testCaptionParser(self):
