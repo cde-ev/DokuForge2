@@ -924,7 +924,7 @@ class ExporterTestStrings:
                  [u'$\\circ$ $\\cap\\inf$ $\\times$',
                   u'$\\circ$ $\\cap\\inf$ $\\times$' ],
                  [u'$$\\circ \\cap \\inf \\times$$',
-                  u'\\begin{equation*}\\circ \\cap \\inf \\times\\end{equation*}'],
+                  u'\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n'],
                  [u'$$\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}$$',
                   u'\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}]'],
                  [u'$$\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\n\\\\abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}$$',
