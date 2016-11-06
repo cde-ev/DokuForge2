@@ -616,7 +616,6 @@ escapeMathCommands = EscapeCommands(
     ## misc
     u'stackrel', u'binom', u'mathbb',
     ## environments
-    u'begin{gathered', u'end{gathered',
     u'begin{aligned', u'end{aligned',
     ]))
 
