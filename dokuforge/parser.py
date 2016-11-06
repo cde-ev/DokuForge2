@@ -715,6 +715,13 @@ class PTree:
         """
         raise NotImplementedError
 
+    def toTexStringsAndTerminalStrings(self):
+        """
+        return a list of tex representations of the parsed objects,
+        distingushing strings and TerminalStrings that should not be touched
+        """
+        return [self.toTex()]
+
     def toHtml(self):
         """
         return a html-representation of the parsed object.
@@ -750,6 +757,13 @@ class PSequence(PTree):
         for part in self.parts:
             result = result + part.toTex()
         return result
+
+    def toTexStringsAndTerminalStrings(self):
+        result = []
+        for part in self.parts:
+            result = result + part.toTexStringsAndTerminalStrings()
+        return result
+
 
     def toHtml(self):
         result = ''
@@ -855,7 +869,10 @@ class PDisplayMath(PTree):
         return ('displaymath', self.text.text)
 
     def toTex(self):
-        return '\\[%1s\\]' % mathMicrotype(self.text.text)
+        return '\n\\begin{equation*}\n%1s\n\\end{equation*}\n' % mathMicrotype(self.text.text)
+
+    def toTexStringsAndTerminalStrings(self):
+        return [TerminalString(self.toTex())]
 
     def toHtml(self):
         return "<div class=\"displaymath\">$$%1s$$</div>" % self.text.toHtml()
@@ -911,6 +928,16 @@ class PParagraph(PTree):
         return self.it.isEmpty()
 
     def toTex(self):
+        result = ''
+        towrap = ''
+        for part in self.it.toTexStringsAndTerminalStrings():
+            if isinstance(part, TerminalString):
+                result += wrap(towrap)
+                towrap = ''
+                result += part.getString()
+            else:
+                towrap += part
+            result += wrap(towrap)
         return u'\n%s\n' % wrap(self.it.toTex())
 
     def toHtml(self):
