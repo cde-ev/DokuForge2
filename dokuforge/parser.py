@@ -615,8 +615,6 @@ escapeMathCommands = EscapeCommands(
     u'langle', u'rangle',
     ## misc
     u'stackrel', u'binom', u'mathbb',
-    ## environments
-    u'begin{aligned', u'end{aligned',
     ]))
 
 escapeEndEdnote = Escaper(u"\\end{ednote}", u"\\@|end{ednote}")
@@ -695,9 +693,10 @@ def wrap(text, subsequent_indent=''):
     """
     # triple @ to label linebreaks after long lines before wrapping
     text = re.sub(r'([^\n]{160})\n', r'\1\\@\\@\\@\n', text)
-    return textwrap.fill(text, subsequent_indent=subsequent_indent,
-            drop_whitespace = True, replace_whitespace = True,
-            break_long_words = False, break_on_hyphens = False)
+    result = textwrap.fill(text, subsequent_indent=subsequent_indent,
+                           drop_whitespace = False, replace_whitespace = True,
+                           break_long_words = False, break_on_hyphens = False)
+    return result
 
 class PTree:
     """
@@ -869,7 +868,14 @@ class PDisplayMath(PTree):
         return ('displaymath', self.text.text)
 
     def toTex(self):
-        return '\n\\begin{equation*}\n%1s\n\\end{equation*}\n' % mathMicrotype(self.text.text)
+        result = ''
+        if (self.text.text.lstrip().startswith(u'\\begin{align}') and
+            self.text.text.rstrip().endswith(u'\\end{align}')):
+            aligncontent = self.text.text.strip()[13:-12].strip()
+            result = '\n\\begin{align*}\n%1s\n\\end{align*}\n' % mathMicrotype(aligncontent)
+        else:
+            result = '\n\\begin{equation*}\n%1s\n\\end{equation*}\n' % mathMicrotype(self.text.text)
+        return result
 
     def toTexStringsAndTerminalStrings(self):
         return [TerminalString(self.toTex())]
@@ -929,8 +935,8 @@ class PParagraph(PTree):
 
     def toTex(self):
         result = ''
-        towrap = ''
         for part in self.it.toTexStringsAndTerminalStrings():
+            towrap = ''
             if isinstance(part, TerminalString):
                 result += wrap(towrap)
                 towrap = ''
@@ -938,7 +944,7 @@ class PParagraph(PTree):
             else:
                 towrap += part
             result += wrap(towrap)
-        return u'\n%s\n' % wrap(self.it.toTex())
+        return result
 
     def toHtml(self):
         return '\n<p>\n'  + self.it.toHtml() + '\n</p>\n'
