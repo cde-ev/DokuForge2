@@ -659,7 +659,7 @@ def defaultMicrotype(text):
     """
     assert isinstance(text, unicode)
     separators = ' \t,;:()!?\n-' # no point, might be in abbreviations
-    features = [formatCode,
+    features = [SplitSeparators("\n"), formatCode,
                 ## no splitting at all before the previous features
                 SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing,
