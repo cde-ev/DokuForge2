@@ -58,15 +58,15 @@ da die Ednote selbst auch geschweifte Klammern enthält.</p>
   <col width="100">
  </colgroup>
 <tbody>
- <tr><td colspan="4">@BOOK{fischer97, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  title</td><td>=</td> <td>"Lineare Algebra", </td> <td></td> <td>"Vollständiger Titel der Monographie" </td> </tr
- <tr> <td>  author</td><td>=</td> <td>"Fischer, Gerd", </td> <td></td> <td>"Name der Autoren: Nachname, Vorname" </td> </tr>
- <tr> <td>  editor</td><td>=</td> <td>"Rühmann, Heinz", </td> <td>  %% optional %%  </td> <td>"Editor des Werkes: Nachname, Vorname" </td> </tr>
- <tr> <td>  translator</td><td>=</td> <td>"Braun,Wilhelm", </td> <td>  %% optional %%  </td> <td>"Übersetzer des Werkes" </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1997", </td> <td></td> <td>"Veröffentlichungsjahr" </td> </tr>
- <tr> <td>  address</td><td>=</td> <td>"Berlin", </td> <td></td> <td>"Ort der Veröffentlichung" </td> </tr>
- <tr> <td>  publisher</td><td>=</td> <td>"Vieweg Studium", </td> <td>  %% optional %%  </td> <td>"Verlag" </td> </tr>
- <tr><td colspan="4">} </td></tr>
+ <tr><td colspan="3">@BOOK{fischer97, </td> <td>% Kurzform</td></tr>
+ <tr> <td>  title</td><td>=</td> <td>"Lineare Algebra", </td>  <td>% Vollständiger Titel der Monographie </td> </tr
+ <tr> <td>  author</td><td>=</td> <td>"Fischer, Gerd", </td>  <td>% Name der Autoren: Nachname, Vorname (optional) </td> </tr>
+ <tr> <td>  editor</td><td>=</td> <td>"Rühmann, Heinz", </td> <td>% Editor des Werkes: Nachname, Vorname (optional) </td> </tr>
+ <tr> <td>  translator</td><td>=</td> <td>"Braun,Wilhelm", </td> <td>% Übersetzer des Werkes </td> </tr>
+ <tr> <td>  year</td><td>=</td> <td>"1997", </td> <td>% Veröffentlichungsjahr </td> </tr>
+ <tr> <td>  address</td><td>=</td> <td>"Berlin", </td> <td>% Ort der Veröffentlichung </td> </tr>
+ <tr> <td>  publisher</td><td>=</td> <td>"Vieweg Studium", </td><td>% Verlag (optional) </td> </tr>
+ <tr><td colspan="3">} </td></tr>
 </tbody>
 </table>
 </pre>
@@ -83,13 +83,13 @@ angeben):</p>
   <col width="100">
  </colgroup>
 <tbody>
- <tr><td colspan="3">@ARTICLE{heisenbergDeutung, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  author</td><td>=</td> <td>"Heisenberg, Werner and Bohr, Niels", </td> <td>"Name der Autoren: Nachname, Vorname" </td> </tr>
- <tr> <td>  title</td><td>=</td> <td>"Die Kopenhagener Deutung der Quantentheorie", </td> <td>"Vollständiger Titel des Artikels" </td> </tr>
- <tr> <td>  journal</td><td>=</td> <td>"Physik und Philosophie", </td> <td>"Name des Journals, in dem der Artikel veröffentlicht wurde" </td> </tr>
- <tr> <td>  volume</td><td>=</td> <td>"12", </td> <td>"Nummer des Jahrgangs/Journals" </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>"Veröffentlichungsjahr" </td> </tr>
- <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>"Seitenumfang im Journal" </td> </tr>
+ <tr><td colspan="3">@ARTICLE{heisenbergDeutung, </td> <td>% Kurzform</td></tr>
+ <tr> <td>  author</td><td>=</td> <td>"Heisenberg, Werner and Bohr, Niels", </td> <td>% Name der Autoren: Nachname, Vorname </td> </tr>
+ <tr> <td>  title</td><td>=</td> <td>"Die Kopenhagener Deutung der Quantentheorie", </td> <td>% Vollständiger Titel des Artikels </td> </tr>
+ <tr> <td>  journal</td><td>=</td> <td>"Physik und Philosophie", </td> <td>% Name des Journals, in dem der Artikel veröffentlicht wurde </td> </tr>
+ <tr> <td>  volume</td><td>=</td> <td>"12", </td> <td>% Nummer des Jahrgangs/Journals </td> </tr>
+ <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>% Veröffentlichungsjahr </td> </tr>
+ <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>% Seitenumfang im Journal </td> </tr>
  <tr><td colspan="4">} </td></tr>
 </tbody>
 </table>
@@ -106,14 +106,14 @@ Artikel in Lexika) lautet die Syntax:</p>
   <col width="100">
  </colgroup>
 <tbody>
- <tr><td colspan="3">@INCOLLECTION{brodersen, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  author</td><td>=</td> <td>"Brodersen, Kai", </td> <td>"Name der Autoren: Nachname, Vorname" </td> </tr>
- <tr> <td>  title</td><td>=</td> <td>"Gebet und Fluch, Zeichen und Traum.", </td> <td>"Titel des Aufsatzes" </td> </tr>
- <tr> <td>  editor</td><td>=</td> <td>"Brodersen, Kai", </td> <td>"Name der Herausgeber: Nachname, Vorname" </td> </tr>
- <tr> <td>  booktitle</td><td>=</td> <td>"Briefe in die Unterwelt.", </td> <td>"Name des Sammelwerkes/Lexikons" </td> </tr>
- <tr> <td>  address</td><td>=</td> <td>"Münster", </td> <td>"Ort der Veröffentlichung" </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>"Jahr der Veröffentlichung" </td> </tr>
- <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>"Seitenumfang im Sammelwerk" </td> </tr>
+ <tr><td colspan="3">@INCOLLECTION{brodersen, </td> <td>% Kurzform</td></tr>
+ <tr> <td>  author</td><td>=</td> <td>"Brodersen, Kai", </td> <td>% Name der Autoren: Nachname, Vorname </td> </tr>
+ <tr> <td>  title</td><td>=</td> <td>"Gebet und Fluch, Zeichen und Traum.", </td> <td>% Titel des Aufsatzes </td> </tr>
+ <tr> <td>  editor</td><td>=</td> <td>"Brodersen, Kai", </td> <td>% Name der Herausgeber: Nachname, Vorname </td> </tr>
+ <tr> <td>  booktitle</td><td>=</td> <td>"Briefe in die Unterwelt.", </td> <td>% Name des Sammelwerkes/Lexikons </td> </tr>
+ <tr> <td>  address</td><td>=</td> <td>"Münster", </td> <td>% Ort der Veröffentlichung </td> </tr>
+ <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>% Jahr der Veröffentlichung </td> </tr>
+ <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>% Seitenumfang im Sammelwerk </td> </tr>
  <tr><td colspan="4">} </td></tr>
 </tbody>
 </table>
@@ -129,12 +129,12 @@ Artikel in Lexika) lautet die Syntax:</p>
   <col width="100">
  </colgroup>
 <tbody>
- <tr><td colspan="4">@BOOKLET{mpgBericht, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  url</td><td>=</td> <td>"http://www.mpg.de/180882/Jahresbericht", </td> <td> </td> <td>"Internetadresse" </td> </tr>
- <tr> <td>  urldate</td><td>=</td> <td>"2012-07-02", </td> <td></td> <td> "Datum des Abrufes: YYYY-MM-DD" </td>  </tr>
- <tr> <td>  title</td><td>=</td> <td>"Jahresbericht der Max-Planck-Gesellschaft 2010", </td> <td> </td> <td>"Titel der Internetreferenz" </td> </tr>
- <tr> <td>  author</td><td>=</td> <td>"Max-Planck-Gesellschaft", </td> <td>%% optional %% </td> <td>"Namen der Autoren" </td> </tr>
- <tr><td colspan="4">} </td></tr>
+ <tr><td colspan="3">@BOOKLET{mpgBericht, </td> <td>% Kurzform</td></tr>
+ <tr> <td>  url</td><td>=</td> <td>"http://www.mpg.de/180882/Jahresbericht", </td> <td>% Internetadresse </td> </tr>
+ <tr> <td>  urldate</td><td>=</td> <td>"2012-07-02", </td> <td>% Datum des Abrufes: YYYY-MM-DD </td>  </tr>
+ <tr> <td>  title</td><td>=</td> <td>"Jahresbericht der Max-Planck-Gesellschaft 2010", </td> <td>% Titel der Internetreferenz </td> </tr>
+ <tr> <td>  author</td><td>=</td> <td>"Max-Planck-Gesellschaft", </td> <td>% Namen der Autoren (optional) </td> </tr>
+ <tr><td colspan="3">} </td></tr>
 </tbody>
 </table>
 </pre>
