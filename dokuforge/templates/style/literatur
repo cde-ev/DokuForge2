@@ -132,7 +132,7 @@ Artikel in Lexika) lautet die Syntax:</p>
  <tr><td colspan="4">@BOOKLET{mpgBericht, </td> <td>"Kurzform"</td></tr>
  <tr> <td>  url</td><td>=</td> <td>"http://www.mpg.de/180882/Jahresbericht", </td> <td> </td> <td>"Internetadresse" </td> </tr>
  <tr> <td>  urldate</td><td>=</td> <td>"2012-07-02", </td> <td></td> <td> "Datum des Abrufes: YYYY-MM-DD" </td>  </tr>
- <tr> <td>  tile</td><td>=</td> <td>"Jahresbericht der Max-Planck-Gesellschaft 2010", </td> <td> </td> <td>"Titel der Internetreferenz" </td> </tr>
+ <tr> <td>  title</td><td>=</td> <td>"Jahresbericht der Max-Planck-Gesellschaft 2010", </td> <td> </td> <td>"Titel der Internetreferenz" </td> </tr>
  <tr> <td>  author</td><td>=</td> <td>"Max-Planck-Gesellschaft", </td> <td>%% optional %% </td> <td>"Namen der Autoren" </td> </tr>
  <tr><td colspan="4">} </td></tr>
 </tbody>
