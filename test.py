@@ -1013,7 +1013,9 @@ class ExporterTestStrings:
                 [u'We are in the 21. regiment and again in the 21.regiment.',
                  u'We are in the \\@21. regiment and again in the \\@21.regiment.'],
                 [u'some 5,000 races',
-                 u'some 5,000 races']]
+                 u'some 5,000 races'],
+                [u'pi ist 3,14159',
+                 u'pi ist 3,14159']] # I'm not sure what we want in this case, but certainly not 3,14\,159
 
     dates = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
                u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
