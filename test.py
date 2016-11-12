@@ -1011,7 +1011,9 @@ class ExporterTestStrings:
     numbers = [ [u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
                  u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
                 [u'We are in the 21. regiment and again in the 21.regiment.',
-                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'] ]
+                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'],
+                [u'some 5,000 races',
+                 u'some 5,000 races']]
 
     dates = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
                u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
