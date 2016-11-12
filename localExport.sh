@@ -53,12 +53,6 @@ rm dokuforge/versioninfo.py
 # unpack export
 tar -C $EXPORTDIR -xvf $EXPORTEDACAFILENAME
 
-# add input to export
-# for i in `find $DFACADIR -name "blob*,v"` `find $DFACADIR -name "Index,v"` `find $DFACADIR -name "isDeleted,v"` `find $DFACADIR -name "nextpage,v"` `find $DFACADIR -name "nextblob,v"`
-# do
-#     rm $i
-# done
-
 cd $DFACADIR
 rm *,v
 for d in *
