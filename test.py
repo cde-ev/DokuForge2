@@ -864,13 +864,13 @@ class ExporterTestStrings:
     """
 
     itemizeAndCo = [[u'- Text',
-                     u'\n\\begin{itemize}\n\\item Text\n\\end{itemize}\n'],
+                     u'\\begin{itemize}\n\\item Text\n\\end{itemize}'],
                     [u'-Text',
                      u'-Text'],
                     [u'- item\n\n-nonitem',
-                     u'\n\\begin{itemize}\n\\item item\n\end{itemize}\n-nonitem'],
+                     u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem'],
                     [u'1. item',
-                     u'\n\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}\n'] ]
+                     u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}'] ]
 
     quotes = [ [u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                 u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
@@ -929,14 +929,14 @@ class ExporterTestStrings:
                   u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$'],
                  [u'$\\circ$ $\\cap\\inf$ $\\times$',
                   u'$\\circ$ $\\cap\\inf$ $\\times$' ],
-                 [u'$$\\circ \\cap \\inf \\times$$',
-                  u'\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n'],
-                 [u'$$\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}$$',
-                  u'\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n'],
-                 [u'$$\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}$$',
-                  u'\n\\begin{align*}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align*}\n'],
+                 [u'b $$\\circ \\cap \\inf \\times$$ e',
+                  u'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
+                 [u'b $$\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}$$ e',
+                  u'b\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n e'],
+                 [u'b $$\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}$$ e',
+                  u'b\n\\begin{align*}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align*}\n e'],
                  [u'Bla $$\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}$$ Blub',
-                  u'Bla \n\\begin{align*}\na + b &= c\\\\\na - b &= d\n\\end{align*}\n Blub'],
+                  u'Bla\n\\begin{align*}\na + b &= c\\\\\na - b &= d\n\\end{align*}\n Blub'],
                  [u'Trailing \\',
                   u'Trailing \\@\\backslash'],
                  [u'$Trailing \\$',
@@ -1039,9 +1039,9 @@ class ExporterTestStrings:
               u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
 
     sectionsAndAuthors = [ [u'[foo]\n(bar)',
-                            u'\n\\section{foo}\n\\authors{bar}\n'],
+                            u'\\section{foo}\n\\authors{bar}'],
                            [u'[[foo]]\n\n(bar)',
-                            u'\n\\subsection{foo}\n(bar)'] ]
+                            u'\\subsection{foo}\n\n(bar)'] ]
 
     numericalScope = [ [u'10\xb3 Meter sind ein km',
                         u'10\xb3 Meter sind ein km'] ]
@@ -1049,7 +1049,7 @@ class ExporterTestStrings:
     codeAndLengthyParagraph = [ [u'Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet\nlirem ipsum dolor sit amet lorem ipsum dolor sit amet\nlurem ipsum dolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so weiter.',
                                  u'Larem ipsum dolor sit amet \\@\\lstinline|rhoncus| lerem ipsum dolor sit\namet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum\ndolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so\nweiter.'] ]
 
-    ednoteEscape = [ [u"""
+    ednoteEscape = [ [u"""before
 
 {{
 
@@ -1061,8 +1061,9 @@ Bobby Tables...
 
 }}
 
-""",
-u"""
+after""",
+u"""before
+
 \\begin{ednote}
 
 Bobby Tables...
@@ -1072,7 +1073,8 @@ Bobby Tables...
 \\herebedragons
 
 \\end{ednote}
-""" ] ]
+
+after""" ] ]
 
 class ExporterTestCases:
     """
@@ -1107,7 +1109,7 @@ class ExporterTestCases:
 
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
-        obtained = dfLineGroupParser(df).toTex()
+        obtained = dfLineGroupParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
     def testLineGroupParser(self):
@@ -1116,7 +1118,7 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
 
 class DokuforgeTitleParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
-        obtained = dfTitleParser(df).toTex()
+        obtained = dfTitleParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
     def testTitleParser(self):
@@ -1124,7 +1126,7 @@ class DokuforgeTitleParserTests(DfTestCase):
 
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
-        obtained = dfCaptionParser(df).toTex()
+        obtained = dfCaptionParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
     def testCaptionParser(self):
