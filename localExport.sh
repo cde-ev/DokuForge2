@@ -82,14 +82,13 @@ do
     cd ..
 done
 
-for d in *
+for d in $DFACADIR/*
 do
-    cd $d
-    if [ ! -d $EXPORTEDACADIR/$d ]; then
-        mkdir $EXPORTEDACADIR/$d
+    course=$EXPORTEDACADIR/`basename $d`
+    if [ ! -d $course ]; then
+        mkdir $course
     fi
-    cp input.txt $EXPORTEDACADIR/$d/
-    cd ..
+    cp $d/input.txt $course/
 done
 
 cd $CURRENTDIR
