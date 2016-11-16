@@ -938,15 +938,15 @@ class PParagraph(PTree):
 
     def toTex(self):
         result = ''
+        towrap = ''
         for part in self.it.toTexStringsAndTerminalStrings():
-            towrap = ''
             if isinstance(part, TerminalString):
                 result += wrap(towrap)
                 towrap = ''
                 result += part.getString()
             else:
                 towrap += part
-            result += wrap(towrap)
+        result += wrap(towrap)
         return result
 
     def toHtml(self):
