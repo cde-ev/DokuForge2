@@ -75,6 +75,7 @@ do
     done
     cd ..
 done
+cd $CURRENTDIR
 
 for d in $DFACADIR/*
 do
@@ -84,8 +85,6 @@ do
     fi
     cp $d/input.txt $course/
 done
-
-cd $CURRENTDIR
 
 # clean up files created during exporting
 rm -rf $DFACADIR $EXPORTEDACAFILENAME $EXPORTSTATICCLEANDIR
