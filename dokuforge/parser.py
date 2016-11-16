@@ -681,9 +681,11 @@ def defaultMicrotype(text):
                 escapeCommands] # escapeCommands at last
     return applyMicrotypefeatures([text], features)
 
-def mathMicrotype(text):
+def mathMicrotype(text, isalign=False):
     features = [percent, hashmark, spacedEllipsis, ellipsis, tilde,
-                naturalNumbers, ampersand_math, escapeMathCommands]
+                naturalNumbers, escapeMathCommands]
+    if not isalign:
+        features.append(ampersand_math)
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
@@ -877,9 +879,11 @@ class PDisplayMath(PTree):
         if (self.text.text.lstrip().startswith(u'\\begin{align}') and
             self.text.text.rstrip().endswith(u'\\end{align}')):
             aligncontent = self.text.text.strip()[13:-12].strip()
-            result = '\n\\begin{align*}\n%1s\n\\end{align*}\n' % mathMicrotype(aligncontent)
+            result = ('\n\\begin{align*}\n%1s\n\\end{align*}\n'
+                    % mathMicrotype(aligncontent, True))
         else:
-            result = '\n\\begin{equation*}\n%1s\n\\end{equation*}\n' % mathMicrotype(self.text.text)
+            result = ('\n\\begin{equation*}\n%1s\n\\end{equation*}\n'
+                    % mathMicrotype(self.text.text))
         return result
 
     def toTexStringsAndTerminalStrings(self):
