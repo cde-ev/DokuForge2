@@ -947,6 +947,7 @@ class PParagraph(PTree):
             else:
                 towrap += part
         result += wrap(towrap)
+        result = u'\n%s\n' % result
         return result
 
     def toHtml(self):
