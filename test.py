@@ -937,6 +937,8 @@ class ExporterTestStrings:
                   u'b\n\\begin{align*}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align*}\n e'],
                  [u'Bla $$\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}$$ Blub',
                   u'Bla\n\\begin{align*}\na + b &= c\\\\\na - b &= d\n\\end{align*}\n Blub'],
+                 [u'Matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$.',
+                  u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'],
                  [u'Trailing \\',
                   u'Trailing \\@\\backslash'],
                  [u'$Trailing \\$',

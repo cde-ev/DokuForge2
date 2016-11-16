@@ -439,6 +439,8 @@ percent = Escaper(u'%', TerminalString(u'\\%'))
 
 ampersand = Escaper(u'&', TerminalString(u'\\@\\&'))
 
+ampersand_math = Escaper(u'&', TerminalString(u'\\@\\forbidden\\&'))
+
 hashmark = Escaper(u'#', TerminalString(u'\\@\\#'))
 
 quote = Escaper(u"'", TerminalString(u"\\@'"))
@@ -681,7 +683,7 @@ def defaultMicrotype(text):
 
 def mathMicrotype(text):
     features = [percent, hashmark, spacedEllipsis, ellipsis, tilde,
-                naturalNumbers, escapeMathCommands]
+                naturalNumbers, ampersand_math, escapeMathCommands]
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
