@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# != 2 ]; then
-    echo "Usage: " $0 " <raw export .tar.gz file> <dokuforge-export-static directory>"
+    echo "Usage: " $0 " <raw export .tar.gz file> <dokuforge-export-static working copy>"
     exit 1
 fi
 
