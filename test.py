@@ -1032,6 +1032,13 @@ class ExporterTestStrings:
     code = [ [u'|increase(i)| increases |i|, by one.',
               u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
 
+    urls = [ [u'http://www.google.de',
+              u'\\url{http://www.google.de}'],
+             [u'https://www.bla.com',
+              u'\\url{https://www.bla.com}'],
+             [u'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsser_Arkade1.jpg', # note that % needs to be escaped (else starts comment), but _ does not
+              u'\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsser_Arkade1.jpg}'] ]
+
     sectionsAndAuthors = [ [u'[foo]\n(bar)',
                             u'\\section{foo}\n\\authors{bar}'],
                            [u'[[foo]]\n\n(bar)',
@@ -1081,6 +1088,7 @@ class ExporterTestCases:
                         ExporterTestStrings.numbers,
                         ExporterTestStrings.dates,
                         ExporterTestStrings.units,
+                        ExporterTestStrings.urls,
                         ExporterTestStrings.numericalScope ]
 
     # Text vs. Titles
