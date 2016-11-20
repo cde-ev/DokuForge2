@@ -1037,6 +1037,11 @@ class ExporterTestStrings:
                            [u'[[foo]]\n\n(bar)',
                             u'\\subsection{foo}\n\n(bar)'] ]
 
+    sectionsWithEmph = [ [u'[Ola Gjeilo: _Northern Lights_]',
+                          u'\\section{Ola Gjeilo: \\emph{Northern Lights}}'],
+                         [u'[Max Reger: _Es waren zwei Königskinder_]',
+                          u'\\section{Max Reger: \\emph{Es waren zwei Königskinder}}']]
+
     numericalScope = [ [u'10\xb3 Meter sind ein km',
                         u'10\xb3 Meter sind ein km'] ]
 
@@ -1091,7 +1096,8 @@ class ExporterTestCases:
                     ExporterTestStrings.codeAndLengthyParagraph  ]
 
     lineGroupTests = testsInText + \
-                     [ ExporterTestStrings.sectionsAndAuthors ]
+                     [ ExporterTestStrings.sectionsAndAuthors,
+                       ExporterTestStrings.sectionsWithEmph ]
 
     titleTests = testsEverywhere
 
