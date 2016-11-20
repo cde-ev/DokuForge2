@@ -1066,6 +1066,9 @@ Bobby Tables...
 
 \\end{ednote}""" ] ]
 
+    multilineCaptions = [ [u'Dies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.',
+                           u'Dies ist eine Bildunterschrift.\n%\nSie soll zwei Absätze haben.' ] ]
+
 class ExporterTestCases:
     """
     Which tests should be run for the separate parsers?
@@ -1095,7 +1098,8 @@ class ExporterTestCases:
 
     titleTests = testsEverywhere
 
-    captionTests = testsInText
+    captionTests = testsInText + \
+                   [ ExporterTestStrings.multilineCaptions ]
 
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
