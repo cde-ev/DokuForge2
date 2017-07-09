@@ -889,7 +889,9 @@ class ExporterTestStrings:
                [u'Was laesst Menschen "aufbluehen"?',
                 u'Was laesst Menschen "`aufbluehen"\'?'],
                [u'"Schoki"! "Cola"; "Nudeln": "Suppe")',
-                u'"`Schoki"\'! "`Cola"\'; "`Nudeln"\': "`Suppe"\')']]
+                u'"`Schoki"\'! "`Cola"\'; "`Nudeln"\': "`Suppe"\')'],
+               [u'"Yo!" "Whaaat?" "Boom."',
+                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\'']]
 
     abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
