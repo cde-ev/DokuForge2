@@ -891,7 +891,9 @@ class ExporterTestStrings:
                [u'"Schoki"! "Cola"; "Nudeln": "Suppe")',
                 u'"`Schoki"\'! "`Cola"\'; "`Nudeln"\': "`Suppe"\')'],
                [u'"Yo!" "Whaaat?" "Boom."',
-                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\'']]
+                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\''],
+               [u'bla "Altern der DNA" blub',
+                u'bla "`Altern der \\@\\acronym{DNA}"\' blub']]
 
     abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
