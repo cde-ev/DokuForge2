@@ -15,9 +15,9 @@ Teil #{{ page|string }}
 ({{estimate.pages | round(2) | e}} Seiten,
 {{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
 {{estimate.ednotepages | round(2) | e}} Seiten Ednotes)
+<hr>
 {%- if page in course.pages -%}
 {%- set pageindex = course.pages.index(page) %}
-<hr>
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
 &nbsp;&nbsp;&nbsp;
@@ -67,6 +67,9 @@ Teil #{{ page|string }}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
 &nbsp;&nbsp;&nbsp;
 {%- endif -%}
+
+{%- if page in course.pages -%}
+{%- set pageindex = course.pages.index(page) %}
 {%- if pageindex > 0 -%}
 <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>&nbsp;
 {%- else -%}
@@ -87,6 +90,8 @@ Teil #{{ page|string }}
 &nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
 
 {% endif %}
+{% endif %}
+
 <div class="rareCommands">
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
 &nbsp;
