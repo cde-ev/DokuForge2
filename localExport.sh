@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# != 2 ]; then
-    echo "Usage: " $0 " <raw export .tar.gz file> <dokuforge-export-static directory>"
+    echo "Usage: " $0 " <raw export .tar.gz file> <dokuforge-export-static working copy>"
     exit 1
 fi
 
@@ -53,12 +53,6 @@ rm dokuforge/versioninfo.py
 # unpack export
 tar -C $EXPORTDIR -xvf $EXPORTEDACAFILENAME
 
-# add input to export
-# for i in `find $DFACADIR -name "blob*,v"` `find $DFACADIR -name "Index,v"` `find $DFACADIR -name "isDeleted,v"` `find $DFACADIR -name "nextpage,v"` `find $DFACADIR -name "nextblob,v"`
-# do
-#     rm $i
-# done
-
 cd $DFACADIR
 rm *,v
 for d in *
@@ -81,18 +75,16 @@ do
     done
     cd ..
 done
-
-for d in *
-do
-    cd $d
-    if [ ! -d $EXPORTEDACADIR/$d ]; then
-        mkdir $EXPORTEDACADIR/$d
-    fi
-    cp input.txt $EXPORTEDACADIR/$d/
-    cd ..
-done
-
 cd $CURRENTDIR
+
+for d in $DFACADIR/*
+do
+    course=$EXPORTEDACADIR/`basename $d`
+    if [ ! -d $course ]; then
+        mkdir $course
+    fi
+    cp $d/input.txt $course/
+done
 
 # clean up files created during exporting
 rm -rf $DFACADIR $EXPORTEDACAFILENAME $EXPORTSTATICCLEANDIR
