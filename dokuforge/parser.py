@@ -931,7 +931,7 @@ class PParagraph(PTree):
 
 class PHeading(PTree):
     def __init__(self, title, level):
-        self.title = PLeaf(title)
+        self.title = title
         self.level = level
 
     def debug(self):
@@ -1293,6 +1293,11 @@ def defaultInnerParse(lines):
     else:
         return PSequence([g.parse() for g in groups])
 
+
+def headingParse(line):
+    return defaultInnerParse([line])
+
+
 class Linegroup:
     """
     Abstract class where all line-groups inherit from.
@@ -1493,7 +1498,7 @@ class Heading(Linegroup):
         return title
 
     def parse(self):
-        return PHeading(self.getTitle(), 0)
+        return PHeading(headingParse(self.getTitle()), 0)
 
 class Subheading(Heading):
     """
@@ -1507,7 +1512,7 @@ class Subheading(Heading):
         return line.startswith(u'[[') and not line.startswith(u'[[[')
 
     def parse(self):
-        return PHeading(self.getTitle(), 1)
+        return PHeading(headingParse(self.getTitle()), 1)
 
 class Author(Linegroup):
     """
