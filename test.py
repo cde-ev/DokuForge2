@@ -500,7 +500,7 @@ password = secret
 permissions = df_superadmin True,df_admin True
 """
         self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
+        self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
         form = self.res.forms[1]
         form["content"] = """[bob
 name = bob
