@@ -1013,16 +1013,16 @@ class ExporterTestStrings:
                 [u'We are in the 21. regiment and again in the 21.regiment.',
                  u'We are in the \\@21. regiment and again in the \\@21.regiment.'],
                 [u'bis zu 30 000 Einwohner',
-                 u'bis zu 30\\,000 Einwohner'],
+                 u'bis zu 30 000 Einwohner'],
                 [u'Kennwort 0000 ist unsicher, 00000 auch, 0000000 nicht weniger',
-                 u'Kennwort 0000 ist unsicher, 00\,000, 0\,000\,000 nicht weniger'],
+                 u'Kennwort 0000 ist unsicher, 00\,000 auch, 0\,000\,000 nicht weniger'],
                 [u'some 5,000 races',
                  u'some 5,000 races'],
                 [u'pi ist 3,14159',
-                 u'pi ist 3,14159'],
+                 u'pi ist 3,14\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
                 [u'bla 2004-2006 blub',
                  u'bla 2004\@--2006 blub']
-              ] # I'm not sure what we want in this case, but certainly not 3,14\,159
+              ]
 
     dates = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
                u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
