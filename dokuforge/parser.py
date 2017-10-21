@@ -681,10 +681,10 @@ def defaultMicrotype(text):
                 escapeCommands] # escapeCommands at last
     return applyMicrotypefeatures([text], features)
 
-def mathMicrotype(text, isalign=False):
+def mathMicrotype(text, isAligningEnvironment=False):
     features = [percent, hashmark, spacedEllipsis, ellipsis, tilde,
                 naturalNumbers, escapeMathCommands]
-    if not isalign:
+    if not isAligningEnvironment:
         features.append(ampersand_math)
     return applyMicrotypefeatures([text], features)
 
@@ -874,15 +874,29 @@ class PDisplayMath(PTree):
     def debug(self):
         return ('displaymath', self.text.text)
 
+    def _stringIndexList(self):
+        allowedEnvs = [u'align', u'equation']
+        allowedEnvironments = allowedEnvs + [u'%s*' % i for i in allowedEnvs]
+        startStrings = [u'\\begin{%s}' % i for i in allowedEnvironments]
+        endStrings = [u'\\end{%s}' % i for i in allowedEnvironments]
+        middleStartIndices = [len(s) for s in startStrings]
+        middleEndIndices = [-len(s) for s in endStrings]
+        isAligningEnvironment = [(u'align' in s) for s in allowedEnvironments]
+        return zip(startStrings, endStrings, middleStartIndices, middleEndIndices, isAligningEnvironment)
+
     def toTex(self):
-        result = ''
-        if (self.text.text.lstrip().startswith(u'\\begin{align}') and
-            self.text.text.rstrip().endswith(u'\\end{align}')):
-            aligncontent = self.text.text.strip()[13:-12].strip()
-            result = ('\n\\begin{align*}\n%1s\n\\end{align*}\n'
-                    % mathMicrotype(aligncontent, True))
-        else:
-            result = ('\n\\begin{equation*}\n%1s\n\\end{equation*}\n'
+        for startString, endString, middleStartIndex, middleEndIndex, isAligningEnvironment in self._stringIndexList():
+            if (self.text.text.lstrip().startswith(startString) and
+                self.text.text.rstrip().endswith(endString)):
+                aligncontent = self.text.text.strip()[middleStartIndex:middleEndIndex].strip()
+                result = ('\n%s\n%1s\n%s\n'
+                          % (startString, mathMicrotype(aligncontent,
+                                                        isAligningEnvironment=isAligningEnvironment),
+                             endString))
+                return result
+
+        # if none of the allowed environments is found, use equation* as default
+        result = ('\n\\begin{equation*}\n%1s\n\\end{equation*}\n'
                     % mathMicrotype(self.text.text))
         return result
 
