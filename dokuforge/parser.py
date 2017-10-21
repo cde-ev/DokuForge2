@@ -403,17 +403,16 @@ def naturalNumbers(word):
             word = word[1:]
         else:
             sign = u''
-        value = int(word)
-        if value < 10000:
+        if len(word) < 5:
             # no special typesetting for 4 digits only
-            yield u"%s%d" % (sign, value)
+            yield u"%s%s" % (sign, word)
         else:
             result = u''
-            while value >= 1000:
-                threedigits = value % 1000
-                result = u'\\,%03d%s' % (threedigits, result)
-                value = value // 1000
-            yield TerminalString(u'%s%d%s' % (sign, value, result))
+            while len(word) >= 4:
+                threedigits = word[-3:]
+                result = u'\\,%s%s' % (threedigits, result)
+                word = word[:-3]
+            yield TerminalString(u'%s%s%s' % (sign, word, result))
 
 def fullStop(word):
     if len(word) > 1 and word.endswith(u'.'):
