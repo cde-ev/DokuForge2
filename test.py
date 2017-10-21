@@ -1048,7 +1048,9 @@ class ExporterTestStrings:
                          [u'[[_Mein BAMF_ -- aus dem Kabarett]]',
                           u'\\subsection{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
                          [u'[[Max Reger: _Es waren zwei Königskinder_ hier]]',
-                          u'\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}'] ]
+                          u'\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
+                         [u'[1. Buch Mose]',
+                          u'\\section{\\@1. Buch Mose}'] ]
 
     numericalScope = [ [u'10\xb3 Meter sind ein km',
                         u'10\xb3 Meter sind ein km'] ]
