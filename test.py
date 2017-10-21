@@ -1039,8 +1039,10 @@ class ExporterTestStrings:
 
     sectionsWithEmph = [ [u'[Ola Gjeilo: _Northern Lights_]',
                           u'\\section{Ola Gjeilo: \\emph{Northern Lights}}'],
-                         [u'[Max Reger: _Es waren zwei Königskinder_]',
-                          u'\\section{Max Reger: \\emph{Es waren zwei Königskinder}}']]
+                         [u'[_Mein BAMF_ -- aus dem Kabarett]',
+                          u'\\section{\\emph{Mein \\\@\\acronym{BAMF}} \\\@-- aus dem Kabarett}'],
+                         [u'[Max Reger: _Es waren zwei Königskinder_ hier]',
+                          u'\\section{Max Reger: \\emph{Es waren zwei Königskinder} hier}']]
 
     numericalScope = [ [u'10\xb3 Meter sind ein km',
                         u'10\xb3 Meter sind ein km'] ]
