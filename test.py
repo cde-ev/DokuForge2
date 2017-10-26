@@ -17,7 +17,7 @@ import tarfile
 import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
-from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
+from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser, Estimate
 from dokuforge.common import TarWriter
 from dokuforge.common import UTC
 from dokuforge.course import Course
@@ -1112,6 +1112,18 @@ class ExporterTestCases:
     titleTests = testsEverywhere
 
     captionTests = testsInText
+
+class DokuforgeParserUnitTests(DfTestCase):
+    def verifyReturnTypes(self, text):
+        pseq = dfLineGroupParser(text)
+        assert isinstance(pseq.debug(), tuple)
+        assert isinstance(pseq.toTex(), unicode)
+        assert isinstance(pseq.toHtml(), unicode)
+        assert isinstance(pseq.toDF(), unicode)
+        assert isinstance(pseq.toEstimate(), Estimate)
+
+    def testLineGroupParser(self):
+        [ [self.verifyReturnTypes(s[0]) for s in t] for t in ExporterTestCases.lineGroupTests ]
 
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):

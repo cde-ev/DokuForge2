@@ -22,6 +22,10 @@ check: test
 test: test.py
 	${PYTHON2} test.py
 
+# only test exporting of text (microtypography, titles etc.)
+test-exported-strings:
+	${PYTHON2} -m unittest test.DokuforgeParserUnitTests test.DokuforgeMicrotypeUnitTests test.DokuforgeTitleParserTests test.DokuforgeCaptionParserTests
+
 .coverage:$(wildcard dokuforge/*.py) test.py
 	${PYTHON2} -m coverage -x test.py
 coverage: .coverage
