@@ -1034,7 +1034,18 @@ class ExporterTestStrings:
     numbers = [ [u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
                  u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
                 [u'We are in the 21. regiment and again in the 21.regiment.',
-                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'] ]
+                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'],
+                [u'bis zu 30 000 Einwohner',
+                 u'bis zu 30 000 Einwohner'],
+                [u'Kennwort 0000 ist unsicher, 00000 auch, 0000000 nicht weniger',
+                 u'Kennwort 0000 ist unsicher, 00\,000 auch, 0\,000\,000 nicht weniger'],
+                [u'some 5,000 races',
+                 u'some 5,000 races'],
+                [u'pi ist 3,14159',
+                 u'pi ist 3,14\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
+                [u'bla 2004-2006 blub',
+                 u'bla 2004\@--2006 blub']
+              ]
 
     dates = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
                u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
