@@ -931,6 +931,8 @@ class ExporterTestStrings:
                   u'$\\circ$ $\\cap\\inf$ $\\times$' ],
                  [u'$a &= b$',
                   u'$a \\@\\forbidden\\&= b$'],
+                 [u'$$a &= b$$',
+                  u'\\begin{equation*}\na \\@\\forbidden\\&= b\n\\end{equation*}'],
                  [u'Trailing \\',
                   u'Trailing \\@\\backslash'],
                  [u'$Trailing \\$',
