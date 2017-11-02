@@ -935,7 +935,7 @@ class PHeading(PTree):
         self.level = level
 
     def debug(self):
-        return ('Heading', self.level, self.getTitle())
+        return ('Heading', self.level, self.title.debug())
 
     def toTex(self):
         return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.title.toTex())
@@ -951,11 +951,10 @@ class PHeading(PTree):
     def getLevel(self):
         return self.level
 
-    def getTitle(self):
-        return self.title.text
-
     def toEstimate(self):
-        return Estimate.fromTitle(self.getTitle())
+        if isinstance(self.title, PSequence):
+            return Estimate.fromTitle(self.title.toDF())
+        return Estimate.fromTitle(self.title.text)
 
 class PAuthor(PTree):
     def __init__(self, author):
