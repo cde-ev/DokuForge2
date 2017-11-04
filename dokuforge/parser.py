@@ -539,7 +539,7 @@ def formatUrls(word):
 
 class EscapeCommands:
     """
-    Mark all controll sequence tokens as forbidden, except
+    Mark all control sequence tokens as forbidden, except
     a list of known good commands.
     """
     escapechar = u"\\"
