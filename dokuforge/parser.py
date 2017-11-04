@@ -502,6 +502,41 @@ def formatCode(word):
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
+def formatUrls(word):
+    """
+    use \url for URLs
+    """
+
+    def escapeWithinUrl(word):
+        """
+        % -> \%
+        """
+        return word.replace(u'%', u'\\%')
+
+    def fixPeriodAtEndOfUrl(word):
+        """
+        \url{www.bla.com.} -> \url{www.bla.com}.
+        """
+        return word.replace(u'.}', u'}.')
+
+    pattern = r'(http://|https://|www.)([^\s\(\);,"\?!}]*)([\s\(\);,"\?!}]?)'
+    m = True
+    while m:
+        if m != True:
+            left, url_start, url_rest, after, word =  m.groups()
+            if url_start :
+                yield left
+                url = url_start + url_rest
+                url = escapeWithinUrl(url)
+                url = u'\\@\\url{%s}' % url
+                url = fixPeriodAtEndOfUrl(url)
+                yield TerminalString(url)
+            else:
+                yield (left + matched)
+            word = after + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
 class EscapeCommands:
     """
     Mark all controll sequence tokens as forbidden, except
@@ -654,7 +689,7 @@ def defaultMicrotype(text):
     """
     assert isinstance(text, unicode)
     separators = ' \t,;:()!?\n-' # no point, might be in abbreviations
-    features = [SplitSeparators("\n"), formatCode,
+    features = [SplitSeparators("\n"), formatCode, formatUrls,
                 ## no splitting at all before the previous features
                 SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing,

@@ -1069,19 +1069,25 @@ class ExporterTestStrings:
               u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
 
     urls = [ [u'http://www.google.de',
-              u'\\url{http://www.google.de}'],
+              u'\\@\\url{http://www.google.de}'],
              [u'siehe http://www.google.de',
-              u'siehe \\url{http://www.google.de}'],
+              u'siehe \\@\\url{http://www.google.de}'],
              [u'http://www.google.de bla',
-              u'\\url{http://www.google.de} bla'],
-             [u'https://www.bla.com',
-              u'\\url{https://www.bla.com}'],
-             [u'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsser_Arkade1.jpg', # note that % needs to be escaped (else starts comment), but _ does not
-              u'\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsser_Arkade1.jpg}'],
+              u'\\@\\url{http://www.google.de} bla'],
+             [u'https://www.bla.com. http://www.blub.org?',
+              u'\\@\\url{https://www.bla.com}. \\@\\url{http://www.blub.org}?'],
+             [u'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
+              u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsserArkade1.jpg}'],
+             # the following does not work yet:
+             # [u'https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg', # _ is not emphasis
+             #  u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
              [u'auf www.bla.com lesen',
-              u'auf \\url{www.bla.com} lesen'],
+              u'auf \\@\\url{www.bla.com} lesen'],
+             # the following does not work yet:
+             # [u'Das www.ist_keine_hervorhebung.de!',
+             #  u'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
              [u'http://www.bla.com/foo}\\evilCommand',
-              u'\\url{http://www.bla.com\\@\}\\@\\forbidden\\evilCommand']
+              u'\\@\\url{http://www.bla.com/foo}\\@\}\\@\\forbidden\\evilCommand']
              ]
 
     sectionsAndAuthors = [ [u'[foo]\n(bar)',
