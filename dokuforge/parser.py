@@ -403,17 +403,16 @@ def naturalNumbers(word):
             word = word[1:]
         else:
             sign = u''
-        value = int(word)
-        if value < 10000:
+        if len(word) < 5:
             # no special typesetting for 4 digits only
-            yield u"%s%d" % (sign, value)
+            yield u"%s%s" % (sign, word)
         else:
             result = u''
-            while value >= 1000:
-                threedigits = value % 1000
-                result = u'\\,%03d%s' % (threedigits, result)
-                value = value // 1000
-            yield TerminalString(u'%s%d%s' % (sign, value, result))
+            while len(word) >= 4:
+                threedigits = word[-3:]
+                result = u'\\,%s%s' % (threedigits, result)
+                word = word[:-3]
+            yield TerminalString(u'%s%s%s' % (sign, word, result))
 
 def fullStop(word):
     if len(word) > 1 and word.endswith(u'.'):
@@ -438,6 +437,8 @@ def closeQuotationMark(word):
 percent = Escaper(u'%', TerminalString(u'\\%'))
 
 ampersand = Escaper(u'&', TerminalString(u'\\@\\&'))
+
+ampersand_math = Escaper(u'&', TerminalString(u'\\@\\forbidden\\&'))
 
 hashmark = Escaper(u'#', TerminalString(u'\\@\\#'))
 
@@ -609,13 +610,7 @@ escapeMathCommands = EscapeCommands(
     u'left', u'right', u'lfloor', u'rfloor', u'lceil', u'rceil',
     u'langle', u'rangle',
     ## misc
-    u'stackrel', u'binom', u'mathbb'
-    # FIXME think about including environments, these can come up in complex
-    # mathematical formulas, but they could also be abused (more in the "we
-    # don't want users to make typesetting decisions" style of misuse, than
-    # anything critical).
-    # ## environments
-    # '\\begin', '\\end',
+    u'stackrel', u'binom', u'mathbb',
     ]))
 
 escapeEndEdnote = Escaper(u"\\end{ednote}", u"\\@|end{ednote}")
@@ -685,9 +680,11 @@ def defaultMicrotype(text):
                 escapeCommands] # escapeCommands at last
     return applyMicrotypefeatures([text], features)
 
-def mathMicrotype(text):
+def mathMicrotype(text, isAligningEnvironment=False):
     features = [percent, hashmark, spacedEllipsis, ellipsis, tilde,
                 naturalNumbers, escapeMathCommands]
+    if not isAligningEnvironment:
+        features.append(ampersand_math)
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
@@ -702,9 +699,10 @@ def wrap(text, subsequent_indent=''):
     """
     # triple @ to label linebreaks after long lines before wrapping
     text = re.sub(r'([^\n]{160})\n', r'\1\\@\\@\\@\n', text)
-    return textwrap.fill(text, subsequent_indent=subsequent_indent,
-            drop_whitespace = True, replace_whitespace = True,
-            break_long_words = False, break_on_hyphens = False)
+    result = textwrap.fill(text, width=70, subsequent_indent=subsequent_indent,
+                           drop_whitespace = True, replace_whitespace = True,
+                           break_long_words = False, break_on_hyphens = False)
+    return result
 
 class PTree:
     """
@@ -721,6 +719,13 @@ class PTree:
         return a tex-representation of the parsed object.
         """
         raise NotImplementedError
+
+    def toTexStringsAndTerminalStrings(self):
+        """
+        return a list of tex representations of the parsed objects,
+        distingushing strings and TerminalStrings that should not be touched
+        """
+        return [self.toTex()]
 
     def toHtml(self):
         """
@@ -757,6 +762,13 @@ class PSequence(PTree):
         for part in self.parts:
             result = result + part.toTex()
         return result
+
+    def toTexStringsAndTerminalStrings(self):
+        result = []
+        for part in self.parts:
+            result = result + part.toTexStringsAndTerminalStrings()
+        return result
+
 
     def toHtml(self):
         result = ''
@@ -861,8 +873,34 @@ class PDisplayMath(PTree):
     def debug(self):
         return ('displaymath', self.text.text)
 
+    def _stringIndexList(self):
+        allowedEnvs = [u'align', u'equation']
+        allowedEnvironments = allowedEnvs + [u'%s*' % i for i in allowedEnvs]
+        startStrings = [u'\\begin{%s}' % i for i in allowedEnvironments]
+        endStrings = [u'\\end{%s}' % i for i in allowedEnvironments]
+        middleStartIndices = [len(s) for s in startStrings]
+        middleEndIndices = [-len(s) for s in endStrings]
+        isAligningEnvironment = [(u'align' in s) for s in allowedEnvironments]
+        return zip(startStrings, endStrings, middleStartIndices, middleEndIndices, isAligningEnvironment)
+
     def toTex(self):
-        return '\\[%1s\\]' % mathMicrotype(self.text.text)
+        for startString, endString, middleStartIndex, middleEndIndex, isAligningEnvironment in self._stringIndexList():
+            if (self.text.text.lstrip().startswith(startString) and
+                self.text.text.rstrip().endswith(endString)):
+                aligncontent = self.text.text.strip()[middleStartIndex:middleEndIndex].strip()
+                result = ('\n%s\n%1s\n%s\n'
+                          % (startString, mathMicrotype(aligncontent,
+                                                        isAligningEnvironment=isAligningEnvironment),
+                             endString))
+                return result
+
+        # if none of the allowed environments is found, use equation* as default
+        result = ('\n\\begin{equation*}\n%1s\n\\end{equation*}\n'
+                    % mathMicrotype(self.text.text))
+        return result
+
+    def toTexStringsAndTerminalStrings(self):
+        return [TerminalString(self.toTex())]
 
     def toHtml(self):
         return "<div class=\"displaymath\">$$%1s$$</div>" % self.text.toHtml()
@@ -918,7 +956,18 @@ class PParagraph(PTree):
         return self.it.isEmpty()
 
     def toTex(self):
-        return u'\n%s\n' % wrap(self.it.toTex())
+        result = ''
+        towrap = ''
+        for part in self.it.toTexStringsAndTerminalStrings():
+            if isinstance(part, TerminalString):
+                result += wrap(towrap)
+                towrap = ''
+                result += part.getString()
+            else:
+                towrap += part
+        result += wrap(towrap)
+        result = u'\n%s\n' % result
+        return result
 
     def toHtml(self):
         return '\n<p>\n'  + self.it.toHtml() + '\n</p>\n'
