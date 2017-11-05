@@ -1107,7 +1107,7 @@ Bobby Tables...
 after""" ] ]
 
     multilineCaptions = [ [u'Dies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.',
-                           u'\\begin{minipage}{\\linewidth}\nDies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.\\end{minipage}' ] ]
+                           u'\\\@\\begin{minipage}{\\linewidth}\nDies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.\\end{minipage}' ] ]
 
 class ExporterTestCases:
     """
