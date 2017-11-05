@@ -19,6 +19,7 @@ clean:
 
 check: test
 
+# entire test suite
 test: test.py
 	${PYTHON2} test.py
 

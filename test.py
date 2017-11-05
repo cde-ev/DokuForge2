@@ -929,8 +929,10 @@ class ExporterTestStrings:
                   u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$'],
                  [u'$\\circ$ $\\cap\\inf$ $\\times$',
                   u'$\\circ$ $\\cap\\inf$ $\\times$' ],
-                 [u'$$\\circ \\cap \\inf \\times$$',
-                  u'\\[\\circ \\cap \\inf \\times\\]'],
+                 [u'$a &= b$',
+                  u'$a \\@\\forbidden\\&= b$'],
+                 [u'$$a &= b$$',
+                  u'\\begin{equation*}\na \\@\\forbidden\\&= b\n\\end{equation*}'],
                  [u'Trailing \\',
                   u'Trailing \\@\\backslash'],
                  [u'$Trailing \\$',
@@ -947,6 +949,29 @@ class ExporterTestStrings:
                   u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'],
                  [u'Tilde~ist unklar. $Auch~hier$.',
                   u'Tilde\\@~ist unklar. $Auch\\@~hier$.'] ]
+
+    mathEnvironments = [ [u'b $$\\circ \\cap \\inf \\times$$ e',
+                          u'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
+                         [u'b $$\\begin{equation}a + b = c\\end{equation}$$ e',
+                          u'b\n\\begin{equation}\na + b = c\n\\end{equation}\n e'],
+                         [u'b $$\\begin{equation*}a + b = c \\end{equation*}$$ e',
+                          u'b\n\\begin{equation*}\na + b = c\n\\end{equation*}\n e'],
+                         [u'b $$\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}$$ e',
+                          u'b\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n e'],
+                         [u'b $$\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}$$ e',
+                          u'b\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n e'],
+                         [u'b $$\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}$$ e',
+                          u'b\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align}\n e'],
+                         [u'a $$\\begin{equation} b &= c \\end{equation}$$ d',
+                          u'a\n\\begin{equation}\nb \\@\\forbidden\\&= c\n\\end{equation}\n d'],
+                         [u'b $$\\begin{equation}a + b &= c\\end{equation}$$ e',
+                          u'b\n\\begin{equation}\na + b \\@\\forbidden\\&= c\n\\end{equation}\n e'],
+                         [u'b $$\\begin{align}a + b \evilmath = c\\end{align}$$ e',
+                          u'b\n\\begin{align}\na + b \\@\\forbidden\\evilmath = c\n\\end{align}\n e'],
+                         [u'Bla $$\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}$$ Blub',
+                          u'Bla\n\\begin{align}\na + b &= c\\\\\na - b &= d\n\\end{align}\n Blub'],
+                         [u'Matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$.',
+                          u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'] ]
 
     evilUTF8 = [ [u'Bla … blub bloink.',
                   u'Bla~\\@\\dots{} blub bloink.'],
@@ -1011,7 +1036,18 @@ class ExporterTestStrings:
     numbers = [ [u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
                  u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
                 [u'We are in the 21. regiment and again in the 21.regiment.',
-                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'] ]
+                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'],
+                [u'bis zu 30 000 Einwohner',
+                 u'bis zu 30 000 Einwohner'],
+                [u'Kennwort 0000 ist unsicher, 00000 auch, 0000000 nicht weniger',
+                 u'Kennwort 0000 ist unsicher, 00\,000 auch, 0\,000\,000 nicht weniger'],
+                [u'some 5,000 races',
+                 u'some 5,000 races'],
+                [u'pi ist 3,14159',
+                 u'pi ist 3,14\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
+                [u'bla 2004-2006 blub',
+                 u'bla 2004\@--2006 blub']
+              ]
 
     dates = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
                u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
@@ -1058,7 +1094,7 @@ class ExporterTestStrings:
     codeAndLengthyParagraph = [ [u'Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet\nlirem ipsum dolor sit amet lorem ipsum dolor sit amet\nlurem ipsum dolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so weiter.',
                                  u'Larem ipsum dolor sit amet \\@\\lstinline|rhoncus| lerem ipsum dolor sit\namet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum\ndolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so\nweiter.'] ]
 
-    ednoteEscape = [ [u"""
+    ednoteEscape = [ [u"""before
 
 {{
 
@@ -1070,8 +1106,10 @@ Bobby Tables...
 
 }}
 
-""",
-u"""\\begin{ednote}
+after""",
+u"""before
+
+\\begin{ednote}
 
 Bobby Tables...
 
@@ -1079,7 +1117,9 @@ Bobby Tables...
 
 \\herebedragons
 
-\\end{ednote}""" ] ]
+\\end{ednote}
+
+after""" ] ]
 
 class ExporterTestCases:
     """
@@ -1089,6 +1129,7 @@ class ExporterTestCases:
                         ExporterTestStrings.abbreviation,
                         ExporterTestStrings.acronym,
                         ExporterTestStrings.escaping,
+                        ExporterTestStrings.mathEnvironments,
                         ExporterTestStrings.evilUTF8,
                         ExporterTestStrings.pageReferences,
                         ExporterTestStrings.spacing,
