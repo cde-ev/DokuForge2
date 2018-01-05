@@ -224,7 +224,7 @@ sie nur dann automatisch formatieren kann.</p>
 2349635 und nicht 2 349 635
 300000 und nicht 300.000
 </pre>
-
+<p>Uhrzeiten bitte im Format 23:00 eingeben.</p>
 <h2><a name="exponenten"></a> Exponenten</h2>
 <p>Wenn du Exponenten darstellen willst, setze diese bitte zwischen zwei
 Dollarzeichen (d.h. als mathematische Formel).</p>
