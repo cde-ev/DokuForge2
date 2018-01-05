@@ -39,6 +39,7 @@ für die Weiterentwicklung von DokuForge auf dein Feedback angewiesen.</p>
 <li><a href="#eigennamen">Eigennamen</a></li>
 <li><a href="#cde_vokabular">CdE-Vokabular</a></li>
 <li><a href="#ednotes">Ednotes</a></li>
+<li><a href="#urls">URLs</a></li>
 </ul>
 <h2><a name="absaetze"></a>Absätze</h2>
 <p>Absätze werden in DokuForge durch Leerzeilen getrennt. Wenn du einen
@@ -345,3 +346,24 @@ aber beginnend mit einer geschweiften, öffnen:</p>
         </td>
 </tr>
 </table></div>
+<h2><a name="urls"></a> URLs</h2>
+<p>URLs bitte in Ednotes eingeben.</p>
+<table  width="80%">
+<tr>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
+</tr>
+<tr>
+    <td><pre>
+Unter
+{
+http://www.google.de
+}
+erreicht man eine Suchmaschine.</pre>
+        </td>
+    <td>Unter<pre class="ednote">
+http://www.google.de</pre>erreicht man eine Suchmaschine.
+        </td>
+</tr>
+</table>
+<p>Dabei bitte ignorieren, dass das scheinbar den Absatz zerhackt.</p>
