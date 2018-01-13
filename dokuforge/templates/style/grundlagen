@@ -40,6 +40,7 @@ für die Weiterentwicklung von DokuForge auf dein Feedback angewiesen.</p>
 <li><a href="#cde_vokabular">CdE-Vokabular</a></li>
 <li><a href="#ednotes">Ednotes</a></li>
 <li><a href="#urls">URLs</a></li>
+<li><a href="#urls">Code</a></li>
 </ul>
 <h2><a name="absaetze"></a>Absätze</h2>
 <p>Absätze werden in DokuForge durch Leerzeilen getrennt. Wenn du einen
@@ -367,4 +368,19 @@ http://www.google.de</pre>erreicht man eine Suchmaschine.
 </tr>
 </table>
 <p>Dabei bitte ignorieren, dass das scheinbar den Absatz zerhackt.</p>
+<h2><a name="code"></a> Code (Programmquelltext)</h2>
+<p>Zur Darstellung von kleinen Code-Schnippseln im Fließtext werden Pipes
+um den Code gesetzt. Eine mehrzeilige Eingabe von Code erfolgt in ednotes.</p>
+<p>Eingabe:</p>
+<p>Möchte man eine |Class Klasse| im Text erklären, so kann man es einfach
+mit || einfügen. Schreibt man eine mehrzeilige Klassendefinition, so
+wird sie in eine Ednote eingebettet. Dabei bitte die ednote mit einer Klammerstruktur eingeben, die im Quellcode nicht vorkommt.</p>
+<pre>
+{[(
+Class Klasse
+    def __init__(self, realpart, imagpart):
+    self.r = realpart
+    self.i = imagpart
+)]}
+</pre>
 </div>
