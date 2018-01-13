@@ -893,8 +893,10 @@ class ExporterTestStrings:
 
     abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
-                     [u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.,',
-                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.,'],
+                     [u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.',
+                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.'],
+                     [u'aber u.a. auch o.ä. wie o.Ä.',
+                      u'aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.'],
                      [u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
                       u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
                      [u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
@@ -902,7 +904,9 @@ class ExporterTestStrings:
                      [u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
                       u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
                      [u'd. h., der Exporter bzw. oder ca. oder so.',
-                      u'd.\\,h., der Exporter bzw. oder ca. oder so.'] ]
+                      u'd.\\,h., der Exporter bzw. oder ca. oder so.'],
+                     [u'Aber u. a. auch o. ä. wie o. Ä.',
+                      u'Aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.']]
 
     acronym = [ [u'Bitte ACRONYME wie EKGs anders setzen.',
                  u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
