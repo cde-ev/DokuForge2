@@ -345,7 +345,7 @@ aber beginnend mit einer geschweiften, öffnen:</p>
 \title{Beispieltitel}</pre>
         </td>
 </tr>
-</table></div>
+</table>
 <h2><a name="urls"></a> URLs</h2>
 <p>URLs bitte in Ednotes eingeben.</p>
 <table  width="80%">
@@ -367,3 +367,4 @@ http://www.google.de</pre>erreicht man eine Suchmaschine.
 </tr>
 </table>
 <p>Dabei bitte ignorieren, dass das scheinbar den Absatz zerhackt.</p>
+</div>
