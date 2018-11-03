@@ -39,6 +39,8 @@ für die Weiterentwicklung von DokuForge auf dein Feedback angewiesen.</p>
 <li><a href="#eigennamen">Eigennamen</a></li>
 <li><a href="#cde_vokabular">CdE-Vokabular</a></li>
 <li><a href="#ednotes">Ednotes</a></li>
+<li><a href="#urls">URLs</a></li>
+<li><a href="#urls">Code</a></li>
 </ul>
 <h2><a name="absaetze"></a>Absätze</h2>
 <p>Absätze werden in DokuForge durch Leerzeilen getrennt. Wenn du einen
@@ -224,7 +226,7 @@ sie nur dann automatisch formatieren kann.</p>
 2349635 und nicht 2 349 635
 300000 und nicht 300.000
 </pre>
-
+<p>Uhrzeiten bitte im Format 23:00 eingeben.</p>
 <h2><a name="exponenten"></a> Exponenten</h2>
 <p>Wenn du Exponenten darstellen willst, setze diese bitte zwischen zwei
 Dollarzeichen (d.h. als mathematische Formel).</p>
@@ -265,7 +267,7 @@ sehr schön umformulieren.</p>
 <li>f.</li>
 <li>ff.</li>
 <li>n.Chr.</li>
-<li>o.Ä.</li>
+<li>o.ä., o.Ä.</li>
 <li>s.o.</li>
 <li>s.u.</li>
 <li>sog.</li>
@@ -345,4 +347,41 @@ Klammern in umgekehrter Reihenfolge beenden:</p>
 \title{Beispieltitel}</pre>
         </td>
 </tr>
-</table></div>
+</table>
+<h2><a name="urls"></a> URLs</h2>
+<p>URLs bitte in Ednotes eingeben.</p>
+<table  width="80%">
+<tr>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
+</tr>
+<tr>
+    <td><pre>
+Unter
+{
+http://www.google.de
+}
+erreicht man eine Suchmaschine.</pre>
+        </td>
+    <td>Unter<pre class="ednote">
+http://www.google.de</pre>erreicht man eine Suchmaschine.
+        </td>
+</tr>
+</table>
+<p>Dabei bitte ignorieren, dass das scheinbar den Absatz zerhackt.</p>
+<h2><a name="code"></a> Code (Programmquelltext)</h2>
+<p>Zur Darstellung von kleinen Code-Schnippseln im Fließtext werden Pipes
+um den Code gesetzt. Eine mehrzeilige Eingabe von Code erfolgt in ednotes.</p>
+<p>Eingabe:</p>
+<p>Möchte man eine |Class Klasse| im Text erklären, so kann man es einfach
+mit || einfügen. Schreibt man eine mehrzeilige Klassendefinition, so
+wird sie in eine Ednote eingebettet. Dabei bitte die ednote mit einer Klammerstruktur eingeben, die im Quellcode nicht vorkommt.</p>
+<pre>
+{[(
+Class Klasse
+    def __init__(self, realpart, imagpart):
+    self.r = realpart
+    self.i = imagpart
+)]}
+</pre>
+</div>
