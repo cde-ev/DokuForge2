@@ -1,10 +1,10 @@
 <div class="body">
 <h1>Literatur</h1>
 <h2>Verweis auf Literaturquellen im Text</h2>
-<p>Wenn du im Text auf eine Literaturquelle oder eine Internetseite verweisen willst, dann 
-geschieht das mit einer Literaturangabe. Das gilt auch für Abbildungen, Tabellen und dergleichen, 
+<p>Wenn du im Text auf eine Literaturquelle oder eine Internetseite verweisen willst, dann
+geschieht das mit einer Literaturangabe. Das gilt auch für Abbildungen, Tabellen und dergleichen,
 für die ihr in der Doku eine Quelle nennen wollt.</p>
-<p>Wo du im Text auf eine Literaturquelle verweisen willst, fügst du ein <code>LITERATUR:kuerzel</code> ein. 
+<p>Wo du im Text auf eine Literaturquelle verweisen willst, fügst du ein <code>LITERATUR:kuerzel</code> ein.
 <code>kuerzel</code> ist dabei ein von dir für die Quelle vergebenes Kürzel.</p>
 <table  width="80%">
 <tr>
@@ -14,14 +14,14 @@ für die ihr in der Doku eine Quelle nennen wollt.</p>
 <tr>
     <td>
         <code>In ihrem Buch The Meme Machine LITERATUR:blackmore2000
-geht die englische Psychologin Susan Blackmore von der Grundannahme aus, 
-dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit 
+geht die englische Psychologin Susan Blackmore von der Grundannahme aus,
+dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit
 zur Imitation eine entscheidende Wendung nahm.</code>
         </td>
     <td>
-        In ihrem Buch The Meme Machine [1], 
-geht die englische Psychologin Susan Blackmore von der Grundannahme aus, 
-dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit 
+        In ihrem Buch The Meme Machine [1],
+geht die englische Psychologin Susan Blackmore von der Grundannahme aus,
+dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit
 zur Imitation eine entscheidende Wendung nahm.
         </td>
 </tr>
@@ -46,7 +46,7 @@ dessen Syntax ist hier in einer Ednote gewünscht.)</p>
 }
 }]}
 </pre></p>
-<p>Beachte, dass die Ednote mit <code>{[{</code> geöffnet und mit <code>}]}</code> geschlossen werden muss, 
+<p>Beachte, dass die Ednote mit <code>{[{</code> geöffnet und mit <code>}]}</code> geschlossen werden muss,
 da die Ednote selbst auch geschweifte Klammern enthält.</p>
 <h2>Beispiele für gebräuchliche Arten von Literaturquellen</h2>
 <p>Hier findest du Beispiele für gängige Arten von Literaturquellen
@@ -55,7 +55,7 @@ Zeile als Kommentar angesehen und ignoriert wird. </p>
 <p>Im Fall einer Monographie bzw. eines Buches lautet die Syntax:</p>
 <pre>
 <table cellspacing="0px">
- <colgroup> 
+ <colgroup>
   <col width="100">
   <col width="5">
   <col width="150">
@@ -80,7 +80,7 @@ die Syntax (bei Zeitungsartikeln bitte das vollständige Datum
 angeben):</p>
 <pre>
 <table cellspacing="0px">
- <colgroup> 
+ <colgroup>
   <col width="100">
   <col width="5">
   <col width="150">
@@ -103,7 +103,7 @@ angeben):</p>
 Artikel in Lexika) lautet die Syntax:</p>
 <pre>
 <table cellspacing="0px">
- <colgroup> 
+ <colgroup>
   <col width="100">
   <col width="5">
   <col width="150">
@@ -126,7 +126,7 @@ Artikel in Lexika) lautet die Syntax:</p>
 <p>Im Fall einer URL bzw. Internetreferenz lautet die Syntax:</p>
 <pre>
 <table cellspacing="0px">
- <colgroup> 
+ <colgroup>
   <col width="100">
   <col width="5">
   <col width="150">
