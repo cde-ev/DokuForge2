@@ -5,27 +5,8 @@
 geschieht das mit einer Literaturangabe. Das gilt auch für Abbildungen, Tabellen und dergleichen,
 für die ihr in der Doku eine Quelle nennen wollt.</p>
 <p>Wo du im Text auf eine Literaturquelle verweisen willst, fügst du ein <code>LITERATUR:kuerzel</code> ein.
-<code>kuerzel</code> ist dabei ein von dir für die Quelle vergebenes Kürzel.</p>
-<table  width="80%">
-<tr>
-    <td width="40%">Eingabe:</td>
-    <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-    <td>
-        <code>In ihrem Buch The Meme Machine LITERATUR:blackmore2000
-geht die englische Psychologin Susan Blackmore von der Grundannahme aus,
-dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit
-zur Imitation eine entscheidende Wendung nahm.</code>
-        </td>
-    <td>
-        In ihrem Buch The Meme Machine [1],
-geht die englische Psychologin Susan Blackmore von der Grundannahme aus,
-dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit
-zur Imitation eine entscheidende Wendung nahm.
-        </td>
-</tr>
-</table>
+<code>kuerzel</code> ist dabei ein von dir für die Quelle vergebenes Kürzel.
+Daraus machen wir später einen richtigen Literaturverweis.</p>
 
 <h2>Literaturverzeichnis</h2>
 <p>Es genügt nicht, einfach nur <code>LITERATUR:blackmore2000</code>
