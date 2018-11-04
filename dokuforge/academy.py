@@ -186,7 +186,7 @@ for your reference
                 yield chunk
         contents = u""
         for course in self.listCourses():
-            contents += u"\\include{%s/chap}\n" % course.name
+            contents += u"\\input{%s/chap}\n" % course.name
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
         yield tarwriter.addChunk(b"contents.tex",
