@@ -1082,14 +1082,12 @@ class ExporterTestStrings:
               u'\\@\\url{https://www.bla.com}. \\@\\url{http://www.blub.org}?'],
              [u'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
               u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsserArkade1.jpg}'],
-             # the following does not work yet:
-             # [u'https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg', # _ is not emphasis
-             #  u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
+             [u'https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg',
+              u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
              [u'auf www.bla.com lesen',
               u'auf \\@\\url{www.bla.com} lesen'],
-             # the following does not work yet:
-             # [u'Das www.ist_keine_hervorhebung.de!',
-             #  u'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
+             [u'Das www.ist_keine_hervorhebung.de!',
+              u'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
              [u'http://www.bla.com/foo}\\evilCommand',
               u'\\@\\url{http://www.bla.com/foo}\\@\}\\@\\forbidden\\evilCommand']
              ]
