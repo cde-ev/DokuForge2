@@ -304,6 +304,7 @@ def unspaceAbbreviations(word):
     word = re.sub(u'(^| )d\. h\.', u'\\1d.h.', word)
     word = re.sub(u'(^| )n\. Chr\.', u'\\1n.Chr.', word)
     word = re.sub(u'(^| )o\. Ä\.', u'\\1o.Ä.', word)
+    word = re.sub(u'(^| )o\. ä\.', u'\\1o.ä.', word)
     word = re.sub(u'(^| )s\. o\.', u'\\1s.o.', word)
     word = re.sub(u'(^| )s\. u\.', u'\\1s.u.', word)
     word = re.sub(u'(^| )u\. a\.', u'\\1u.a.', word)
@@ -325,6 +326,7 @@ def standardAbbreviations(word):
         u'ff.': u'ff.',
         u'n.Chr.': u'n.\\,Chr.',
         u'o.Ä.': u'o.\\,Ä.',
+        u'o.ä.': u'o.\\,ä.',
         u's.o.': u's.\\,o.',
         u'sog.': u'sog.',
         u's.u.': u's.\\,u.',
