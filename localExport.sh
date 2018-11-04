@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+if which python2 >/dev/null 2>&1
+then
+    PYTHON2=python2
+else
+    PYTHON2=python
+fi
+
 if [ $# != 2 ]; then
     echo "Usage: " $0 " <raw export .tar.gz file> <dokuforge-export-static working copy>"
     exit 1
@@ -46,7 +53,7 @@ svn export $EXPORTSTATICDIR $EXPORTSTATICCLEANDIR
 echo "Exporting ..."
 printf 'commitid = "%s"' `git show -s --format=%H` > dokuforge/versioninfo.py \
     || rm dokuforge/versioninfo.py
-python -m dokuforge.export $DFWORKDIR $EXPORTSTATICCLEANDIR $ACANAME
+$PYTHON2 -m dokuforge.export $DFWORKDIR $EXPORTSTATICCLEANDIR $ACANAME
 echo "Done."
 rm dokuforge/versioninfo.py
 
