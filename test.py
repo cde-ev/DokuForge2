@@ -1078,8 +1078,8 @@ class ExporterTestStrings:
               u'siehe \\@\\url{http://www.google.de}'],
              [u'http://www.google.de bla',
               u'\\@\\url{http://www.google.de} bla'],
-             [u'https://www.bla.com. http://www.blub.org?',
-              u'\\@\\url{https://www.bla.com}. \\@\\url{http://www.blub.org}?'],
+             [u'https://www.bla.com. Sowie http://www.blub.org?',
+              u'\\@\\url{https://www.bla.com}. Sowie \\@\\url{http://www.blub.org}?'],
              [u'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
               u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsserArkade1.jpg}'],
              [u'https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg',
