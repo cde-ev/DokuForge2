@@ -892,8 +892,10 @@ class ExporterTestStrings:
                 u'"`Schoki"\'! "`Cola"\'; "`Nudeln"\': "`Suppe"\')'],
                [u'"Yo!" "Whaaat?" "Boom."',
                 u'"`Yo!"\' "`Whaaat?"\' "`Boom."\''],
-               [u'bla "Altern der DNA" blub',
-                u'bla "`Altern der \\@\\acronym{DNA}"\' blub'],
+               [u'"ALTERN der DNA"',
+                u'"`\\@\\acronym{ALTERN} der \\@\\acronym{DNA}"\''],
+               [u'bla "ALTERN der DNA" blub',
+                u'bla "`\\@\\acronym{ALTERN} der \\@\\acronym{DNA}"\' blub'],
                [u'Und "$so$ ist $es$" in',
                 u'Und "`$so$ ist $es$"\' in']]
 
