@@ -1111,7 +1111,7 @@ Bobby Tables...
 after""" ] ]
 
     multilineCaptions = [ [u'Dies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.',
-                           u'\\\@\\begin{minipage}{\\linewidth}\nDies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.\\end{minipage}' ] ]
+                           u'Dies ist eine Bildunterschrift.\\@\\@\\@\nSie soll zwei Absätze haben.' ] ]
 
 class ExporterTestCases:
     """
@@ -1143,7 +1143,7 @@ class ExporterTestCases:
 
     titleTests = testsEverywhere
 
-    captionTests = testsInText + \
+    captionTests = [[[i, j.replace(u'\n\n', u'\\@\\@\\@\n')] for i, j in k] for k in testsInText] + \
                    [ ExporterTestStrings.multilineCaptions ]
 
 class DokuforgeMicrotypeUnitTests(DfTestCase):
