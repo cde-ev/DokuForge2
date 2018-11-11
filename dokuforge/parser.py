@@ -771,7 +771,6 @@ class PSequence(PTree):
             result = result + part.toTexStringsAndTerminalStrings()
         return result
 
-
     def toHtml(self):
         result = ''
         for part in self.parts:
@@ -1755,9 +1754,24 @@ def dfTitleParser(text):
 
 captionfeatures =  [Paragraph, Item, EnumerateItem, Description, Ednote]
 
+
+class PSequenceWithCaptionPostprocessing(PSequence):
+    def __init__(self, parts):
+        PSequence.__init__(self, parts)
+
+    def postprocess(self, text):
+        text = text.strip()
+        text = text.replace(u'\n\n', u'\\@\\@\\@\n')
+        return text
+
+    def toTex(self):
+        texToBePostprocessed = PSequence.toTex(self)
+        return self.postprocess(texToBePostprocessed)
+
+
 def dfCaptionParser(text):
     groups = grouplines(text.splitlines(), captionfeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
-    return PSequence(ptrees)
+    return PSequenceWithCaptionPostprocessing(ptrees)
