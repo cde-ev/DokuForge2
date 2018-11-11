@@ -44,6 +44,7 @@ if [ -d $EXPORTEDACADIR ]; then
 fi
 
 # unpack raw export so that local df2 finds it
+mkdir -p work/example/df
 tar -C $DFWORKDIR -xvf $RAWEXPORT
 
 # clean directory of dokuforge-export-static files (no local files, e.g., backups)
