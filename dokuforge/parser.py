@@ -423,16 +423,29 @@ def fullStop(word):
     else:
         yield word
 
+openQuotationTerminalString = TerminalString(u'"`')
+closeQuotationTerminalString = TerminalString(u'"\'')
+
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith(u'"'):
-        yield TerminalString(u'"`')
+        yield openQuotationTerminalString
         word = word[1:]
     yield word
 
 def closeQuotationMark(word):
+    # print(word)
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
-        yield TerminalString(u'"\'')
+        yield closeQuotationTerminalString
+    else:
+        yield word
+
+def closePunctuationQuotationMark(word):
+    if (len(word) == 2):
+        print(word, word[0] in u'.;:()!?',  word[1] == '"' )
+    if ( len(word) == 2 ) and ( word[0] in u'.;:()!?' ) and ( word[1] == '"' ):
+        yield word[:1]
+        yield closeQuotationTerminalString
     else:
         yield word
 
@@ -626,6 +639,15 @@ class SplitSeparators:
     def __call__(self, word):
         return self.splitre.split(word)
 
+
+class SplitPunctuationQuotes:
+    def __init__(self, punctuation):
+        self.splitre = re.compile('([%s]")' % re.escape(punctuation))
+
+    def __call__(self, word):
+        return self.splitre.split(word)
+
+
 def applyMicrotypefeatures(wordlist, featurelist):
     """
     sequentially apply (in the sense wordlist >>= feature)
@@ -633,6 +655,7 @@ def applyMicrotypefeatures(wordlist, featurelist):
     of the result.
     @type wordlist: [unicode]
     """
+    # print(wordlist)
     for feature in featurelist:
         wordlistlist = []
         for word in wordlist:
@@ -658,6 +681,8 @@ def defaultMicrotype(text):
     separators = ' \t,;:()!?\n-' # no point, might be in abbreviations
     features = [SplitSeparators("\n"), formatCode,
                 ## no splitting at all before the previous features
+                SplitPunctuationQuotes(separators[1:-1]),
+                closePunctuationQuotationMark,
                 SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing,
                 percentSpacing, formatDate, pageReferences,
