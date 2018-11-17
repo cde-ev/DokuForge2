@@ -53,7 +53,8 @@ drücken. Einmal reicht nicht!</p>
 </tr>
 <tr>
     <td><pre>Ein einfacher
-Zeilenumbruch wird von DokuForge nicht als Absatz erkannt.
+Zeilenumbruch wird von DokuForge
+nicht als Absatz erkannt.
 
 Erst eine Leerzeile erzeugt einen neuen Absatz.</pre></td>
     <td>
