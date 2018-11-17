@@ -891,13 +891,7 @@ class ExporterTestStrings:
                [u'"Schoki"! "Cola"; "Nudeln": "Suppe")',
                 u'"`Schoki"\'! "`Cola"\'; "`Nudeln"\': "`Suppe"\')'],
                [u'"Yo!" "Whaaat?" "Boom."',
-                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\''],
-               [u'"ALTERN der DNA"',
-                u'"`\\@\\acronym{ALTERN} der \\@\\acronym{DNA}"\''],
-               [u'bla "ALTERN der DNA" blub',
-                u'bla "`\\@\\acronym{ALTERN} der \\@\\acronym{DNA}"\' blub'],
-               [u'Und "$so$ ist $es$" in',
-                u'Und "`$so$ ist $es$"\' in']]
+                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\''] ]
 
     abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
