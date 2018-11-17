@@ -39,6 +39,8 @@ für die Weiterentwicklung von DokuForge auf dein Feedback angewiesen.</p>
 <li><a href="#eigennamen">Eigennamen</a></li>
 <li><a href="#cde_vokabular">CdE-Vokabular</a></li>
 <li><a href="#ednotes">Ednotes</a></li>
+<li><a href="#urls">URLs</a></li>
+<li><a href="#urls">Code</a></li>
 </ul>
 <h2><a name="absaetze"></a>Absätze</h2>
 <p>Absätze werden in DokuForge durch Leerzeilen getrennt. Wenn du einen
@@ -66,18 +68,18 @@ drücken. Einmal reicht nicht!</p>
 
 <h2><a name="ueberschriften"></a> Überschriften</h2>
 <p>Eine Überschrift steht am Anfang einer Zeile und wird in eckige
-Klammern gesetzt. Sie wird dabei nicht nummeriert -- dies geschieht
+Klammern gesetzt. Sie wird dabei nicht nummeriert &ndash; dies geschieht
 später automatisch. Deshalb bitte nicht auf eine Kapitelnummer
-verweisen, sondern auf den Titel. Beispiel: "Wie in der Einleitung
-dargestellt."</p>
+verweisen, sondern auf den Titel. Beispiel: &quot;Wie in der Einleitung
+dargestellt.&quot;</p>
 <p>Es gibt nur eine Überschriftenebene! Also keine Unterüberschriften
 (weder kursiv noch als Schlagwort oder noch anders).</p>
 <h2><a name="autoren"></a> Autoren</h2>
 <p>Direkt unter eine Überschrift (und nur da) kann nach einem einfachen
 Zeilenumbruch eine Autorenangabe gesetzt werden. Autorenangaben
 gehören in runde Klammern.</p>
-<p>Bitte setze kein "von" an den Beginn, nenne die Autoren mit Komma
-getrennt sowie mit einem "und" vor dem letzten Autorennamen.</p>
+<p>Bitte setze kein &quot;von&quot; an den Beginn, nenne die Autoren mit Komma
+getrennt sowie mit einem &quot;und&quot; vor dem letzten Autorennamen.</p>
 <table width="80%">
 <tr>
     <td width="40%">Eingabe:</td>
@@ -159,13 +161,13 @@ zum gewünschten Ergebnis.</p>
 werden in DokuForge mit drei Punkten und einem Leerzeichen davor
 gesetzt ...</p>
 <h2><a name="anfuehrungszeichen"></a> Anführungszeichen</h2>
-<p>Anführungszeichen sollten als " (Shift-2 auf der deutschen Tastatur)
+<p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur)
 eingegeben werden. Es werden dann automatisch korrekte deutsche
 Anführungszeichen gesetzt.</p>
 <h2><a name="bindestrich"></a> Bindestrich</h2>
 <p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und
 Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden
-hier zur Eingabe zwei Bindestriche: "--". Wichtig ist, dass
+hier zur Eingabe zwei Bindestriche: &quot;--&quot;. Wichtig ist, dass
 Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen,
 während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt
 werden.</p>
@@ -176,13 +178,13 @@ werden.</p>
 </tr>
 <tr>
     <td>
-    "DokuForge" schreibt man --&nbsp;und dies verhält sich bei "Style-Guide"
+    &quot;DokuForge&quot; schreibt man --&nbsp;und dies verhält sich bei &quot;Style-Guide&quot;
     anders&nbsp;-- ohne Bindestrich. Das hat auch sicher 5--7 gute Gründe.
         </td>
     <td>
-    &bdquo;DokuForge&ldquo; schreibt man --&nbsp;und dies verhält sich bei
-    &bdquo;Style-Guide&ldquo; anders&nbsp;-- ohne Bindestrich. Das hat auch
-    sicher 5--7 gute Gründe.
+    &bdquo;DokuForge&ldquo; schreibt man &ndash;&nbsp;und dies verhält sich bei
+    &bdquo;Style-Guide&ldquo; anders&nbsp;&ndash; ohne Bindestrich. Das hat auch
+    sicher 5&ndash;7 gute Gründe.
         </td>
 </tr>
 </table>
@@ -190,7 +192,7 @@ werden.</p>
 <h2><a name="einheiten"></a> Einheiten</h2>
 <p>Einheiten werden automatisch erkannt. Sie müssen dafür lediglich durch
 ein Leerzeichen getrennt hinter die zugehörige Zahl gesetzt werden. Im
-Gegensatz dazu gehört vor das Prozentzeichen und vor "°C" kein
+Gegensatz dazu gehört vor das Prozentzeichen und vor &quot;°C&quot; kein
 Leerzeichen! Dieses bitte direkt an die Zahl schreiben.</p>
 <table>
 <tr>
@@ -213,7 +215,7 @@ Leerzeichen! Dieses bitte direkt an die Zahl schreiben.</p>
 </tr>
 </table>
 
-<p>Das Dollarzeichen "$" kann DokuForge übrigens nicht darstellen. Dieses
+<p>Das Dollarzeichen &quot;$&quot; kann DokuForge übrigens nicht darstellen. Dieses
 ist nämlich für mathematische Formeln reserviert. Bitte entweder eine
 Ednote oder die Abkürzung USD verwenden.</p>
 <h2><a name="zahlen"></a> Zahlen</h2>
@@ -224,7 +226,7 @@ sie nur dann automatisch formatieren kann.</p>
 2349635 und nicht 2 349 635
 300000 und nicht 300.000
 </pre>
-
+<p>Uhrzeiten bitte im Format 23:00 eingeben.</p>
 <h2><a name="exponenten"></a> Exponenten</h2>
 <p>Wenn du Exponenten darstellen willst, setze diese bitte zwischen zwei
 Dollarzeichen (d.h. als mathematische Formel).</p>
@@ -250,7 +252,7 @@ Dollarzeichen (d.h. als mathematische Formel).</p>
 </table>
 
 <h2><a name="brueche"></a> Brüche</h2>
-<p>Bitte gebt Brüche in der Form "1/2" ein und nicht als "½".</p>
+<p>Bitte gebt Brüche in der Form &quot;1/2&quot; ein und nicht als &quot;½&quot;.</p>
 <h2><a name="abkuerzungen"></a> Abkürzungen</h2>
 <p>Abkürzungen sind manchmal etwas problematisch. Daher gibt es eine
 Liste erlaubter Abkürzungen. Alles andere, was man versucht sein
@@ -265,7 +267,7 @@ sehr schön umformulieren.</p>
 <li>f.</li>
 <li>ff.</li>
 <li>n.Chr.</li>
-<li>o.Ä.</li>
+<li>o.ä., o.Ä.</li>
 <li>s.o.</li>
 <li>s.u.</li>
 <li>sog.</li>
@@ -293,7 +295,7 @@ Gliedern (es werden später korrekte kleine Zwischenräume gesetzt).</p>
 </ul>
 <h2><a name="ednotes"></a> Ednotes</h2>
 <p>Falls du uns (denen, die die Doku endgültig setzen) etwas mitteilen
-oder Besonderheiten wie Gedichte oder Tabellen nutzen willst (siehe
+oder Besonderheiten wie Tabellen oder Gedichte nutzen willst (siehe
 dazu die entsprechenden Abschnitte), kannst du es in einem separaten
 Absatz in geschweifte Klammern schreiben. Diese sogenannte Ednote
 sieht zum Beispiel so aus:</p>
@@ -328,7 +330,8 @@ Breite des Eingabefeldes) selbst umbrichst.</p>
 <p>Wenn du in den Ednotes geschweifte Klammern verwendest, genügt eine
 einfach geschweifte Klammer nicht, um eine Ednote auszuzeichnen. Du
 kannst die Ednote dann mit einer beliebigen Kombination von Klammern,
-aber beginnend mit einer geschweiften, öffnen:</p>
+aber beginnend mit einer geschweiften, öffnen und mit schließenden
+Klammern in umgekehrter Reihenfolge beenden:</p>
 <table  width="80%">
 <tr>
     <td width="40%">Eingabe:</td>
@@ -344,4 +347,41 @@ aber beginnend mit einer geschweiften, öffnen:</p>
 \title{Beispieltitel}</pre>
         </td>
 </tr>
-</table></div>
+</table>
+<h2><a name="urls"></a> URLs</h2>
+<p>URLs bitte in Ednotes eingeben.</p>
+<table  width="80%">
+<tr>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
+</tr>
+<tr>
+    <td><pre>
+Unter
+{
+http://www.google.de
+}
+erreicht man eine Suchmaschine.</pre>
+        </td>
+    <td>Unter<pre class="ednote">
+http://www.google.de</pre>erreicht man eine Suchmaschine.
+        </td>
+</tr>
+</table>
+<p>Dabei bitte ignorieren, dass das scheinbar den Absatz zerhackt.</p>
+<h2><a name="code"></a> Code (Programmquelltext)</h2>
+<p>Zur Darstellung von kleinen Code-Schnippseln im Fließtext werden Pipes
+um den Code gesetzt. Eine mehrzeilige Eingabe von Code erfolgt in ednotes.</p>
+<p>Eingabe:</p>
+<p>Möchte man eine |Class Klasse| im Text erklären, so kann man es einfach
+mit || einfügen. Schreibt man eine mehrzeilige Klassendefinition, so
+wird sie in eine Ednote eingebettet. Dabei bitte die ednote mit einer Klammerstruktur eingeben, die im Quellcode nicht vorkommt.</p>
+<pre>
+{[(
+Class Klasse
+    def __init__(self, realpart, imagpart):
+    self.r = realpart
+    self.i = imagpart
+)]}
+</pre>
+</div>
