@@ -139,8 +139,13 @@ def acronym(word):
     still allowing for compound nouns such as 'DNA-Sequenz'.
     A plural 's' as in 'EKGs' is allowed.
     """
-    pattern = r'(\w+)' # only alphanumeric characters or underscore
     concat_left = u''
+
+    if re.compile(r'^(\d)D$').match(word):  # nD needs special treatment
+        concat_left = re.sub(r'(\d)D', u'\\1\\\\@\\\\acronym{D}', word)
+        word = ''
+
+    pattern = r'(\w+)' # only alphanumeric characters or underscore
     m = True
     while m:
         if m != True:

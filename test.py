@@ -913,7 +913,7 @@ class ExporterTestStrings:
                 [u'Unterscheide T-shirt und DNA-Sequenz.',
                  u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.'],
                 [u'Wenn 1D nicht reicht, nutze 2D oder 6D.',
-                 u'Wenn \\@\\acronym{1D} nicht reicht, nutze \\@\\acronym{2D} oder\n\\@\\acronym{6D}.'],
+                 u'Wenn 1\\@\\acronym{D} nicht reicht, nutze 2\\@\\acronym{D} oder\n6\\@\\acronym{D}.'],
                 [u'Wahlergebnis fuer die SPD: 9% (NRW).',
                  u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
                 [u'FDP? CDU! CSU. ÖVP.',
