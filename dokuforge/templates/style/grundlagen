@@ -6,7 +6,7 @@ entsprechenden Kurstitel. Jetzt kannst du bestehende Texte in dieser
 Kursdoku anschauen, editieren oder neue Seiten hinzufügen.</p>
 <p>Textverarbeitungsprogramme wie Word und OpenOffice haben die
 unangenehme Eigenschaft, beim Einfügen von Texten in DokuForge mittels
-Copy'n'Paste nicht standardisierte Sonderzeichen in mehr oder weniger
+Copy&amp;Paste Sonderzeichen in mehr oder weniger
 unvorhersehbarer Art und Weise zu benutzen. Das betrifft vor allem
 Anführungszeichen, Gedankenstriche und Ellipsen.</p>
 <p>Wir empfehlen dir daher dringend, zum Vorschreiben der Texte das
@@ -162,15 +162,13 @@ werden in DokuForge mit drei Punkten und einem Leerzeichen davor
 gesetzt ...</p>
 <h2><a name="anfuehrungszeichen"></a> Anführungszeichen</h2>
 <p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur)
-eingegeben werden. Es werden dann automatisch korrekte deutsche
-Anführungszeichen gesetzt.</p>
+eingegeben werden. Wir machen daraus später »schöne« Anführungszeichen.</p>
 <h2><a name="bindestrich"></a> Bindestrich</h2>
 <p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und
 Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden
 hier zur Eingabe zwei Bindestriche: &quot;--&quot;. Wichtig ist, dass
 Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen,
-während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt
-werden.</p>
+während Bereichsstriche ohne Leerzeichen eingegeben werden.</p>
 
 <h2><a name="einheiten"></a> Einheiten</h2>
 <p>Einheiten werden automatisch erkannt. Sie müssen dafür lediglich durch
