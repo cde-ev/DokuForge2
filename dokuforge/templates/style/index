@@ -28,6 +28,7 @@ was möglich ist bzw. wie du etwas eingeben sollst.</p>
 <p>Falls du dich schon mit DokuForge auskennst, findest du
 <a href="{{ staticjoin('so_gehts_cheatsheet.pdf')|e }}">hier einen
 übersichtlichen Spickzettel</a> für die Eingabe-Syntax.</p>
+<p>Alle Anleitungen auf einer Seite findest du <a href="/style/all">hier</a>.
 <h2>Schokolade</h2>
 <p>Sonderwünsche bedeuten oft viel Handarbeit. Wenn sich ein
 Dokuteam-Mitglied diese Arbeit macht, um die Doku euren Vorstellungen
