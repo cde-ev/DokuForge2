@@ -93,7 +93,7 @@ getrennt sowie mit einem &quot;und&quot; vor dem letzten Autorennamen.</p>
             <i>Vorname Nachname</i>
     </td>
 </tr>
-<tr> 
+<tr>
     <td>
             [Überschrift]<br>            (Vorname Nachname, Vorname Nachname und Vorname Nachname)        </td>
     <td>
@@ -171,23 +171,6 @@ hier zur Eingabe zwei Bindestriche: &quot;--&quot;. Wichtig ist, dass
 Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen,
 während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt
 werden.</p>
-<table  width="80%">
-<tr>
-    <td width="40%">Eingabe:</td>
-    <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-    <td>
-    &quot;DokuForge&quot; schreibt man --&nbsp;und dies verhält sich bei &quot;Style-Guide&quot;
-    anders&nbsp;-- ohne Bindestrich. Das hat auch sicher 5--7 gute Gründe.
-        </td>
-    <td>
-    &bdquo;DokuForge&ldquo; schreibt man &ndash;&nbsp;und dies verhält sich bei
-    &bdquo;Style-Guide&ldquo; anders&nbsp;&ndash; ohne Bindestrich. Das hat auch
-    sicher 5&ndash;7 gute Gründe.
-        </td>
-</tr>
-</table>
 
 <h2><a name="einheiten"></a> Einheiten</h2>
 <p>Einheiten werden automatisch erkannt. Sie müssen dafür lediglich durch
