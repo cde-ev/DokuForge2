@@ -18,112 +18,81 @@ dessen Syntax ist hier in einer Ednote gewünscht.)</p>
 <p>Beispiel:
 <pre>
 {[{LITERATURANGABEN
+
 @BOOK{blackmore2000,
-             title     = "The Meme Machine",
-             author    = "Blackmore, Susan",
-             year      = "2000",
-             address   = "Oxford",
-             publisher = "Oxford Paperbacks",
+  title     = "The Meme Machine",
+  author    = "Blackmore, Susan",
+  year      = "2000",
+  address   = "Oxford",
+  publisher = "Oxford Paperbacks",
 }
 }]}
 </pre></p>
 <p>Beachte, dass die Ednote mit <code>{[{</code> geöffnet und mit <code>}]}</code> geschlossen werden muss,
 da die Ednote selbst auch geschweifte Klammern enthält.</p>
 <h2>Beispiele für gebräuchliche Arten von Literaturquellen</h2>
-<p>Hier findest du Beispiele für gängige Arten von Literaturquellen
-als Kopiervorlage. Beachte, dass ab einem Prozentzeichen der Rest der
+<p>Hier findest du Beispiele für gängige Arten von Literaturquellen, leere Vorlagen zum Kopieren stehen unten.
+Beachte, dass ab einem Prozentzeichen der Rest der
 Zeile als Kommentar angesehen und ignoriert wird. Die Erläuterungen
 nach den Prozentzeichen, die in den folgenden Beispielen stehen,
 brauchst du daher nicht mitkopieren. </p>
 <p>Im Fall einer Monographie bzw. eines Buches lautet die Syntax:</p>
 <pre>
-<table cellspacing="0px">
- <colgroup>
-  <col width="100">
-  <col width="5">
-  <col width="150">
-  <col width="100">
- </colgroup>
-<tbody>
- <tr><td colspan="3">@BOOK{fischer97, </td> <td>% Kurzform</td></tr>
- <tr> <td>  title</td><td>=</td> <td>"Lineare Algebra", </td>  <td>% Vollständiger Titel der Monographie </td> </tr
- <tr> <td>  author</td><td>=</td> <td>"Fischer, Gerd", </td>  <td>% Name der Autoren: Nachname, Vorname (optional) </td> </tr>
- <tr> <td>  editor</td><td>=</td> <td>"Rühmann, Heinz", </td> <td>% Editor des Werkes: Nachname, Vorname (optional) </td> </tr>
- <tr> <td>  translator</td><td>=</td> <td>"Braun,Wilhelm", </td> <td>% Übersetzer des Werkes </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1997", </td> <td>% Veröffentlichungsjahr </td> </tr>
- <tr> <td>  address</td><td>=</td> <td>"Berlin", </td> <td>% Ort der Veröffentlichung </td> </tr>
- <tr> <td>  publisher</td><td>=</td> <td>"Vieweg Studium", </td><td>% Verlag (optional) </td> </tr>
- <tr><td colspan="3">} </td></tr>
-</tbody>
-</table>
+{({
+@BOOK{fischer97,                  % Kurzform
+  title      = "Lineare Algebra", % Vollständiger Titel der Monographie
+  author     = "Fischer, Gerd",   % Name der Autoren: Nachname, Vorname (optional)
+  editor     = "Rühmann, Heinz",  % Editor des Werkes: Nachname, Vorname (optional)
+  translator = "Braun, Wilhelm",  % Übersetzer des Werkes
+  year       = "1997",            % Veröffentlichungsjahr
+  address    = "Berlin",          % Ort der Veröffentlichung
+  publisher  = "Vieweg Studium",  % Verlag (optional)
+}
+})}
 </pre>
 
 <p>Im Fall eines Artikels in einer Zeitschrift bzw. einem Journal lautet
 die Syntax (bei Zeitungsartikeln bitte das vollständige Datum
 angeben):</p>
 <pre>
-<table cellspacing="0px">
- <colgroup>
-  <col width="100">
-  <col width="5">
-  <col width="150">
-  <col width="100">
- </colgroup>
-<tbody>
- <tr><td colspan="3">@ARTICLE{heisenbergDeutung, </td> <td>% Kurzform</td></tr>
- <tr> <td>  author</td><td>=</td> <td>"Heisenberg, Werner and Bohr, Niels", </td> <td>% Name der Autoren: Nachname, Vorname </td> </tr>
- <tr> <td>  title</td><td>=</td> <td>"Die Kopenhagener Deutung der Quantentheorie", </td> <td>% Vollständiger Titel des Artikels </td> </tr>
- <tr> <td>  journal</td><td>=</td> <td>"Physik und Philosophie", </td> <td>% Name des Journals, in dem der Artikel veröffentlicht wurde </td> </tr>
- <tr> <td>  volume</td><td>=</td> <td>"12", </td> <td>% Nummer des Jahrgangs/Journals </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>% Veröffentlichungsjahr </td> </tr>
- <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>% Seitenumfang im Journal </td> </tr>
- <tr><td colspan="4">} </td></tr>
-</tbody>
-</table>
+{[{
+@ARTICLE{heisenbergDeutung,                                % Kurzform
+  author  = "Heisenberg, Werner and Bohr, Niels",          % Name der Autoren: Nachname, Vorname
+  title   = "Die Kopenhagener Deutung der Quantentheorie", % Vollständiger Titel des Artikels
+  journal = "Physik und Philosophie",                      % Name des Journals, in dem der Artikel veröffentlicht wurde
+  volume  = "12",                                          % Nummer des Jahrgangs/Journals
+  year    = "1990",                                        % Veröffentlichungsjahr
+  pages   = "27--42",                                      % Seitenumfang im Journal
+}
+})}
 </pre>
 
 <p>Im Fall eines Aufsatzes in einem Sammelwerk (hierunter fallen auch
 Artikel in Lexika) lautet die Syntax:</p>
 <pre>
-<table cellspacing="0px">
- <colgroup>
-  <col width="100">
-  <col width="5">
-  <col width="150">
-  <col width="100">
- </colgroup>
-<tbody>
- <tr><td colspan="3">@INCOLLECTION{brodersen, </td> <td>% Kurzform</td></tr>
- <tr> <td>  author</td><td>=</td> <td>"Brodersen, Kai", </td> <td>% Name der Autoren: Nachname, Vorname </td> </tr>
- <tr> <td>  title</td><td>=</td> <td>"Gebet und Fluch, Zeichen und Traum.", </td> <td>% Titel des Aufsatzes </td> </tr>
- <tr> <td>  editor</td><td>=</td> <td>"Brodersen, Kai", </td> <td>% Name der Herausgeber: Nachname, Vorname </td> </tr>
- <tr> <td>  booktitle</td><td>=</td> <td>"Briefe in die Unterwelt.", </td> <td>% Name des Sammelwerkes/Lexikons </td> </tr>
- <tr> <td>  address</td><td>=</td> <td>"Münster", </td> <td>% Ort der Veröffentlichung </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>% Jahr der Veröffentlichung </td> </tr>
- <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>% Seitenumfang im Sammelwerk </td> </tr>
- <tr><td colspan="4">} </td></tr>
-</tbody>
-</table>
+{[{
+@INCOLLECTION{brodersen,                             % Kurzform
+  author    = "Brodersen, Kai",                      % Name der Autoren: Nachname, Vorname
+  title     = "Gebet und Fluch, Zeichen und Traum.", % Titel des Aufsatzes
+  editor    = "Brodersen, Kai",                      % Name der Herausgeber: Nachname, Vorname
+  booktitle = "Briefe in die Unterwelt.",            % Name des Sammelwerkes/Lexikons
+  address   = "Münster",                             % Ort der Veröffentlichung
+  year      = "1990",                                % Jahr der Veröffentlichung
+  pages     = "27--42",                              % Seitenumfang im Sammelwerk
+}
+})}
 </pre>
 
 <p>Im Fall einer URL bzw. Internetreferenz lautet die Syntax:</p>
 <pre>
-<table cellspacing="0px">
- <colgroup>
-  <col width="100">
-  <col width="5">
-  <col width="150">
-  <col width="100">
- </colgroup>
-<tbody>
- <tr><td colspan="3">@BOOKLET{mpgBericht, </td> <td>% Kurzform</td></tr>
- <tr> <td>  url</td><td>=</td> <td>"http://www.mpg.de/180882/Jahresbericht", </td> <td>% Internetadresse </td> </tr>
- <tr> <td>  urldate</td><td>=</td> <td>"2012-07-02", </td> <td>% Datum des Abrufes: YYYY-MM-DD </td>  </tr>
- <tr> <td>  title</td><td>=</td> <td>"Jahresbericht der Max-Planck-Gesellschaft 2010", </td> <td>% Titel der Internetreferenz </td> </tr>
- <tr> <td>  author</td><td>=</td> <td>"Max-Planck-Gesellschaft", </td> <td>% Namen der Autoren (optional) </td> </tr>
- <tr><td colspan="3">} </td></tr>
-</tbody>
-</table>
+{[{
+@BOOKLET{mpgBericht,                                          % Kurzform
+  url     = "http://www.mpg.de/180882/Jahresbericht",         % Internetadresse
+  urldate = "2012-07-02",                                     % Datum des Abrufes: YYYY-MM-DD
+  title   = "Jahresbericht der Max-Planck-Gesellschaft 2010", % Titel der Internetreferenz
+  author  = "Max-Planck-Gesellschaft",                        % Namen der Autoren (optional)
+}
+})}
 </pre>
 
 <p>Die Beispiele dienen zur Illustration der Verwendung der
@@ -132,3 +101,45 @@ Spezialfälle abzudecken. Wenn du eine Literaturangabe hast, die du
 in keines der oben genannten Schemata packen kannst, dann schreib die
 fertig formatierte Literaturangabe in eine eigene Ednote. Um die
 endgültige Formatierung kümmern wir uns dann in der Redaktion.</p></div>
+
+<h2>Vorlagen zum Kopieren</h2>
+Nicht zutreffende Felder bitte löschen.
+<pre>
+{[{
+@BOOK{fischer97,
+  title      = "",
+  author     = "",
+  editor     = "",
+  translator = "",
+  year       = "",
+  address    = "",
+  publisher  = "",
+}
+
+@ARTICLE{heisenbergDeutung,
+  author  = "",
+  title   = "",
+  journal = "",
+  volume  = "",
+  year    = "",
+  pages   = "",
+}
+
+@INCOLLECTION{brodersen,
+  author    = "",
+  title     = "",
+  editor    = "",
+  booktitle = "",
+  address   = "",
+  year      = "",
+  pages     = "",
+}
+
+@BOOKLET{mpgBericht,
+  url     = "",
+  urldate = "",
+  title   = "",
+  author  = "",
+}
+})}
+</pre>

@@ -6,7 +6,7 @@ entsprechenden Kurstitel. Jetzt kannst du bestehende Texte in dieser
 Kursdoku anschauen, editieren oder neue Seiten hinzufügen.</p>
 <p>Textverarbeitungsprogramme wie Word und OpenOffice haben die
 unangenehme Eigenschaft, beim Einfügen von Texten in DokuForge mittels
-Copy'n'Paste nicht standardisierte Sonderzeichen in mehr oder weniger
+Copy&amp;Paste Sonderzeichen in mehr oder weniger
 unvorhersehbarer Art und Weise zu benutzen. Das betrifft vor allem
 Anführungszeichen, Gedankenstriche und Ellipsen.</p>
 <p>Wir empfehlen dir daher dringend, zum Vorschreiben der Texte das
@@ -52,12 +52,11 @@ drücken. Einmal reicht nicht!</p>
     <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-    <td>
-        Ein einfacher<br>
-    Zeilenumbruch wird von DokuForge nicht als Absatz erkannt.
-    <p>
-    Erst eine Leerzeile erzeugt einen neuen Absatz.
-        </td>
+    <td><pre>Ein einfacher
+Zeilenumbruch wird von DokuForge
+nicht als Absatz erkannt.
+
+Erst eine Leerzeile erzeugt einen neuen Absatz.</pre></td>
     <td>
         Ein einfacher Zeilenumbruch wird von DokuForge nicht als Absatz erkannt.
     <p>
@@ -86,16 +85,15 @@ getrennt sowie mit einem &quot;und&quot; vor dem letzten Autorennamen.</p>
     <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-    <td>[Überschrift]<br>
-            (Vorname Nachname)
-    </td>
+    <td><pre>[Überschrift]
+(Vorname Nachname)</pre></td>
     <td><h3>Überschrift</h3>
             <i>Vorname Nachname</i>
     </td>
 </tr>
 <tr>
-    <td>
-            [Überschrift]<br>            (Vorname Nachname, Vorname Nachname und Vorname Nachname)        </td>
+    <td><pre>[Überschrift]
+(Vorname Nachname, Vorname Nachname und Vorname Nachname)</pre></td>
     <td>
             <h3>Überschrift</h3>            <i>Vorname Nachname, Vorname Nachname und Vorname Nachname</i>        </td>
 </tr>
@@ -103,10 +101,10 @@ getrennt sowie mit einem &quot;und&quot; vor dem letzten Autorennamen.</p>
 
 <h2><a name="hervorhebungen"></a> Hervorhebungen</h2>
 <p>Möchte man etwas im Text hervorheben, kann man es zwischen
-_Unterstriche_ setzen.</p>
+<code>_Unterstriche_</code> setzen.</p>
 <h2><a name="schlagworte"></a> Schlagworte</h2>
 <p>Am Anfang eines Absatzes (und nur dort!) gibt es die Möglichkeit, ein
-Wort als Schlagwort auszuzeichnen, indem man es in *Sternchen*
+Wort als Schlagwort auszuzeichnen, indem man es in <code>*Sternchen*</code>
 einschließt.</p>
 <h2><a name="aufzaehlungen"></a> Aufzählungen</h2>
 <p>Aufzählungen funktionieren denkbar einfach: Ein einzelner Bindestrich
@@ -118,12 +116,10 @@ zum gewünschten Ergebnis.</p>
     <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-    <td>
-        - erster Punkt<br>
-    - zweiter Punkt<br>
-    - noch ein .<br>
-    - viele Punkte:&nbsp;...<br>
-        </td>
+    <td><pre>- erster Punkt
+- zweiter Punkt
+- noch ein .
+- viele Punkte: ...<pre></td>
     <td>
         <ul>
     <li type="disc">erster Punkt</li>
@@ -140,12 +136,10 @@ zum gewünschten Ergebnis.</p>
     <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-    <td>
-        1. erster Punkt<br>
-    2. zweiter Punkt<br>
-    3. noch ein .<br>
-    4. viele Punkte:&nbsp;...<br>
-        </td>
+    <td><pre>1. erster Punkt
+2. zweiter Punkt
+3. noch ein .
+4. viele Punkte: ...</pre></td>
     <td>
         <ol>
     <li>erster Punkt</li>
@@ -159,35 +153,16 @@ zum gewünschten Ergebnis.</p>
 <h2><a name="ellipse"></a> Auslasspunkte (Ellipse)</h2>
 <p>Eine Ellipse (drei Punkte zur Kennzeichnung einer Auslassung, …)
 werden in DokuForge mit drei Punkten und einem Leerzeichen davor
-gesetzt ...</p>
+gesetzt: <code>...</code></p>
 <h2><a name="anfuehrungszeichen"></a> Anführungszeichen</h2>
 <p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur)
-eingegeben werden. Es werden dann automatisch korrekte deutsche
-Anführungszeichen gesetzt.</p>
+eingegeben werden. Wir machen daraus später »schöne« Anführungszeichen.</p>
 <h2><a name="bindestrich"></a> Bindestrich</h2>
 <p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und
 Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden
-hier zur Eingabe zwei Bindestriche: &quot;--&quot;. Wichtig ist, dass
+hier zur Eingabe zwei Bindestriche: <code>--</code>. Wichtig ist, dass
 Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen,
-während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt
-werden.</p>
-<table  width="80%">
-<tr>
-    <td width="40%">Eingabe:</td>
-    <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-    <td>
-    &quot;DokuForge&quot; schreibt man --&nbsp;und dies verhält sich bei &quot;Style-Guide&quot;
-    anders&nbsp;-- ohne Bindestrich. Das hat auch sicher 5--7 gute Gründe.
-        </td>
-    <td>
-    &bdquo;DokuForge&ldquo; schreibt man &ndash;&nbsp;und dies verhält sich bei
-    &bdquo;Style-Guide&ldquo; anders&nbsp;&ndash; ohne Bindestrich. Das hat auch
-    sicher 5&ndash;7 gute Gründe.
-        </td>
-</tr>
-</table>
+während Bereichsstriche ohne Leerzeichen eingegeben werden.</p>
 
 <h2><a name="einheiten"></a> Einheiten</h2>
 <p>Einheiten werden automatisch erkannt. Sie müssen dafür lediglich durch
@@ -200,13 +175,9 @@ Leerzeichen! Dieses bitte direkt an die Zahl schreiben.</p>
     <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-    <td>
-    <span class="tex2jax_ignore">
-        1 m ist noch nicht so viel.<br>
-        1 m$^2$ ist schon mehr.<br>
-        Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
-    </span>
-        </td>
+    <td><span class="tex2jax_ignore"><pre>1 m ist noch nicht so viel.
+1 m$^2$ ist schon mehr.
+Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.</pre></span></td>
     <td>
         1 m ist noch nicht so viel.<br>
         1 m$^2$ ist schon mehr.<br>
@@ -237,12 +208,9 @@ Dollarzeichen (d.h. als mathematische Formel).</p>
 </tr>
 <tr>
     <td>
-    <span class="tex2jax_ignore">
-        5 m$^2$<br>
-        300 m$^3$<br>
-        7 km$^{800}$ sind zwar relativ unsinnig, aber ein Beispiel.
-    </span>
-        </td>
+    <span class="tex2jax_ignore"><pre>5 m$^2$
+300 m$^3$
+7 km$^{800}$ sind zwar relativ unsinnig, aber ein Beispiel.</pre></span></td>
     <td>
         5 m$^2$<br>
         300 m$^3$<br>
@@ -252,7 +220,7 @@ Dollarzeichen (d.h. als mathematische Formel).</p>
 </table>
 
 <h2><a name="brueche"></a> Brüche</h2>
-<p>Bitte gebt Brüche in der Form &quot;1/2&quot; ein und nicht als &quot;½&quot;.</p>
+<p>Bitte gebt Brüche in der Form <code>1/2</code> ein und nicht als <code>½</code>.</p>
 <h2><a name="abkuerzungen"></a> Abkürzungen</h2>
 <p>Abkürzungen sind manchmal etwas problematisch. Daher gibt es eine
 Liste erlaubter Abkürzungen. Alles andere, was man versucht sein
@@ -275,6 +243,7 @@ sehr schön umformulieren.</p>
 <li>u.a.</li>
 <li>v.Chr.</li>
 <li>vgl.</li>
+<li>vs.</li>
 <li>z.B.</li>
 </ul>
 <p>Diese Abkürzungen bitte auch genau so wie oben dargestellt schreiben,
@@ -373,9 +342,8 @@ http://www.google.de</pre>erreicht man eine Suchmaschine.
 <h2><a name="code"></a> Code (Programmquelltext)</h2>
 <p>Zur Darstellung von kleinen Code-Schnippseln im Fließtext werden Pipes
 um den Code gesetzt. Eine mehrzeilige Eingabe von Code erfolgt in ednotes.</p>
-<p>Eingabe:</p>
-<p>Möchte man eine |Class Klasse| im Text erklären, so kann man es einfach
-mit || einfügen. Schreibt man eine mehrzeilige Klassendefinition, so
+<p>Möchte man eine <code>|Class Klasse|</code> im Text erklären, so kann man es einfach
+in <code>|</code>-Symbole einschließen. Schreibt man eine mehrzeilige Klassendefinition, so
 wird sie in eine Ednote eingebettet. Dabei bitte die ednote mit einer Klammerstruktur eingeben, die im Quellcode nicht vorkommt.</p>
 <pre>
 {[(

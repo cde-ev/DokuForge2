@@ -1,11 +1,11 @@
 <div class="body">
 <h1>Gedichte und paralleler Text</h1>
-<p>Auch in diesen Fällen ist es nötig, die entsprechenden Texte in eine
-Ednote zu packen, damit alle Zeilenumbrüche erhalten bleiben. Bitte
+<p>In diesen Fällen bitte die entsprechenden Texte in eine
+Ednote packen, damit alle Zeilenumbrüche erhalten bleiben. Bitte
 verseht dabei eure Gedichte, Dialoge etc. mit Anmerkungen in einer
-Ednote wie: &quot;Dies ist ein GEDICHT, bitte entsprechend setzen!&quot;.</p>
+Ednote wie im folgenden Beispiel:</p>
 <pre>
-{ Technische Redaktion: Gedicht voraus. Die Einrückung im ersten Vers
+{ Gedicht voraus. Die Einrückung im ersten Vers
   ist beabsichtigt -- marc 20041227
 }
 
@@ -20,40 +20,27 @@ Ednote wie: &quot;Dies ist ein GEDICHT, bitte entsprechend setzen!&quot;.</p>
 }</pre>
 
 <p>In manchen Fällen mag es sinnvoll sein, Texte zweispaltig parallel zu
-setzen (z.B. bei einem Text und seiner Übersetzung). Hierfür gibt es die
-Parallel-Umgebung. Du kennzeichnest einfach folgendermaßen in der
-Ednote, was wohin soll:</p>
-<table  width="80%"  cellpadding="10">
-<tr>
-    <td width="30%">Eingabe:</td>
-    <td width="30%">Vorschau:</td>
-    <td width="30%"></td>
-</tr>
-<tr>
-    <td>
+setzen (z.B. bei einem Text und seiner Übersetzung). In diesem Fall erklärt
+uns bitte per ednotes, wie die zwei Teile zusammengehören:
+
 <pre>
-{
-\startparallel
+{ Die folgenden zwei Texte bitte nebeneinander setzen.
+
+  Linke Spalte:
+}
+
 Ich bin der Text, der auf der linken Seite steht.
 Dieser Meinung bin ich.
 Ich werde hier übersetzt.
-\parallel
+
+{ Hier kommt die rechte Spalte: }
+
 I am the text on the right side.
 This is my opinion.
 I am the translation
-\stopparallel
-}
+
+{ Ende der zwei Spalten. Weiter im normalen Fließtext: }
+
+Und hier geht der normale Text weiter.
 </pre>
-    </td>
-    <td valign="top">
-Ich bin der Text, der auf der linken Seite steht. 
-Dieser Meinung bin ich.
-Ich werde hier übersetzt.
-        </td>
-    <td valign="top">
-I am the text on the right side.
-This is my opinion.
-I am the translation
-        </td>
-</tr>
-</table></div>
+</div>
