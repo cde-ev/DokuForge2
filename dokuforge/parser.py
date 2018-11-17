@@ -526,7 +526,6 @@ def formatUrls(word):
     while m:
         if m != True:
             left, url_start, url_rest, after, word =  m.groups()
-            print (left, url_start, url_rest, after, word)
             yield left
             if url_start:
                 url = url_start + url_rest
@@ -535,7 +534,6 @@ def formatUrls(word):
                 url = fixPeriodAtEndOfUrl(url)
                 yield TerminalString(url)
             word = after + word
-        print(re.match(r'(.*?)' + pattern + r'(.*)', word))
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
