@@ -31,8 +31,8 @@ dessen Syntax ist hier in einer Ednote gewünscht.)</p>
 <p>Beachte, dass die Ednote mit <code>{[{</code> geöffnet und mit <code>}]}</code> geschlossen werden muss,
 da die Ednote selbst auch geschweifte Klammern enthält.</p>
 <h2>Beispiele für gebräuchliche Arten von Literaturquellen</h2>
-<p>Hier findest du Beispiele für gängige Arten von Literaturquellen
-als Kopiervorlage. Beachte, dass ab einem Prozentzeichen der Rest der
+<p>Hier findest du Beispiele für gängige Arten von Literaturquellen, leere Vorlagen zum Kopieren unten.
+Beachte, dass ab einem Prozentzeichen der Rest der
 Zeile als Kommentar angesehen und ignoriert wird. Die Erläuterungen
 nach den Prozentzeichen, die in den folgenden Beispielen stehen,
 brauchst du daher nicht mitkopieren. </p>
@@ -43,7 +43,7 @@ brauchst du daher nicht mitkopieren. </p>
   title      = "Lineare Algebra", % Vollständiger Titel der Monographie
   author     = "Fischer, Gerd",   % Name der Autoren: Nachname, Vorname (optional)
   editor     = "Rühmann, Heinz",  % Editor des Werkes: Nachname, Vorname (optional)
-  translator = "Braun,Wilhelm",   % Übersetzer des Werkes
+  translator = "Braun, Wilhelm",  % Übersetzer des Werkes
   year       = "1997",            % Veröffentlichungsjahr
   address    = "Berlin",          % Ort der Veröffentlichung
   publisher  = "Vieweg Studium",  % Verlag (optional)
@@ -101,3 +101,45 @@ Spezialfälle abzudecken. Wenn du eine Literaturangabe hast, die du
 in keines der oben genannten Schemata packen kannst, dann schreib die
 fertig formatierte Literaturangabe in eine eigene Ednote. Um die
 endgültige Formatierung kümmern wir uns dann in der Redaktion.</p></div>
+
+<h2>Vorlagen zum Kopieren</h2>
+Nicht zutreffende Felder bitte löschen.
+<pre>
+{[{
+@BOOK{fischer97,
+  title      = "",
+  author     = "",
+  editor     = "",
+  translator = "",
+  year       = "",
+  address    = "",
+  publisher  = "",
+}
+
+@ARTICLE{heisenbergDeutung,
+  author  = "",
+  title   = "",
+  journal = "",
+  volume  = "",
+  year    = "",
+  pages   = "",
+}
+
+@INCOLLECTION{brodersen,
+  author    = "",
+  title     = "",
+  editor    = "",
+  booktitle = "",
+  address   = "",
+  year      = "",
+  pages     = "",
+}
+
+@BOOKLET{mpgBericht,
+  url     = "",
+  urldate = "",
+  title   = "",
+  author  = "",
+}
+})}
+</pre>
