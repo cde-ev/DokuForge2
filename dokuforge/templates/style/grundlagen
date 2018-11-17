@@ -100,10 +100,10 @@ getrennt sowie mit einem &quot;und&quot; vor dem letzten Autorennamen.</p>
 
 <h2><a name="hervorhebungen"></a> Hervorhebungen</h2>
 <p>Möchte man etwas im Text hervorheben, kann man es zwischen
-_Unterstriche_ setzen.</p>
+<code>_Unterstriche_</code> setzen.</p>
 <h2><a name="schlagworte"></a> Schlagworte</h2>
 <p>Am Anfang eines Absatzes (und nur dort!) gibt es die Möglichkeit, ein
-Wort als Schlagwort auszuzeichnen, indem man es in *Sternchen*
+Wort als Schlagwort auszuzeichnen, indem man es in <code>*Sternchen*</code>
 einschließt.</p>
 <h2><a name="aufzaehlungen"></a> Aufzählungen</h2>
 <p>Aufzählungen funktionieren denkbar einfach: Ein einzelner Bindestrich
@@ -152,14 +152,14 @@ zum gewünschten Ergebnis.</p>
 <h2><a name="ellipse"></a> Auslasspunkte (Ellipse)</h2>
 <p>Eine Ellipse (drei Punkte zur Kennzeichnung einer Auslassung, …)
 werden in DokuForge mit drei Punkten und einem Leerzeichen davor
-gesetzt ...</p>
+gesetzt: <code>...</code></p>
 <h2><a name="anfuehrungszeichen"></a> Anführungszeichen</h2>
 <p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur)
 eingegeben werden. Wir machen daraus später »schöne« Anführungszeichen.</p>
 <h2><a name="bindestrich"></a> Bindestrich</h2>
 <p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und
 Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden
-hier zur Eingabe zwei Bindestriche: &quot;--&quot;. Wichtig ist, dass
+hier zur Eingabe zwei Bindestriche: <code>--</code>. Wichtig ist, dass
 Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen,
 während Bereichsstriche ohne Leerzeichen eingegeben werden.</p>
 
@@ -219,7 +219,7 @@ Dollarzeichen (d.h. als mathematische Formel).</p>
 </table>
 
 <h2><a name="brueche"></a> Brüche</h2>
-<p>Bitte gebt Brüche in der Form &quot;1/2&quot; ein und nicht als &quot;½&quot;.</p>
+<p>Bitte gebt Brüche in der Form <code>1/2</code> ein und nicht als <code>½</code>.</p>
 <h2><a name="abkuerzungen"></a> Abkürzungen</h2>
 <p>Abkürzungen sind manchmal etwas problematisch. Daher gibt es eine
 Liste erlaubter Abkürzungen. Alles andere, was man versucht sein
@@ -340,8 +340,8 @@ http://www.google.de</pre>erreicht man eine Suchmaschine.
 <h2><a name="code"></a> Code (Programmquelltext)</h2>
 <p>Zur Darstellung von kleinen Code-Schnippseln im Fließtext werden Pipes
 um den Code gesetzt. Eine mehrzeilige Eingabe von Code erfolgt in ednotes.</p>
-<p>Möchte man eine |Class Klasse| im Text erklären, so kann man es einfach
-mit || einfügen. Schreibt man eine mehrzeilige Klassendefinition, so
+<p>Möchte man eine <code>|Class Klasse|</code> im Text erklären, so kann man es einfach
+in <code>|</code>-Symbole einschließen. Schreibt man eine mehrzeilige Klassendefinition, so
 wird sie in eine Ednote eingebettet. Dabei bitte die ednote mit einer Klammerstruktur eingeben, die im Quellcode nicht vorkommt.</p>
 <pre>
 {[(
