@@ -1,0 +1,38 @@
+<div class="body">
+<h1>Noten und Musik</h1>
+<p>Bei Tonnamen wird unterschieden zwischen</p>
+<ol>
+<li>Tonnamen, die eine explizite Tonhöhe angeben sollen, und</li>
+<li>Tonnamen, die einen Ton ohne spezifizierte Oktave angeben sollen.</li>
+</ol>
+<p>Für Beides gilt: Jeder Tonname wird durch _Tonname_ hervorgehoben, um kursiv zu erscheinen.</p>
+<p>Für 1) gelten folgende Konventionen:</p>
+<ul>
+<li>Das westliche Tonsystem ist in Oktavräume eingeteilt, welche jeweils vom Ton C bis zum nächsthöheren Ton H reichen. Jeder Oktavraum hat
+zur zweifelsfreien Identifizierung eine eigene Bezeichnung. Töne tieferer Oktaven werden dabei mit Großbuchstaben, Töne höherer Oktaven mit
+Kleinbuchstaben bezeichnet. Für jede höhere/tiefere Oktave wird zudem ein Strich hinzugefügt.</li>
+<li>Die einzelnen Frequenzräume lauten wie folgt:
+<ul>
+<li>Subsubkontra-Oktave: Von _,,,C_ (8,2 Hz) bis _,,,H_</li>
+<li>Subkontra-Oktave: Von _,,C_ (16,4 Hz) bis _,,H_</li>
+<li>Kontra-Oktave: Von _,C_ (32,7 Hz) bis _,H_</li>
+<li>Große Oktave: Von _C_ (65,4 Hz) bis _H_</li>
+<li>Kleine Oktave: Von _c_ (130,8 Hz) bis _h_</li>
+<li>Eingestrichene Oktave: Von _c'_ (261,6 Hz) bis _h'_ </li>
+<li>Zweigestrichene Oktave: Von _c''_ (523,2 Hz) bis _h''_</li>
+<li>Dreigestrichene Oktave: Von _c'''_ (1047 Hz) bis _h'''_</li>
+</ul>
+Theoretisch gibt es nach oben keine Begrenzung, aber alles über der siebtgestrichenen Oktave ist für das durchschnittliche menschliche Gehör nicht mehr
+wahrnehmbar.</li>
+<li>Statt der Striche kann man Tonbuchstaben auch beziffern, z.B. _d''_=_d<sup>2</sup>_ (sprich: zweigestrichenes _D_) oder _,A_=_A<sub>1</sub>_ (sprich: Kontra-A). Konvention bei
+der Doku ist es aber, auf Bezifferung zu verzichten.</li>
+<li>Beispiel: Die diatonische, abwärtsführende Linie des Violoncellos vom _d'_ hinunter zum _G_ leitet elegant in die Reprise über.</li>
+</ul>
+<p>Für 2) gilt:</p>
+<ul>
+<li>Tonnamen, die einen Ton ohne spezifische Oktave angeben sollen, werden prinzipiell groß geschrieben.</li>
+<li>Beispiel: Das _A_ des Alts ist in diesem Akkord sehr prägnant und sorgt für einen dissonanten Klang.</li>
+<li>Ausnahme bilden Tonartenbezeichnungen: Bei Dur wird der Buchstabe großgeschrieben (z.B. Des-Dur), bei Moll klein (z.B. h-Moll).</li>
+<li>Schön ist es, 2) zu vermeiden und konkrete Tonhöhen (vgl. 1)) anzugeben.</li>
+</ul>
+</div>

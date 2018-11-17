@@ -1,72 +1,59 @@
 <div class="body">
 <h1>Literatur</h1>
 <h2>Verweis auf Literaturquellen im Text</h2>
-<p>Wenn du im Text auf eine Literaturquelle oder eine Internetseite verweisen willst, dann 
-geschieht das mit einer Literaturangabe. Das gilt auch für Abbildungen, Tabellen und dergleichen, 
+<p>Wenn du im Text auf eine Literaturquelle oder eine Internetseite verweisen willst, dann
+geschieht das mit einer Literaturangabe. Das gilt auch für Abbildungen, Tabellen und dergleichen,
 für die ihr in der Doku eine Quelle nennen wollt.</p>
-<p>Wo du im Text auf eine Literaturquelle verweisen willst, fügst du ein <code>LITERATUR:kuerzel</code> ein. 
-<code>kuerzel</code> ist dabei ein von dir für die Quelle vergebenes Kürzel.</p>
-<table  width="80%">
-<tr>
-    <td width="40%">Eingabe:</td>
-    <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-    <td>
-        <code>In ihrem Buch The Meme Machine LITERATUR:blackmore2000, 
-geht die englische Psychologin Susan Blackmore von der Grundannahme aus, 
-dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit 
-zur Imitation eine entscheidende Wendung nahm.</code>
-        </td>
-    <td>
-        In ihrem Buch The Meme Machine [1], 
-geht die englische Psychologin Susan Blackmore von der Grundannahme aus, 
-dass die menschliche Evolutionsgeschichte durch das Entwickeln der Fähigkeit 
-zur Imitation eine entscheidende Wendung nahm.
-        </td>
-</tr>
-</table>
+<p>Wo du im Text auf eine Literaturquelle verweisen willst, fügst du ein <code>LITERATUR:kuerzel</code> ein.
+<code>kuerzel</code> ist dabei ein von dir für die Quelle vergebenes Kürzel.
+Daraus machen wir später einen richtigen Literaturverweis.</p>
 
 <h2>Literaturverzeichnis</h2>
-<p>Es genügt nicht, einfach nur <code>LITERATUR:blackmore2000</code> im Text zu verwenden. 
-Du musst am Ende der Doku noch angeben, auf was <code>LITERATUR:blackmore2000</code> 
-verweist. Dazu fügst du am Ende der Doku eine Ednote ein, in der die 
-bibliographischen Angaben zu den Quellen stehen. (Für die Profis: Wir verwenden 
-BibLaTeX mit Biber, dessen Syntax ist hier in einer Ednote gewünscht)</p>
+<p>Es genügt nicht, einfach nur <code>LITERATUR:blackmore2000</code>
+im Text zu verwenden.  Du musst am Ende der Doku noch angeben, auf
+was <code>LITERATUR:blackmore2000</code> verweist. Dazu fügst du am
+Ende der Doku eine Ednote ein, in der die bibliographischen Angaben zu
+den Quellen stehen. (Für die Profis: Wir verwenden BibLaTeX mit Biber,
+dessen Syntax ist hier in einer Ednote gewünscht.)</p>
 <p>Beispiel:
 <pre>
 {[{LITERATURANGABEN
-@BOOK{blackmore2000,  % Kürzel für diese Literaturquelle lautet "blackmore2000"
-             title     = "The Meme Machine",   % Titel des Buchs
-             author    = "Blackmore, Susan",   % Autor
-             year      = "2000",               % Jahr der Veröffentlichung
-             address   = "Oxford",             % Ort
-             publisher = "Oxford Paperbacks",  % Verlag
+@BOOK{blackmore2000,
+             title     = "The Meme Machine",
+             author    = "Blackmore, Susan",
+             year      = "2000",
+             address   = "Oxford",
+             publisher = "Oxford Paperbacks",
 }
 }]}
 </pre></p>
-<p>Beachte, dass die Ednote mit <code>{[{</code> geöffnet und mit <code>}]}</code> geschlossen werden muss, 
+<p>Beachte, dass die Ednote mit <code>{[{</code> geöffnet und mit <code>}]}</code> geschlossen werden muss,
 da die Ednote selbst auch geschweifte Klammern enthält.</p>
 <h2>Beispiele für gebräuchliche Arten von Literaturquellen</h2>
+<p>Hier findest du Beispiele für gängige Arten von Literaturquellen
+als Kopiervorlage. Beachte, dass ab einem Prozentzeichen der Rest der
+Zeile als Kommentar angesehen und ignoriert wird. Die Erläuterungen
+nach den Prozentzeichen, die in den folgenden Beispielen stehen,
+brauchst du daher nicht mitkopieren. </p>
 <p>Im Fall einer Monographie bzw. eines Buches lautet die Syntax:</p>
 <pre>
 <table cellspacing="0px">
- <colgroup> 
+ <colgroup>
   <col width="100">
   <col width="5">
   <col width="150">
   <col width="100">
  </colgroup>
 <tbody>
- <tr><td colspan="4">@BOOK{fischer97, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  title</td><td>=</td> <td>"Lineare Algebra", </td> <td></td> <td>"Vollständiger Titel der Monographie" </td> </tr
- <tr> <td>  author</td><td>=</td> <td>"Fischer, Gerd", </td> <td></td> <td>"Name der Autoren: Nachname, Vorname" </td> </tr>
- <tr> <td>  editor</td><td>=</td> <td>"Rühmann, Heinz", </td> <td>  %% optional %%  </td> <td>"Editor des Werkes: Nachname, Vorname" </td> </tr>
- <tr> <td>  translator</td><td>=</td> <td>"Braun,Wilhelm", </td> <td>  %% optional %%  </td> <td>"Übersetzer des Werkes" </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1997", </td> <td></td> <td>"Veröffentlichungsjahr" </td> </tr>
- <tr> <td>  address</td><td>=</td> <td>"Berlin", </td> <td></td> <td>"Ort der Veröffentlichung" </td> </tr>
- <tr> <td>  publisher</td><td>=</td> <td>"Vieweg Studium", </td> <td>  %% optional %%  </td> <td>"Verlag" </td> </tr>
- <tr><td colspan="4">} </td></tr>
+ <tr><td colspan="3">@BOOK{fischer97, </td> <td>% Kurzform</td></tr>
+ <tr> <td>  title</td><td>=</td> <td>"Lineare Algebra", </td>  <td>% Vollständiger Titel der Monographie </td> </tr
+ <tr> <td>  author</td><td>=</td> <td>"Fischer, Gerd", </td>  <td>% Name der Autoren: Nachname, Vorname (optional) </td> </tr>
+ <tr> <td>  editor</td><td>=</td> <td>"Rühmann, Heinz", </td> <td>% Editor des Werkes: Nachname, Vorname (optional) </td> </tr>
+ <tr> <td>  translator</td><td>=</td> <td>"Braun,Wilhelm", </td> <td>% Übersetzer des Werkes </td> </tr>
+ <tr> <td>  year</td><td>=</td> <td>"1997", </td> <td>% Veröffentlichungsjahr </td> </tr>
+ <tr> <td>  address</td><td>=</td> <td>"Berlin", </td> <td>% Ort der Veröffentlichung </td> </tr>
+ <tr> <td>  publisher</td><td>=</td> <td>"Vieweg Studium", </td><td>% Verlag (optional) </td> </tr>
+ <tr><td colspan="3">} </td></tr>
 </tbody>
 </table>
 </pre>
@@ -76,20 +63,20 @@ die Syntax (bei Zeitungsartikeln bitte das vollständige Datum
 angeben):</p>
 <pre>
 <table cellspacing="0px">
- <colgroup> 
+ <colgroup>
   <col width="100">
   <col width="5">
   <col width="150">
   <col width="100">
  </colgroup>
 <tbody>
- <tr><td colspan="3">@ARTICLE{heisenbergDeutung, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  author</td><td>=</td> <td>"Heisenberg, Werner and Bohr, Niels", </td> <td>"Name der Autoren: Nachname, Vorname" </td> </tr>
- <tr> <td>  title</td><td>=</td> <td>"Die Kopenhagener Deutung der Quantentheorie", </td> <td>"Vollständiger Titel des Artikels" </td> </tr>
- <tr> <td>  journal</td><td>=</td> <td>"Physik und Philosophie", </td> <td>"Name des Journals, in dem der Artikel veröffentlicht wurde" </td> </tr>
- <tr> <td>  volume</td><td>=</td> <td>"12", </td> <td>"Nummer des Jahrgangs/Journals" </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>"Veröffentlichungsjahr" </td> </tr>
- <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>"Seitenumfang im Journal" </td> </tr>
+ <tr><td colspan="3">@ARTICLE{heisenbergDeutung, </td> <td>% Kurzform</td></tr>
+ <tr> <td>  author</td><td>=</td> <td>"Heisenberg, Werner and Bohr, Niels", </td> <td>% Name der Autoren: Nachname, Vorname </td> </tr>
+ <tr> <td>  title</td><td>=</td> <td>"Die Kopenhagener Deutung der Quantentheorie", </td> <td>% Vollständiger Titel des Artikels </td> </tr>
+ <tr> <td>  journal</td><td>=</td> <td>"Physik und Philosophie", </td> <td>% Name des Journals, in dem der Artikel veröffentlicht wurde </td> </tr>
+ <tr> <td>  volume</td><td>=</td> <td>"12", </td> <td>% Nummer des Jahrgangs/Journals </td> </tr>
+ <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>% Veröffentlichungsjahr </td> </tr>
+ <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>% Seitenumfang im Journal </td> </tr>
  <tr><td colspan="4">} </td></tr>
 </tbody>
 </table>
@@ -99,21 +86,21 @@ angeben):</p>
 Artikel in Lexika) lautet die Syntax:</p>
 <pre>
 <table cellspacing="0px">
- <colgroup> 
+ <colgroup>
   <col width="100">
   <col width="5">
   <col width="150">
   <col width="100">
  </colgroup>
 <tbody>
- <tr><td colspan="3">@INCOLLECTION{brodersen, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  author</td><td>=</td> <td>"Brodersen, Kai", </td> <td>"Name der Autoren: Nachname, Vorname" </td> </tr>
- <tr> <td>  title</td><td>=</td> <td>"Gebet und Fluch, Zeichen und Traum.", </td> <td>"Titel des Aufsatzes" </td> </tr>
- <tr> <td>  editor</td><td>=</td> <td>"Brodersen, Kai", </td> <td>"Name der Herausgeber: Nachname, Vorname" </td> </tr>
- <tr> <td>  booktitle</td><td>=</td> <td>"Briefe in die Unterwelt.", </td> <td>"Name des Sammelwerkes/Lexikons" </td> </tr>
- <tr> <td>  address</td><td>=</td> <td>"Münster", </td> <td>"Ort der Veröffentlichung" </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>"Jahr der Veröffentlichung" </td> </tr>
- <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>"Seitenumfang im Sammelwerk" </td> </tr>
+ <tr><td colspan="3">@INCOLLECTION{brodersen, </td> <td>% Kurzform</td></tr>
+ <tr> <td>  author</td><td>=</td> <td>"Brodersen, Kai", </td> <td>% Name der Autoren: Nachname, Vorname </td> </tr>
+ <tr> <td>  title</td><td>=</td> <td>"Gebet und Fluch, Zeichen und Traum.", </td> <td>% Titel des Aufsatzes </td> </tr>
+ <tr> <td>  editor</td><td>=</td> <td>"Brodersen, Kai", </td> <td>% Name der Herausgeber: Nachname, Vorname </td> </tr>
+ <tr> <td>  booktitle</td><td>=</td> <td>"Briefe in die Unterwelt.", </td> <td>% Name des Sammelwerkes/Lexikons </td> </tr>
+ <tr> <td>  address</td><td>=</td> <td>"Münster", </td> <td>% Ort der Veröffentlichung </td> </tr>
+ <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>% Jahr der Veröffentlichung </td> </tr>
+ <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>% Seitenumfang im Sammelwerk </td> </tr>
  <tr><td colspan="4">} </td></tr>
 </tbody>
 </table>
@@ -122,19 +109,19 @@ Artikel in Lexika) lautet die Syntax:</p>
 <p>Im Fall einer URL bzw. Internetreferenz lautet die Syntax:</p>
 <pre>
 <table cellspacing="0px">
- <colgroup> 
+ <colgroup>
   <col width="100">
   <col width="5">
   <col width="150">
   <col width="100">
  </colgroup>
 <tbody>
- <tr><td colspan="4">@BOOKLET{mpgBericht, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  url</td><td>=</td> <td>"http://www.mpg.de/180882/Jahresbericht", </td> <td> </td> <td>"Internetadresse" </td> </tr>
- <tr> <td>  urldate</td><td>=</td> <td>"2012-07-02", </td> <td></td> <td> "Datum des Abrufes: YYYY-MM-DD" </td>  </tr>
- <tr> <td>  tile</td><td>=</td> <td>"Jahresbericht der Max-Planck-Gesellschaft 2010", </td> <td> </td> <td>"Titel der Internetreferenz" </td> </tr>
- <tr> <td>  author</td><td>=</td> <td>"Max-Planck-Gesellschaft", </td> <td>%% optional %% </td> <td>"Namen der Autoren" </td> </tr>
- <tr><td colspan="4">} </td></tr>
+ <tr><td colspan="3">@BOOKLET{mpgBericht, </td> <td>% Kurzform</td></tr>
+ <tr> <td>  url</td><td>=</td> <td>"http://www.mpg.de/180882/Jahresbericht", </td> <td>% Internetadresse </td> </tr>
+ <tr> <td>  urldate</td><td>=</td> <td>"2012-07-02", </td> <td>% Datum des Abrufes: YYYY-MM-DD </td>  </tr>
+ <tr> <td>  title</td><td>=</td> <td>"Jahresbericht der Max-Planck-Gesellschaft 2010", </td> <td>% Titel der Internetreferenz </td> </tr>
+ <tr> <td>  author</td><td>=</td> <td>"Max-Planck-Gesellschaft", </td> <td>% Namen der Autoren (optional) </td> </tr>
+ <tr><td colspan="3">} </td></tr>
 </tbody>
 </table>
 </pre>
