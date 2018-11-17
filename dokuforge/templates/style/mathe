@@ -16,10 +16,10 @@ nachgeschlagen werden:
 <p>Die Vorschau von Formeln wird im Browser erzeugt, was je nach Umfang
 der Formeln, Browser und Computer mit beträchtlichem Rechenaufwand
 verbunden sein kann. Aus diesem Grund ist die Vorschau standardmäßig
-deaktiviert. Sie kann durch einen Klick auf den &quot;Mathe&quot;-Link in der
+deaktiviert. Sie kann durch einen Klick auf den &quot;Formelvorschau&quot;-Link in der
 Menüleiste rechts oben aktiviert werden. Damit dies funktioniert, muss
 JavaScript im Browser aktiviert sein.</p>
-<p>DokuForge unterstützt zwei Arten von Formeln — solche im Fließtext und
+<p>DokuForge unterstützt zwei Arten von Formeln – solche im Fließtext und
 solche, die abgesetzt werden.</p>
 <p>Noch ein Hinweis: In Formeln dürfen keine Leerzeilen vorkommen.</p>
 <table  width="80%">
