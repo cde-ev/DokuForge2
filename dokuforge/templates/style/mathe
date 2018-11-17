@@ -55,8 +55,8 @@ abgesetzten Formel vermitteln.</pre></span>
 <p>In abgesetzten Formeln ist es auch möglich, Umgebungen zu nutzen, die
 Mehrzeiligkeit unterstützen. Meistens ist die align-Umgebung das
 Mittel der Wahl. Dabei werden die Gleichheitszeichen aneinander
-ausgerichtet, indem vor jedes ein kaufmännisches &quot;und&quot; gesetzt
-wird. Zeilenumbrüche werden durch &quot;\\&quot; erzeugt.</p>
+ausgerichtet, indem vor jedes ein <code>&</code> (kaufmännisches &quot;und&quot;) gesetzt
+wird. Zeilenumbrüche werden durch <code>\\</code> erzeugt.</p>
 <table  width="80%">
 <tr>
         <td width="40%">Eingabe:</td>
@@ -81,7 +81,7 @@ $$\begin{align}
 </table>
 
 <p>Jede Zeile (und damit natürlich auch eine alleinstehende Gleichung)
-kann mit Hilfe von &quot;\label{...}&quot; am Ende der Zeile mit einem &quot;Label&quot;
+kann mit Hilfe von <code>\label{sinnvollerName}</code> am Ende der Zeile mit einem Label
 versehen werden.</p>
 <table  width="80%">
 <tr>
@@ -108,8 +108,8 @@ $$\begin{align}
 </tr>
 </table>
 
-<p>Auf dieses &quot;Label&quot; kann man später im Text verweisen: Wie man in
-Gleichung EQ:equals sieht, ist ...</p>
+<p>Auf dieses Label kann man später im Text verweisen: <code>Wie man in
+Gleichung EQ:equals sieht, ...</code></p>
 <h2><a name="def_satz_bew"></a> Definitionen, Sätze und Beweise</h2>
 <p>Um Definitionen, Sätze oder Beweise einzugeben, verwenden wir
 folgende Syntax:
@@ -134,6 +134,5 @@ Label versehen:
 {SATZ:gauss}
 Der Satz von Gauß
 <p>{END}</pre>
-<p>Im Text kann man dann auf den Satz verweisen: Wie man in SATZ:gauss
-sieht, entspricht der gesamte elektrische Fluss durch eine
-geschlossene Fläche der Ladung innerhalb der Fläche.</p></div>
+<p>Im Text kann man dann auf den Satz verweisen: <code>Wie man in SATZ:gauss
+sieht, ...</code></p></div>
