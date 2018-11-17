@@ -356,7 +356,6 @@ http://www.google.de</pre>erreicht man eine Suchmaschine.
 <h2><a name="code"></a> Code (Programmquelltext)</h2>
 <p>Zur Darstellung von kleinen Code-Schnippseln im Fließtext werden Pipes
 um den Code gesetzt. Eine mehrzeilige Eingabe von Code erfolgt in ednotes.</p>
-<p>Eingabe:</p>
 <p>Möchte man eine |Class Klasse| im Text erklären, so kann man es einfach
 mit || einfügen. Schreibt man eine mehrzeilige Klassendefinition, so
 wird sie in eine Ednote eingebettet. Dabei bitte die ednote mit einer Klammerstruktur eingeben, die im Quellcode nicht vorkommt.</p>
