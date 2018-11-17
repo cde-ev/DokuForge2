@@ -433,7 +433,6 @@ def openQuotationMark(word):
     yield word
 
 def closeQuotationMark(word):
-    # print(word)
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
         yield closeQuotationTerminalString
@@ -441,8 +440,6 @@ def closeQuotationMark(word):
         yield word
 
 def closePunctuationQuotationMark(word):
-    if (len(word) == 2):
-        print(word, word[0] in u'.;:()!?',  word[1] == '"' )
     if ( len(word) == 2 ) and ( word[0] in u'.;:()!?' ) and ( word[1] == '"' ):
         yield word[:1]
         yield closeQuotationTerminalString
@@ -655,7 +652,6 @@ def applyMicrotypefeatures(wordlist, featurelist):
     of the result.
     @type wordlist: [unicode]
     """
-    # print(wordlist)
     for feature in featurelist:
         wordlistlist = []
         for word in wordlist:
