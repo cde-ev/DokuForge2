@@ -1072,6 +1072,26 @@ class ExporterTestStrings:
     code = [ [u'|increase(i)| increases |i|, by one.',
               u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
 
+    urls = [ [u'http://www.google.de',
+              u'\\@\\url{http://www.google.de}'],
+             [u'siehe http://www.google.de',
+              u'siehe \\@\\url{http://www.google.de}'],
+             [u'http://www.google.de bla',
+              u'\\@\\url{http://www.google.de} bla'],
+             [u'https://www.bla.com. Sowie http://www.blub.org?',
+              u'\\@\\url{https://www.bla.com}. Sowie \\@\\url{http://www.blub.org}?'],
+             [u'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
+              u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsserArkade1.jpg}'],
+             [u'https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg',
+              u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
+             [u'auf www.bla.com lesen',
+              u'auf \\@\\url{www.bla.com} lesen'],
+             [u'Das www.ist_keine_hervorhebung.de!',
+              u'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
+             [u'http://www.bla.com/foo}\\evilCommand',
+              u'\\@\\url{http://www.bla.com/foo}\\@\}\\@\\forbidden\\evilCommand']
+             ]
+
     sectionsAndAuthors = [ [u'[foo]\n(bar)',
                             u'\\section{foo}\n\\authors{bar}'],
                            [u'[[foo]]\n\n(bar)',
@@ -1129,6 +1149,7 @@ class ExporterTestCases:
                         ExporterTestStrings.numbers,
                         ExporterTestStrings.dates,
                         ExporterTestStrings.units,
+                        ExporterTestStrings.urls,
                         ExporterTestStrings.numericalScope ]
 
     # Text vs. Titles
