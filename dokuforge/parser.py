@@ -840,7 +840,17 @@ class PUrl(PTree):
         return url
 
     def toHtml(self):
-        return '<a href="%s">%s</a>' % (self.text.text, self.text.toHtml())
+        url = self.text.text
+        html = self.text.toHtml()
+        if url.startswith('www.'):
+            url = '//' + url
+        period = ''
+        if url.endswith('.'):
+            # Split trailing period from the url.
+            url = url[:-1]
+            html = html[:-1]
+            period = '.'
+        return '<a href="%s">%s</a>%s' % (url, html, period)
 
     def toDF(self):
         return self.text.text
