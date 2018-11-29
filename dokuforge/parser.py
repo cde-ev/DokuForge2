@@ -1214,7 +1214,9 @@ class Mathgroup(Chargroup):
 
     @classmethod
     def startshere(self, char, lookahead=None):
-        return char == u'$' and lookahead != u'$'
+        return char == u'$' and (
+                not lookahead or lookahead[0] != u'$'
+                )
 
     def append(self, chars):
         for c in chars:
@@ -1258,7 +1260,9 @@ class DisplayMathGroup(Chargroup):
 
     @classmethod
     def startshere(self, char, lookahead=None):
-        return char == u'$' and lookahead == u'$'
+        return char == u'$' and (
+                lookahead and lookahead[0] == u'$'
+                )
 
     def append(self, chars):
         for c in chars:
@@ -1307,7 +1311,7 @@ def groupchars(text, supportedgroups):
     for i in range(len(text)):
         c = text[i]
         if i + 1 < len(text):
-            lookahead = text[i+1]
+            lookahead = text[i+1:i+8]
         else:
             lookahead = None
 
