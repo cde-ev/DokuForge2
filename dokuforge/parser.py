@@ -820,6 +820,40 @@ class PLeaf(PTree):
     def toEstimate(self):
         return Estimate.fromText(self.text)
 
+class PUrl(PTree):
+    """
+    A uniform resource locator.
+    """
+    def __init__(self, text):
+        self.text = PLeaf(text)
+
+    def debug(self):
+        return ('url', self.text.text)
+
+    def toTex(self):
+        url = self.text.text
+        url = self.texEscapeWithinUrl(url)
+        url = u'\\@\\url{%s}' % url
+        if url.endswith('.}'):
+            # Split trailing period from the url.
+            url = url[:-2] + '}.'
+        return url
+
+    def toHtml(self):
+        return '<a href="%s">%s</a>' % (self.text.text, self.text.toHtml())
+
+    def toDF(self):
+        return self.text.text
+
+    def toEstimate(self):
+        return self.text.toEstimate()
+
+    def texEscapeWithinUrl(self, word):
+        """
+        % -> \%
+        """
+        return word.replace(u'%', u'\\%')
+
 class PEmph(PTree):
     """
     An emphasized piece of text.
@@ -1172,6 +1206,34 @@ class Simplegroup(Chargroup):
     def __init__(self, initial=None):
         Chargroup.__init__(self, initial=initial)
 
+class Urlgroup(Chargroup):
+    """
+    The group for uniform resource locators starting with 'http://',
+    'https://' or 'www.'.
+    """
+    def __init__(self, initial=None):
+        Chargroup.__init__(self, initial=initial)
+
+    @classmethod
+    def startshere(self, char, lookahead=None):
+        if not lookahead:
+            return False
+        if char == u'h':
+            return (lookahead.startswith(u'ttp://') or
+                    lookahead.startswith(u'ttps://'))
+        elif char == u'w':
+            return lookahead.startswith(u'ww.')
+        return False
+
+    def rejectcontinuation(self, char):
+        return char in u' ();,"?!}'
+
+    def enforcecontinuation(self, char):
+        return not self.rejectcontinuation(char)
+
+    def parse(self):
+        return PUrl(self.text)
+
 class Emphgroup(Chargroup):
     """
     The group for _emphasized text_.
@@ -1339,7 +1401,7 @@ def defaultInnerParse(lines):
     """
     @type lines: [unicode]
     """
-    features = [Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup]
+    features = [Simplegroup, Urlgroup, Emphgroup, Mathgroup, DisplayMathGroup]
     text = u'\n'.join(lines)
     groups = groupchars(text, features)
     if len(groups) == 1:
