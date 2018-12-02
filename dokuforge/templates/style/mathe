@@ -8,19 +8,18 @@
 </ul>
 <h2><a name="grundlagen"></a> Grundlagen</h2>
 <p>Zur Formeldarstellung wird in DokuForge eine Untermenge von LaTeX
-verwendet. Grundsätzlich sind die meisten Mathematikbefehle, die im
-Kopka beschrieben werden, erlaubt. Es können bei Bedarf kursspezifisch
-neue Befehle erlaubt bzw. definiert werden.</p>
+verwendet. Viele gängige Mathematikbefehle sind erlaub. Es können bei
+Bedarf kursspezifisch neue Befehle erlaubt bzw. definiert werden.</p>
 <p>Die wichtigsten LaTeX-Mathematikbefehle können beispielsweise hier
 nachgeschlagen werden:
 <a href="http://web.ift.uib.no/Teori/KURS/WRK/TeX/symALL.html">LaTeX-Symbole</a>.</p>
 <p>Die Vorschau von Formeln wird im Browser erzeugt, was je nach Umfang
 der Formeln, Browser und Computer mit beträchtlichem Rechenaufwand
 verbunden sein kann. Aus diesem Grund ist die Vorschau standardmäßig
-deaktiviert. Sie kann durch einen Klick auf den "Mathe"-Link in der
+deaktiviert. Sie kann durch einen Klick auf den &quot;Formelvorschau&quot;-Link in der
 Menüleiste rechts oben aktiviert werden. Damit dies funktioniert, muss
 JavaScript im Browser aktiviert sein.</p>
-<p>DokuForge unterstützt zwei Arten von Formeln — solche im Fließtext und
+<p>DokuForge unterstützt zwei Arten von Formeln – solche im Fließtext und
 solche, die abgesetzt werden.</p>
 <p>Noch ein Hinweis: In Formeln dürfen keine Leerzeilen vorkommen.</p>
 <table  width="80%">
@@ -30,17 +29,14 @@ solche, die abgesetzt werden.</p>
 </tr>
 <tr>
     <td valign="top">
-    <span class="tex2jax_ignore">
-    <p>Solange nur $l = c\tau$ sein
-    soll, kann man das im Text schreiben.
-    Die Erkenntnis, dass<br>
-    $$<br>
-    \int\limits_0^{\frac{\pi}{2}} \sin^2(x) +
-    \cos^2(x) \, dx = \frac{\pi}{2}<br>
-    $$<br>
-    ist, kann man dagegen besser in einer
-    abgesetzten Formel vermitteln.</p>
-    </span>
+    <span class="tex2jax_ignore"><pre>Solange nur $l = c\tau$ sein
+soll, kann man das im Text schreiben.
+Die Erkenntnis, dass
+$$
+\int\limits_0^{\frac{\pi}{2}} \sin^2(x) + \cos^2(x) \, dx = \frac{\pi}{2}
+$$
+ist, kann man dagegen besser in einer
+abgesetzten Formel vermitteln.</pre></span>
     </td>
     <td valign="top">
     <p>Solange nur $l = c\tau$ sein soll, kann man das im Text schreiben.
@@ -59,8 +55,8 @@ solche, die abgesetzt werden.</p>
 <p>In abgesetzten Formeln ist es auch möglich, Umgebungen zu nutzen, die
 Mehrzeiligkeit unterstützen. Meistens ist die align-Umgebung das
 Mittel der Wahl. Dabei werden die Gleichheitszeichen aneinander
-ausgerichtet, indem vor jedes ein kaufmännisches "und" gesetzt
-wird. Zeilenumbrüche werden durch "\\" erzeugt.</p>
+ausgerichtet, indem vor jedes ein <code>&</code> (kaufmännisches &quot;und&quot;) gesetzt
+wird. Zeilenumbrüche werden durch <code>\\</code> erzeugt.</p>
 <table  width="80%">
 <tr>
         <td width="40%">Eingabe:</td>
@@ -68,13 +64,11 @@ wird. Zeilenumbrüche werden durch "\\" erzeugt.</p>
 </tr>
 <tr>
         <td valign="middle">
-    <span class="tex2jax_ignore">
-$$\begin{align}<br>
-  (a + b)^2      &amp;= a^2 + 2ab + b^2 \\<br>
-  (a - b)^2      &amp;= a^2 - 2ab + b^2 \\<br>
-  (a + b)(a - b) &amp;= a^2 + ab - ab - b^2<br>
-\end{align}$$<br>
-    </span>
+    <span class="tex2jax_ignore"><pre>$$\begin{align}
+  (a + b)^2      &amp;= a^2 + 2ab + b^2 \\
+  (a - b)^2      &amp;= a^2 - 2ab + b^2 \\
+  (a + b)(a - b) &amp;= a^2 + ab - ab - b^2
+\end{align}$$</pre></span>
         </td>
         <td valign="middle">
 $$\begin{align}
@@ -87,7 +81,7 @@ $$\begin{align}
 </table>
 
 <p>Jede Zeile (und damit natürlich auch eine alleinstehende Gleichung)
-kann mit Hilfe von "\label{...}" am Ende der Zeile mit einem "Label"
+kann mit Hilfe von <code>\label{sinnvollerName}</code> am Ende der Zeile mit einem Label
 versehen werden.</p>
 <table  width="80%">
 <tr>
@@ -96,14 +90,12 @@ versehen werden.</p>
 </tr>
 <tr>
         <td valign="middle">
-    <span class="tex2jax_ignore">
-$$\begin{align}<br>
- \int_0^1 3x^2 + 2x \, dx<br>
-     &= \left. x^3 + x^2 \right|_0^1                    \\<br>
-     &= 1 + 1                        \label{oneplusone} \\<br>
-     &= 2                            \label{equals}<br>
-\end{align}$$<br>
-    </span>
+    <span class="tex2jax_ignore"><pre>$$\begin{align}
+ \int_0^1 3x^2 + 2x \, dx
+     &= \left. x^3 + x^2 \right|_0^1                    \\
+     &= 1 + 1                        \label{oneplusone} \\
+     &= 2                            \label{equals}
+\end{align}$$</pre></span>
         </td>
         <td valign="middle">
 $$\begin{align}
@@ -116,28 +108,31 @@ $$\begin{align}
 </tr>
 </table>
 
-<p>Auf dieses "Label" kann man später im Text verweisen: Wie man in
-Gleichung EQ:equals sieht, ist ...</p>
+<p>Auf dieses Label kann man später im Text verweisen: <code>Wie man in
+Gleichung EQ:equals sieht, ...</code></p>
 <h2><a name="def_satz_bew"></a> Definitionen, Sätze und Beweise</h2>
-<p>Mathematiker lieben es, ihre Dokumentationen mit Definitionen, Sätzen
-und Beweisen zu pflastern. Daher verwenden wir folgende Syntax:</p>
-<p>{DEF}</p>
-<p>Das ist eine Defintion.</p>
-<p>{END}</p>
-<p>{SATZ}</p>
-<p>Hier ist ein Satz.</p>
-<p>{END}</p>
-<p>bzw.</p>
-<p>{SATZ}</p>
-<p>Hier ist noch ein Satz.</p>
-<p>{BEWEIS}</p>
-<p>Und hier ist sein Beweis.</p>
-<p>{QED}</p>
-<p>Falls man auf einen Satz verweisen möchte, kann man ihn mit einem
-Label versehen:</p>
-<p>{SATZ:gauss}</p>
-<p>Der Satz von Gauß</p>
-<p>{END}</p>
-<p>Im Text kann man dann auf den Satz verweisen: Wie man in SATZ:gauss
-sieht, entspricht der gesamte elektrische Fluss durch eine
-geschlossene Fläche der Ladung innerhalb der Fläche.</p></div>
+<p>Um Definitionen, Sätze oder Beweise einzugeben, verwenden wir
+folgende Syntax:
+<pre>{DEF}
+Das ist eine Defintion.
+{END}
+
+{SATZ}
+Hier ist ein Satz.
+{END}
+</pre>
+bzw.
+<pre>
+{SATZ}
+Hier ist noch ein Satz.
+{BEWEIS}
+Und hier ist sein Beweis.
+{QED}</pre>
+Falls man auf einen Satz verweisen möchte, kann man ihn mit einem
+Label versehen:
+<pre>
+{SATZ:gauss}
+Der Satz von Gauß
+<p>{END}</pre>
+<p>Im Text kann man dann auf den Satz verweisen: <code>Wie man in SATZ:gauss
+sieht, ...</code></p></div>
