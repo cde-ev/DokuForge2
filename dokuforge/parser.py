@@ -138,6 +138,8 @@ def acronym(word):
     But don't mangle things like 'T-Shirt' or 'E-Mail' while
     still allowing for compound nouns such as 'DNA-Sequenz'.
     A plural 's' as in 'EKGs' is allowed.
+    In Dimensions, such as 2D or 3D, only the D should be
+    displayed in a smaller font.
     """
     concat_left = u''
 
