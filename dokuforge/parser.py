@@ -981,31 +981,31 @@ class PParagraph(PTree):
         return self.it.toEstimate().fullline()
 
 class PHeading(PTree):
-    def __init__(self, title, level):
-        self.title = title
+    def __init__(self, subtree, level):
+        self.subtree = subtree
         self.level = level
 
     def debug(self):
-        return ('Heading', self.level, self.title.debug())
+        return ('Heading', self.level, self.subtree.debug())
 
     def toTex(self):
-        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.title.toTex())
+        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.subtree.toTex())
 
     def toHtml(self):
         n = self.level + 1
-        return u'\n<h%d>%s</h%d>\n' % (n, self.title.toHtml(), n)
+        return u'\n<h%d>%s</h%d>\n' % (n, self.subtree.toHtml(), n)
 
     def toDF(self):
         n = self.level + 1
-        return u'\n\n%s%s%s' % (u'[' * n, self.title.toDF(), u']' * n)
+        return u'\n\n%s%s%s' % (u'[' * n, self.subtree.toDF(), u']' * n)
 
     def getLevel(self):
         return self.level
 
     def toEstimate(self):
-        if isinstance(self.title, PSequence):
-            return Estimate.fromTitle(self.title.toDF())
-        return Estimate.fromTitle(self.title.text)
+        if isinstance(self.subtree, PSequence):
+            return Estimate.fromTitle(self.subtree.toDF())
+        return Estimate.fromTitle(self.subtree.text)
 
 class PAuthor(PTree):
     def __init__(self, author):
