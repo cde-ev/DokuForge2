@@ -1331,11 +1331,10 @@ def groupchars(text, supportedgroups):
     return groups
 
 
-def defaultInnerParse(lines):
+def defaultInnerParse(lines, features=(Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup)):
     """
     @type lines: [unicode]
     """
-    features = [Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup]
     text = u'\n'.join(lines)
     groups = groupchars(text, features)
     if len(groups) == 1:
@@ -1345,7 +1344,7 @@ def defaultInnerParse(lines):
 
 
 def headingParse(line):
-    return defaultInnerParse([line])
+    return defaultInnerParse([line], features=(Simplegroup, Emphgroup))
 
 
 class Linegroup:
