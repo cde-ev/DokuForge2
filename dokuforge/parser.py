@@ -1236,7 +1236,7 @@ class Urlgroup(Chargroup):
                 begin.startswith(u'www.'))
 
     def rejectcontinuation(self, char):
-        return char in u' ();,"?!}'
+        return char in u' ();,"?!}\n'
 
     def enforcecontinuation(self, char):
         return not self.rejectcontinuation(char)
