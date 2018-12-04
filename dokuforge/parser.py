@@ -1230,12 +1230,10 @@ class Urlgroup(Chargroup):
     def startshere(self, char, lookahead=None):
         if not lookahead:
             return False
-        if char == u'h':
-            return (lookahead.startswith(u'ttp://') or
-                    lookahead.startswith(u'ttps://'))
-        elif char == u'w':
-            return lookahead.startswith(u'ww.')
-        return False
+        begin = char + lookahead
+        return (begin.startswith(u'http://') or
+                begin.startswith(u'https://') or
+                begin.startswith(u'www.'))
 
     def rejectcontinuation(self, char):
         return char in u' ();,"?!}'
@@ -1385,6 +1383,7 @@ def groupchars(text, supportedgroups):
     for i in range(len(text)):
         c = text[i]
         if i + 1 < len(text):
+            # Look ahead up to 7 characters to match 'https://'.
             lookahead = text[i+1:i+8]
         else:
             lookahead = None
