@@ -138,9 +138,16 @@ def acronym(word):
     But don't mangle things like 'T-Shirt' or 'E-Mail' while
     still allowing for compound nouns such as 'DNA-Sequenz'.
     A plural 's' as in 'EKGs' is allowed.
+    In Dimensions, such as 2D or 3D, only the D should be
+    displayed in a smaller font.
     """
-    pattern = r'(\w+)' # only alphanumeric characters or underscore
     concat_left = u''
+
+    if re.compile(r'^(\d)D$').match(word):  # nD needs special treatment
+        concat_left = re.sub(r'(\d)D', u'\\1\\\\@\\\\acronym{D}', word)
+        word = ''
+
+    pattern = r'(\w+)' # only alphanumeric characters or underscore
     m = True
     while m:
         if m != True:
