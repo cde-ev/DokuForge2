@@ -833,10 +833,12 @@ class PUrl(PTree):
     def toTex(self):
         url = self.text.text
         url = self.texEscapeWithinUrl(url)
-        url = u'\\@\\url{%s}' % url
-        if url.endswith('.}'):
+        fmtstr = u'\\@\\url{%s}'
+        if url.endswith('.'):
             # Split trailing period from the url.
-            url = url[:-2] + '}.'
+            url = (fmtstr % url[:-1]) + '.'
+        else:
+            url = fmtstr % url
         return url
 
     def toHtml(self):
@@ -844,13 +846,13 @@ class PUrl(PTree):
         html = self.text.toHtml()
         if url.startswith('www.'):
             url = '//' + url
-        period = ''
+        fmtstr = u'<a href="%s">%s</a>'
         if url.endswith('.'):
             # Split trailing period from the url.
-            url = url[:-1]
-            html = html[:-1]
-            period = '.'
-        return '<a href="%s">%s</a>%s' % (url, html, period)
+            url = (fmtstr % (url[:-1], html[:-1])) + '.'
+        else:
+            url = fmtstr % (url, html)
+        return url
 
     def toDF(self):
         return self.text.text
