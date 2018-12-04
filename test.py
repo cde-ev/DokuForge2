@@ -17,7 +17,7 @@ import tarfile
 import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
-from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
+from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser, Estimate
 from dokuforge.common import TarWriter
 from dokuforge.common import UTC
 from dokuforge.course import Course
@@ -1079,6 +1079,21 @@ class ExporterTestStrings:
                            [u'[[foo]]\n\n(bar)',
                             u'\\subsection{foo}\n\n(bar)'] ]
 
+    sectionsWithEmph = [ [u'[Ola Gjeilo: _Northern Lights_]',
+                          u'\\section{Ola Gjeilo: \\emph{Northern Lights}}'],
+                         [u'[_Mein BAMF_ -- aus dem Kabarett]',
+                          u'\\section{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
+                         [u'[Max Reger: _Es waren zwei Königskinder_ hier]',
+                          u'\\section{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
+                         [u'[[Ola Gjeilo: _Northern Lights_]]',
+                          u'\\subsection{Ola Gjeilo: \\emph{Northern Lights}}'],
+                         [u'[[_Mein BAMF_ -- aus dem Kabarett]]',
+                          u'\\subsection{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
+                         [u'[[Max Reger: _Es waren zwei Königskinder_ hier]]',
+                          u'\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
+                         [u'[1. Buch Mose]',
+                          u'\\section{\\@1. Buch Mose}'] ]
+
     numericalScope = [ [u'10\xb3 Meter sind ein km',
                         u'10\xb3 Meter sind ein km'] ]
 
@@ -1141,12 +1156,25 @@ class ExporterTestCases:
                     ExporterTestStrings.codeAndLengthyParagraph  ]
 
     lineGroupTests = testsInText + \
-                     [ ExporterTestStrings.sectionsAndAuthors ]
+                     [ ExporterTestStrings.sectionsAndAuthors,
+                       ExporterTestStrings.sectionsWithEmph ]
 
     titleTests = testsEverywhere
 
     captionTests = [[[i, j.replace(u'\n\n', u'\\@\\@\\@\n')] for i, j in k] for k in testsInText] + \
                    [ ExporterTestStrings.multilineCaptions ]
+
+class DokuforgeParserUnitTests(DfTestCase):
+    def verifyReturnTypes(self, text):
+        pseq = dfLineGroupParser(text)
+        assert isinstance(pseq.debug(), tuple)
+        assert isinstance(pseq.toTex(), unicode)
+        assert isinstance(pseq.toHtml(), unicode)
+        assert isinstance(pseq.toDF(), unicode)
+        assert isinstance(pseq.toEstimate(), Estimate)
+
+    def testLineGroupParser(self):
+        [ [self.verifyReturnTypes(s[0]) for s in t] for t in ExporterTestCases.lineGroupTests ]
 
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):

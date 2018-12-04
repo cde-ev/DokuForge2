@@ -987,32 +987,34 @@ class PParagraph(PTree):
         return self.it.toEstimate().fullline()
 
 class PHeading(PTree):
-    def __init__(self, title, level):
-        self.title = PLeaf(title)
+    def __init__(self, subtree, level):
+        self.subtree = subtree
         self.level = level
 
     def debug(self):
-        return ('Heading', self.level, self.getTitle())
+        return ('Heading', self.level, self.subtree.debug())
 
     def toTex(self):
-        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.title.toTex())
+        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.subtree.toTex())
 
     def toHtml(self):
         n = self.level + 1
-        return u'\n<h%d>%s</h%d>\n' % (n, self.title.toHtml(), n)
+        return u'\n<h%d>%s</h%d>\n' % (n, self.subtree.toHtml(), n)
 
     def toDF(self):
         n = self.level + 1
-        return u'\n\n%s%s%s' % (u'[' * n, self.title.toDF(), u']' * n)
+        return u'\n\n%s%s%s' % (u'[' * n, self.subtree.toDF(), u']' * n)
 
     def getLevel(self):
         return self.level
 
     def getTitle(self):
-        return self.title.text
+        return self.subtree.text
 
     def toEstimate(self):
-        return Estimate.fromTitle(self.getTitle())
+        if isinstance(self.subtree, PSequence):
+            return Estimate.fromTitle(self.subtree.toDF())
+        return Estimate.fromTitle(self.subtree.text)
 
 class PAuthor(PTree):
     def __init__(self, author):
@@ -1338,17 +1340,21 @@ def groupchars(text, supportedgroups):
     return groups
 
 
-def defaultInnerParse(lines):
+def defaultInnerParse(lines, features=(Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup)):
     """
     @type lines: [unicode]
     """
-    features = [Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup]
     text = u'\n'.join(lines)
     groups = groupchars(text, features)
     if len(groups) == 1:
         return groups[0].parse()
     else:
         return PSequence([g.parse() for g in groups])
+
+
+def headingParse(line):
+    return defaultInnerParse([line], features=(Simplegroup, Emphgroup))
+
 
 class Linegroup:
     """
@@ -1550,7 +1556,7 @@ class Heading(Linegroup):
         return title
 
     def parse(self):
-        return PHeading(self.getTitle(), 0)
+        return PHeading(headingParse(self.getTitle()), 0)
 
 class Subheading(Heading):
     """
@@ -1564,7 +1570,7 @@ class Subheading(Heading):
         return line.startswith(u'[[') and not line.startswith(u'[[[')
 
     def parse(self):
-        return PHeading(self.getTitle(), 1)
+        return PHeading(headingParse(self.getTitle()), 1)
 
 class Author(Linegroup):
     """
