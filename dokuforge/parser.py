@@ -439,12 +439,19 @@ def closeQuotationMark(word):
     else:
         yield word
 
-def closePunctuationQuotationMark(word):
-    if ( len(word) == 2 ) and ( word[0] in u'.;:()!?' ) and ( word[1] == '"' ):
-        yield word[:1]
-        yield closeQuotationTerminalString
-    else:
-        yield word
+class punctuationQuotationMark:
+    def __init__(self, punctuation):
+        self.punctuation = punctuation
+
+    def __call__(self, word):
+        if (   len(word) == 2 ) and ( word[0] in self.punctuation ) and ( word[1] == '"' ):
+            yield word[:1]
+            yield closeQuotationTerminalString
+        elif ( len(word) == 2 ) and ( word[0] == '"' ) and ( word[1] in self.punctuation ):
+            yield openQuotationTerminalString
+            yield word[1:]
+        else:
+            yield word
 
 percent = Escaper(u'%', TerminalString(u'\\%'))
 
@@ -637,12 +644,20 @@ class SplitSeparators:
         return self.splitre.split(word)
 
 
-class SplitPunctuationQuotes(SplitSeparators):
+class SplitPunctuationClosingQuotes(SplitSeparators):
     """
     Split at separators (e.g., punctuation) before closing quotation marks
     """
     def __init__(self, punctuation):
         SplitSeparators.__init__(self, punctuation, regex='([%s]")')
+
+
+class SplitPunctuationOpeningQuotes(SplitSeparators):
+    """
+    Split at separators (e.g., "(") before opening quotation marks
+    """
+    def __init__(self, punctuation):
+        SplitSeparators.__init__(self, punctuation, regex='("[%s])')
 
 
 def applyMicrotypefeatures(wordlist, featurelist):
@@ -677,8 +692,9 @@ def defaultMicrotype(text):
     separators = ' \t,;:()!?\n-' # no point, might be in abbreviations
     features = [SplitSeparators("\n"), formatCode,
                 ## no splitting at all before the previous features
-                SplitPunctuationQuotes(separators[1:-1]),
-                closePunctuationQuotationMark,
+                SplitPunctuationClosingQuotes(',;:)!?'),
+                SplitPunctuationOpeningQuotes('('),
+                punctuationQuotationMark(separators[2:-2]),
                 SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing,
                 percentSpacing, formatDate, pageReferences,
