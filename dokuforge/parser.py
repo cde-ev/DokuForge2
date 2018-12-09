@@ -841,18 +841,10 @@ class PUrl(PTree):
             url = fmtstr % url
         return url
 
+    """
     def toHtml(self):
-        url = self.text.text
-        html = self.text.toHtml()
-        if url.startswith('www.'):
-            url = '//' + url
-        fmtstr = u'<a href="%s">%s</a>'
-        if url.endswith('.'):
-            # Split trailing period from the url.
-            url = (fmtstr % (url[:-1], html[:-1])) + '.'
-        else:
-            url = fmtstr % (url, html)
-        return url
+        not implmemented, see 756fa1e1fa293996a4a094991849d91497b56f07 for an untested version
+    """
 
     def toDF(self):
         return self.text.text
