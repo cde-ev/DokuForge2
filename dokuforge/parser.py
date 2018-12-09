@@ -630,19 +630,19 @@ escapeEndEdnote = Escaper(u"\\end{ednote}", u"\\@|end{ednote}")
 # where we expect them to end.
 
 class SplitSeparators:
-    def __init__(self, separators):
-        self.splitre = re.compile("([%s])" % re.escape(separators))
+    def __init__(self, separators, regex='([%s])'):
+        self.splitre = re.compile( regex % re.escape(separators))
 
     def __call__(self, word):
         return self.splitre.split(word)
 
 
-class SplitPunctuationQuotes:
+class SplitPunctuationQuotes(SplitSeparators):
+    """
+    Split at separators (e.g., punctuation) before closing quotation marks
+    """
     def __init__(self, punctuation):
-        self.splitre = re.compile('([%s]")' % re.escape(punctuation))
-
-    def __call__(self, word):
-        return self.splitre.split(word)
+        SplitSeparators.__init__(self, punctuation, regex='([%s]")')
 
 
 def applyMicrotypefeatures(wordlist, featurelist):
