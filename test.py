@@ -1090,6 +1090,8 @@ class ExporterTestStrings:
               u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
              [u'auf www.bla.com lesen',
               u'auf \\@\\url{www.bla.com} lesen'],
+             [u'siehe www.bla.com.',
+              u'siehe \\@\\url{www.bla.com}.'],
              [u'Das www.ist_keine_hervorhebung.de!',
               u'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
              [u'http://www.bla.com/foo}\\evilCommand',
