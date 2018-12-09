@@ -888,10 +888,12 @@ class ExporterTestStrings:
                 u'"`Wow"\'-Effekt'],
                [u'Was laesst Menschen "aufbluehen"?',
                 u'Was laesst Menschen "`aufbluehen"\'?'],
+               [u'"(Ei"',
+                u'"`(Ei"\''],
                [u'"Schoki"! "Cola"; "Nudeln": "Suppe")',
                 u'"`Schoki"\'! "`Cola"\'; "`Nudeln"\': "`Suppe"\')'],
-               [u'"Yo!" "Whaaat?" "Boom."',
-                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\''] ]
+               [u'"Yo!" "Whaaat?" "Boom." "Cola;" "Nudeln:" "Suppe)"',
+                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\' "`Cola;"\' "`Nudeln:"\' "`Suppe)"\''] ]
 
     abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
