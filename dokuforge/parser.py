@@ -831,20 +831,15 @@ class PUrl(PTree):
         return ('url', self.text.text)
 
     def toTex(self):
-        url = self.text.text
-        url = self.texEscapeWithinUrl(url)
-        fmtstr = u'\\@\\url{%s}'
-        if url.endswith('.'):
-            # Split trailing period from the url.
-            url = (fmtstr % url[:-1]) + '.'
-        else:
-            url = fmtstr % url
-        return url
+        result = self.text.text
+        result = self.texEscapeWithinUrl(result)
+        result = self.formatAndSplitTrailingPeriod(u'\\@\\url{%s}', result)
+        return result
 
-    """
     def toHtml(self):
-        not implmemented, see 756fa1e1fa293996a4a094991849d91497b56f07 for an untested version
-    """
+        result = self.text.toHtml()
+        result = self.formatAndSplitTrailingPeriod(u'<a>%s</a>', result)
+        return result
 
     def toDF(self):
         return self.text.text
@@ -857,6 +852,14 @@ class PUrl(PTree):
         % -> \%
         """
         return word.replace(u'%', u'\\%')
+
+    def formatAndSplitTrailingPeriod(self, fmtstr, word):
+        if word.endswith('.'):
+            # Separate trailing period.
+            word = (fmtstr % word[:-1]) + '.'
+        else:
+            word = fmtstr % word
+        return word
 
 class PEmph(PTree):
     """
