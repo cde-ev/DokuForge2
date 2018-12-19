@@ -833,12 +833,12 @@ class PUrl(PTree):
     def toTex(self):
         result = self.text.text
         result = self.texEscapeWithinUrl(result)
-        result = self.formatAndSplitTrailingPeriod(u'\\@\\url{%s}', result)
+        result = self.formatAndSplitTrailingChars(u'\\@\\url{%s}', result)
         return result
 
     def toHtml(self):
         result = self.text.toHtml()
-        result = self.formatAndSplitTrailingPeriod(u'<a>%s</a>', result)
+        result = self.formatAndSplitTrailingChars(u'<a>%s</a>', result)
         return result
 
     def toDF(self):
@@ -853,10 +853,10 @@ class PUrl(PTree):
         """
         return word.replace(u'%', u'\\%')
 
-    def formatAndSplitTrailingPeriod(self, fmtstr, word):
-        if word.endswith('.'):
+    def formatAndSplitTrailingChars(self, fmtstr, word):
+        if word and len(word) > 0 and word[-1] in '.,;:)]?!':
             # Separate trailing period.
-            word = (fmtstr % word[:-1]) + '.'
+            word = (fmtstr % word[:-1]) + word[-1]
         else:
             word = fmtstr % word
         return word
@@ -1231,7 +1231,12 @@ class Urlgroup(Chargroup):
                 begin.startswith(u'www.'))
 
     def rejectcontinuation(self, char):
-        return char in u' ();,"?!}\n'
+        if char.isalnum():
+            return False
+        # All non alphanumeric characters allowed in urls.
+        unreserved = u'-_.~'
+        reserved = u'!*\'();:@&=+$,/?%#[]'
+        return not char in (unreserved + reserved)
 
     def enforcecontinuation(self, char):
         return not self.rejectcontinuation(char)
