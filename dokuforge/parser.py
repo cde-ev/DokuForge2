@@ -654,7 +654,7 @@ class SplitPunctuationClosingQuotes(SplitSeparators):
 
 class SplitPunctuationOpeningQuotes(SplitSeparators):
     """
-    Split at separators (e.g., "(") before opening quotation marks
+    Split at separators (e.g., "(") after opening quotation marks
     """
     def __init__(self, punctuation):
         SplitSeparators.__init__(self, punctuation, regex='("[%s])')
