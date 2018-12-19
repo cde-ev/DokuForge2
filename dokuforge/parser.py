@@ -440,6 +440,10 @@ def closeQuotationMark(word):
         yield word
 
 class PunctuationQuotationMark:
+    """
+    Opening and closing quotation marks followed or preceded by
+    punctuation characters.
+    """
     def __init__(self, punctuation):
         self.punctuation = punctuation
 
@@ -694,7 +698,7 @@ def defaultMicrotype(text):
                 ## no splitting at all before the previous features
                 SplitPunctuationClosingQuotes(',;:)!?'),
                 SplitPunctuationOpeningQuotes('('),
-                PunctuationQuotationMark(separators[2:-2]),
+                PunctuationQuotationMark(',;:()!?)'),
                 SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing,
                 percentSpacing, formatDate, pageReferences,

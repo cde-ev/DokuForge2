@@ -890,10 +890,12 @@ class ExporterTestStrings:
                 u'Was laesst Menschen "`aufbluehen"\'?'],
                [u'ei "(Ei" ei ("Ei" ei',
                 u'ei "`(Ei"\' ei ("`Ei"\' ei'],
-               [u'"Schoki"! "Cola"; "Nudeln": "Suppe")',
-                u'"`Schoki"\'! "`Cola"\'; "`Nudeln"\': "`Suppe"\')'],
+               [u'"Schoki"! "Cola"; "Wasser", "Nudeln": "Suppe")',
+                u'"`Schoki"\'! "`Cola"\'; "`Wasser"\', "`Nudeln"\': "`Suppe"\')'],
                [u'"Yo!" "Whaaat?" "Boom." "Cola;" "Nudeln:" "Suppe)"',
-                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\' "`Cola;"\' "`Nudeln:"\' "`Suppe)"\''] ]
+                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\' "`Cola;"\' "`Nudeln:"\' "`Suppe)"\''],
+               [u'"Wasser,"',
+                u'"`Wasser,"\''] ]
 
     abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
