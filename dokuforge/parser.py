@@ -430,18 +430,39 @@ def fullStop(word):
     else:
         yield word
 
+openQuotationTerminalString = TerminalString(u'"`')
+closeQuotationTerminalString = TerminalString(u'"\'')
+
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith(u'"'):
-        yield TerminalString(u'"`')
+        yield openQuotationTerminalString
         word = word[1:]
     yield word
 
 def closeQuotationMark(word):
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
-        yield TerminalString(u'"\'')
+        yield closeQuotationTerminalString
     else:
         yield word
+
+class PunctuationQuotationMark:
+    """
+    Opening and closing quotation marks followed or preceded by
+    punctuation characters.
+    """
+    def __init__(self, punctuation):
+        self.punctuation = punctuation
+
+    def __call__(self, word):
+        if (   len(word) == 2 ) and ( word[0] in self.punctuation ) and ( word[1] == '"' ):
+            yield word[:1]
+            yield closeQuotationTerminalString
+        elif ( len(word) == 2 ) and ( word[0] == '"' ) and ( word[1] in self.punctuation ):
+            yield openQuotationTerminalString
+            yield word[1:]
+        else:
+            yield word
 
 percent = Escaper(u'%', TerminalString(u'\\%'))
 
@@ -627,11 +648,28 @@ escapeEndEdnote = Escaper(u"\\end{ednote}", u"\\@|end{ednote}")
 # where we expect them to end.
 
 class SplitSeparators:
-    def __init__(self, separators):
-        self.splitre = re.compile("([%s])" % re.escape(separators))
+    def __init__(self, separators, regex='([%s])'):
+        self.splitre = re.compile( regex % re.escape(separators))
 
     def __call__(self, word):
         return self.splitre.split(word)
+
+
+class SplitPunctuationClosingQuotes(SplitSeparators):
+    """
+    Split at separators (e.g., punctuation) before closing quotation marks
+    """
+    def __init__(self, punctuation):
+        SplitSeparators.__init__(self, punctuation, regex='([%s]")')
+
+
+class SplitPunctuationOpeningQuotes(SplitSeparators):
+    """
+    Split at separators (e.g., "(") after opening quotation marks
+    """
+    def __init__(self, punctuation):
+        SplitSeparators.__init__(self, punctuation, regex='("[%s])')
+
 
 def applyMicrotypefeatures(wordlist, featurelist):
     """
@@ -665,6 +703,9 @@ def defaultMicrotype(text):
     separators = ' \t,;:()!?\n-' # no point, might be in abbreviations
     features = [SplitSeparators("\n"), formatCode,
                 ## no splitting at all before the previous features
+                SplitPunctuationClosingQuotes(',;:)!?'),
+                SplitPunctuationOpeningQuotes('('),
+                PunctuationQuotationMark(',;:()!?)'),
                 SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing,
                 percentSpacing, formatDate, pageReferences,
