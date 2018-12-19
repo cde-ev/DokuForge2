@@ -892,20 +892,25 @@ class PDisplayMath(PTree):
         return zip(startStrings, endStrings, middleStartIndices, middleEndIndices, isAligningEnvironment)
 
     def toTex(self):
-        for startString, endString, middleStartIndex, middleEndIndex, isAligningEnvironment in self._stringIndexList():
-            if (self.text.text.lstrip().startswith(startString) and
-                self.text.text.rstrip().endswith(endString)):
-                aligncontent = self.text.text.strip()[middleStartIndex:middleEndIndex].strip()
-                result = ('\n%s\n%1s\n%s\n'
-                          % (startString, mathMicrotype(aligncontent,
-                                                        isAligningEnvironment=isAligningEnvironment),
-                             endString))
-                return result
+        def prepare():
+            for startString, endString, middleStartIndex, middleEndIndex, isAligningEnvironment in self._stringIndexList():
+                if (self.text.text.lstrip().startswith(startString) and
+                        self.text.text.rstrip().endswith(endString)):
+                    aligncontent = self.text.text.strip()[middleStartIndex:middleEndIndex].strip()
+                    result = ('\n%s\n%1s\n%s\n'
+                              % (startString, mathMicrotype(aligncontent,
+                                                            isAligningEnvironment=isAligningEnvironment),
+                                 endString))
+                    return result
 
-        # if none of the allowed environments is found, use equation* as default
-        result = ('\n\\begin{equation*}\n%1s\n\\end{equation*}\n'
-                    % mathMicrotype(self.text.text))
-        return result
+            # if none of the allowed environments is found, use equation* as default
+            result = ('\n\\begin{equation*}\n%1s\n\\end{equation*}\n'
+                      % mathMicrotype(self.text.text))
+            return result
+
+        preparedTex = prepare()
+        preparedTex = preparedTex.replace(u'\n\n', u'\n')
+        return preparedTex
 
     def toTexStringsAndTerminalStrings(self):
         return [TerminalString(self.toTex())]
