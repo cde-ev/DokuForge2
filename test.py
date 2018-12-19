@@ -1074,14 +1074,16 @@ class ExporterTestStrings:
 
     urls = [ [u'http://www.google.de',
               u'\\@\\url{http://www.google.de}'],
-             [u'siehe http://www.google.de',
-              u'siehe \\@\\url{http://www.google.de}'],
+             [u'(siehe http://www.google.de)',
+              u'(siehe \\@\\url{http://www.google.de})'],
              [u'http://www.google.de bla',
               u'\\@\\url{http://www.google.de} bla'],
              [u'http://www.google.de www.bla.de',
               u'\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
              [u'http://www.google.de\nwww.bla.de',
               u'\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
+             [u'https://duckduckgo.com/?q=find&ia=web',
+              u'\\@\\url{https://duckduckgo.com/?q=find&ia=web}'],
              [u'https://www.bla.com. Sowie http://www.blub.org?',
               u'\\@\\url{https://www.bla.com}. Sowie \\@\\url{http://www.blub.org}?'],
              [u'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
