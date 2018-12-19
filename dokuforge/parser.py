@@ -439,7 +439,7 @@ def closeQuotationMark(word):
     else:
         yield word
 
-class punctuationQuotationMark:
+class PunctuationQuotationMark:
     def __init__(self, punctuation):
         self.punctuation = punctuation
 
@@ -694,7 +694,7 @@ def defaultMicrotype(text):
                 ## no splitting at all before the previous features
                 SplitPunctuationClosingQuotes(',;:)!?'),
                 SplitPunctuationOpeningQuotes('('),
-                punctuationQuotationMark(separators[2:-2]),
+                PunctuationQuotationMark(separators[2:-2]),
                 SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing,
                 percentSpacing, formatDate, pageReferences,
