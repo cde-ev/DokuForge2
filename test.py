@@ -17,7 +17,7 @@ import tarfile
 import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
-from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
+from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser, Estimate
 from dokuforge.common import TarWriter
 from dokuforge.common import UTC
 from dokuforge.course import Course
@@ -888,8 +888,14 @@ class ExporterTestStrings:
                 u'"`Wow"\'-Effekt'],
                [u'Was laesst Menschen "aufbluehen"?',
                 u'Was laesst Menschen "`aufbluehen"\'?'],
-               [u'"Schoki"! "Cola"; "Nudeln": "Suppe")',
-                u'"`Schoki"\'! "`Cola"\'; "`Nudeln"\': "`Suppe"\')']]
+               [u'ei "(Ei" ei ("Ei" ei',
+                u'ei "`(Ei"\' ei ("`Ei"\' ei'],
+               [u'"Schoki"! "Cola"; "Wasser", "Nudeln": "Suppe")',
+                u'"`Schoki"\'! "`Cola"\'; "`Wasser"\', "`Nudeln"\': "`Suppe"\')'],
+               [u'"Yo!" "Whaaat?" "Boom." "Cola;" "Nudeln:" "Suppe)"',
+                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\' "`Cola;"\' "`Nudeln:"\' "`Suppe)"\''],
+               [u'"Wasser,"',
+                u'"`Wasser,"\''] ]
 
     abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
@@ -912,6 +918,8 @@ class ExporterTestStrings:
                  u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
                 [u'Unterscheide T-shirt und DNA-Sequenz.',
                  u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.'],
+                [u'Wenn 1D nicht reicht, nutze 2D oder 6D.',
+                 u'Wenn 1\\@\\acronym{D} nicht reicht, nutze 2\\@\\acronym{D} oder\n6\\@\\acronym{D}.'],
                 [u'Wahlergebnis fuer die SPD: 9% (NRW).',
                  u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
                 [u'FDP? CDU! CSU. ÖVP.',
@@ -954,23 +962,25 @@ class ExporterTestStrings:
 
     mathEnvironments = [ [u'b $$\\circ \\cap \\inf \\times$$ e',
                           u'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
-                         [u'b $$\\begin{equation}a + b = c\\end{equation}$$ e',
+                         [u'b $$\n\\circ \\cap \\inf \\times\n$$ e',
+                          u'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
+                         [u'b $$\n\\begin{equation}a + b = c\\end{equation}\n$$ e',
                           u'b\n\\begin{equation}\na + b = c\n\\end{equation}\n e'],
-                         [u'b $$\\begin{equation*}a + b = c \\end{equation*}$$ e',
+                         [u'b $$\n\\begin{equation*}a + b = c \\end{equation*}\n$$ e',
                           u'b\n\\begin{equation*}\na + b = c\n\\end{equation*}\n e'],
-                         [u'b $$\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}$$ e',
+                         [u'b $$\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n$$ e',
                           u'b\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n e'],
-                         [u'b $$\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}$$ e',
+                         [u'b $$\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n$$ e',
                           u'b\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n e'],
-                         [u'b $$\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}$$ e',
+                         [u'b $$\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}\n$$ e',
                           u'b\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align}\n e'],
-                         [u'a $$\\begin{equation} b &= c \\end{equation}$$ d',
+                         [u'a $$\n\\begin{equation} b &= c \\end{equation}\n$$ d',
                           u'a\n\\begin{equation}\nb \\@\\forbidden\\&= c\n\\end{equation}\n d'],
-                         [u'b $$\\begin{equation}a + b &= c\\end{equation}$$ e',
+                         [u'b $$\n\\begin{equation}a + b &= c\\end{equation}\n$$ e',
                           u'b\n\\begin{equation}\na + b \\@\\forbidden\\&= c\n\\end{equation}\n e'],
-                         [u'b $$\\begin{align}a + b \evilmath = c\\end{align}$$ e',
+                         [u'b $$\n\\begin{align}a + b \evilmath = c\\end{align}\n$$ e',
                           u'b\n\\begin{align}\na + b \\@\\forbidden\\evilmath = c\n\\end{align}\n e'],
-                         [u'Bla $$\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}$$ Blub',
+                         [u'Bla $$\n\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}\n$$ Blub',
                           u'Bla\n\\begin{align}\na + b &= c\\\\\na - b &= d\n\\end{align}\n Blub'],
                          [u'Matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$.',
                           u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'] ]
@@ -1105,6 +1115,21 @@ class ExporterTestStrings:
                            [u'[[foo]]\n\n(bar)',
                             u'\\subsection{foo}\n\n(bar)'] ]
 
+    sectionsWithEmph = [ [u'[Ola Gjeilo: _Northern Lights_]',
+                          u'\\section{Ola Gjeilo: \\emph{Northern Lights}}'],
+                         [u'[_Mein BAMF_ -- aus dem Kabarett]',
+                          u'\\section{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
+                         [u'[Max Reger: _Es waren zwei Königskinder_ hier]',
+                          u'\\section{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
+                         [u'[[Ola Gjeilo: _Northern Lights_]]',
+                          u'\\subsection{Ola Gjeilo: \\emph{Northern Lights}}'],
+                         [u'[[_Mein BAMF_ -- aus dem Kabarett]]',
+                          u'\\subsection{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
+                         [u'[[Max Reger: _Es waren zwei Königskinder_ hier]]',
+                          u'\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
+                         [u'[1. Buch Mose]',
+                          u'\\section{\\@1. Buch Mose}'] ]
+
     numericalScope = [ [u'10\xb3 Meter sind ein km',
                         u'10\xb3 Meter sind ein km'] ]
 
@@ -1168,12 +1193,25 @@ class ExporterTestCases:
                     ExporterTestStrings.codeAndLengthyParagraph  ]
 
     lineGroupTests = testsInText + \
-                     [ ExporterTestStrings.sectionsAndAuthors ]
+                     [ ExporterTestStrings.sectionsAndAuthors,
+                       ExporterTestStrings.sectionsWithEmph ]
 
     titleTests = testsEverywhere
 
     captionTests = [[[i, j.replace(u'\n\n', u'\\@\\@\\@\n')] for i, j in k] for k in testsInText] + \
                    [ ExporterTestStrings.multilineCaptions ]
+
+class DokuforgeParserUnitTests(DfTestCase):
+    def verifyReturnTypes(self, text):
+        pseq = dfLineGroupParser(text)
+        assert isinstance(pseq.debug(), tuple)
+        assert isinstance(pseq.toTex(), unicode)
+        assert isinstance(pseq.toHtml(), unicode)
+        assert isinstance(pseq.toDF(), unicode)
+        assert isinstance(pseq.toEstimate(), Estimate)
+
+    def testLineGroupParser(self):
+        [ [self.verifyReturnTypes(s[0]) for s in t] for t in ExporterTestCases.lineGroupTests ]
 
 class DokuforgeMicrotypeUnitTests(DfTestCase):
     def verifyExportsTo(self, df, tex):

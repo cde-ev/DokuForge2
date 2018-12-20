@@ -138,9 +138,16 @@ def acronym(word):
     But don't mangle things like 'T-Shirt' or 'E-Mail' while
     still allowing for compound nouns such as 'DNA-Sequenz'.
     A plural 's' as in 'EKGs' is allowed.
+    In Dimensions, such as 2D or 3D, only the D should be
+    displayed in a smaller font.
     """
-    pattern = r'(\w+)' # only alphanumeric characters or underscore
     concat_left = u''
+
+    if re.compile(r'^(\d)D$').match(word):  # nD needs special treatment
+        concat_left = re.sub(r'(\d)D', u'\\1\\\\@\\\\acronym{D}', word)
+        word = ''
+
+    pattern = r'(\w+)' # only alphanumeric characters or underscore
     m = True
     while m:
         if m != True:
@@ -423,18 +430,39 @@ def fullStop(word):
     else:
         yield word
 
+openQuotationTerminalString = TerminalString(u'"`')
+closeQuotationTerminalString = TerminalString(u'"\'')
+
 def openQuotationMark(word):
     if len(word) > 1 and word.startswith(u'"'):
-        yield TerminalString(u'"`')
+        yield openQuotationTerminalString
         word = word[1:]
     yield word
 
 def closeQuotationMark(word):
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
-        yield TerminalString(u'"\'')
+        yield closeQuotationTerminalString
     else:
         yield word
+
+class PunctuationQuotationMark:
+    """
+    Opening and closing quotation marks followed or preceded by
+    punctuation characters.
+    """
+    def __init__(self, punctuation):
+        self.punctuation = punctuation
+
+    def __call__(self, word):
+        if (   len(word) == 2 ) and ( word[0] in self.punctuation ) and ( word[1] == '"' ):
+            yield word[:1]
+            yield closeQuotationTerminalString
+        elif ( len(word) == 2 ) and ( word[0] == '"' ) and ( word[1] in self.punctuation ):
+            yield openQuotationTerminalString
+            yield word[1:]
+        else:
+            yield word
 
 percent = Escaper(u'%', TerminalString(u'\\%'))
 
@@ -620,11 +648,28 @@ escapeEndEdnote = Escaper(u"\\end{ednote}", u"\\@|end{ednote}")
 # where we expect them to end.
 
 class SplitSeparators:
-    def __init__(self, separators):
-        self.splitre = re.compile("([%s])" % re.escape(separators))
+    def __init__(self, separators, regex='([%s])'):
+        self.splitre = re.compile( regex % re.escape(separators))
 
     def __call__(self, word):
         return self.splitre.split(word)
+
+
+class SplitPunctuationClosingQuotes(SplitSeparators):
+    """
+    Split at separators (e.g., punctuation) before closing quotation marks
+    """
+    def __init__(self, punctuation):
+        SplitSeparators.__init__(self, punctuation, regex='([%s]")')
+
+
+class SplitPunctuationOpeningQuotes(SplitSeparators):
+    """
+    Split at separators (e.g., "(") after opening quotation marks
+    """
+    def __init__(self, punctuation):
+        SplitSeparators.__init__(self, punctuation, regex='("[%s])')
+
 
 def applyMicrotypefeatures(wordlist, featurelist):
     """
@@ -658,6 +703,9 @@ def defaultMicrotype(text):
     separators = ' \t,;:()!?\n-' # no point, might be in abbreviations
     features = [SplitSeparators("\n"), formatCode,
                 ## no splitting at all before the previous features
+                SplitPunctuationClosingQuotes(',;:)!?'),
+                SplitPunctuationOpeningQuotes('('),
+                PunctuationQuotationMark(',;:()!?)'),
                 SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing,
                 percentSpacing, formatDate, pageReferences,
@@ -926,20 +974,25 @@ class PDisplayMath(PTree):
         return zip(startStrings, endStrings, middleStartIndices, middleEndIndices, isAligningEnvironment)
 
     def toTex(self):
-        for startString, endString, middleStartIndex, middleEndIndex, isAligningEnvironment in self._stringIndexList():
-            if (self.text.text.lstrip().startswith(startString) and
-                self.text.text.rstrip().endswith(endString)):
-                aligncontent = self.text.text.strip()[middleStartIndex:middleEndIndex].strip()
-                result = ('\n%s\n%1s\n%s\n'
-                          % (startString, mathMicrotype(aligncontent,
-                                                        isAligningEnvironment=isAligningEnvironment),
-                             endString))
-                return result
+        def prepare():
+            for startString, endString, middleStartIndex, middleEndIndex, isAligningEnvironment in self._stringIndexList():
+                if (self.text.text.lstrip().startswith(startString) and
+                        self.text.text.rstrip().endswith(endString)):
+                    aligncontent = self.text.text.strip()[middleStartIndex:middleEndIndex].strip()
+                    result = ('\n%s\n%1s\n%s\n'
+                              % (startString, mathMicrotype(aligncontent,
+                                                            isAligningEnvironment=isAligningEnvironment),
+                                 endString))
+                    return result
 
-        # if none of the allowed environments is found, use equation* as default
-        result = ('\n\\begin{equation*}\n%1s\n\\end{equation*}\n'
-                    % mathMicrotype(self.text.text))
-        return result
+            # if none of the allowed environments is found, use equation* as default
+            result = ('\n\\begin{equation*}\n%1s\n\\end{equation*}\n'
+                      % mathMicrotype(self.text.text))
+            return result
+
+        preparedTex = prepare()
+        preparedTex = preparedTex.replace(u'\n\n', u'\n')
+        return preparedTex
 
     def toTexStringsAndTerminalStrings(self):
         return [TerminalString(self.toTex())]
@@ -1021,32 +1074,34 @@ class PParagraph(PTree):
         return self.it.toEstimate().fullline()
 
 class PHeading(PTree):
-    def __init__(self, title, level):
-        self.title = PLeaf(title)
+    def __init__(self, subtree, level):
+        self.subtree = subtree
         self.level = level
 
     def debug(self):
-        return ('Heading', self.level, self.getTitle())
+        return ('Heading', self.level, self.subtree.debug())
 
     def toTex(self):
-        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.title.toTex())
+        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.subtree.toTex())
 
     def toHtml(self):
         n = self.level + 1
-        return u'\n<h%d>%s</h%d>\n' % (n, self.title.toHtml(), n)
+        return u'\n<h%d>%s</h%d>\n' % (n, self.subtree.toHtml(), n)
 
     def toDF(self):
         n = self.level + 1
-        return u'\n\n%s%s%s' % (u'[' * n, self.title.toDF(), u']' * n)
+        return u'\n\n%s%s%s' % (u'[' * n, self.subtree.toDF(), u']' * n)
 
     def getLevel(self):
         return self.level
 
     def getTitle(self):
-        return self.title.text
+        return self.subtree.text
 
     def toEstimate(self):
-        return Estimate.fromTitle(self.getTitle())
+        if isinstance(self.subtree, PSequence):
+            return Estimate.fromTitle(self.subtree.toDF())
+        return Estimate.fromTitle(self.subtree.text)
 
 class PAuthor(PTree):
     def __init__(self, author):
@@ -1404,17 +1459,21 @@ def groupchars(text, supportedgroups):
     return groups
 
 
-def defaultInnerParse(lines):
+def defaultInnerParse(lines, features=(Simplegroup, Urlgroup, Emphgroup, Mathgroup, DisplayMathGroup)):
     """
     @type lines: [unicode]
     """
-    features = [Simplegroup, Urlgroup, Emphgroup, Mathgroup, DisplayMathGroup]
     text = u'\n'.join(lines)
     groups = groupchars(text, features)
     if len(groups) == 1:
         return groups[0].parse()
     else:
         return PSequence([g.parse() for g in groups])
+
+
+def headingParse(line):
+    return defaultInnerParse([line], features=(Simplegroup, Emphgroup))
+
 
 class Linegroup:
     """
@@ -1616,7 +1675,7 @@ class Heading(Linegroup):
         return title
 
     def parse(self):
-        return PHeading(self.getTitle(), 0)
+        return PHeading(headingParse(self.getTitle()), 0)
 
 class Subheading(Heading):
     """
@@ -1630,7 +1689,7 @@ class Subheading(Heading):
         return line.startswith(u'[[') and not line.startswith(u'[[[')
 
     def parse(self):
-        return PHeading(self.getTitle(), 1)
+        return PHeading(headingParse(self.getTitle()), 1)
 
 class Author(Linegroup):
     """
