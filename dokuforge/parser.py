@@ -855,7 +855,7 @@ class PUrl(PTree):
 
     def formatAndSplitTrailingChars(self, fmtstr, word):
         if word and len(word) > 0 and word[-1] in '.,;:)]?!':
-            # Separate trailing period.
+            # Separate trailing punctuation mark or closing bracket.
             word = (fmtstr % word[:-1]) + word[-1]
         else:
             word = fmtstr % word
