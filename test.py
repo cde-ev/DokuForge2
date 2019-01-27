@@ -895,7 +895,9 @@ class ExporterTestStrings:
                [u'"Yo!" "Whaaat?" "Boom." "Cola;" "Nudeln:" "Suppe)"',
                 u'"`Yo!"\' "`Whaaat?"\' "`Boom."\' "`Cola;"\' "`Nudeln:"\' "`Suppe)"\''],
                [u'"Wasser,"',
-                u'"`Wasser,"\''] ]
+                u'"`Wasser,"\''],
+               [u'So "sollte es" sein. Und "$so$ ist $es$" hier.',
+                u'So "`sollte es"\' sein. Und "`$so$ ist $es$"\' hier.'] ]
 
     abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                       u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter'],
