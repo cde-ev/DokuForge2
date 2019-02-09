@@ -25,14 +25,14 @@ stets die Quelle an.</p>
 <p>Wenn die Grafik nicht von einem Kursteilnehmer oder Dokuteammitglied erstellt wurde, benötigen wir die Erlaubnis, diese Grafik abzudrucken und
 auf der Doku-DVD verwenden zu dürfen. Diese Erlaubnis musst du selbst einholen. Ohne diese Erlaubnis können wir die Grafik nicht abdrucken.</p>
 <h2>Bilder hochladen und einbinden</h2>
-<p>Grafiken können über &quot;neues Bild hochladen&quot; am Ende einer Seite zu dem jeweiligen Kapitel hochgeladen werden. Beim Hochladen werdet ihr
+<p>Grafiken können über &quot;neues Bild hochladen&quot; am Ende einer Seite zu dem jeweiligen Kapitel hochgeladen werden. Beim Hochladen wirst du
 nach einem Kürzel gefragt. Die Kürzel dürfen ausschließlich Kleinbuchstaben und Zahlen enthalten.</p>
-<p>Auf die genaue Positionierung der Bilder habt ihr keinen Einfluss.
+<p>Auf die genaue Positionierung der Bilder hast du keinen Einfluss.
 Bilder sind Fließobjekte, daher ist keine &quot;Hier&quot;-Positionierung möglich.
 Die Bilder werden in der Nähe ihrer ersten Referenz eingebunden werden,
 ihre Position kann sich aber durch Seitenumbrüche, andere Abbildungen etc. verschieben.
 Bitte verweist aus diesem Grund nicht direkt auf Abbildungen (&quot;in folgender Abbildung&quot;),
-sondern bindet Abbildungen über eine Referenz ein. Das heißt: In eurem Text verweist ihr
+sondern bindet Abbildungen über eine Referenz ein. Das heißt: In deinem Text verweist du
 über eine Referenz der Form <code>In ABBILDUNG:Kürzel sieht man ...</code> auf das entsprechende Bild.</p>
 <p>Das sieht dann z.B. so aus:</p>
 <table  width="80%">

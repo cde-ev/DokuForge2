@@ -1,18 +1,75 @@
 <div class="body">
 <h1>Literatur</h1>
+
+<p>Wenn du im Text auf eine Literaturquelle oder eine Internetseite
+verweisen willst, dann geschieht das mit einer Literaturangabe. Das
+gilt auch für Abbildungen, Tabellen und dergleichen, für die du in der
+Doku eine Quelle nennen willst. Dazu gibst du im Text oder der
+Bild-/Tabellenunterschrift an, dass und wie auf eine Quelle verwiesen
+werden soll, und außerdem natürlich die Quelle, siehe unten.</p>
+
 <h2>Verweis auf Literaturquellen im Text</h2>
-<p>Wenn du im Text auf eine Literaturquelle oder eine Internetseite verweisen willst, dann
-geschieht das mit einer Literaturangabe. Das gilt auch für Abbildungen, Tabellen und dergleichen,
-für die ihr in der Doku eine Quelle nennen wollt.</p>
-<p>Wo du im Text auf eine Literaturquelle verweisen willst, fügst du ein <code>LITERATUR:kuerzel</code> ein.
-<code>kuerzel</code> ist dabei ein von dir für die Quelle vergebenes Kürzel.
-Daraus machen wir später einen richtigen Literaturverweis.</p>
+
+<p>Wo du im Text auf eine Literaturquelle verweisen willst, fügst du
+ein <code>LITERATUR:kuerzel</code> ein. <code>kuerzel</code> ist dabei
+ein von dir für die Quelle vergebenes Kürzel. Daraus machen wir später
+einen richtigen Literaturverweis, die Vorschau übersetzt das noch
+nicht.</p>
+
+<p>Verweise auf bestimmte Abschnitte, Seiten, Abbildungen etc. in der
+Quelle kannst du einfach dahinter schreiben. Baue den Literaturverweis
+dafür so in den Satz oder in Klammern ein, wie er erscheinen
+soll. Beispiele:</p>
+
+<table width="80%">
+  <tr>
+    <td width="40%">Eingabe und Vorschau:</td>
+    <td width="40%">späteres Ergebnis (nicht in der Vorschau):</td>
+  </tr>
+  <tr>
+    <td>
+      <code>Dazu schreiben Müller et al. LITERATUR:mueller2001 ...</code>
+    </td>
+    <td>
+      Dazu schreiben Müller et al. [1] ...
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>Pinguine leben in der Antarktis LITERATUR:schneider2001 Seite 5.</code>
+    </td>
+    <td>
+      Pinguine leben in der Antarktis [2, Seite 5].
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>Abbildung angepasst aus LITERATUR:kohl02 Abb. 5.</code>
+    </td>
+    <td>
+      Abbildung angepasst aus [3, Abb. 5].
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>Autos sind oft schwarz (vgl. LITERATUR:opel2 LITERATUR:ford88).</code>
+    </td>
+    <td>
+      Autos sind oft schwarz (vgl. [4, 5]).
+    </td>
+  </tr>
+</table>
+
+<p>Bitte vergesse nun zum Schluss nicht, die entsprechend mit dem
+LITERATUR:kuerzel referenzierte Literaturangabe auch zu
+definieren. Füge den entsprechenden Literaturdaten einfach als Ednote
+dazu, wie im folgenden Abschnitt beschrieben.</p>
 
 <h2>Literaturverzeichnis</h2>
-<p>Es genügt nicht, einfach nur <code>LITERATUR:blackmore2000</code>
-im Text zu verwenden.  Du musst am Ende der Doku noch angeben, auf
+<p>Es genügt nicht, einfach nur zum Beispiel <code>LITERATUR:blackmore2000</code>
+im Text zu verwenden, du musst uns noch verraten, auf
 was <code>LITERATUR:blackmore2000</code> verweist. Dazu fügst du am
-Ende der Doku eine Ednote ein, in der die bibliographischen Angaben zu
+Ende des Abschnitts eine Ednote ein, in der die bibliographischen Angaben zu
 den Quellen stehen. (Für die Profis: Wir verwenden BibLaTeX mit Biber,
 dessen Syntax ist hier in einer Ednote gewünscht.)</p>
 <p>Beispiel:
