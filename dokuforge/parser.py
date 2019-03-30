@@ -723,10 +723,11 @@ def defaultMicrotype(text):
                 UTF8glqq, UTF8elqq, UTF8grqq, UTF8flqq, UTF8frqq,
                 UTF8glq, UTF8grq, UTF8erq,
                 # fullStop after ellipsis and standardAbbreviations
-                fullStop, acronym, naturalNumbers,
+                fullStop, naturalNumbers,
                 ## no splitting at '-' before numbers
                 SplitSeparators(separators[-1]), # separator '-' only
                 openQuotationMark, closeQuotationMark,
+                acronym, # after quotation marks are handled
                 escapeCommands] # escapeCommands at last
     return applyMicrotypefeatures([text], features)
 
