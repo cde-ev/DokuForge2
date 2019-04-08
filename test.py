@@ -896,6 +896,8 @@ class ExporterTestStrings:
                 u'"`Yo!"\' "`Whaaat?"\' "`Boom."\' "`Cola;"\' "`Nudeln:"\' "`Suppe)"\''],
                [u'"Wasser,"',
                 u'"`Wasser,"\''],
+               [u'So "sollte es" sein. Und "$so$ ist $es$" hier.',
+                u'So "`sollte es"\' sein. Und \\@"`$so$ ist $es$\\@"\' hier.'],
                [u'Bitte "ACRONYME" berücksichtigen.',
                 u'Bitte "`\\@\\acronym{ACRONYME}"\' berücksichtigen.'],
                [u'"Altern der DNA"',

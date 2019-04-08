@@ -446,6 +446,38 @@ def closeQuotationMark(word):
     else:
         yield word
 
+def lonelyOpenQuotationMark(word):
+    """
+    Opening quotation mark before character groups, e.g. ' "$x$'.
+    """
+    pattern = r'( )"$'
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            yield (left + matched)
+            quote = openQuotationTerminalString.getString()
+            yield TerminalString(u'\\@' + quote)
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
+def lonelyCloseQuotationMark(word):
+    """
+    Closing quotation mark after character groups, e.g. '$x$" '.
+    """
+    # word = re.sub(u'^" ', u"\\@\"' ", word)
+    pattern = r'^"( )'
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            yield left
+            quote = closeQuotationTerminalString.getString()
+            yield TerminalString(u'\\@' + quote)
+            word = matched + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
 class PunctuationQuotationMark:
     """
     Opening and closing quotation marks followed or preceded by
@@ -714,6 +746,7 @@ def defaultMicrotype(text):
                 # ellipses with and without spacing before splitting at spaces
                 bracketEllipsis, spacedEllipsis, ellipsis,
                 spacedUTF8ellipsis, UTF8ellipsis,
+                lonelyOpenQuotationMark, lonelyCloseQuotationMark,
                 ## no splitting at ' ' before the previous features
                 SplitSeparators(separators[0]), # separator ' ' only
                 percent, ampersand, hashmark, quote, leftCurlyBracket,
