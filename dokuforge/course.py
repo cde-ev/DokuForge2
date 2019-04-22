@@ -141,7 +141,7 @@ class Course(StorageDir):
         @type havelock: None or LockDir
         @rtype: int
         """
-        return int(self.getcontent(b"nextpage", havelock) or "0")
+        return int(self.getcontent(b"nextpage", havelock) or b"0")
 
     def nextblob(self, havelock=None):
         """
@@ -151,7 +151,7 @@ class Course(StorageDir):
         @returns: number of next available blob
         @rtype: int
         """
-        return int(self.getcontent(b"nextblob", havelock) or "0")
+        return int(self.getcontent(b"nextblob", havelock) or b"0")
 
     def listpages(self, havelock=None):
         """
@@ -160,7 +160,7 @@ class Course(StorageDir):
         @rtype: [int]
         """
         lines = self.getcontent(b"Index", havelock).splitlines()
-        return [int(line.split()[0]) for line in lines if line != ""]
+        return [int(line.split()[0]) for line in lines if line != b""]
 
     def outlinepages(self, havelock=None):
         """

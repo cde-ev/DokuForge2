@@ -223,6 +223,9 @@ class Storage(object):
         return rloghead(self.fullpath(postfix=b",v"))
 
     def content(self, havelock=None):
+        """
+        @rtype: bytes
+        """
         self.ensureexistence(havelock = havelock)
         logger.debug("retrieving content for %r" % self.fullpath())
         return check_output(["co", "-q", "-p", "-kb", self.fullpath()],

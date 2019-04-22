@@ -38,7 +38,7 @@ class StorageDir:
         @type filename: bytes
         @param filename: passed to Storage as second param
         @type havelock: None or LockDir
-        @rtype: str
+        @rtype: bytes
         @returns: the content of the Storage build from self.path and filename
         """
         return self.getstorage(filename).content(havelock)
