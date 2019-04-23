@@ -177,6 +177,8 @@ class Storage(object):
                 shutil.copyfileobj(content, objfile)
             args = ["ci", "-q", "-f", "-m%s" % message]
             if user is not None:
+                if isinstance(user, bytes):
+                  user = user.decode("utf8")
                 args.append("-w%s" % user)
             args.append(self.fullpath())
             subprocess.check_call(args, env=RCSENV)
