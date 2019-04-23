@@ -588,7 +588,7 @@ class Course(StorageDir):
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
-        @returns: a mapping providing the keys: name(str), pages([int]),
+        @returns: a mapping providing the keys: name(unicode), pages([int]),
                 deadpages([int]), title(unicode), outlines([Outline])
         """
         functions = dict(

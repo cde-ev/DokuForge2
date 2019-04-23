@@ -103,11 +103,11 @@ class StorageDir:
         @param extrafunctions: the dict passed to LazyView is updated with
             this dict
         @rtype: LazyView
-        @returns: a mapping providing the keys name(str) and title(unicode) as
-            well as the keys from extrafunctions
+        @returns: a mapping providing the keys name(unicode) and title(unicode)
+            as well as the keys from extrafunctions
         """
         functions = dict(
-            name=lambda:self.name,
+            name=lambda:self.name.decode("utf8"),
             title=self.gettitle)
         functions.update(extrafunctions)
         return LazyView(functions)
