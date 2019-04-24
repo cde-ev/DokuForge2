@@ -205,7 +205,7 @@ class Storage(object):
 
     def status(self, havelock=None):
         """
-        @rtype: str
+        @rtype: bytes
         """
         self.ensureexistence(havelock = havelock)
         result = rlogv(self.fullpath(postfix=b",v"))
@@ -265,6 +265,7 @@ class Storage(object):
         @param newcontent: the new content, produced by the user starting from
                            the content at the provided version
         @type user: None or bytes
+        @rtype: (bool, bytes, bytes)
         @returns: a triple (ok, newversion, mergedcontent) where ok is boolen
             with value True if the save was sucessfull (if not, a merge has
             to be done manually), and (newversion, mergedcontent) is a state
