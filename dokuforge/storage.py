@@ -161,6 +161,7 @@ class Storage(object):
         exist already.
 
         @type content: bytes or raw filelike 
+        @type user: None or bytes
         @param content: the content of the file
         @type message: unicode
         """
@@ -168,6 +169,7 @@ class Storage(object):
         if isinstance(content, bytes):
             content = io.BytesIO(content)
         assert isinstance(message, unicode)
+        assert user is None or isinstance(user, bytes)
         logger.debug("storing %r" % self.fullpath())
 
         with havelock or self.lock as gotlock:
@@ -178,9 +180,7 @@ class Storage(object):
                 shutil.copyfileobj(content, objfile)
             args = ["ci", "-q", "-f", b"-m" + message.encode("utf8")]
             if user is not None:
-                if isinstance(user, bytes):
-                  user = user.decode("utf8")
-                args.append("-w%s" % user)
+                args.append(b"-w" + user)
             args.append(self.fullpath())
             subprocess.check_call(args, env=RCSENV)
 
