@@ -242,7 +242,7 @@ class Storage(object):
         that version is still the head revision.
 
         @returns: an opaque version string and the contents of the file
-        @rtype: (bytes, str)
+        @rtype: (bytes, bytes)
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
