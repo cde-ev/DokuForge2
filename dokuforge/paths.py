@@ -1,5 +1,6 @@
 try:
     from ConfigParser import SafeConfigParser as ConfigParser
+    ConfigParser.read_file = ConfigParser.readfp
 except ImportError:
     from configparser import ConfigParser
 import io
@@ -27,7 +28,7 @@ class PathConfig(object):
     def __init__(self,config=None):
         if config is None:
             self.cp = ConfigParser()
-            self.cp.readfp(io.StringIO(default_config))
+            self.cp.read_file(io.StringIO(default_config))
         else:
             self.cp = config
 
@@ -35,7 +36,7 @@ class PathConfig(object):
         self.cp = ConfigParser()
         # can be switched to plain open when dropping support for Python2.X
         with io.open(configfile, encoding=config_encoding) as opencfg:
-            self.cp.readfp(opencfg)
+            self.cp.read_file(opencfg)
 
     @property
     def rootdir(self):

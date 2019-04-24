@@ -1,6 +1,7 @@
 import random
 try:
     from ConfigParser import SafeConfigParser as ConfigParser
+    ConfigParser.read_file = ConfigParser.readfp
 except ImportError:
     from configparser import ConfigParser
 import io
@@ -391,7 +392,7 @@ class UserDB:
         content = io.StringIO(self.storage.content().decode("utf8"))
         ## update time, since we read the new content
         self.timestamp = self.storage.cachedtime
-        config.readfp(content)
+        config.read_file(content)
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():

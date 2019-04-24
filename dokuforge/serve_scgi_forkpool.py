@@ -11,6 +11,7 @@ from dokuforge.paths import PathConfig, config_encoding
 
 try:
     from ConfigParser import SafeConfigParser as ConfigParser
+    ConfigParser.read_file = ConfigParser.readfp
 except ImportError:
     from configparser import ConfigParser
 import io
@@ -49,7 +50,7 @@ def parsesize(s):
 def main(configfile):
     config = ConfigParser()
     with io.open(configfile, encoding=config_encoding) as openconfig:
-        config.readfp(openconfig)
+        config.read_file(openconfig)
     port = int(config.get(u'scgi', u'port'))
     limitas = parsesize(config.get(u'scgi', u'limitas'))
     limitdata = parsesize(config.get(u'scgi', u'limitdata'))

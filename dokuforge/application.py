@@ -4,6 +4,7 @@
 try:
     import ConfigParser as configparser
     from ConfigParser import SafeConfigParser as ConfigParser
+    ConfigParser.read_file = ConfigParser.readfp
 except ImportError:
     import configparser
     from configparser import ConfigParser
@@ -458,9 +459,10 @@ class Application:
         @rtype: {unicode: unicode}
         @returns: a dict of all groups with their titles as values
         """
+        config = ConfigParser()
+        groupconfig = io.StringIO(self.groupstore.content().decode("utf8"))
         try:
-            config = ConfigParser()
-            config.readfp(io.StringIO(self.groupstore.content().decode("utf8")))
+            config.read_file(groupconfig)
         except configparser.ParsingError as err:
             return {}
         ret = {}
