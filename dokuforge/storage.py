@@ -155,18 +155,19 @@ class Storage(object):
     def lock(self):
         return LockDir(self.fullpath(prefix=b"#lock."))
 
-    def store(self, content, user=None, message="store called", havelock=None):
+    def store(self, content, user=None, message=u"store called", havelock=None):
         """
         Store the given contents; rcs file is create if it does not
         exist already.
 
         @type content: bytes or raw filelike 
         @param content: the content of the file
-        @type message: str
+        @type message: unicode
         """
         assert not isinstance(content, unicode)
         if isinstance(content, bytes):
             content = io.BytesIO(content)
+        assert isinstance(message, unicode)
         logger.debug("storing %r" % self.fullpath())
 
         with havelock or self.lock as gotlock:
@@ -175,7 +176,7 @@ class Storage(object):
                                   env=RCSENV)
             with open(self.fullpath(), "wb") as objfile:
                 shutil.copyfileobj(content, objfile)
-            args = ["ci", "-q", "-f", "-m%s" % message]
+            args = ["ci", "-q", "-f", b"-m" + message.encode("utf8")]
             if user is not None:
                 if isinstance(user, bytes):
                   user = user.decode("utf8")
