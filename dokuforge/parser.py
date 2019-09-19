@@ -345,14 +345,12 @@ def standardAbbreviations(word):
         u'etc.': u'etc.',
         u'f.': u'f.',
         u'ff.': u'ff.',
-        u'n.Chr.': u'n.\\,Chr.',
         u'o.Ä.': u'o.\\,Ä.',
         u'o.ä.': u'o.\\,ä.',
         u's.o.': u's.\\,o.',
         u'sog.': u'sog.',
         u's.u.': u's.\\,u.',
         u'u.a.': u'u.\\,a.',
-        u'v.Chr.': u'v.\\,Chr.',
         u'vgl.': u'vgl.',
         u'z.B.': u'z.\\,B.'}
 
