@@ -391,7 +391,7 @@ class UnitSpacing:
             if m != True:
                 left, number, unit, word =  m.groups()
                 yield (left + number)
-                if unit[-1].endswith(u'V') and len(unit) > 1:
+                if unit.strip().endswith(u'V') and len(unit.strip()) > 1:
                     # annotation for 'mV', 'μV' etc.
                     unit = u'\\@' + unit
                 yield TerminalString(u'\\,' + unit)
