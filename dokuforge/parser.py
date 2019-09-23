@@ -221,6 +221,20 @@ def formatDate(word):
         m = re.match(r'(.*?)' + date_pattern + r'(.*)', word)
     yield word
 
+def formatYearsBCAD(word):
+    """
+    Do spacing for years "n. Chr." or "v. Chr."
+    """
+    year_pattern = r'(\d+) ?([nv]\.)(Chr\.)'
+    m = True
+    while m:
+        if m != True:
+            left, year, beforeAfter, christ, word =  m.groups()
+            yield left
+            yield TerminalString(u'%s\\,%s\\,%s' % (year, beforeAfter, christ))
+        m = re.match(r'(.*?)' + year_pattern + r'(.*)', word)
+    yield word
+
 def pageReferences(word):
     """
     Do spacing for page references.
@@ -729,7 +743,7 @@ def defaultMicrotype(text):
                 PunctuationQuotationMark(',;:()!?)'),
                 SplitSeparators(separators[1:-1]), # separators except ' -'
                 unspaceAbbreviations, unitSpacing,
-                percentSpacing, formatDate, pageReferences,
+                percentSpacing, formatDate, formatYearsBCAD, pageReferences,
                 # keep order in the following line
                 lawReferences, numberSpacing, formatDashes,
                 # ellipses with and without spacing before splitting at spaces
