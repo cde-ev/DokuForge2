@@ -333,26 +333,17 @@ def unspaceAbbreviations(word):
     word = re.sub(u'(^| )z\. B\.', u'\\1z.B.', word)
     yield word
 
-def standardAbbreviations(word):
-    """
-    Do spacing for standard abbreviations.
-    """
+def spaceMultipartStandardAbbreviations(word):
     abb = {
-        # dots are converted to TerminalString by ellipsis Escaper
-        u'bzw.': u'bzw.',
-        u'ca.': u'ca.',
-        u'd.h.': u'd.\\,h.',
-        u'etc.': u'etc.',
-        u'f.': u'f.',
-        u'ff.': u'ff.',
-        u'o.Ä.': u'o.\\,Ä.',
-        u'o.ä.': u'o.\\,ä.',
-        u's.o.': u's.\\,o.',
-        u'sog.': u'sog.',
-        u's.u.': u's.\\,u.',
-        u'u.a.': u'u.\\,a.',
-        u'vgl.': u'vgl.',
-        u'z.B.': u'z.\\,B.'}
+        u'd.h.'   : u'd.\\,h.',
+        u'n.Chr.' : u'n.\\,Chr.',
+        u'o.Ä.'   : u'o.\\,Ä.',
+        u'o.ä.'   : u'o.\\,ä.',
+        u's.o.'   : u's.\\,o.',
+        u's.u.'   : u's.\\,u.',
+        u'u.a.'   : u'u.\\,a.',
+        u'v.Chr.' : u'v.\\,Chr.',
+        u'z.B.'   : u'z.\\,B.'}
 
     yield abb.get(word, word)
 
@@ -763,11 +754,11 @@ def defaultMicrotype(text):
                 SplitSeparators(separators[0]), # separator ' ' only
                 percent, ampersand, hashmark, quote, leftCurlyBracket,
                 rightCurlyBracket, caret, tilde,
-                standardAbbreviations,
+                spaceMultipartStandardAbbreviations,
                 UTF8endash, UTF8emdash,
                 UTF8glqq, UTF8elqq, UTF8grqq, UTF8flqq, UTF8frqq,
                 UTF8glq, UTF8grq, UTF8erq,
-                # fullStop after ellipsis and standardAbbreviations
+                # fullStop after ellipsis and spaceMultipartStandardAbbreviations
                 fullStop, naturalNumbers,
                 ## no splitting at '-' before numbers
                 SplitSeparators(separators[-1]), # separator '-' only
