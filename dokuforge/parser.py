@@ -531,12 +531,6 @@ UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
 
 UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
 
-UTF8glqq = Escaper(u'„', TerminalString(u'\\@"`'))
-
-UTF8elqq = Escaper(u'”', TerminalString(u'\\@"`'))
-
-UTF8grqq = Escaper(u'“', TerminalString(u'\\@"\''))
-
 UTF8flqq = Escaper(u'«', TerminalString(u'\\@«'))
 
 UTF8frqq = Escaper(u'»', TerminalString(u'\\@»'))
@@ -756,7 +750,7 @@ def defaultMicrotype(text):
                 rightCurlyBracket, caret, tilde,
                 spaceMultipartStandardAbbreviations,
                 UTF8endash, UTF8emdash,
-                UTF8glqq, UTF8elqq, UTF8grqq, UTF8flqq, UTF8frqq,
+                UTF8flqq, UTF8frqq,
                 UTF8glq, UTF8grq, UTF8erq,
                 # fullStop after ellipsis and spaceMultipartStandardAbbreviations
                 fullStop, naturalNumbers,
