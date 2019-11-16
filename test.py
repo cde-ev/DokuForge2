@@ -1003,7 +1003,7 @@ class ExporterTestStrings:
                  [u'„$einsam$ $lonely$” $quote$“ here.',
                   u'\\@"`$einsam$ $lonely$\\@"\' $quote$\\@"\' here.'],
                  [u'Bla »blub« bloink.',
-                  u'Bla \\@»blub\\@« bloink.'],
+                  u'Bla \\@"`blub\\@"\' bloink.'],
                  [u'Bla ‚blub‘ ‚bloink’.',
                   u'Bla \\@\\glq blub\\@\\grq{} \\@\\glq bloink\\@\\grq{}.'] ]
 

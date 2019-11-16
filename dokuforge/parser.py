@@ -435,7 +435,7 @@ def fullStop(word):
 
 openQuotationString = u'"`'
 closeQuotationString = u'"\''
-unicodeQuotationMarks = u'„“”'
+unicodeQuotationMarks = u'„“”»«'
 
 def openQuotationMark(word):
     """
@@ -549,10 +549,6 @@ UTF8ellipsis = Escaper(u'…', TerminalString(u'\\@\\dots{}'))
 UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
 
 UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
-
-UTF8flqq = Escaper(u'«', TerminalString(u'\\@«'))
-
-UTF8frqq = Escaper(u'»', TerminalString(u'\\@»'))
 
 UTF8glq = Escaper(u'‚', TerminalString(u'\\@\\glq '))
 
@@ -771,7 +767,6 @@ def defaultMicrotype(text):
                 rightCurlyBracket, caret, tilde,
                 spaceMultipartStandardAbbreviations,
                 UTF8endash, UTF8emdash,
-                UTF8flqq, UTF8frqq,
                 UTF8glq, UTF8grq, UTF8erq,
                 # fullStop after ellipsis and spaceMultipartStandardAbbreviations
                 fullStop, naturalNumbers,
