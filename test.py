@@ -996,12 +996,16 @@ class ExporterTestStrings:
                   u'Bla~\\@\\dots{} blub bloink.'],
                  [u'Bla – blub — bloink.',
                   u'Bla \\@-- blub \\@--- bloink.'],
-                 [u'Bla „blub“ ”bloink“.',
-                  u'Bla \\@"`blub\\@"\' \\@"`bloink\\@"\'.'],
+                 [u'Bla „deutsch“ “american” ”unusual“.',
+                  u'Bla \\@"`deutsch\\@"\' \\@"`american\\@"\' \\@"`unusual\\@"\'.'],
+                 [u'Bla „(deutsch,“ “(american,” ”(unusual,“.',
+                  u'Bla \\@"`(deutsch,\\@"\' \\@"`(american,\\@"\' \\@"`(unusual,\\@"\'.'],
+                 [u'„$einsam$ $lonely$” $quote$“ here.',
+                  u'\\@"`$einsam$ $lonely$\\@"\' $quote$\\@"\' here.'],
                  [u'Bla »blub« bloink.',
-                  u'Bla \\@»blub\\@« bloink.'],
-                 [u'Bla ‚blub‘ ‚bloink’.',
-                  u'Bla \\@\\glq blub\\@\\grq{} \\@\\glq bloink\\@\\grq{}.'] ]
+                  u'Bla \\@"`blub\\@"\' bloink.'],
+                 [u'\'Bla\' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
+                  u'\\@\'Bla\\@\' \\@\'blub\\@\' \\@\'bloink\\@\' \\@\'blub\\@\' \\@\'bloink\\@\'.'] ]
 
     pageReferences = [ [u'Auf S. 4 Abs. 3 in Art. 7 steht',
                         u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],

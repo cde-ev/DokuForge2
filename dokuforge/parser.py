@@ -433,19 +433,33 @@ def fullStop(word):
     else:
         yield word
 
-openQuotationTerminalString = TerminalString(u'"`')
-closeQuotationTerminalString = TerminalString(u'"\'')
+openQuotationString = u'"`'
+closeQuotationString = u'"\''
+unicodeQuotationMarks = u'„“”»«'
 
 def openQuotationMark(word):
-    if len(word) > 1 and word.startswith(u'"'):
-        yield openQuotationTerminalString
-        word = word[1:]
+    """
+    Opening quotation marks. Unicode quotes are annotated with \@.
+    """
+    if len(word) > 1:
+        if word.startswith(u'"'):
+            yield TerminalString(openQuotationString)
+            word = word[1:]
+        elif word[0] in list(unicodeQuotationMarks):
+            yield TerminalString(u'\\@'+ openQuotationString)
+            word = word[1:]
     yield word
 
 def closeQuotationMark(word):
+    """
+    Closing quotation marks. Unicode quotes are annotated with \@.
+    """
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
-        yield closeQuotationTerminalString
+        yield TerminalString(closeQuotationString)
+    elif len(word) > 1 and word[-1] in list(unicodeQuotationMarks):
+        yield word[:-1]
+        yield TerminalString(u'\\@'+ closeQuotationString)
     else:
         yield word
 
@@ -453,14 +467,13 @@ def lonelyOpenQuotationMark(word):
     """
     Opening quotation mark before character groups, e.g. ' "$x$'.
     """
-    pattern = r'( )"$'
+    pattern = r'(^| )[%s]$' % (u'"' + unicodeQuotationMarks)
     m = True
     while m:
         if m != True:
             left, matched, word =  m.groups()
             yield (left + matched)
-            quote = openQuotationTerminalString.getString()
-            yield TerminalString(u'\\@' + quote)
+            yield TerminalString(u'\\@' + openQuotationString)
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
@@ -469,14 +482,13 @@ def lonelyCloseQuotationMark(word):
     Closing quotation mark after character groups, e.g. '$x$" '.
     """
     # word = re.sub(u'^" ', u"\\@\"' ", word)
-    pattern = r'^"( )'
+    pattern = r'^[%s]( |$)' % (u'"' + unicodeQuotationMarks)
     m = True
     while m:
         if m != True:
             left, matched, word =  m.groups()
             yield left
-            quote = closeQuotationTerminalString.getString()
-            yield TerminalString(u'\\@' + quote)
+            yield TerminalString(u'\\@' + closeQuotationString)
             word = matched + word
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
@@ -490,11 +502,18 @@ class PunctuationQuotationMark:
         self.punctuation = punctuation
 
     def __call__(self, word):
-        if (   len(word) == 2 ) and ( word[0] in self.punctuation ) and ( word[1] == '"' ):
+        quotes = [u'"'] + list(unicodeQuotationMarks)
+        if (   len(word) == 2 ) and ( word[0] in self.punctuation ) and ( word[1] in quotes ):
             yield word[:1]
-            yield closeQuotationTerminalString
-        elif ( len(word) == 2 ) and ( word[0] == '"' ) and ( word[1] in self.punctuation ):
-            yield openQuotationTerminalString
+            if word[1] == u'"':
+                yield TerminalString(closeQuotationString)
+            else:
+                yield TerminalString("\\@" + closeQuotationString)
+        elif ( len(word) == 2 ) and ( word[0] in quotes ) and ( word[1] in self.punctuation ):
+            if word[0] == u'"':
+                yield TerminalString(openQuotationString)
+            else:
+                yield TerminalString("\\@" + openQuotationString)
             yield word[1:]
         else:
             yield word
@@ -531,21 +550,15 @@ UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
 
 UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
 
-UTF8glqq = Escaper(u'„', TerminalString(u'\\@"`'))
+UTF8glq = Escaper(u'‚', TerminalString(u'\\@\''))
 
-UTF8elqq = Escaper(u'”', TerminalString(u'\\@"`'))
+UTF8grq = Escaper(u'‘', TerminalString(u'\\@\''))
 
-UTF8grqq = Escaper(u'“', TerminalString(u'\\@"\''))
+UTF8erq = Escaper(u'’', TerminalString(u'\\@\''))
 
-UTF8flqq = Escaper(u'«', TerminalString(u'\\@«'))
+UTF8clq = Escaper(u'‹', TerminalString(u'\\@\''))
 
-UTF8frqq = Escaper(u'»', TerminalString(u'\\@»'))
-
-UTF8glq = Escaper(u'‚', TerminalString(u'\\@\\glq '))
-
-UTF8grq = Escaper(u'‘', TerminalString(u'\\@\\grq{}'))
-
-UTF8erq = Escaper(u'’', TerminalString(u'\\@\\grq{}'))
+UTF8crq = Escaper(u'›', TerminalString(u'\\@\''))
 
 
 def formatCode(word):
@@ -695,7 +708,8 @@ class SplitPunctuationClosingQuotes(SplitSeparators):
     Split at separators (e.g., punctuation) before closing quotation marks
     """
     def __init__(self, punctuation):
-        SplitSeparators.__init__(self, punctuation, regex='([%s]")')
+        SplitSeparators.__init__(self, punctuation,
+                regex='([%%s][%s])' % (u'"' + unicodeQuotationMarks))
 
 
 class SplitPunctuationOpeningQuotes(SplitSeparators):
@@ -703,7 +717,8 @@ class SplitPunctuationOpeningQuotes(SplitSeparators):
     Split at separators (e.g., "(") after opening quotation marks
     """
     def __init__(self, punctuation):
-        SplitSeparators.__init__(self, punctuation, regex='("[%s])')
+        SplitSeparators.__init__(self, punctuation,
+                regex='([%s][%%s])' % (u'"' + unicodeQuotationMarks))
 
 
 def applyMicrotypefeatures(wordlist, featurelist):
@@ -756,8 +771,7 @@ def defaultMicrotype(text):
                 rightCurlyBracket, caret, tilde,
                 spaceMultipartStandardAbbreviations,
                 UTF8endash, UTF8emdash,
-                UTF8glqq, UTF8elqq, UTF8grqq, UTF8flqq, UTF8frqq,
-                UTF8glq, UTF8grq, UTF8erq,
+                UTF8glq, UTF8grq, UTF8erq, UTF8clq, UTF8crq,
                 # fullStop after ellipsis and spaceMultipartStandardAbbreviations
                 fullStop, naturalNumbers,
                 ## no splitting at '-' before numbers
