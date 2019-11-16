@@ -467,7 +467,7 @@ def lonelyOpenQuotationMark(word):
     """
     Opening quotation mark before character groups, e.g. ' "$x$'.
     """
-    pattern = r'( )"$'
+    pattern = r'(^| )[%s]$' % (u'"' + unicodeQuotationMarks)
     m = True
     while m:
         if m != True:
@@ -482,7 +482,7 @@ def lonelyCloseQuotationMark(word):
     Closing quotation mark after character groups, e.g. '$x$" '.
     """
     # word = re.sub(u'^" ', u"\\@\"' ", word)
-    pattern = r'^"( )'
+    pattern = r'^[%s]( |$)' % (u'"' + unicodeQuotationMarks)
     m = True
     while m:
         if m != True:
