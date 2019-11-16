@@ -998,6 +998,8 @@ class ExporterTestStrings:
                   u'Bla \\@-- blub \\@--- bloink.'],
                  [u'Bla „deutsch“ “american” ”unusual“.',
                   u'Bla \\@"`deutsch\\@"\' \\@"`american\\@"\' \\@"`unusual\\@"\'.'],
+                 [u'Bla „(deutsch,“ “(american,” ”(unusual,“.',
+                  u'Bla \\@"`(deutsch,\\@"\' \\@"`(american,\\@"\' \\@"`(unusual,\\@"\'.'],
                  [u'Bla »blub« bloink.',
                   u'Bla \\@»blub\\@« bloink.'],
                  [u'Bla ‚blub‘ ‚bloink’.',
