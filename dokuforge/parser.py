@@ -687,6 +687,8 @@ escapeMathCommands = EscapeCommands(
     ## parens
     u'left', u'right', u'lfloor', u'rfloor', u'lceil', u'rceil',
     u'langle', u'rangle',
+    ## chemistry with chemformula
+    u'ch',
     ## misc
     u'stackrel', u'binom', u'mathbb',
     ]))
