@@ -35,6 +35,7 @@ für die Weiterentwicklung von DokuForge auf dein Feedback angewiesen.</p>
 <li><a href="#zahlen">Zahlen</a></li>
 <li><a href="#exponenten">Exponenten</a></li>
 <li><a href="#brueche">Brüche</a></li>
+<li><a href="#chemie">Chemische Formeln</a></li>
 <li><a href="#abkuerzungen">Abkürzungen</a></li>
 <li><a href="#eigennamen">Eigennamen</a></li>
 <li><a href="#cde_vokabular">CdE-Vokabular</a></li>
@@ -221,6 +222,18 @@ Dollarzeichen (d.h. als mathematische Formel).</p>
 
 <h2><a name="brueche"></a> Brüche</h2>
 <p>Bitte gebt Brüche in der Form <code>1/2</code> ein und nicht als <code>½</code>.</p>
+<h2><a name="chemie"></a> Chemische Formeln</h2>
+<p>Chemische Formeln und Reaktionen werden mit dem Paket
+<a href="http://mirrors.ctan.org/macros/latex/contrib/chemformula/chemformula_en.pdf">chemformula</a>
+gesetzt, zum Beispiel <code>$\ch{H3O+}$</code> oder die Gleichungen
+<code>$\ch{A + B -> C}$</code> und</p>
+<pre>
+\begin{equation*}
+  \ch{CO2 + H2O <=>[$k$] HCO3- + H+}.
+\end{equation*}
+</pre>
+<p>Es ist empfehlenswert, zusätzlich ein handschriftliches Bild des gewünschten
+Ergebnisses hochzuladen.</p>
 <h2><a name="abkuerzungen"></a> Abkürzungen</h2>
 <p>Abkürzungen sind manchmal etwas problematisch. Daher gibt es eine
 Liste erlaubter Abkürzungen. Alles andere, was man versucht sein
