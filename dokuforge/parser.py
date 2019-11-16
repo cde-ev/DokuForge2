@@ -502,11 +502,18 @@ class PunctuationQuotationMark:
         self.punctuation = punctuation
 
     def __call__(self, word):
-        if (   len(word) == 2 ) and ( word[0] in self.punctuation ) and ( word[1] == '"' ):
+        quotes = [u'"'] + list(unicodeQuotationMarks)
+        if (   len(word) == 2 ) and ( word[0] in self.punctuation ) and ( word[1] in quotes ):
             yield word[:1]
-            yield TerminalString(closeQuotationString)
-        elif ( len(word) == 2 ) and ( word[0] == '"' ) and ( word[1] in self.punctuation ):
-            yield TerminalString(openQuotationString)
+            if word[1] == u'"':
+                yield TerminalString(closeQuotationString)
+            else:
+                yield TerminalString("\\@" + closeQuotationString)
+        elif ( len(word) == 2 ) and ( word[0] in quotes ) and ( word[1] in self.punctuation ):
+            if word[0] == u'"':
+                yield TerminalString(openQuotationString)
+            else:
+                yield TerminalString("\\@" + openQuotationString)
             yield word[1:]
         else:
             yield word
@@ -701,7 +708,8 @@ class SplitPunctuationClosingQuotes(SplitSeparators):
     Split at separators (e.g., punctuation) before closing quotation marks
     """
     def __init__(self, punctuation):
-        SplitSeparators.__init__(self, punctuation, regex='([%s]")')
+        SplitSeparators.__init__(self, punctuation,
+                regex='([%%s][%s])' % (u'"' + unicodeQuotationMarks))
 
 
 class SplitPunctuationOpeningQuotes(SplitSeparators):
@@ -709,7 +717,8 @@ class SplitPunctuationOpeningQuotes(SplitSeparators):
     Split at separators (e.g., "(") after opening quotation marks
     """
     def __init__(self, punctuation):
-        SplitSeparators.__init__(self, punctuation, regex='("[%s])')
+        SplitSeparators.__init__(self, punctuation,
+                regex='([%s][%%s])' % (u'"' + unicodeQuotationMarks))
 
 
 def applyMicrotypefeatures(wordlist, featurelist):
