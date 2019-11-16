@@ -433,19 +433,33 @@ def fullStop(word):
     else:
         yield word
 
-openQuotationTerminalString = TerminalString(u'"`')
-closeQuotationTerminalString = TerminalString(u'"\'')
+openQuotationString = u'"`'
+closeQuotationString = u'"\''
+unicodeQuotationMarks = u'„“”'
 
 def openQuotationMark(word):
-    if len(word) > 1 and word.startswith(u'"'):
-        yield openQuotationTerminalString
-        word = word[1:]
+    """
+    Opening quotation marks. Unicode quotes are annotated with \@.
+    """
+    if len(word) > 1:
+        if word.startswith(u'"'):
+            yield TerminalString(openQuotationString)
+            word = word[1:]
+        elif word[0] in list(unicodeQuotationMarks):
+            yield TerminalString(u'\\@'+ openQuotationString)
+            word = word[1:]
     yield word
 
 def closeQuotationMark(word):
+    """
+    Closing quotation marks. Unicode quotes are annotated with \@.
+    """
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
-        yield closeQuotationTerminalString
+        yield TerminalString(closeQuotationString)
+    elif len(word) > 1 and word[-1] in list(unicodeQuotationMarks):
+        yield word[:-1]
+        yield TerminalString(u'\\@'+ closeQuotationString)
     else:
         yield word
 
@@ -459,8 +473,7 @@ def lonelyOpenQuotationMark(word):
         if m != True:
             left, matched, word =  m.groups()
             yield (left + matched)
-            quote = openQuotationTerminalString.getString()
-            yield TerminalString(u'\\@' + quote)
+            yield TerminalString(u'\\@' + openQuotationString)
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
@@ -475,8 +488,7 @@ def lonelyCloseQuotationMark(word):
         if m != True:
             left, matched, word =  m.groups()
             yield left
-            quote = closeQuotationTerminalString.getString()
-            yield TerminalString(u'\\@' + quote)
+            yield TerminalString(u'\\@' + closeQuotationString)
             word = matched + word
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
@@ -492,9 +504,9 @@ class PunctuationQuotationMark:
     def __call__(self, word):
         if (   len(word) == 2 ) and ( word[0] in self.punctuation ) and ( word[1] == '"' ):
             yield word[:1]
-            yield closeQuotationTerminalString
+            yield TerminalString(closeQuotationString)
         elif ( len(word) == 2 ) and ( word[0] == '"' ) and ( word[1] in self.punctuation ):
-            yield openQuotationTerminalString
+            yield TerminalString(openQuotationString)
             yield word[1:]
         else:
             yield word
