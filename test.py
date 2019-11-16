@@ -1000,6 +1000,8 @@ class ExporterTestStrings:
                   u'Bla \\@"`deutsch\\@"\' \\@"`american\\@"\' \\@"`unusual\\@"\'.'],
                  [u'Bla „(deutsch,“ “(american,” ”(unusual,“.',
                   u'Bla \\@"`(deutsch,\\@"\' \\@"`(american,\\@"\' \\@"`(unusual,\\@"\'.'],
+                 [u'„$einsam$ $lonely$” $quote$“ here.',
+                  u'\\@"`$einsam$ $lonely$\\@"\' $quote$\\@"\' here.'],
                  [u'Bla »blub« bloink.',
                   u'Bla \\@»blub\\@« bloink.'],
                  [u'Bla ‚blub‘ ‚bloink’.',
