@@ -76,9 +76,9 @@ do
     shopt -s nullglob
     for i in title page* blob*.filename blob*.comment
     do
-        echo $i >> input
-        cat $i >> input
-        echo >> input
+        echo $i >> input.df2
+        cat $i >> input.df2
+        echo >> input.df2
         rm -f $i
     done
     cd ..
@@ -91,7 +91,7 @@ do
     if [ ! -d $course ]; then
         mkdir $course
     fi
-    cp $d/input $course/
+    cp $d/input.df2 $course/
 done
 
 # clean up files created during exporting
