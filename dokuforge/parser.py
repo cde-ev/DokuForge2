@@ -550,11 +550,15 @@ UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
 
 UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
 
-UTF8glq = Escaper(u'‚', TerminalString(u'\\@\\glq '))
+UTF8glq = Escaper(u'‚', TerminalString(u'\\@\''))
 
-UTF8grq = Escaper(u'‘', TerminalString(u'\\@\\grq{}'))
+UTF8grq = Escaper(u'‘', TerminalString(u'\\@\''))
 
-UTF8erq = Escaper(u'’', TerminalString(u'\\@\\grq{}'))
+UTF8erq = Escaper(u'’', TerminalString(u'\\@\''))
+
+UTF8clq = Escaper(u'‹', TerminalString(u'\\@\''))
+
+UTF8crq = Escaper(u'›', TerminalString(u'\\@\''))
 
 
 def formatCode(word):
@@ -767,7 +771,7 @@ def defaultMicrotype(text):
                 rightCurlyBracket, caret, tilde,
                 spaceMultipartStandardAbbreviations,
                 UTF8endash, UTF8emdash,
-                UTF8glq, UTF8grq, UTF8erq,
+                UTF8glq, UTF8grq, UTF8erq, UTF8clq, UTF8crq,
                 # fullStop after ellipsis and spaceMultipartStandardAbbreviations
                 fullStop, naturalNumbers,
                 ## no splitting at '-' before numbers
