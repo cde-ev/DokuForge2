@@ -1005,7 +1005,9 @@ class ExporterTestStrings:
                  [u'Bla »blub« bloink.',
                   u'Bla \\@"`blub\\@"\' bloink.'],
                  [u'\'Bla\' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
-                  u'\\@\'Bla\\@\' \\@\'blub\\@\' \\@\'bloink\\@\' \\@\'blub\\@\' \\@\'bloink\\@\'.'] ]
+                  u'\\@\'Bla\\@\' \\@\'blub\\@\' \\@\'bloink\\@\' \\@\'blub\\@\' \\@\'bloink\\@\'.'],
+                 [u'„‚Nested quotes‘”.',
+                  u'\\@\\@"`\\@\'Nested quotes\\@\'\\@\\@"`.'] ]
 
     pageReferences = [ [u'Auf S. 4 Abs. 3 in Art. 7 steht',
                         u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
