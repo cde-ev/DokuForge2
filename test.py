@@ -998,6 +998,8 @@ class ExporterTestStrings:
                   u'Bla \\@-- blub \\@--- bloink.'],
                  [u'Bla „deutsch“ “american” ”unusual“.',
                   u'Bla \\@"`deutsch\\@"\' \\@"`american\\@"\' \\@"`unusual\\@"\'.'],
+                 [u'Bla «französisch» oder « französisch ».',
+                  u'Bla \\@"`französisch\\@"\' oder \\@\\@"` französisch \\@\\@"`.'],
                  [u'Bla „(deutsch,“ “(american,” ”(unusual,“.',
                   u'Bla \\@"`(deutsch,\\@"\' \\@"`(american,\\@"\' \\@"`(unusual,\\@"\'.'],
                  [u'„$einsam$ $lonely$” $quote$“ here.',
