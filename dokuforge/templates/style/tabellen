@@ -18,8 +18,9 @@ auf die entsprechende Tabelle.</p>
 
 <pre>In TABELLE:akzente sind Akzentmöglichkeiten gelistet.
 
-{ Tabelle:akzente "Mögliche Stellungen griechischer Akzente
-                   ohne Berücksichtigung der Silbenlänge"
+{ Tabelle:akzente
+  Mögliche Stellungen griechischer Akzente
+  ohne Berücksichtigung der Silbenlänge
 
 Akzent            | Akut | Gravis | Zirkumflex
 -----------------------------------------------
@@ -30,8 +31,9 @@ drittletzte Silbe |  x   |   -    |     -
 </pre>
 
 <pre>
-{( Tabelle:akzente "Mögliche Stellungen griechischer Akzente
-                   ohne Berücksichtigung der Silbenlänge"
+{( TABELLE:akzente
+  Mögliche Stellungen griechischer Akzente
+  ohne Berücksichtigung der Silbenlänge
 
 \begin{tabular}{lccc}
 \toprule
