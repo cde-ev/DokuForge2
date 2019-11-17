@@ -282,7 +282,7 @@ class DokuforgeWebTests(DfTestCase):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.is_loggedin()
-        self.res.mustcontain("Exportieren")
+        self.res.mustcontain("Testexport")
 
     def testCourse(self):
         self.do_login()
@@ -700,7 +700,7 @@ permissions = df_superadmin True,df_admin True
     def testAcademyExport(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(description="Exportieren")
+        self.res = self.res.click(description="Testexport")
         self.assertIsTarGz(self.res.body)
 
     def testRawCourseExport(self):
