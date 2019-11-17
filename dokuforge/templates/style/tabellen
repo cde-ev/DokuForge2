@@ -12,13 +12,13 @@ ein <code>\midrule</code> zwischendrin (wir verwenden booktabs.sty).</p>
 <p>Auf die genaue Positionierung der Tabellen hast du keinen Einfluss,
 genauso wie bei Abbildungen. Bitte verweise aus diesem Grund nicht direkt
 auf Tabellen ("in folgender Tabelle"), sondern binde Tabellen über eine
-Referenz der Form "<code>In Tabelle:Kürzel ist aufgelistet ...</code>"
+Referenz der Form "<code>In TABELLE:Kürzel ist aufgelistet ...</code>"
 auf die entsprechende Tabelle.</p>
 <p>Zu einer Tabelle gehört deswegen neben einer Tabellenüberschrift auch ein Kürzel.</p>
 
 <pre>In TABELLE:akzente sind Akzentmöglichkeiten gelistet.
 
-{ Tabelle:akzente
+{ TABELLE:akzente
   Mögliche Stellungen griechischer Akzente
   ohne Berücksichtigung der Silbenlänge
 
