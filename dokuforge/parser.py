@@ -500,9 +500,10 @@ def explode(word):
     for char in word:
         yield char
 
-class ReplaceCharacter:
+class ReplaceSuspiciousCharacter:
     """
     Replace a list of characters and annotate with \@\@.
+    This is intended for characters that should have been addressed earlier so that the replacement done here is a wild guess, pointed out by double-\@.
     """
     def __init__(self, badSigns, replacement):
         self.badSigns = badSigns
@@ -801,7 +802,7 @@ def defaultMicrotype(text):
                 acronym, # after quotation marks are handled
                 escapeCommands, # escapeCommands last before explode
                 explode, # prepare final character replacements
-                ReplaceCharacter(unicodeQuotationMarks, '"`') ]
+                ReplaceSuspiciousCharacter(unicodeQuotationMarks, '"`') ]
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text, isAligningEnvironment=False):
