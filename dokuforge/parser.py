@@ -502,8 +502,9 @@ def explode(word):
 
 class ReplaceSuspiciousCharacter:
     """
-    Replace a list of characters and annotate with \@\@.
-    This is intended for characters that should have been addressed earlier so that the replacement done here is a wild guess, pointed out by double-\@.
+    Replace a list of characters and annotate with \@\@. This is intended
+    for characters that should have been addressed earlier so that the
+    replacement done here is a wild guess, pointed out by double-\@.
     """
     def __init__(self, badSigns, replacement):
         self.badSigns = badSigns
