@@ -493,6 +493,29 @@ def lonelyCloseQuotationMark(word):
         m = re.match(r'(.*?)' + pattern + r'(.*)', word)
     yield word
 
+def explode(word):
+    """
+    Split word into single characters.
+    """
+    for char in word:
+        yield char
+
+class ReplaceSuspiciousCharacter:
+    """
+    Replace a list of characters and annotate with \@\@. This is intended
+    for characters that should have been addressed earlier so that the
+    replacement done here is a wild guess, pointed out by double-\@.
+    """
+    def __init__(self, badSigns, replacement):
+        self.badSigns = badSigns
+        self.replacement = replacement
+
+    def __call__(self, word):
+        if word in self.badSigns:
+           yield TerminalString(u'\\@\\@' + self.replacement)
+        else:
+           yield word
+
 class PunctuationQuotationMark:
     """
     Opening and closing quotation marks followed or preceded by
@@ -778,7 +801,9 @@ def defaultMicrotype(text):
                 SplitSeparators(separators[-1]), # separator '-' only
                 openQuotationMark, closeQuotationMark,
                 acronym, # after quotation marks are handled
-                escapeCommands] # escapeCommands at last
+                escapeCommands, # escapeCommands last before explode
+                explode, # prepare final character replacements
+                ReplaceSuspiciousCharacter(unicodeQuotationMarks, '"`') ]
     return applyMicrotypefeatures([text], features)
 
 def mathMicrotype(text, isAligningEnvironment=False):

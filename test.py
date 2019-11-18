@@ -998,6 +998,8 @@ class ExporterTestStrings:
                   u'Bla \\@-- blub \\@--- bloink.'],
                  [u'Bla „deutsch“ “american” ”unusual“.',
                   u'Bla \\@"`deutsch\\@"\' \\@"`american\\@"\' \\@"`unusual\\@"\'.'],
+                 [u'Bla «französisch» oder « französisch ».',
+                  u'Bla \\@"`französisch\\@"\' oder \\@\\@"` französisch \\@\\@"`.'],
                  [u'Bla „(deutsch,“ “(american,” ”(unusual,“.',
                   u'Bla \\@"`(deutsch,\\@"\' \\@"`(american,\\@"\' \\@"`(unusual,\\@"\'.'],
                  [u'„$einsam$ $lonely$” $quote$“ here.',
@@ -1005,7 +1007,9 @@ class ExporterTestStrings:
                  [u'Bla »blub« bloink.',
                   u'Bla \\@"`blub\\@"\' bloink.'],
                  [u'\'Bla\' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
-                  u'\\@\'Bla\\@\' \\@\'blub\\@\' \\@\'bloink\\@\' \\@\'blub\\@\' \\@\'bloink\\@\'.'] ]
+                  u'\\@\'Bla\\@\' \\@\'blub\\@\' \\@\'bloink\\@\' \\@\'blub\\@\' \\@\'bloink\\@\'.'],
+                 [u'„‚Nested quotes‘”.',
+                  u'\\@\\@"`\\@\'Nested quotes\\@\'\\@\\@"`.'] ]
 
     pageReferences = [ [u'Auf S. 4 Abs. 3 in Art. 7 steht',
                         u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
