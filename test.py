@@ -719,6 +719,21 @@ permissions = df_superadmin True,df_admin True
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.res.body.startswith(b"head"))
 
+    def testPartDeletion(self):
+        self.do_login()
+        self.res = self.res.click(description="X-Akademie")
+        self.res.mustcontain("Area51")
+        self.res = self.res.click(href=re.compile("/.*createcourse$"))
+        form = self.res.forms[1]
+        form["name"] = "bug"
+        form["title"] = "bug"
+        self.res = form.submit()
+        self.res.mustcontain("Area51", "bug")
+        self.res = self.res.click(href=re.compile("/bug/$"))
+        self.res = self.res.forms[1].submit() # create new part
+        self.res = self.res.click(href=re.compile("/bug/0/$"), index=0)
+        self.res = self.res.forms[1].submit() # delete only part
+
 class CourseTests(DfTestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
