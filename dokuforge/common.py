@@ -163,7 +163,10 @@ def validateBlobFilename(filename):
     @raises InvalidBlobFilename:
     """
     assert isinstance(filename, bytes)
-    if re.match(b'^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
+    if filename == u'':
+        raise InvalidBlobFilename(u"Dateiname ist leer!",
+                                  u"Bitte und erneut versuchen und tatsächlich eine Datei hochladen.")
+    elif re.match(b'^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
         raise InvalidBlobFilename(u"Dateiname nicht wohlgeformt!",
                                   u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen. Der Dateinahme darf nicht mehr als 200 Zeichen enthalten.")
 
