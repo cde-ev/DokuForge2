@@ -698,7 +698,20 @@ permissions = df_superadmin True,df_admin True
         self.is_loggedin()
 
     def testAddBlobInvalidFilename(self):
-        print("To be implemented: test that invalid file name raises suitable exception")
+        self.do_login()
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+        form = self.res.forms[1]
+        form["comment"] = "Should not work"
+        form["label"] = "shouldnotwork"
+        self.res = form.submit()
+        form = self.res.forms[1]
+        form["content"] = Upload("testData/invalid+filename.jpg")
+        self.res = form.submit()
+        self.res.mustcontain("Dateiname nicht wohlgeformt!")
+        self.is_loggedin()
 
     def testAddBlobWithoutFile(self):
         print("To be implemented: test that creating a blob without uplading file raises suitable exception")
