@@ -66,7 +66,7 @@ class TarWriterTests(DfTestCase):
         tar = tar + tarwriter.addChunk(b'myFile', b'contents', timeStampNow)
         tar = tar + tarwriter.close()
         self.assertIsTar(tar)
-        
+
     def testGzip(self):
         timeStampNow = datetime.datetime.utcnow()
         timeStampNow.replace(tzinfo=UTC())
@@ -697,6 +697,12 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain(u"Kürzel nicht wohlgeformt!")
         self.is_loggedin()
 
+    def testAddBlobInvalidFilename(self):
+        print("To be implemented: test that invalid file name raises suitable exception")
+
+    def testAddBlobWithoutFile(self):
+        print("To be implemented: test that creating a blob without uplading file raises suitable exception")
+
     def testAcademyExport(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
@@ -723,7 +729,7 @@ class CourseTests(DfTestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.course = Course(os.path.join(self.tmpdir, b'example'))
-        
+
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
 
@@ -746,7 +752,7 @@ class AcademyTest(DfTestCase):
         self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
         self.academy.createCourse(u'new01', u'erster neuer Kurs')
         self.academy.createCourse(u'new02', u'zweiter neuer Kurs')
-        
+
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
 
