@@ -311,7 +311,7 @@ class Course(StorageDir):
                 newentries = [entries[0]]
                 newentries.extend([x for x in entries[1:] if int(x) != number])
                 newlines.append(b" ".join(newentries))
-            newindex = b"\n".join(newlines) + b"\n"
+            newindex = b"".join(map(b"%s\n".__mod__, newlines))
             indexstore.store(newindex, havelock = gotlock, user = user)
 
     def delpage(self, number, user=None):
@@ -334,7 +334,7 @@ class Course(StorageDir):
                 entries = line.split()
                 if entries and int(entries[0]) != number:
                     newlines.append(line)
-            newindex = b"\n".join(newlines) + b"\n"
+            newindex = b"".join(map(b"%s\n".__mod__, newlines))
             indexstore.store(newindex, havelock = gotlock, user = user)
 
     def swappages(self, position, user=None):
@@ -355,7 +355,7 @@ class Course(StorageDir):
                 tmp = lines[position-1]
                 lines[position-1] = lines[position]
                 lines[position] = tmp
-            newindex = b"\n".join(lines) + b"\n"
+            newindex = b"".join(map(b"%s\n".__mod__, lines))
             indexstore.store(newindex, havelock = gotlock, user = user)
 
     def relink(self, page, user=None):
@@ -384,7 +384,7 @@ class Course(StorageDir):
                         pass # page already present
                     else:
                         lines.append((u"%d" % page).encode("ascii"))
-                        newindex = b"\n".join(lines) + b"\n"
+                        newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex,
                                          user = user)
 
@@ -416,7 +416,7 @@ class Course(StorageDir):
                             pass # want a set-like semantics
                         else:
                             lines[i] += (u" %d" % number).encode("ascii")
-            newindex = b"\n".join(lines) + b"\n"
+            newindex = b"".join(map(b"%s\n".__mod__, lines))
             indexstore.store(newindex, havelock = gotlockindex, user = user)
 
 
@@ -508,7 +508,7 @@ class Course(StorageDir):
                     entries = lines[i].split()
                     if entries and int(entries[0]) == number:
                         lines[i] += (u" %d" % newnumber).encode("ascii")
-                        newindex = b"\n".join(lines) + b"\n"
+                        newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex)
 
         blobbase = (u"blob%d" % newnumber).encode("ascii")
