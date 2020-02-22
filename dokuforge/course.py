@@ -160,7 +160,7 @@ class Course(StorageDir):
         @rtype: [int]
         """
         lines = self.getcontent(b"Index", havelock).splitlines()
-        return [int(line.split()[0]) for line in lines if line != ""]
+        return [int(line.split()[0]) for line in lines if line != b""]
 
     def outlinepages(self, havelock=None):
         """
