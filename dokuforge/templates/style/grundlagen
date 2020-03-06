@@ -1,343 +1,278 @@
 <div class="body">
-<h2>Grundlagen von DokuForge</h2>
-
-<p>Hier geben wir eine Einführung in die Benutzung von DokuForge. Diese Seite
-sollte von allen gelesen werden, die mit DokuForge arbeiten.</p>
-
-<p>Das Ziel dieser Regeln ist es, die Dokumentation später möglichst
-einheitlich aussehen zu lassen. Deswegen möchten wir euch bitten, diese Regeln
-zu beachten, da wir sonst später eure Texte nachbearbeiten müssen, was sehr
-viel Zeit kostet.</p>
-
-<p>Vielen Dank!</p>
-
-<h3>Inhalt</h3>
-
-<ol>
- <li><p><a href="#gl">Gliederung, Hervorhebungen und Aufzählungen</a></p></li>
- <li><p><a href="#sch">Abkürzungen und Schreibweisen</a></p></li>
- <li><p><a href="#ed">ednotes</a></p></li>
- <li><p><a href="#kon">Konflikte</a></p></li>
-</ol>
-
-<h3><a name="gl">Gliederung, Hervorhebungen und Aufzählungen</a></h3>
-
-<p>DokuForge bietet bewusst nur wenige, aber dafür wohlüberlegte Formatierungs-
-bzw. Auszeichnungsmöglichkeiten an. Dabei handelt es sich um die Überschrift,
-die Autorenangabe, die Hervorhebung, das Schlagwort und Aufzählungen.<p>
-
+<h1>Bedienung von DokuForge</h1>
+<p>Nach dem Einloggen kannst du deine Akademie auswählen, danach deinen
+Kurs. Dafür klickst du auf den Namen der Akademie, und dann auf den
+entsprechenden Kurstitel. Jetzt kannst du bestehende Texte in dieser
+Kursdoku anschauen, editieren oder neue Seiten hinzufügen.</p>
+<p>Textverarbeitungsprogramme wie Word und OpenOffice haben die
+unangenehme Eigenschaft, beim Einfügen von Texten in DokuForge mittels
+Copy&amp;Paste Sonderzeichen in mehr oder weniger
+unvorhersehbarer Art und Weise zu benutzen. Das betrifft vor allem
+Anführungszeichen, Gedankenstriche und Ellipsen.</p>
+<p>Wir empfehlen dir daher dringend, zum Vorschreiben der Texte das
+Programm Notepad bzw. einen anderen Texteditor im Plain-Text-Modus zu
+verwenden. Ansonsten müssen die eingegebenen Texte unbedingt von Hand
+an die allgemein gültigen Standards angepasst werden.</p>
+<p>Bist du fertig mit deiner Eingabe, lies den Text bitte noch einmal
+Korrektur und gib dann dem für dich zuständigen Eingabekontrolleur
+Bescheid.</p>
+<p>Bei Problemen und Fragen kannst und sollst du dich an deinen
+Eingabekontrolleur wenden oder einfach eine E-Mail an
+team (at) dokuforge.de schreiben. Wir helfen dir gerne weiter und sind auch
+für die Weiterentwicklung von DokuForge auf dein Feedback angewiesen.</p>
+<p><a name="toc"></a></p>
 <ul>
-<li><p><em>Absätze</em> werden in DokuForge durch Leerzeilen getrennt. Wenn ihr einen neuen Absatz anfangen wollt, müsst ihr also zweimal Enter drücken. Einmal reicht nicht!</p>
-<p>
+<li><a href="#absaetze">Absätze</a></li>
+<li><a href="#ueberschriften">Überschriften</a></li>
+<li><a href="#autoren">Autoren</a></li>
+<li><a href="#hervorhebungen">Hervorhebungen</a></li>
+<li><a href="#schlagworte">Schlagworte</a></li>
+<li><a href="#aufzaehlungen">Aufzählungen</a></li>
+<li><a href="#ellipse">Auslasspunkte (Ellipse)</a></li>
+<li><a href="#anfuehrungszeichen">Anführungszeichen</a></li>
+<li><a href="#bindestrich">Bindestrich</a></li>
+<li><a href="#einheiten">Einheiten</a></li>
+<li><a href="#zahlen">Zahlen</a></li>
+<li><a href="#exponenten">Exponenten</a></li>
+<li><a href="#brueche">Brüche</a></li>
+<li><a href="#abkuerzungen">Abkürzungen</a></li>
+<li><a href="#eigennamen">Eigennamen</a></li>
+<li><a href="#cde_vokabular">CdE-Vokabular</a></li>
+<li><a href="#ednotes">Ednotes</a></li>
+<li><a href="#urls">URLs</a></li>
+<li><a href="#urls">Code</a></li>
+</ul>
+<h2><a name="absaetze"></a>Absätze</h2>
+<p>Absätze werden in DokuForge durch Leerzeilen getrennt. Wenn du einen
+neuen Absatz anfangen willst, musst du also zweimal Enter
+drücken. Einmal reicht nicht!</p>
 <table width="80%">
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td>
-        Ein einfacher<br>
-	Zeilenumbruch wird von DokuForge nicht als Absatz erkannt.
-	<p>
-	Erst eine Leerzeile erzeugt einen neuen Absatz.
-        </td>
-	<td>
+    <td><pre>Ein einfacher
+Zeilenumbruch wird von DokuForge
+nicht als Absatz erkannt.
+
+Erst eine Leerzeile erzeugt einen neuen Absatz.</pre></td>
+    <td>
         Ein einfacher Zeilenumbruch wird von DokuForge nicht als Absatz erkannt.
-	<p>
-	Erst eine Leerzeile erzeugt einen neuen Absatz.
+    <p>
+    Erst eine Leerzeile erzeugt einen neuen Absatz.
         </td>
 </tr>
 </table>
-</p>
-</li>
 
-    <li><p>Eine <em>Überschrift</em> steht am Anfang einer Zeile und wird
-    in eckige Klammern gesetzt. Sie wird dabei nicht nummeriert &ndash; dies
-    geschieht später automatisch. Das sieht dann so aus:<p>
-
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>[Überschrift]</td>
-	<td><h3>Überschrift</h3></td>
-</tr>
-</table>
-
-<p>Es gibt nur eine Überschriftenebene! Also keine Unterüberschriften (weder
-kursiv, noch fett,&nbsp;...).</p>
-
-    <p>Die Kapitelnummerierung erfolgt später automatisch. Deshalb bitte nicht
-    auf eine Kapitelnummer verweisen, sondern auf den Titel. Beispiel: &bdquo;Wie in
-    der Einleitung dargestellt.&ldquo;</p>
-
-</li>
-
-    <li><p>Direkt unter eine Überschrift  (und nur da) kann nach einem einfachen
-    Zeilenumbruch eine <em>Autorenangabe</em> gesetzt werden. Autorenangaben
-    gehören in runde Klammern.</p>
-
+<h2><a name="ueberschriften"></a> Überschriften</h2>
+<p>Eine Überschrift steht am Anfang einer Zeile und wird in eckige
+Klammern gesetzt. Sie wird dabei nicht nummeriert &ndash; dies geschieht
+später automatisch. Deshalb bitte nicht auf eine Kapitelnummer
+verweisen, sondern auf den Titel. Beispiel: &quot;Wie in der Einleitung
+dargestellt.&quot;</p>
+<p>Es gibt nur eine Überschriftenebene! Also keine Unterüberschriften
+(weder kursiv noch als Schlagwort oder noch anders).</p>
+<h2><a name="autoren"></a> Autoren</h2>
+<p>Direkt unter eine Überschrift (und nur da) kann nach einem einfachen
+Zeilenumbruch eine Autorenangabe gesetzt werden. Autorenangaben
+gehören in runde Klammern.</p>
+<p>Bitte setze kein &quot;von&quot; an den Beginn, nenne die Autoren mit Komma
+getrennt sowie mit einem &quot;und&quot; vor dem letzten Autorennamen.</p>
 <table width="80%">
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td>[Überschrift]<br>
-            (Vorname Nachname)
-	</td>
-	<td><h3>Überschrift</h3>
+    <td><pre>[Überschrift]
+(Vorname Nachname)</pre></td>
+    <td><h3>Überschrift</h3>
             <i>Vorname Nachname</i>
-	</td>
+    </td>
 </tr>
 <tr>
-	<td>
-            [Überschrift]<br>            (Vorname Nachname, Vorname Nachname und Vorname Nachname)        </td>
-	<td>
+    <td><pre>[Überschrift]
+(Vorname Nachname, Vorname Nachname und Vorname Nachname)</pre></td>
+    <td>
             <h3>Überschrift</h3>            <i>Vorname Nachname, Vorname Nachname und Vorname Nachname</i>        </td>
 </tr>
 </table>
-    <p>Bitte kein &bdquo;von&ldquo; zu Beginn und die Autoren mit Komma getrennt, sowie ein &bdquo;und&ldquo; vor dem letzten Autor.</p></li>
 
-    <li><p>Möchte man etwas im Text <em>hervorheben</em>, kann man es zwischen Unterstriche setzen.<p>
-
+<h2><a name="hervorhebungen"></a> Hervorhebungen</h2>
+<p>Möchte man etwas im Text hervorheben, kann man es zwischen
+<code>_Unterstriche_</code> setzen.</p>
+<h2><a name="schlagworte"></a> Schlagworte</h2>
+<p>Am Anfang eines Absatzes (und nur dort!) gibt es die Möglichkeit, ein
+Wort als Schlagwort auszuzeichnen, indem man es in <code>*Sternchen*</code>
+einschließt.</p>
+<h2><a name="aufzaehlungen"></a> Aufzählungen</h2>
+<p>Aufzählungen funktionieren denkbar einfach: Ein einzelner Bindestrich
+bzw. eine Zahl mit einem Punkt dahinter am Anfang einer Zeile führt
+zum gewünschten Ergebnis.</p>
 <table width="80%">
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td>
-        Hervorhebungen im Text dienen _nur_ dazu, etwas hervorzuheben und _keinesfalls_ für Überschriften, Autorenangaben am Ende eines Absatzes o.Ä.
-        </td>
-	<td>
-        Hervorhebungen im Text dienen <i>nur</i> dazu, etwas hervorzuheben und <i>keinesfalls</i> für Überschriften, Autorenangaben am Ende eines Absatzes o.Ä.
-        </td>
-</tr>
-</table>
-</li>
-
-<li><p>Am Anfang eines Absatzes gibt es die Möglichkeit, ein Wort als <em>Schlagwort</em> auszuzeichnen, indem man es in Sternchen einschließt.</p>
-
-<table width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-*Schlagworte* dienen also dazu, das entscheidende Wort hervorzuheben, das in
-diesem Absatz genauer erläutert wird.<br><br>
-
-*Wichtig* ist, dass es keine Unterüberschriften sind und dass diese
-Formatierung nicht dazu benutzt wird, beliebigen Text fett zu setzen.
-
-        </td>
-	<td>
-
-<b>Schlagworte</b>&nbsp;dienen also dazu, das entscheidende Wort hervorzuheben,
-das in diesem Absatz genauer erläutert wird.<br><br>
-
-<b>Wichtig</b>&nbsp;ist, dass es keine Unterüberschriften sind und dass diese
-Formatierung nicht dazu benutzt wird, beliebigen Text fett zu setzen.
-
-
-</td>
-</tr>
-</table>
-</li>
-
-<li><p>Aufzählungen funktionieren denkbar einfach: Ein einzelner Bindestrich am Anfang einer Zeile führt zum gewünschten Ergebnis.</p>
-
-<table width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td>
-        - erster Punkt<br>
-	- zweiter Punkt<br>
-	- noch ein .<br>
-	- viele Punkte:&nbsp;...<br>
-        </td>
-	<td>
+    <td><pre>- erster Punkt
+- zweiter Punkt
+- noch ein .
+- viele Punkte: ...<pre></td>
+    <td>
         <ul>
-	<li type="disc">erster Punkt</li>
-	<li type="disc">zweiter Punkt</li>
-	<li type="disc">noch ein .</li>
-	<li type="disc">viele Punkte:&nbsp;...</li></ul>
+    <li type="disc">erster Punkt</li>
+    <li type="disc">zweiter Punkt</li>
+    <li type="disc">noch ein .</li>
+    <li type="disc">viele Punkte:&nbsp;...</li></ul>
         </td>
 </tr>
 </table>
-</li>
-
-<li><p>Es gibt auch nummerierte Aufzählungen.</p>
 
 <table width="80%">
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td>
-        1. erster Punkt<br>
-	2. zweiter Punkt<br>
-	3. noch ein .<br>
-	4. viele Punkte:&nbsp;...<br>
-        </td>
-	<td>
+    <td><pre>1. erster Punkt
+2. zweiter Punkt
+3. noch ein .
+4. viele Punkte: ...</pre></td>
+    <td>
         <ol>
-	<li>erster Punkt</li>
-	<li>zweiter Punkt</li>
-	<li>noch ein .</li>
-	<li>viele Punkte:&nbsp;...</li></ol>
+    <li>erster Punkt</li>
+    <li>zweiter Punkt</li>
+    <li>noch ein .</li>
+    <li>viele Punkte:&nbsp;...</li></ol>
         </td>
 </tr>
 </table>
-</li>
 
-</ul>
+<h2><a name="ellipse"></a> Auslasspunkte (Ellipse)</h2>
+<p>Eine Ellipse (drei Punkte zur Kennzeichnung einer Auslassung, …)
+werden in DokuForge mit drei Punkten und einem Leerzeichen davor
+gesetzt: <code>...</code></p>
+<h2><a name="anfuehrungszeichen"></a> Anführungszeichen</h2>
+<p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur)
+eingegeben werden. Wir machen daraus später »schöne« Anführungszeichen.</p>
+<h2><a name="bindestrich"></a> Bindestrich</h2>
+<p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und
+Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden
+hier zur Eingabe zwei Bindestriche: <code>--</code>. Wichtig ist, dass
+Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen,
+während Bereichsstriche ohne Leerzeichen eingegeben werden.</p>
 
-<h3><a name="sch">Abkürzungen und Schreibweisen</a></h3>
-
-<p>Die Dokumentation ist einheitlich in neuer deutscher Rechtschreibung zu
-verfassen.  Bei der Arbeit mit DF müssen dabei einige spezielle Schreibweisen
-(die bei der Eingabe nicht dudenkonform sind) beachtet werden, damit DokuForge
-den Text nachher richtig setzen kann.  Daher bitten wir euch dringend, die
-folgenden Punkte zu beachten!</p>
-
-<ul>
-<li><p>Die Dokumentation ist <em>einheitlich</em> in <em>neuer</em> deutscher Rechtschreibung zu verfassen.</p></li>
-<li><p>Vor drei Punkten (Ellipse) wird im Deutschen ein Leerzeichen gesetzt&nbsp;...</p></li>
-<li><p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur) eingegeben werden. Daraus werden später typografisch richtige Anführungszeichen, auch wenn das in DokuForge noch nicht zu sehen ist.</p></li>
-<li><p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden hier zur Eingabe zwei Bindestriche &bdquo;--&ldquo;. Wichtig ist, dass Gedankenstriche auf beiden Seiten je ein Leerzeichen Abstand bekommen, während Bereichsstriche kompress (also ohne Leerzeichen) gesetzt werden. Das heißt:</p>
-<table  width="80%">
+<h2><a name="einheiten"></a> Einheiten</h2>
+<p>Einheiten werden automatisch erkannt. Sie müssen dafür lediglich durch
+ein Leerzeichen getrennt hinter die zugehörige Zahl gesetzt werden. Im
+Gegensatz dazu gehört vor das Prozentzeichen und vor &quot;°C&quot; kein
+Leerzeichen! Dieses bitte direkt an die Zahl schreiben.</p>
+<table>
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td>
-	&quot;DokuForge&quot; schreibt man --&nbsp;und dies verhält sich bei &quot;Style-Guide&quot;
-	anders&nbsp;-- ohne Bindestrich. Das hat auch sicher 5--7 gute Gründe.
-        </td>
-	<td>
-	&quot;DokuForge&quot; schreibt man --&nbsp;und dies verhält sich bei
-	&quot;Style-Guide&quot; anders&nbsp;-- ohne Bindestrich. Das hat auch
-	sicher 5--7 gute Gründe.
+    <td><span class="tex2jax_ignore"><pre>1 m ist noch nicht so viel.
+1 m$^2$ ist schon mehr.
+Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.</pre></span></td>
+    <td>
+        1 m ist noch nicht so viel.<br>
+        1 m$^2$ ist schon mehr.<br>
+        Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
         </td>
 </tr>
 </table>
-</li>
 
-<li><p>Große Zahlen bitte ohne Leerzeichen oder Punkte eingeben, da DokuForge
-sie nur dann automatisch formatieren kann. Also:</p>
-
-<p>
+<p>Das Dollarzeichen &quot;$&quot; kann DokuForge übrigens nicht darstellen. Dieses
+ist nämlich für mathematische Formeln reserviert. Bitte entweder eine
+Ednote oder die Abkürzung USD verwenden.</p>
+<h2><a name="zahlen"></a> Zahlen</h2>
+<p>Große Zahlen bitte ohne Leerzeichen oder Punkte eingeben, da DokuForge
+sie nur dann automatisch formatieren kann.</p>
 <pre>
 1000 und nicht 1.000
 2349635 und nicht 2 349 635
 300000 und nicht 300.000
 </pre>
-</p>
-</li>
-
-<li>
-
-<p>Das Dollarzeichen <span class="tex2jax_ignore">&bdquo;$&ldquo;</span> kann DokuForge übrigens nicht darstellen.
-Dieses ist nämlich für mathematische Formeln und ähnliche Bösartigkeiten
-reserviert. Bitte entweder eine ednote oder die Abkürzung USD verwenden.</p>
-
-<p>Das Dollarzeichen ist allerdings relevant, wenn du Exponenten darstellen
-willst. Quadratmeter, Kubikzentimeter und Dinge dieser Art bitte
-folgendermaßen eingeben:</p>
-
+<p>Uhrzeiten bitte im Format 23:00 eingeben.</p>
+<h2><a name="exponenten"></a> Exponenten</h2>
+<p>Wenn du Exponenten darstellen willst, setze diese bitte zwischen zwei
+Dollarzeichen (d.h. als mathematische Formel).</p>
 <table  width="80%">
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td>
-	<span class="tex2jax_ignore">
-        5 m$^2$<br>
-        300 m$^3$<br>
-        7 km$^{800}$ sind zwar relativ unsinnig, aber ein Beispiel.
-	</span>
-        </td>
-	<td>
+    <td>
+    <span class="tex2jax_ignore"><pre>5 m$^2$
+300 m$^3$
+7 km$^{800}$ sind zwar relativ unsinnig, aber ein Beispiel.</pre></span></td>
+    <td>
         5 m$^2$<br>
         300 m$^3$<br>
         7 km$^{800}$ sind zwar relativ unsinnig, aber ein Beispiel.
         </td>
 </tr>
 </table>
-</li>
 
-<li><p>Bitte gebt Brüche in der Form &bdquo;1/2&ldquo; ein und nicht als &bdquo;&frac12;&ldquo;!
-
-<li><p>Abkürzungen sind manchmal etwas problematisch. Daher
-gibt es eine Liste erlaubter Abkürzungen. Alles andere, was man versucht sein
-könnte abzukürzen, kann man meistens genauso gut ausschreiben oder sehr schön
-umformulieren.</p>
-<p>Bitte also nur die folgenden Abkürzungen verwenden: </p>
-
-<TABLE BORDER="0">
-<TR><TD> z.B.   </TD><TD width="20">&nbsp;</TD>
-    <TD> d.h.   </TD><TD width="20">&nbsp;</TD>
-    <TD> u.a.   </TD><TD width="20">&nbsp;</TD>
-    <TD> s.o.   </TD><TD width="20">&nbsp;</TD>
-    <TD> s.u.   </TD><TD width="20">&nbsp;</TD>
-    <TD> ca.    </TD><TD width="20">&nbsp;</TD>
-    <TD> etc.   </TD><TD width="20">&nbsp;</TD>
-    <TD> bzw.   </TD><TD width="20">&nbsp;</TD>
-    <TD> vgl.   </TD>
-</TR>
-<TR><TD> sog.   </TD><TD width="20">&nbsp;</TD>
-    <TD> o.Ä.</TD><TD width="20">&nbsp;</TD>
-    <TD> v.Chr. </TD><TD width="20">&nbsp;</TD>
-    <TD> n.Chr. </TD><TD width="20">&nbsp;</TD>
-    <TD> f.     </TD><TD width="20">&nbsp;</TD>
-    <TD> ff.    </TD>
-</TR>
-</TABLE>
-
-<p>Diese Abkürzungen bitte auch genau so wie oben dargestellt schreiben, also
-bei mehrteiligen Abkürzungen ohne Leerzeichen zwischen den Gliedern.</p>
-</li>
-
-<li><p>Eigennamen bitte nicht in GROSSBUCHSTABEN setzen.</p></li>
-
-<li><p>Zu guter Letzt noch die Schreibweise einiger bestimmter Begriffe:</p>
-<p>
-
-<pre>
-CdE                            HimmelpfingstAkademie
-CdEler                         (der) exPuls
-SommerAkademie                 CdElokal
-PfingstAkademie                KüA (Plural: KüAs)
-</pre>
-
-</p>
-</li>
+<h2><a name="brueche"></a> Brüche</h2>
+<p>Bitte gebt Brüche in der Form <code>1/2</code> ein und nicht als <code>½</code>.</p>
+<h2><a name="abkuerzungen"></a> Abkürzungen</h2>
+<p>Abkürzungen sind manchmal etwas problematisch. Daher gibt es eine
+Liste erlaubter Abkürzungen. Alles andere, was man versucht sein
+könnte abzukürzen, kann man meistens genauso gut ausschreiben oder
+sehr schön umformulieren.</p>
+<p>Bitte also nur die folgenden Abkürzungen verwenden:</p>
+<ul>
+<li>bzw.</li>
+<li>ca.</li>
+<li>d.h.</li>
+<li>etc.</li>
+<li>f.</li>
+<li>ff.</li>
+<li>ggf.</li>
+<li>n.Chr.</li>
+<li>o.ä., o.Ä.</li>
+<li>s.o.</li>
+<li>s.u.</li>
+<li>sog.</li>
+<li>u.a.</li>
+<li>v.Chr.</li>
+<li>vgl.</li>
+<li>vs.</li>
+<li>z.B.</li>
 </ul>
-
-<h3><a name="ed">ednotes</a></h3>
-
-<p>Falls ihr uns (denen, die die Doku endgültig setzen) etwas mitteilen wollt,
-könnt ihr es in einem <em>separaten</em> Absatz in geschweifte Klammern
-schreiben.  Diese sogenannte <em>ednote</em> sieht zum Beispiel so aus:</p>
-
+<h2><a name="eigennamen"></a> Eigennamen</h2>
+<p>Eigennamen bitte <strong>nicht</strong> in GROSSBUCHSTABEN setzen.</p>
+<h2><a name="cde_vokabular"></a> CdE-Vokabular</h2>
+<p>Einige Schreibweisen gewisser CdE-Begriffe:</p>
+<ul>
+<li>CdE</li>
+<li>CdEler</li>
+<li>PfingstAkademie</li>
+<li>SommerAkademie</li>
+<li>WinterAkademie</li>
+<li>(der) exPuls</li>
+<li>CdElokal</li>
+<li>KüA, KüAs</li>
+</ul>
+<h2><a name="ednotes"></a> Ednotes</h2>
+<p>Falls du uns (denen, die die Doku endgültig setzen) etwas mitteilen
+oder Besonderheiten wie Tabellen oder Gedichte nutzen willst (siehe
+dazu die entsprechenden Abschnitte), kannst du es in einem separaten
+Absatz in geschweifte Klammern schreiben. Diese sogenannte Ednote
+sieht zum Beispiel so aus:</p>
 <table  width="80%">
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td><pre>
+    <td><pre>
 { Im folgenden Absatz sind ganz viele
   Rechtschreibfehler. Diese sind absichtlich,
   also bitte stehen lassen! Da sie das Auge
@@ -345,7 +280,7 @@ schreiben.  Diese sogenannte <em>ednote</em> sieht zum Beispiel so aus:</p>
   Tafeln Schokolade zu euch unterwegs.  Danke!
                            -- silke 20050709 }</pre>
         </td>
-	<td><pre class="ednote">
+    <td><pre class="ednote">
   Im folgenden Absatz sind ganz viele
   Rechtschreibfehler. Diese sind absichtlich,
   also bitte stehen lassen! Da sie das Auge
@@ -356,77 +291,63 @@ schreiben.  Diese sogenannte <em>ednote</em> sieht zum Beispiel so aus:</p>
 </tr>
 </table>
 
-<p>In ednotes gibt es keinen automatischen Zeilenumbruch. Es wäre also schön,
-wenn ihr jeweils nach einer geeigneten Zeilenlänge (z.B. der Breite des
-Eingabefeldes&nbsp;...) selbst umbrecht.</p>
-</p>Wenn ihr in den ednotes geschweifte Klammern verwendet, genügt eine einfach
-geschweifte Klammer nicht, um eine ednote auszuzeichnen. Ihr könnt die ednote
-dann mit einer beliebigen Kombination von Klammern öffnen:</p>
-
+<p>In Ednotes gibt es keinen automatischen Zeilenumbruch. Es wäre also
+schön, wenn du jeweils nach einer geeigneten Zeilenlänge (z.B. der
+Breite des Eingabefeldes) selbst umbrichst.</p>
+<p>Wenn du in den Ednotes geschweifte Klammern verwendest, genügt eine
+einfach geschweifte Klammer nicht, um eine Ednote auszuzeichnen. Du
+kannst die Ednote dann mit einer beliebigen Kombination von Klammern,
+aber beginnend mit einer geschweiften, öffnen und mit schließenden
+Klammern in umgekehrter Reihenfolge beenden:</p>
 <table  width="80%">
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td><pre>
+    <td><pre>
 {[(
 \title{Beispieltitel}
 )]}</pre>
         </td>
-	<td><pre class="ednote">
+    <td><pre class="ednote">
 \title{Beispieltitel}</pre>
         </td>
 </tr>
 </table>
-
-<p>ednotes werden auch für einige besondere Dinge wie Gedichte, Tabellen oder
-andere Schriften verwendet. Mehr Informationen dazu gibt es im Kapitel <a
-href="/style/spezielles">Spezielles</a>.</p>
-
-
-<p>Bei Problemen und Fragen könnt und <em>sollt</em> ihr uns natürlich auch
-einfach eine E-Mail an <a href="mailto:team (at) dokuforge.de">team (at)
-dokuforge.de</a> schreiben. Wir helfen euch gerne weiter und sind auch für die
-Weiterentwicklung von DokuForge auf euer Feedback angewiesen.</p>
-
-<h3><a name="kon">Konflikte</a></h3>
-
-<p>
-Wenn ihr einen Text zum editieren öffnet, bekommt ihre eine aktuelle Kopie
-des Textes. Wenn ihr jetzt eine umfangreiche Änderung vornehmt, kann es
-passieren, dass derweil jemand einen Kommafehler beseitigt und eure Kopie
-des Textes gar nicht mehr aktuell ist. Wenn ihr nun versucht zu speichern,
-so erzeugt dies ein Konflikt. Keine Panik, dabei gehen keinerlei Änderungen
-verloren. Aber ihr müsst schauen wie sich die beiden unterschiedlichen
-Versionen wieder vereinen lassen und erneut speichern. Bei dem Beispiel mit
-der Kommakorrektur wäre dies recht einfach, aber bei komplexeren Fällen kann
-es auch komplizierter werden. Dabei sind die einzelnen Konfliktstellen wie
-folgt gekennzeichnet.
-</p>
-<p>
-&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br>
-neue Version<br>
-=======<br>
-alte Version<br>
-&gt;&gt;&gt;&gt;&gt;&gt;&gt;<br>
-</p>
-<p>
-Eine Anmerkung für die alten Hasen: Im alten DokuForge konnte dies nicht
-passieren, da es Locks gab und immer nur einer eine Seite editieren
-durfte; daf&uuml;r gibt es jetzt die ganzen Probleme mit stale locks und
-dem ber&uuml;chtigtem &quot;Lock brechen&quot; nicht mehr.
-</p>
-
-<p>
-Eine Anmerkung f&uuml;r Technik-Freaks: tatsaechlich wird bei dem
-Versuch, eine konfligierende &Auml;nderung hochzuladen diese Version
-in einem Branch gespeichert und erst dann mit <tt>rcsmerge</tt> ein
-Mergevorschlag erstellt. Insbesondere hat man nicht nur eine Chance
-f&uuml;r einen Merge, und ein beim Mergen abschmierender Browser ist
-keine Katastrophe, da man &uuml;ber den rcs-Export an alles
-herankommt, was man f&uuml;r einen erneuten merge-Versuch ben&ouml;tigt.
-</p>
-
-
+<h2><a name="urls"></a> URLs</h2>
+<p>URLs bitte in Ednotes eingeben.</p>
+<table  width="80%">
+<tr>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
+</tr>
+<tr>
+    <td><pre>
+Unter
+{
+http://www.google.de
+}
+erreicht man eine Suchmaschine.</pre>
+        </td>
+    <td>Unter<pre class="ednote">
+http://www.google.de</pre>erreicht man eine Suchmaschine.
+        </td>
+</tr>
+</table>
+<p>Dabei bitte ignorieren, dass das scheinbar den Absatz zerhackt.</p>
+<h2><a name="code"></a> Code (Programmquelltext)</h2>
+<p>Zur Darstellung von kleinen Code-Schnippseln im Fließtext werden Pipes
+um den Code gesetzt. Eine mehrzeilige Eingabe von Code erfolgt in ednotes.</p>
+<p>Möchte man eine <code>|Class Klasse|</code> im Text erklären, so kann man es einfach
+in <code>|</code>-Symbole einschließen. Schreibt man eine mehrzeilige Klassendefinition, so
+wird sie in eine Ednote eingebettet. Dabei bitte die ednote mit einer Klammerstruktur eingeben, die im Quellcode nicht vorkommt.</p>
+<pre>
+{[(
+Class Klasse
+    def __init__(self, realpart, imagpart):
+    self.r = realpart
+    self.i = imagpart
+)]}
+</pre>
 </div>

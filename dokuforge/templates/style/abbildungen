@@ -1,132 +1,51 @@
-    <div class="body">
-              <h2>Wie werden Abbildungen in DokuForge eingefügt?</h2>
-            
-
-
-
-
-<p>
-An dieser Stelle haben wir ein paar Regeln für das Einfügen
-von Abbildungen und ihre Referenzierung im Text zusammengestellt.
-Auch werden wir ein paar Worte über Dateiformate verlieren.
-</p>
-
-<h3>Der Style-Guide Abbildungen &ndash; Inhalt</h3>
-
-<ol>
- <li><p><a href="#basics">Grundlagen</a></p></li>
- <li><p><a href="#formate">Kurzübersicht Bildformate</a></p></li>
-</ol>
-
-<h3><a name="basics">Grundlagen</a></h3>
-
-<p>Abbildungen sollten bitte sparsam verwendet werden. Sehr wichtig ist
-dabei auch, dass durch sie keine fremden Rechte verletzt werden, wie es z.B.
-bei Kopien aus Büchern oder Abbildungen aus dem Internet der Fall sein
-kann. Bitte benutzt daher nur Bilder, bei denen ihr euch wirklich sicher seid,
-dass ihr keine Rechte verletzt oder deren ihr die Rechte erhalten habt!<p>
-
-<p>Ein  zweiter 
-wichtiger Punkt ist die Reproduzierfähigkeit der Bilder.  Sie müssen in
-ausreichend guter Qualität vorliegen und für den Schwarz-Weiß-Druck geeignet
-sein.</p>
-
-<p>Auf die genaue Positionierung der Bilder habt ihr keinen Einfluss. Bilder
-sind Fließobjekte, daher ist <em>keine</em>
-&bdquo;Hier&ldquo;-Positionierung möglich. Die Bilder werden in der
-<em>Nähe</em> ihrer ersten Referenz eingebunden werden, ihre Position kann
-sich aber durch Seitenumbrüche, andere Abbildungen etc. verschieben.</p>
-
-<p>Bitte verweist aus diesem Grund <em>nicht direkt</em> auf Abbildungen
-(&bdquo;in folgender Abbildung&ldquo;), sondern bindet Abbildungen über
-eine Referenz ein. Das heißt: In eurem Text verweist ihr über eine
-Referenz der Form &bdquo;In ABBILDUNG:Kürzel sieht man ...&ldquo; auf das
-entsprechende Bild.</p>
-
-<p>Die Kürzel dürfen ausschließlich Kleinbuchstaben und Zahlen enthalten. Also
-bitte keine Leerzeichen, Umlaute, Unterstriche und Bindestriche.</p>
-
-
+<div class="body">
+<h1>Abbildungen</h1>
+<p>In DokuForge können Abbildungen verwendet werden. Normaler Fließtext
+ist für uns in der Regel mit wenig Aufwand verbunden.  Grafiken aller Art
+bringen hingegen ein klein wenig oder ziemlich viel Mehraufwand mit
+sich – hierbei entscheidet die Qualität der Grafik, ob wir einfach nur
+ein Bild einfügen oder ob wir ein paar Stunden Arbeit aufwenden
+müssen. Um letzteren Fall zu vermeiden, bitten wir dich unsere
+Hinweise zu beachten.</p>
+<h2>Rastergrafik oder Vektorgrafik?</h2>
+<p>Abhängig von der Art der Grafik verwenden wir Vektorgrafiken oder Rastergrafiken.</p>
+<p>In <strong>Rastergrafiken</strong> steht einfach für jeden Bildpunkt einzeln drin, welche Farbe er hat. Wenn man eine Pixelgrafik vergrößert, sieht man die Ecken und Kanten der Bildpunkte: Die Bildpunkte &quot;wachsen&quot; praktisch mit, das große Bild enthält nicht mehr Information oder Auflösung als das kleine Ursprungsbild.</p>
+<p>Bei <strong>Vektorgrafiken</strong> ist das Bild durch Objekte beschrieben. Beispielsweise steht da &quot;schwarze Linie von der Koordinate (x1,y1) zur Koordinate (x2,y2)&quot;. Oder &quot;an der Koordinate (x,y) den Buchstaben 'a' aus der Schriftart 'b'&quot;. Diese Angaben behalten ihre Gültigkeit, auch wenn man das Koordinatensystem skaliert. Man kann Vektorgrafiken beliebig vergrößern, ohne dass man jemals Pixel sieht. Eine Linie von A nach B bleibt einfach eine Linie von A nach B.</p>
+<p><strong>Fotos</strong> sollten als JPG (ein Rastergrafik-Format) hochgeladen werden. Bitte ladet das Bild in der originalen Auflösung hoch. Verkleinern
+können wir selber. Wir benötigen etwa 100 Pixel pro Zentimeter Druckgröße. Bilder, die schlechter aufgelöst sind, können wir nicht abdrucken.</p>
+<p><strong>Screenshots</strong> und <strong>Scans von Strichzeichnungen</strong> sollten als PNG vorliegen. Auch hier gelten die obigen Hinweise zur Auflösung (siehe &quot;Fotos&quot;).</p>
+<p><strong>Diagramme</strong>, <strong>technische Zeichnungen</strong>, <strong>Graphen/Plots</strong>, <strong>Strichzeichnungen</strong> und alle anderen Arten sollten als Vektorgrafiken
+hochgeladen werden. Wir bevorzugen dafür die Formate EPS, SVG, PostScript und TikZ.
+PDF geht auch. Aber bitte keine Rastergrafiken einfach als PDF abspeichern – dann fühlen wir uns veräppelt. Bitte stell uns bei
+Grafiken, die aus Rohdaten erzeugt wurden (z.B. Diagramme und Plots), auch die Rohdaten und eine Anleitung zur Erzeugung der Grafik
+zur Verfügung.</p>
+<h2>Urheberrecht</h2>
+<p>Wir dürfen nur Grafiken abdrucken, für die uns die Urheber bzw. Rechteinhaber die Erlaubnis dazu erteilt haben. Bitte gib beim Hochladen daher
+stets die Quelle an.</p>
+<p>Wenn die Grafik nicht von einem Kursteilnehmer oder Dokuteammitglied erstellt wurde, benötigen wir die Erlaubnis, diese Grafik abzudrucken und
+auf der Doku-DVD verwenden zu dürfen. Diese Erlaubnis musst du selbst einholen. Ohne diese Erlaubnis können wir die Grafik nicht abdrucken.</p>
+<h2>Bilder hochladen und einbinden</h2>
+<p>Grafiken können über &quot;neues Bild hochladen&quot; am Ende einer Seite zu dem jeweiligen Kapitel hochgeladen werden. Beim Hochladen wirst du
+nach einem Kürzel gefragt. Die Kürzel dürfen ausschließlich Kleinbuchstaben und Zahlen enthalten.</p>
+<p>Auf die genaue Positionierung der Bilder hast du keinen Einfluss.
+Bilder sind Fließobjekte, daher ist keine &quot;Hier&quot;-Positionierung möglich.
+Die Bilder werden in der Nähe ihrer ersten Referenz eingebunden werden,
+ihre Position kann sich aber durch Seitenumbrüche, andere Abbildungen etc. verschieben.
+Bitte verweist aus diesem Grund nicht direkt auf Abbildungen (&quot;in folgender Abbildung&quot;),
+sondern bindet Abbildungen über eine Referenz ein. Das heißt: In deinem Text verweist du
+über eine Referenz der Form <code>In ABBILDUNG:Kürzel sieht man ...</code> auf das entsprechende Bild.</p>
 <p>Das sieht dann z.B. so aus:</p>
-
 <table  width="80%">
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td>
-        In ABBILDUNG:gugelhupf sieht man einen Gugelhupf.
+    <td>
+        <code>In ABBILDUNG:gugelhupf sieht man einen Gugelhupf.</code>
         </td>
-	<td>
+    <td>
         In ABBILDUNG:gugelhupf sieht man einen Gugelhupf.
         </td>
 </tr>
-</table>
-
-<p>Nun müsst ihr noch die entsprechende Abbildung hinzufügen. Über den Button 
-&bdquo;neue Abbildung&ldquo; gelangt ihr zu dem entsprechenden Dialog. Als erstes
-müsst ihr das oben verwendete Abbildungskürzel und eine Bildunterschrift eingeben.
-Im Anschluss könnt ihr die Bilddatei hochladen. Die Datei muss als Endung das jeweilige
-Dateiformat tragen, z.B. &bdquo;gugelhupf.jpg&ldquo;.</p>
-
-<p>Später könnt ihr die angelegten Abbildungen betrachten, die Bildunterschrift editieren
-und ein neues Bild hochladen.</p>
-
-<p>Fotos sollten als jpg gespeichert werden. Für Screenshots, Scans von
-Strichzeichnungen und Ähnliches sollte png verwendet werden. Dabei ist
-darauf zu achten, dass bei diesen Pixelgrafiken die Anzahl der Pixel groß
-genug ist. Wir benötigen etwa 100 Pixel pro Zentimeter
-Druckgröße.</p>
-
-<p>Andere Abbildungen (Diagramme, Zeichnungen) sendet bitte als Vektorgrafik
-ein. Hier ist PDF das bevorzugte Format. Aber bitte keine Pixel-Bilder einfach
-als PDF abspeichern!</p>
-
-
-<h3><a name="formate">Kurzübersicht Bildformate:</a></h3>
-
-<ul>
-<li><p>Pixelgrafiken:</p></li>
-  <ul>
-
-  <li><p>In Pixelgrafiken steht einfach für jeden Bildpunkt einzeln drin,
-  welche Farbe er hat. Wenn man eine Pixelgrafik vergrößert, sieht
-  man die Ecken und Kanten der Bildpunkte: Die Bildpunkte &bdquo;wachsen&ldquo;
-  praktisch mit, das große Bild enthält nicht mehr Information oder
-  Auflösung als das kleine Ursprungsbild. Fotos sind ein typisches
-  Beispiel für Pixelgrafiken. Ebenso liegt alles, was man gescannt hat,
-  dann als Pixelgrafik vor.</p></li>
-  
-  <li><p>Als Pixelgrafik sind Fotos, Screenshots und gescannte Zeichnungen
-         abzugeben.</p></li>
-	 
-  <li><p>png: ideal für Screenshots und Scans von Strichzeichnungen</p></li>
-
-  <li><p>jpg/jpeg: ideal für Fotos</p></li>
-  </ul>
-
-<li><p>Vektorgrafiken:</p></li>
-  <ul>
-
-  <li><p>In Vektorgrafiken ist das Bild durch Objekte beschrieben.
-  Beispielsweise steht da &bdquo;schwarze Linie von der Koordinate (x1,y1) zur
-  Koordinate (x2,y2)&ldquo;. Oder &bdquo;an der Koordinate (x,y) den Buchstaben
-  'a' aus dem Font 'b'&ldquo;. Diese Angaben behalten ihre Gültigkeit,
-  auch wenn man das Koordinatensystem aufbläht: Man kann Vektorgrafiken
-  beliebig vergrößern, ohne dass man jemals Pixel sieht. Eine Linie
-  von A nach B bleibt einfach eine Linie von A nach B. Eine typische Anwendung
-  für Vektorgrafiken sind Diagramme, technische Zeichnungen,
-  Graphen/plots, Strichzeichnungen ...</p></li>
-
-  <li><p>Als Vektorgrafik sollten alle Diagramme, Skizzen (Versuchsaufbau etc.),
-         Graphen und sonstige Schaubilder abgegeben werden.</p></li>
-	 
-  <li><p>Die bevorzugten Formate für Vektorgrafiken sind PDF, PostScript und EPS
-         (Encapsulated PostScript).</p></li>
-   </ul>
-</ul>
-
-
-
-    </div>
+</table></div>
