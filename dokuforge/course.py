@@ -635,7 +635,7 @@ class Course(StorageDir):
                 includegraphics = \
                     (u"\\includegraphics" +
                      u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
-                    (self.name, b, fileName)
+                    (self.name.decode('utf8'), b, fileName)
                 if fileName != blob['filename']:
                     tex += (u"%% Original-Dateiname: %s\n" % blob['filename'])
                 if fileName.endswith((".png", ".jpg", ".pdf")):
@@ -645,11 +645,11 @@ class Course(StorageDir):
                             u" nicht als Bild eingebunden)\n") % \
                            (includegraphics, fileName)
                 tex += u"\\caption{%s}\n" % dfCaptionParser(blob['comment']).toTex().strip()
-                tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
+                tex += u"\\label{fig_%s_%d_%s}\n" % (self.name.decode('utf8'), b, blob['label'])
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(self.name +
                                          (u"/blob_%d_" % b).encode("ascii") +
-                                         bytes(fileName),
+                                         fileName.encode("ascii"),
                                          blob['data'],
                                          blobdate)
 

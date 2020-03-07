@@ -184,11 +184,11 @@ for your reference
         if static is not None:
             for chunk in tarwriter.addDirChunk(b"", static, excludes=[b".svn"]):
                 yield chunk
-        contents = u""
+        contents = b""
         for course in self.listCourses():
-            contents += u"\\input{%s/chap}\n" % course.name
+            contents += b"\\input{%s/chap}\n" % course.name
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
         yield tarwriter.addChunk(b"contents.tex",
-                                 contents.encode("utf8"),
+                                 contents,
                                  timeStampNow)
