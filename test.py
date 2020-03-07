@@ -31,6 +31,12 @@ except AttributeError:
     def Upload(filename):
         return (filename,)
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
+
 teststrings = [
     (u"simple string", u"simple string"),
     (u"some chars <>/& here", u"some chars &lt;&gt;/&amp; here"),
@@ -597,7 +603,7 @@ permissions = df_superadmin True,df_admin True
                                      'fig_platzhalter2.PNG'  : 'fig_platzhalter2.png' ,
                                      'Fuzzi-Hut-Logo2.PDF'   : 'Fuzzi-Hut-Logo2.pdf'   }
 
-        imageFilenames = imageFilenamesUnchanged + imageFilenamesToBeChanged.keys()
+        imageFilenames = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.keys())
 
         self.do_login()
         os.chdir('testData')
@@ -617,10 +623,11 @@ permissions = df_superadmin True,df_admin True
             counter = counter+1
         os.chdir('..')
 
-        expectedFilenamesInExport = imageFilenamesUnchanged + imageFilenamesToBeChanged.values()
+        expectedFilenamesInExport = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.values())
 
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(description="Exportieren")
+        #self.res = self.res.click(description="Exportieren")
+        self.res = self.res.click(description="Testexport")
         tarFile = tarfile.open(mode='r',fileobj=io.BytesIO(self.res.body))
         memberNames = tarFile.getnames()
         filenamesInExport = []
