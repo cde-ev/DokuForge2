@@ -66,7 +66,7 @@ class TarWriterTests(DfTestCase):
         tar = tar + tarwriter.addChunk(b'myFile', b'contents', timeStampNow)
         tar = tar + tarwriter.close()
         self.assertIsTar(tar)
-        
+
     def testGzip(self):
         timeStampNow = datetime.datetime.utcnow()
         timeStampNow.replace(tzinfo=UTC())
@@ -227,11 +227,13 @@ permissions = df_meta True,akademie_meta_aca123 False
 
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
+    size = None
+
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.pathconfig = PathConfig()
         self.pathconfig.rootdir = self.tmpdir
-        createexample.main(size=1, pc=self.pathconfig)
+        createexample.main(size=self.size, pc=self.pathconfig)
         app = buildapp(self.pathconfig)
         app = validator(app)
         self.app = webtest.TestApp(app)
@@ -254,6 +256,20 @@ class DokuforgeWebTests(DfTestCase):
 
     def is_loggedin(self):
         self.res.mustcontain("/logout")
+
+class DokuforgeBigWebTests(DokuforgeWebTests):
+    size = 100
+
+    def testCourseLessPrivileged(self):
+        self.do_login(username="arthur", password="mypass")
+        self.res = self.res.click(description="Beste Akademie ever")
+        self.res.mustcontain("Helenistische Heldenideale")
+        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res.mustcontain("Example Section")
+        self.is_loggedin()
+
+class DokuforgeSmallWebTests(DokuforgeWebTests):
+    size = 1
 
     def testLogin(self):
         self.do_login()
@@ -738,7 +754,7 @@ class CourseTests(DfTestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.course = Course(os.path.join(self.tmpdir, b'example'))
-        
+
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
 
@@ -761,7 +777,7 @@ class AcademyTest(DfTestCase):
         self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
         self.academy.createCourse(u'new01', u'erster neuer Kurs')
         self.academy.createCourse(u'new02', u'zweiter neuer Kurs')
-        
+
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
 
