@@ -1035,8 +1035,9 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(c)
-        rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s_%s.tar.gz" % (aca.name, c.name)
+        rs.response.headers['Content-Disposition'] = (
+            "attachment; filename=%s_%s.tar.gz" % (aca.name.decode('ascii'),
+                                                   c.name.decode('ascii')))
         return rs.response
 
     def do_rawacademy(self, rs, academy=None):
@@ -1059,7 +1060,7 @@ class Application:
             yield tarwriter.close()
         rs.response.response = export_iterator(aca)
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % (aca.name,)
+                "attachment; filename=%s.tar.gz" % (aca.name.decode('ascii'),)
         return rs.response
 
     def do_export(self, rs, academy=None):
