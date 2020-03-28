@@ -616,7 +616,7 @@ class Course(StorageDir):
                 blobbase = (u"blob%d" % b).encode("ascii")
                 blobdate = self.getstorage(blobbase).commitstatus()[b'date']
                 tex += u"\n\n%% blob %d\n" % b
-                tex += u"\\begin{figure}\n\centering\n"
+                tex += u"\\begin{figure}\n\\centering\n"
                 fileName = blob['filename']
                 includegraphics = \
                     (u"\\includegraphics" +
