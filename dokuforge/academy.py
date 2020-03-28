@@ -155,7 +155,7 @@ class Academy(StorageDir):
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
-        @returns: a mapping providing the keys: name(str), title(unicode),
+        @returns: a mapping providing the keys: name(bytes), title(unicode),
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
