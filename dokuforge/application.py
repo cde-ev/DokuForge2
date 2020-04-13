@@ -16,6 +16,7 @@ import operator
 import os
 import random
 import sqlite3
+import sys
 import time
 import urllib
 try:
@@ -1035,9 +1036,11 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(c)
-        rs.response.headers['Content-Disposition'] = (
-            "attachment; filename=%s_%s.tar.gz" % (aca.name.decode('ascii'),
-                                                   c.name.decode('ascii')))
+        filename = b"%s_%s.tar.gz" % (aca.name, c.name)
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
+        rs.response.headers['Content-Disposition'] = \
+                "attachment; filename=" + filename
         return rs.response
 
     def do_rawacademy(self, rs, academy=None):
@@ -1059,8 +1062,11 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(aca)
+        filename = b"%s.tar.gz" % aca.name
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % (aca.name.decode('ascii'),)
+                "attachment; filename=" + filename
         return rs.response
 
     def do_export(self, rs, academy=None):
