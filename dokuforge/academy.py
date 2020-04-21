@@ -155,7 +155,7 @@ class Academy(StorageDir):
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
-        @returns: a mapping providing the keys: name(str), title(unicode),
+        @returns: a mapping providing the keys: name(bytes), title(unicode),
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
@@ -186,7 +186,7 @@ for your reference
                 yield chunk
         contents = u""
         for course in self.listCourses():
-            contents += u"\\include{%s/chap}\n" % course.name
+            contents += u"\\include{%s/chap}\n" % course.name.decode("ascii")
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
         yield tarwriter.addChunk(b"contents.tex",
