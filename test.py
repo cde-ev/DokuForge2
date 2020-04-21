@@ -990,7 +990,9 @@ class ExporterTestStrings:
                          [u'Bla $$\n\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}\n$$ Blub',
                           u'Bla\n\\begin{align}\na + b &= c\\\\\na - b &= d\n\\end{align}\n Blub'],
                          [u'Matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$.',
-                          u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'] ]
+                          u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'],
+                         [u'Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.',
+                          u'Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.'] ]
 
     evilUTF8 = [ [u'Bla … blub bloink.',
                   u'Bla~\\@\\dots{} blub bloink.'],
