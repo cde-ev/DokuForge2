@@ -234,11 +234,13 @@ permissions = df_meta True,akademie_meta_aca123 False
 
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
+    size = None
+
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.pathconfig = PathConfig()
         self.pathconfig.rootdir = self.tmpdir
-        createexample.main(size=1, pc=self.pathconfig)
+        createexample.main(size=self.size, pc=self.pathconfig)
         app = buildapp(self.pathconfig)
         app = validator(app)
         self.app = webtest.TestApp(app)
@@ -261,6 +263,20 @@ class DokuforgeWebTests(DfTestCase):
 
     def is_loggedin(self):
         self.res.mustcontain("/logout")
+
+class DokuforgeBigWebTests(DokuforgeWebTests):
+    size = 100
+
+    def testCourseLessPrivileged(self):
+        self.do_login(username="arthur", password="mypass")
+        self.res = self.res.click(description="Beste Akademie ever")
+        self.res.mustcontain("Helenistische Heldenideale")
+        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res.mustcontain("Example Section")
+        self.is_loggedin()
+
+class DokuforgeSmallWebTests(DokuforgeWebTests):
+    size = 1
 
     def testLogin(self):
         self.do_login()
