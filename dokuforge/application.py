@@ -1091,8 +1091,11 @@ class Application:
             yield tarwriter.close()
         rs.response.response = export_iterator(aca, self.staticexportdir,
                                                prefix)
+        filename = b"%s.tar.gz" % aca.name
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % prefix
+                "attachment; filename=%s" % filename
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
