@@ -1,7 +1,7 @@
 ifneq ($(shell which python2),)
-PYTHON2 ?= python2
+PYTHON3 ?= python2
 else
-PYTHON2 ?= python
+PYTHON3 ?= python3
 endif
 
 all: doc setup
@@ -11,7 +11,7 @@ doc:
 
 setup:
 	rm -rf work
-	${PYTHON2} createexample.py
+	${PYTHON3} createexample.py
 
 clean:
 	rm -rf html work
@@ -21,15 +21,15 @@ check: test
 
 # entire test suite
 test: test.py
-	${PYTHON2} test.py
+	${PYTHON3} test.py
 
 # only test exporting of text (microtypography, titles etc.)
 test-exported-strings:
-	${PYTHON2} -m unittest test.DokuforgeParserUnitTests test.DokuforgeMicrotypeUnitTests test.DokuforgeTitleParserTests test.DokuforgeCaptionParserTests
+	${PYTHON3} -m unittest test.DokuforgeParserUnitTests test.DokuforgeMicrotypeUnitTests test.DokuforgeTitleParserTests test.DokuforgeCaptionParserTests
 
 .coverage:$(wildcard dokuforge/*.py) test.py
-	${PYTHON2} -m coverage -x test.py
+	${PYTHON3} -m coverage -x test.py
 coverage: .coverage
-	${PYTHON2} -m coverage -r -m -i "dokuforge/*.py"
+	${PYTHON3} -m coverage -r -m -i "dokuforge/*.py"
 
 .PHONY: all doc clean setup test check
