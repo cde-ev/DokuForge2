@@ -1,7 +1,7 @@
-ifneq ($(shell which python2),)
-PYTHON3 ?= python2
-else
+ifneq ($(shell which python3),)
 PYTHON3 ?= python3
+else
+PYTHON3 ?= python2
 endif
 
 all: doc setup
@@ -25,7 +25,10 @@ test: test.py
 
 # only test exporting of text (microtypography, titles etc.)
 test-exported-strings:
-	${PYTHON3} -m unittest test.DokuforgeParserUnitTests test.DokuforgeMicrotypeUnitTests test.DokuforgeTitleParserTests test.DokuforgeCaptionParserTests
+	for py in python2 python3 ; do\
+		$$py -m unittest test.DokuforgeParserUnitTests test.DokuforgeMicrotypeUnitTests test.DokuforgeTitleParserTests test.DokuforgeCaptionParserTests ;\
+	done
+
 
 .coverage:$(wildcard dokuforge/*.py) test.py
 	${PYTHON3} -m coverage -x test.py
