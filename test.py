@@ -1013,6 +1013,41 @@ class ExporterTestStrings:
                  [u'„‚Nested quotes‘”.',
                   u'\\@\\@"`\\@\'Nested quotes\\@\'\\@\\@"`.'] ]
 
+    nonstandardSpace = [ [u'x x',    # standard ASCII space
+                          u'x x' ],
+                         [u'x x',    # non-breaking space U+00A0
+                          u'x\@ x' ],
+                         [u'x x',    # en quad U+2000
+                          u'x\@ x' ],
+                         [u'x x',    # em quad U+2001
+                          u'x\@ x' ],
+                         [u'x x',    # en space U+2002
+                          u'x\@ x' ],
+                         [u'x x',    # em space U+2003
+                          u'x\@ x' ],
+                         [u'x x',    # 1/3 em space U+2004
+                          u'x\@ x' ],
+                         [u'x x',    # 1/4 em space U+2005
+                          u'x\@ x' ],
+                         [u'x x',    # 1/6 em space U+2006
+                          u'x\@ x' ],
+                         [u'x x',    # figure space U+2007
+                          u'x\@ x' ],
+                         [u'x x',    # punctuation space U+2008
+                          u'x\@ x' ],
+                         [u'x x',    # thin space U+2009
+                          u'x\@ x' ],
+                         [u'x x',    # hair space U+200A
+                          u'x\@ x' ],
+                         [u'x​x',    # zero width space U+200B
+                          u'x\@ x' ],
+                         [u'x x',    # narrow no-break space U+202F
+                          u'x\@ x' ],
+                         [u'x x',    # medium mathematical space (4/18 em) U+205F
+                          u'x\@ x' ],
+                         [u'x﻿x',    # zero-width non-breaking space U+FEFF
+                          u'x\@ x' ] ]
+
     pageReferences = [ [u'Auf S. 4 Abs. 3 in Art. 7 steht',
                         u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
                        [u'Auf Seite 4 Absatz 3 in Artikel 7 steht',
@@ -1193,6 +1228,7 @@ class ExporterTestCases:
                         ExporterTestStrings.escaping,
                         ExporterTestStrings.mathEnvironments,
                         ExporterTestStrings.evilUTF8,
+                        ExporterTestStrings.nonstandardSpace,
                         ExporterTestStrings.pageReferences,
                         ExporterTestStrings.spacing,
                         ExporterTestStrings.lawReference,
