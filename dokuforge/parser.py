@@ -132,6 +132,7 @@ class Escaper:
     def __call__(self, word):
         return intersperse(word.split(self.sequence), self.escaped)
 
+
 def acronym(word):
     """
     All-capital words should be displayed in smaller font.
@@ -573,16 +574,9 @@ UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
 
 UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
 
-UTF8glq = Escaper(u'‚', TerminalString(u'\\@\''))
+UTF8SingleQuotes = [ Escaper(q, TerminalString(u'\\@\'')) for q in (u'‚', u'‘', u'’', u'‹', u'›') ]
 
-UTF8grq = Escaper(u'‘', TerminalString(u'\\@\''))
-
-UTF8erq = Escaper(u'’', TerminalString(u'\\@\''))
-
-UTF8clq = Escaper(u'‹', TerminalString(u'\\@\''))
-
-UTF8crq = Escaper(u'›', TerminalString(u'\\@\''))
-
+# NonStandardSpace = NToOneEscaper((u'', u' '), TerminalString(u'\@ '))
 
 def formatCode(word):
     """
@@ -795,9 +789,9 @@ def defaultMicrotype(text):
                 percent, ampersand, hashmark, quote, leftCurlyBracket,
                 rightCurlyBracket, caret, tilde,
                 spaceMultipartStandardAbbreviations,
-                UTF8endash, UTF8emdash,
-                UTF8glq, UTF8grq, UTF8erq, UTF8clq, UTF8crq,
-                # fullStop after ellipsis and spaceMultipartStandardAbbreviations
+                UTF8endash, UTF8emdash ] + \
+                UTF8SingleQuotes + \
+              [ # fullStop after ellipsis and spaceMultipartStandardAbbreviations
                 fullStop, naturalNumbers,
                 ## no splitting at '-' before numbers
                 SplitSeparators(separators[-1]), # separator '-' only
