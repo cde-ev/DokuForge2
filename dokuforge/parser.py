@@ -576,7 +576,7 @@ UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
 
 UTF8SingleQuotes = [ Escaper(q, TerminalString(u'\\@\'')) for q in (u'‚', u'‘', u'’', u'‹', u'›') ]
 
-# NonStandardSpace = NToOneEscaper((u'', u' '), TerminalString(u'\@ '))
+NonStandardSpace = [ Escaper(q, TerminalString(u'\\@ ')) for q in (u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u'​', u' ', u' ', u'﻿') ]
 
 def formatCode(word):
     """
@@ -791,6 +791,7 @@ def defaultMicrotype(text):
                 spaceMultipartStandardAbbreviations,
                 UTF8endash, UTF8emdash ] + \
                 UTF8SingleQuotes + \
+                NonStandardSpace + \
               [ # fullStop after ellipsis and spaceMultipartStandardAbbreviations
                 fullStop, naturalNumbers,
                 ## no splitting at '-' before numbers
