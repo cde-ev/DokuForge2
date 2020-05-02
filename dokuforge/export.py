@@ -51,15 +51,15 @@ def process(academiesdir,staticexportdir,academyname):
 
     tarGenerator = export_iterator(academy,staticexportdir,prefixdir)
 
-    outputfile = open ( prefixdir+'.tar', 'w' )
+    outputfile = open ( prefixdir.decode("utf8")+'.tar', 'wb' )
 
     for chunk in tarGenerator:
         outputfile.write(chunk)
 
 def main():
-    academiesdir    = sys.argv[1]
-    staticexportdir = sys.argv[2]
-    academyname     = sys.argv[3]
+    academiesdir    = sys.argv[1].encode("utf8")
+    staticexportdir = sys.argv[2].encode("utf8")
+    academyname     = sys.argv[3].encode("utf8")
     process(academiesdir,staticexportdir,academyname)
 
 if __name__ == "__main__":

@@ -277,7 +277,7 @@ class Storage(object):
         validateRcsRevision(version)
 
         ## Transform text to Unix line ending
-        newcontent = b"\n".join(newcontent.splitlines()) + b"\n"
+        newcontent = b"".join(map(b"%s\n".__mod__, newcontent.splitlines()))
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
             currentversion = self.status(havelock = gotlock)
