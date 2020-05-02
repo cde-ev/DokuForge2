@@ -16,6 +16,7 @@ import operator
 import os
 import random
 import sqlite3
+import sys
 import time
 import urllib
 try:
@@ -1035,8 +1036,11 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(c)
+        filename = b"%s_%s.tar.gz" % (aca.name, c.name)
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s_%s.tar.gz" % (aca.name, c.name)
+                "attachment; filename=" + filename
         return rs.response
 
     def do_rawacademy(self, rs, academy=None):
@@ -1058,8 +1062,11 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(aca)
+        filename = b"%s.tar.gz" % aca.name
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % (aca.name,)
+                "attachment; filename=" + filename
         return rs.response
 
     def do_export(self, rs, academy=None):
@@ -1084,8 +1091,11 @@ class Application:
             yield tarwriter.close()
         rs.response.response = export_iterator(aca, self.staticexportdir,
                                                prefix)
+        filename = b"%s.tar.gz" % aca.name
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % prefix
+                "attachment; filename=%s" % filename
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):

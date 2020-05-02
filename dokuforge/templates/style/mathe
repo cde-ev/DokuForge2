@@ -1,104 +1,62 @@
-    <div class="body">
-              <h2>Wie werden Formeln gesetzt?</h2>
-
-
-
-
-<p>
-An dieser Stelle haben wir ein paar Regeln für die Eingabe von
-Formeln und Gleichungen zusammengestellt.
-</p>
-
-
-<h3>Der Style-Guide Mathematik &ndash; Inhalt</h3>
-
-<ol>
- <li><p><a href="#basics">Grundlagen</a></p></li>
- <li><p><a href="#marcros">Spezielle Zeichen</a></p></li>
- <li><p><a href="#align">Ausrichtung mehrzeiliger Formeln</a></p></li>
- <li><p><a href="#satz">Satz und Beweis</a></p></li>
-</ol>
-
-
-
-<h3><a name="basics">Grundlagen</a></h3>
-
-<p>Zur Formeldarstellung wird in DokuForge eine Untermenge von LaTeX verwendet.
-Grundsätzlich sind die meisten Mathematikbefehle, die im Kopka beschrieben
-werden, erlaubt. Es können bei Bedarf kursspezifisch neue Befehle erlaubt bzw.
-definiert werden.</p>
-
-<p>Die Vorschau von Formeln wird im Browser erzeugt, was je nach
-  Umfang der Formeln, Browser und Computer mit betr&auml;chtlichem
-  Rechenaufwand verbunden sein kann. Aus diesem Grund ist die Vorschau
-  standardm&auml;&szlig;ig deaktiviert. Sie kann durch den
-  &quot;Mathe&quot;-Link in der Men&uuml;leiste rechts oben aktiviert werden.</p>
-
-<p>DokuForge unterstützt zwei Arten von Formeln: solche im Fließtext und solche,
-die abgesetzt werden.</p>
-
+<div class="body">
+<h1>Mathematik-Umgebung</h1>
+<p><a name="toc"></a></p>
+<ul>
+<li><a href="#grundlagen">Grundlagen</a></li>
+<li><a href="#mehrzeilig">Mehrzeilige Formeln</a></li>
+<li><a href="#def_satz_bew">Definitionen, Sätze, Beweise</a></li>
+</ul>
+<h2><a name="grundlagen"></a> Grundlagen</h2>
+<p>Zur Formeldarstellung wird in DokuForge eine Untermenge von LaTeX
+verwendet. Viele gängige Mathematikbefehle sind erlaub. Es können bei
+Bedarf kursspezifisch neue Befehle erlaubt bzw. definiert werden.</p>
+<p>Die wichtigsten LaTeX-Mathematikbefehle können beispielsweise hier
+nachgeschlagen werden:
+<a href="http://web.ift.uib.no/Teori/KURS/WRK/TeX/symALL.html">LaTeX-Symbole</a>.</p>
+<p>Die Vorschau von Formeln wird im Browser erzeugt, was je nach Umfang
+der Formeln, Browser und Computer mit beträchtlichem Rechenaufwand
+verbunden sein kann. Aus diesem Grund ist die Vorschau standardmäßig
+deaktiviert. Sie kann durch einen Klick auf den &quot;Formelvorschau&quot;-Link in der
+Menüleiste rechts oben aktiviert werden. Damit dies funktioniert, muss
+JavaScript im Browser aktiviert sein.</p>
+<p>DokuForge unterstützt zwei Arten von Formeln – solche im Fließtext und
+solche, die abgesetzt werden.</p>
+<p>Noch ein Hinweis: In Formeln dürfen keine Leerzeilen vorkommen.</p>
 <table  width="80%">
 <tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
+    <td width="40%">Eingabe:</td>
+    <td width="40%">Vorschau:</td>
 </tr>
 <tr>
-	<td valign="top">
-	<span class="tex2jax_ignore">
-	<p>Solange nur $l = c\tau$ sein
-	soll, kann man das im Text schreiben.
-	Die Erkenntnis, dass<br>
-	$$<br>
-	\int\limits_0^{\frac{\pi}{2}} \sin^2(x) +
-	\cos^2(x) \, dx = \frac{\pi}{2}<br>
-	$$<br>
-	ist, kann man dagegen besser in einer
-	abgesetzten Formel vermitteln.</p>
-	</span>
-	</td>
-	<td valign="top">
-	<p>Solange nur $l = c\tau$ sein soll, kann man das im Text schreiben.
-	Die Erkenntnis, dass<br>
-	$$
-	\int\limits_0^{\frac{\pi}{2}} \sin^2(x) +
-	\cos^2(x) \, dx = \frac{\pi}{2}
-	$$
-	ist, kann man dagegen besser in einer
-	abgesetzten Formel vermitteln.</p>
-	</td>
+    <td valign="top">
+    <span class="tex2jax_ignore"><pre>Solange nur $l = c\tau$ sein
+soll, kann man das im Text schreiben.
+Die Erkenntnis, dass
+$$
+\int\limits_0^{\frac{\pi}{2}} \sin^2(x) + \cos^2(x) \, dx = \frac{\pi}{2}
+$$
+ist, kann man dagegen besser in einer
+abgesetzten Formel vermitteln.</pre></span>
+    </td>
+    <td valign="top">
+    <p>Solange nur $l = c\tau$ sein soll, kann man das im Text schreiben.
+    Die Erkenntnis, dass<br>
+    $$
+    \int\limits_0^{\frac{\pi}{2}} \sin^2(x) +
+    \cos^2(x) \, dx = \frac{\pi}{2}
+    $$
+    ist, kann man dagegen besser in einer
+    abgesetzten Formel vermitteln.</p>
+    </td>
 </tr>
 </table>
 
-<p>Noch ein Hinweis: In Formeln dürfen <i>keine</i> Leerzeilen vorkommen.</p>
-
-<h3><a name="macros">Spezielle Zeichen</a></h3>
-
-<p>In der folgenden Tabelle werden einige spezielle Zeichen und ihre Befehle im
-DokuForge-Mathemodus vorgestellt.</p>
-
-<table  width="80%">
-<tr>
-        <td width="40%">Eingabe:</td>
-        <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-        <td valign="top">
-	<span class="tex2jax_ignore">
-	<p>Mengenzeichen: Bitte $\mathbb{R}$, $\mathbb{C}$, usw. verwenden.</p>
-	</span>
-	</td>
-	<td valign="top">
-	<p>Mengenzeichen: Bitte $\mathbb{R}$, $\mathbb{C}$, usw. verwenden.</p>
-	</td>
-</tr>
-</table>
-
-
-
-<h3><a name="align">Ausrichtung mehrzeiliger Formeln</a></h3>
-
-<p>In abgesetzten Formeln ist es auch möglich, Umgebungen für mehrzeilige Mathematik zu nutzen. In einfachen Fällen ist die gather-Umgebung hilfreich. Dabei erzeugt man mit &bdquo;\\&ldquo; jeweils eine neue Zeile.</p>
-
+<h2><a name="mehrzeilig"></a> Ausrichtung mehrzeiliger Formeln</h2>
+<p>In abgesetzten Formeln ist es auch möglich, Umgebungen zu nutzen, die
+Mehrzeiligkeit unterstützen. Meistens ist die align-Umgebung das
+Mittel der Wahl. Dabei werden die Gleichheitszeichen aneinander
+ausgerichtet, indem vor jedes ein <code>&</code> (kaufmännisches &quot;und&quot;) gesetzt
+wird. Zeilenumbrüche werden durch <code>\\</code> erzeugt.</p>
 <table  width="80%">
 <tr>
         <td width="40%">Eingabe:</td>
@@ -106,58 +64,25 @@ DokuForge-Mathemodus vorgestellt.</p>
 </tr>
 <tr>
         <td valign="middle">
-	<span class="tex2jax_ignore">
-$$\begin{gather}<br>
-  (a + b)^2 = a^2 + 2ab + b^2 \\<br>
-  (a - b)^2 = a^2 - 2ab + b^2 \\<br>
-  (a + b)(a - b)= a^2 + ab - ab + b^2<br>
-\end{gather}$$<br>
-	</span>
-	</td>
-	<td valign="middle">
-$$\begin{gather}
-  (a + b)^2 = a^2 + 2ab + b^2 \\
-  (a - b)^2 = a^2 - 2ab + b^2 \\
-  (a + b)(a - b) = a^2 + ab - ab + b^2
-\end{gather}$$
-	</td>
-</tr>
-</table>
-
-<p>Sollen die Gleichheitszeichen aneinander ausgerichtet werden, so ist
-die align-Umgebung das Mittel der Wahl. Dabei muss
-vor jedes dieser Gleichheitszeichen <i>ein</i> kaufmännisches
-&bdquo;Und&ldquo; gesetzt werden.</p>
-
-<table  width="80%">
-<tr>
-        <td width="40%">Eingabe:</td>
-        <td width="40%">Vorschau:</td>
-</tr>
-<tr>
-        <td valign="middle">
-	<span class="tex2jax_ignore">
-$$\begin{align}<br>
-  (a + b)^2      &amp;= a^2 + 2ab + b^2 \\<br>
-  (a - b)^2      &amp;= a^2 - 2ab + b^2 \\<br>
-  (a + b)(a - b) &amp;= a^2 + ab - ab + b^2<br>
-\end{align}$$<br>
-	</span>
+    <span class="tex2jax_ignore"><pre>$$\begin{align}
+  (a + b)^2      &amp;= a^2 + 2ab + b^2 \\
+  (a - b)^2      &amp;= a^2 - 2ab + b^2 \\
+  (a + b)(a - b) &amp;= a^2 + ab - ab - b^2
+\end{align}$$</pre></span>
         </td>
         <td valign="middle">
 $$\begin{align}
   (a + b)^2      &amp;= a^2 + 2ab + b^2 \\
   (a - b)^2      &amp;= a^2 - 2ab + b^2 \\
-  (a + b)(a - b) &amp;= a^2 + ab - ab + b^2
+  (a + b)(a - b) &amp;= a^2 + ab - ab - b^2
 \end{align}$$
         </td>
 </tr>
 </table>
 
-<p>Jede Zeile (und damit natürlich auch eine
-alleinstehende Gleichung) kann mit Hilfe von \label{...}
-am Ende der Zeile mit einem &bdquo;Label&ldquo; versehen werden:</p>
-
+<p>Jede Zeile (und damit natürlich auch eine alleinstehende Gleichung)
+kann mit Hilfe von <code>\label{sinnvollerName}</code> am Ende der Zeile mit einem Label
+versehen werden.</p>
 <table  width="80%">
 <tr>
         <td width="40%">Eingabe:</td>
@@ -165,14 +90,12 @@ am Ende der Zeile mit einem &bdquo;Label&ldquo; versehen werden:</p>
 </tr>
 <tr>
         <td valign="middle">
-	<span class="tex2jax_ignore">
-$$\begin{align}<br>
- \int_0^1 3x^2 + 2x \, dx<br>
-     &= \left. x^3 + x^2 \right|_0^1                    \\<br>
-     &= 1 + 1                        \label{oneplusone} \\<br>
-     &= 2                            \label{equals}<br>
-\end{align}$$<br>
-	</span>
+    <span class="tex2jax_ignore"><pre>$$\begin{align}
+ \int_0^1 3x^2 + 2x \, dx
+     &= \left. x^3 + x^2 \right|_0^1                    \\
+     &= 1 + 1                        \label{oneplusone} \\
+     &= 2                            \label{equals}
+\end{align}$$</pre></span>
         </td>
         <td valign="middle">
 $$\begin{align}
@@ -185,62 +108,31 @@ $$\begin{align}
 </tr>
 </table>
 
-<p>Auf dieses &bdquo;Label&ldquo; kann man später im Text verweisen:
-Wie man in Gleichung EQ:equals sieht, ist ...</p>
+<p>Auf dieses Label kann man später im Text verweisen: <code>Wie man in
+Gleichung EQ:equals sieht, ...</code></p>
+<h2><a name="def_satz_bew"></a> Definitionen, Sätze und Beweise</h2>
+<p>Um Definitionen, Sätze oder Beweise einzugeben, verwenden wir
+folgende Syntax:
+<pre>{DEF}
+Das ist eine Defintion.
+{END}
 
-<h3><a name="satz">Beweis und Satz</a></h3>
-
-<table  width="80%">
-<tr>
-	<td width="40%">Eingabe:</td>
-	<td width="40%">Vorschau:</td>
-</tr>
-<tr>
-	<td valign="middle">
-<p>Mathematiker lieben es, ihre Dokumentationen in sturer Einfallslosigkeit mit
-Sätzen und Beweisen zu pflastern. Das können wir ihnen leider nicht verweigern
-und haben daher die Syntax</p>
-<p>{SATZ}</p>
-<p>Hier ein Satz</p>
-<p>{END}</p>
-<p>bzw.</p>
-<p>{SATZ}</p>
-<p>Hier noch ein Satz</p>
-<p>{BEWEIS}</p>
-<p>und sein Beweis</p>
-<p>{QED}</p>
-<p>ins Leben gerufen. Falls man auf einen Satz verweisen möchte, kann man ihn mit einem Label versehen:</p>
-<p>{SATZ:gauss}</p>
-<p>Der Satz von Gauß</p>
-<p>{END}</p>
-<p>Im Text kann man dann auf den Satz verweisen: Wie man in SATZ:gauss sieht,
-entspricht der gesamte elektrische Fluss durch eine geschlossene Fläche der
-Ladung innerhalb der Fläche.</p>
-	</td>
-	<td valign="middle">
-<p>Mathematiker lieben es, ihre Dokumentationen in sturer Einfallslosigkeit mit
-Sätzen und Beweisen zu pflastern. Das können wir ihnen leider nicht verweigern
-und haben daher die Syntax</p>
-
-<pre class="ednote"> SATZ</pre>
-<p>Hier ein Satz</p>
-<pre class="ednote"> END</pre>
-<p>bzw.</p>
-<pre class="ednote"> SATZ</pre>
-<p>Hier noch ein Satz</p>
-<pre class="ednote"> BEWEIS</pre>
-<p>und sein Beweis</p>
-<pre class="ednote"> QED</pre>
-<p>ins Leben gerufen. Falls man auf einen Satz verweisen möchte, kann man ihn mit einem Label versehen:</p>
-<pre class="ednote"> SATZ:gauss</pre>
-<p>Der Satz von Gauß</p>
-<pre class="ednote"> END</pre>
-<p>Im Text kann man dann auf den Satz verweisen: Wie man in SATZ:gauss sieht,
-entspricht der gesamte elektrische Fluss durch eine geschlossene Fläche der
-Ladung innerhalb der Fläche.</p>
-	</td>
-</tr>
-</table>
-
-
-    </div>
+{SATZ}
+Hier ist ein Satz.
+{END}
+</pre>
+bzw.
+<pre>
+{SATZ}
+Hier ist noch ein Satz.
+{BEWEIS}
+Und hier ist sein Beweis.
+{QED}</pre>
+Falls man auf einen Satz verweisen möchte, kann man ihn mit einem
+Label versehen:
+<pre>
+{SATZ:gauss}
+Der Satz von Gauß
+<p>{END}</pre>
+<p>Im Text kann man dann auf den Satz verweisen: <code>Wie man in SATZ:gauss
+sieht, ...</code></p></div>

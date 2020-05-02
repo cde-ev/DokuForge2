@@ -73,7 +73,6 @@ class StorageDir:
         if m is None:
             return 0
         return int(m.group(1))
-        
 
     def gettitle(self):
         """
@@ -103,8 +102,8 @@ class StorageDir:
         @param extrafunctions: the dict passed to LazyView is updated with
             this dict
         @rtype: LazyView
-        @returns: a mapping providing the keys name(str) and title(unicode) as
-            well as the keys from extrafunctions
+        @returns: a mapping providing the keys name(bytes) and
+            title(unicode) as well as the keys from extrafunctions
         """
         functions = dict(
             name=lambda:self.name,

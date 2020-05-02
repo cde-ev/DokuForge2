@@ -9,19 +9,23 @@
 {% endblock %}
 {% block content %}
 Teil #{{ page|string }}
-[Version {{commit['revision'] | e }}, 
+[Version {{commit['revision'] | e }},
  zuletzt ge&auml;ndert von {{ commit['author'] | e }}
  am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
 ({{estimate.pages | round(2) | e}} Seiten,
 {{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
 {{estimate.ednotepages | round(2) | e}} Seiten Ednotes)
+<hr>
 {%- if page in course.pages -%}
 {%- set pageindex = course.pages.index(page) %}
-<hr>
+{%- if user.allowedWrite(academy, course) %}
+<a href="{{ buildurl("edit")|e }}">Editieren</a>
+&nbsp;&nbsp;&nbsp;
+{%- endif -%}
 {%- if pageindex > 0 -%}
-<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">Vorheriger Teil</a>
+<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>&nbsp;
 {%- else -%}
-<span class="inactiveNavigation">Vorheriger Teil</span>
+<span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
 {%- endif -%}
 {% for otherpage in course.pages %}
 
@@ -33,11 +37,23 @@ Teil #{{ page|string }}
 {%- endfor -%}
 {% if course.pages[pageindex+1] is defined %}
 
-<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">N&auml;chster Teil</a>
+&nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
 {% else %}
-<span class="inactiveNavigation">N&auml;chster Teil</span>
+&nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
 
 {% endif %}
+<div class="rareCommands">
+<a href="{{ buildurl("rcs")|e }}">rcs</a>
+&nbsp;
+{%- if user.allowedWrite(academy, course) %}
+{%- if page in course.pages -%}
+{{ button(buildurl("delete"), "Löschen", dict()) }}
+{%- else -%}
+{{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
+{%- endif -%}
+{%- endif -%}
+</div>
+
 <hr>
 {% endif %}
 <div class="dokucontent">
@@ -49,10 +65,36 @@ Teil #{{ page|string }}
 
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
-&nbsp;
+&nbsp;&nbsp;&nbsp;
 {%- endif -%}
-<a href="{{ buildurl("rcs")|e }}">rcs</a>
+
+{%- if page in course.pages -%}
+{%- set pageindex = course.pages.index(page) %}
+{%- if pageindex > 0 -%}
+<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>&nbsp;
+{%- else -%}
+<span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
+{%- endif -%}
+{% for otherpage in course.pages %}
+
+{% if otherpage==page -%}
+<b>{{loop.index|e}}</b>
+{%- else -%}
+<a href="{{ buildurl('page', {'page': otherpage})|e }}">{{loop.index|e}}</a>
+{%- endif -%}
+{%- endfor -%}
+{% if course.pages[pageindex+1] is defined %}
+
+&nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
+{% else %}
+&nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
+
+{% endif %}
+{% endif %}
+
 <div class="rareCommands">
+<a href="{{ buildurl("rcs")|e }}">rcs</a>
+&nbsp;
 {%- if user.allowedWrite(academy, course) %}
 {%- if page in course.pages -%}
 {{ button(buildurl("delete"), "Löschen", dict()) }}
