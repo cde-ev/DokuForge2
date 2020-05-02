@@ -1,0 +1,46 @@
+<div class="body">
+<h1>Gedichte und paralleler Text</h1>
+<p>In diesen Fällen bitte die entsprechenden Texte in eine
+Ednote packen, damit alle Zeilenumbrüche erhalten bleiben. Bitte
+verseht dabei eure Gedichte, Dialoge etc. mit Anmerkungen in einer
+Ednote wie im folgenden Beispiel:</p>
+<pre>
+{ Gedicht voraus. Die Einrückung im ersten Vers
+  ist beabsichtigt -- marc 20041227
+}
+
+{ GEDICHT
+
+  R. M. Rilke, Duineser Elegien, 1 (Auszug):
+
+                     Hast du der Gaspara Stampa
+  denn genügend gedacht, daß irgendein Mädchen,
+  dem der Geliebte entging, am gesteigerten Beispiel
+  dieser Liebenden fühlt: daß ich würde wie sie?
+}</pre>
+
+<p>In manchen Fällen mag es sinnvoll sein, Texte zweispaltig parallel zu
+setzen (z.B. bei einem Text und seiner Übersetzung). In diesem Fall erklärt
+uns bitte per ednotes, wie die zwei Teile zusammengehören:
+
+<pre>
+{ Die folgenden zwei Texte bitte nebeneinander setzen.
+
+  Linke Spalte:
+}
+
+Ich bin der Text, der auf der linken Seite steht.
+Dieser Meinung bin ich.
+Ich werde hier übersetzt.
+
+{ Hier kommt die rechte Spalte: }
+
+I am the text on the right side.
+This is my opinion.
+I am the translation
+
+{ Ende der zwei Spalten. Weiter im normalen Fließtext: }
+
+Und hier geht der normale Text weiter.
+</pre>
+</div>

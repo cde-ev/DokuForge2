@@ -160,7 +160,7 @@ class Course(StorageDir):
         @rtype: [int]
         """
         lines = self.getcontent(b"Index", havelock).splitlines()
-        return [int(line.split()[0]) for line in lines if line != ""]
+        return [int(line.split()[0]) for line in lines if line != b""]
 
     def outlinepages(self, havelock=None):
         """
@@ -311,7 +311,7 @@ class Course(StorageDir):
                 newentries = [entries[0]]
                 newentries.extend([x for x in entries[1:] if int(x) != number])
                 newlines.append(b" ".join(newentries))
-            newindex = b"\n".join(newlines) + b"\n"
+            newindex = b"".join(map(b"%s\n".__mod__, newlines))
             indexstore.store(newindex, havelock = gotlock, user = user)
 
     def delpage(self, number, user=None):
@@ -334,7 +334,7 @@ class Course(StorageDir):
                 entries = line.split()
                 if entries and int(entries[0]) != number:
                     newlines.append(line)
-            newindex = b"\n".join(newlines) + b"\n"
+            newindex = b"".join(map(b"%s\n".__mod__, newlines))
             indexstore.store(newindex, havelock = gotlock, user = user)
 
     def swappages(self, position, user=None):
@@ -355,7 +355,7 @@ class Course(StorageDir):
                 tmp = lines[position-1]
                 lines[position-1] = lines[position]
                 lines[position] = tmp
-            newindex = b"\n".join(lines) + b"\n"
+            newindex = b"".join(map(b"%s\n".__mod__, lines))
             indexstore.store(newindex, havelock = gotlock, user = user)
 
     def relink(self, page, user=None):
@@ -384,7 +384,7 @@ class Course(StorageDir):
                         pass # page already present
                     else:
                         lines.append((u"%d" % page).encode("ascii"))
-                        newindex = b"\n".join(lines) + b"\n"
+                        newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex,
                                          user = user)
 
@@ -416,7 +416,7 @@ class Course(StorageDir):
                             pass # want a set-like semantics
                         else:
                             lines[i] += (u" %d" % number).encode("ascii")
-            newindex = b"\n".join(lines) + b"\n"
+            newindex = b"".join(map(b"%s\n".__mod__, lines))
             indexstore.store(newindex, havelock = gotlockindex, user = user)
 
 
@@ -508,7 +508,7 @@ class Course(StorageDir):
                     entries = lines[i].split()
                     if entries and int(entries[0]) == number:
                         lines[i] += (u" %d" % newnumber).encode("ascii")
-                        newindex = b"\n".join(lines) + b"\n"
+                        newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex)
 
         blobbase = (u"blob%d" % newnumber).encode("ascii")
@@ -588,7 +588,7 @@ class Course(StorageDir):
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
-        @returns: a mapping providing the keys: name(str), pages([int]),
+        @returns: a mapping providing the keys: name(bytes), pages([int]),
                 deadpages([int]), title(unicode), outlines([Outline])
         """
         functions = dict(
@@ -630,26 +630,28 @@ class Course(StorageDir):
                 blobbase = (u"blob%d" % b).encode("ascii")
                 blobdate = self.getstorage(blobbase).commitstatus()[b'date']
                 tex += u"\n\n%% blob %d\n" % b
-                tex += u"\\begin{figure}\n\centering\n"
+                tex += u"\\begin{figure}\n\\centering\n"
                 fileName = self._mangleBlobName(blob['filename'])
                 includegraphics = \
                     (u"\\includegraphics" +
                      u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
-                    (self.name, b, fileName)
+                    (self.name.decode('ascii'), b, fileName)
                 if fileName != blob['filename']:
                     tex += (u"%% Original-Dateiname: %s\n" % blob['filename'])
-                if fileName.endswith((".png", ".jpg", ".pdf")):
+                if fileName.lower().endswith((".png", ".jpg", ".pdf")):
                     tex += includegraphics
                 else:
                     tex += (u"%%%s(Binaerdatei \\verb|%s|" +
                             u" nicht als Bild eingebunden)\n") % \
                            (includegraphics, fileName)
-                tex += u"\\caption{%s}\n" % dfCaptionParser(blob['comment']).toTex().strip()
-                tex += u"\\label{fig_%s_%d_%s}\n" % (self.name, b, blob['label'])
+                tex += u"\\caption{%s}\n" % dfCaptionParser(
+                    blob['comment']).toTex().strip()
+                tex += u"\\label{fig_%s_%d_%s}\n" % (
+                    self.name.decode('ascii'), b, blob['label'])
                 tex += u"\\end{figure}\n"
                 yield tarwriter.addChunk(self.name +
                                          (u"/blob_%d_" % b).encode("ascii") +
-                                         bytes(fileName),
+                                         self._mangleBlobName(blob['filename']).encode('utf8'),
                                          blob['data'],
                                          blobdate)
 

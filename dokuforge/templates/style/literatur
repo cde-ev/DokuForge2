@@ -1,174 +1,202 @@
 <div class="body">
-<h2>Literatur</h2>
+<h1>Literatur</h1>
 
-<p>Literaturangaben</p>
-<p><em> Warum Literaturangaben?</em> Literaturangaben sind immer dann notwendig, wenn man ein wörtliches Zitat bzw. einen
-direkten Verweis auf einen Dritten in seinem Text benutzt. Zitate müssen im eigenen Text mit Anführungszeichen
-gekennzeichnet werden. </p>
+<p>Wenn du im Text auf eine Literaturquelle oder eine Internetseite
+verweisen willst, dann geschieht das mit einer Literaturangabe. Das
+gilt auch für Abbildungen, Tabellen und dergleichen, für die du in der
+Doku eine Quelle nennen willst. Dazu gibst du im Text oder der
+Bild-/Tabellenunterschrift an, dass und wie auf eine Quelle verwiesen
+werden soll, und außerdem natürlich die Quelle, siehe unten.</p>
 
-<p><em>In welchem Maß muss bzw. kann Literatur angegeben werden?</em>
-Grundsätzlich müssen Zitate und direkte Verweise im Text mit einer Referenz
-auf das entsprechende Werk und die entsprechende Stelle (meist in Form einer
-Seitenzahl) versehen werden. Alle referenzierten Werke werden im
-Literaturverzeichnis gesammelt, wo sie mit allen Angaben (Autor, Titel,
-Erscheinungsjahr, Verlag, etc.) aufgeführt werden. Oftmals ist es sinnvoll,
-die verwendete, aber nicht direkt zitierte Literatur ebenfalls im
-Literaturverzeichnis anzugeben. Dies erleichtert dem Leser, sich eingehend
-mit den verfassten Texte auseinanderzusetzen, und entspricht guter
-wissenschaftlicher Praxis, ist aber optional.
-</p>
+<h2>Verweis auf Literaturquellen im Text</h2>
 
-<h4><a name="littext">Eingabe der Literaturangaben im Text </a></h4>
-<p> Literaturangaben und Zitatnachweise im Text werden mithilfe eine Kurzform gesetzt,
- die DokuForge signalisiert, welches Buch hier referenziert. Natürlich muss das so zitierte Buch unter
-dieser Kurzform in der Bibliographie (= Literaturverzeichnis) aufgeführt werden, damit es eindeutig zugeordnet
-werden kann. Nach der Kurzform wird alles angegeben, was die zitierte Stelle näher spezifiziert, also meist eine Seitenzahl.
+<p>Wo du im Text auf eine Literaturquelle verweisen willst, fügst du
+ein <code>LITERATUR:kuerzel</code> ein. <code>kuerzel</code> ist dabei
+ein von dir für die Quelle vergebenes Kürzel. Daraus machen wir später
+einen richtigen Literaturverweis, die Vorschau übersetzt das noch
+nicht.</p>
 
-Ein Verweis auf Seite 112 in ein Werk mit dem Kurzform "fischer97" sieht
-folgendermaßen aus (wichtig ist dabei die Auszeichnung "LITERATUR:" die
-verwendet wird um eine Referenz zu kennzeichnen).</p>
+<p>Verweise auf bestimmte Abschnitte, Seiten, Abbildungen etc. in der
+Quelle kannst du einfach dahinter schreiben. Baue den Literaturverweis
+dafür so in den Satz oder in Klammern ein, wie er erscheinen
+soll. Beispiele:</p>
 
-<p style="margin-left: 3em"> "Dies ist ein Zitat eines Werkes."
-(LITERATUR:fischer97 112) </p>
-
-<p>Alle so zitierten Werke müssen auf jeden Fall mit vollständigen Angaben
-(siehe Auflistung unten) an das Ende des jeweiligen Teils gestellt
-werden. Wir werden später je Kurs ein Gesamtverzeichnis erstellen, das am
-Schluss der entsprechenden Kursdoku stehen wird.  Die Angabe zu obigem Zitat
-könnte etwa wie folgt aussehen (beachte die Kurzform "fischer97" am
-Anfang).  </p>
-
-<pre style="margin-left: 3em">
-<table cellspacing="0px">
- <colgroup> 
-  <col width="100">
-  <col width="5">
-  <col width="150">
- </colgroup>
-<tbody>
- <tr><td colspan="3">@BOOK{fischer97, </td></tr>
- <tr> <td width="20%">  title</td><td>=</td> <td>"Lineare Algebra", </td> </tr
- <tr> <td>  author</td><td>=</td> <td>"Fischer, Gerd", </td>  </tr>
- <tr> <td>  year</td><td>=</td> <td>"1997", </td> <td></td></tr>
- <tr> <td>  address</td><td>=</td> <td>"Berlin", </td>  </tr>
- <tr> <td>  publisher </td><td>=</td> <td>"Vieweg Studium", </tr>
- <tr><td colspan="4">} </td></tr>
-</tbody>
+<table width="80%">
+  <tr>
+    <td width="40%">Eingabe und Vorschau:</td>
+    <td width="40%">späteres Ergebnis (nicht in der Vorschau):</td>
+  </tr>
+  <tr>
+    <td>
+      <code>Dazu schreiben Müller et al. LITERATUR:mueller2001 ...</code>
+    </td>
+    <td>
+      Dazu schreiben Müller et al. [1] ...
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>Pinguine leben in der Antarktis LITERATUR:schneider2001 Seite 5.</code>
+    </td>
+    <td>
+      Pinguine leben in der Antarktis [2, Seite 5].
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>Abbildung angepasst aus LITERATUR:kohl02 Abb. 5.</code>
+    </td>
+    <td>
+      Abbildung angepasst aus [3, Abb. 5].
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>Autos sind oft schwarz (vgl. LITERATUR:opel2 LITERATUR:ford88).</code>
+    </td>
+    <td>
+      Autos sind oft schwarz (vgl. [4, 5]).
+    </td>
+  </tr>
 </table>
+
+<p>Bitte vergesse nun zum Schluss nicht, die entsprechend mit dem
+LITERATUR:kuerzel referenzierte Literaturangabe auch zu
+definieren. Füge den entsprechenden Literaturdaten einfach als Ednote
+dazu, wie im folgenden Abschnitt beschrieben.</p>
+
+<h2>Literaturverzeichnis</h2>
+<p>Es genügt nicht, einfach nur zum Beispiel <code>LITERATUR:blackmore2000</code>
+im Text zu verwenden, du musst uns noch verraten, auf
+was <code>LITERATUR:blackmore2000</code> verweist. Dazu fügst du am
+Ende des Abschnitts eine Ednote ein, in der die bibliographischen Angaben zu
+den Quellen stehen. (Für die Profis: Wir verwenden BibLaTeX mit Biber,
+dessen Syntax ist hier in einer Ednote gewünscht.)</p>
+<p>Beispiel:
+<pre>
+{[{LITERATURANGABEN
+
+@BOOK{blackmore2000,
+  title     = "The Meme Machine",
+  author    = "Blackmore, Susan",
+  year      = "2000",
+  address   = "Oxford",
+  publisher = "Oxford Paperbacks",
+}
+}]}
+</pre></p>
+<p>Beachte, dass die Ednote mit <code>{[{</code> geöffnet und mit <code>}]}</code> geschlossen werden muss,
+da die Ednote selbst auch geschweifte Klammern enthält.</p>
+<h2>Beispiele für gebräuchliche Arten von Literaturquellen</h2>
+<p>Hier findest du Beispiele für gängige Arten von Literaturquellen, leere Vorlagen zum Kopieren stehen unten.
+Beachte, dass ab einem Prozentzeichen der Rest der
+Zeile als Kommentar angesehen und ignoriert wird. Die Erläuterungen
+nach den Prozentzeichen, die in den folgenden Beispielen stehen,
+brauchst du daher nicht mitkopieren. </p>
+<p>Im Fall einer Monographie bzw. eines Buches lautet die Syntax:</p>
+<pre>
+{({
+@BOOK{fischer97,                  % Kurzform
+  title      = "Lineare Algebra", % Vollständiger Titel der Monographie
+  author     = "Fischer, Gerd",   % Name der Autoren: Nachname, Vorname (optional)
+  editor     = "Rühmann, Heinz",  % Editor des Werkes: Nachname, Vorname (optional)
+  translator = "Braun, Wilhelm",  % Übersetzer des Werkes
+  year       = "1997",            % Veröffentlichungsjahr
+  address    = "Berlin",          % Ort der Veröffentlichung
+  publisher  = "Vieweg Studium",  % Verlag (optional)
+}
+})}
 </pre>
 
-<h4><a name="litsatz">Eingabe der Literaturdaten </a></h4>
-<p> Die Angaben für das Literaturverzeichnis werden in eine Ednote gesetzt, wobei dafür idealerweise eine Seite am Ende des
-jeweiligen Kurses angelegt wird. Dort wird dann die gesamte Literatur des Kurses gesammelt. Im Literaturverzeichnis
-kann die Literatur auch wahlweise getrennt pro Kurskapitel angegeben werden. Das Literaturverzeichnis baut
-ihr in der folgenden Form in eine Ednote ein: </p>
-<ul><p><pre>
-{({ LITERATUR
-
- Hier stehen die Literaturangaben...
-
+<p>Im Fall eines Artikels in einer Zeitschrift bzw. einem Journal lautet
+die Syntax (bei Zeitungsartikeln bitte das vollständige Datum
+angeben):</p>
+<pre>
+{[{
+@ARTICLE{heisenbergDeutung,                                % Kurzform
+  author  = "Heisenberg, Werner and Bohr, Niels",          % Name der Autoren: Nachname, Vorname
+  title   = "Die Kopenhagener Deutung der Quantentheorie", % Vollständiger Titel des Artikels
+  journal = "Physik und Philosophie",                      % Name des Journals, in dem der Artikel veröffentlicht wurde
+  volume  = "12",                                          % Nummer des Jahrgangs/Journals
+  year    = "1990",                                        % Veröffentlichungsjahr
+  pages   = "27--42",                                      % Seitenumfang im Journal
+}
 })}
-</pre></p></ul>
-<!-- Die Literatureingabe erfolgt direkt im (zugegebenermaßen) etwas kryptischen BibLaTeX-Stil.
-(dieser sollte aber soweit verständlich sein).-->
-<p>
-Die entsprechenden Literaturangaben werden folgendermaßen umgesetzt, hier am Beispiel von verschiedenen häufig vorkommenden
-Publikationsformen. (Für die Erfahrenen sei gesagt, dass zum Satz BibLaTeX verwendet wird.) <!--Für viele Referenzen
-gibt es bereits vorgefertigte Vorlagen, die man natürlich verwenden kann.--> Die Angabe in der ersten Zeile ist die eindeutige
-Kurzform, die für Verweise im Text verwendet wird. Mehrere Autoren werden mit einem "and" verknüfpt.</p>
+</pre>
 
-<ul><li><p> Im Fall einer Monographie/Buch lautet die Syntax:</p>
-<p><pre>
-<table cellspacing="0px">
- <colgroup> 
-  <col width="100">
-  <col width="5">
-  <col width="150">
-  <col width="100">
- </colgroup>
-<tbody>
- <tr><td colspan="4">@BOOK{fischer97, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  title</td><td>=</td> <td>"Lineare Algebra", </td> <td></td> <td>"Vollständiger Titel der Monographie" </td> </tr
- <tr> <td>  author</td><td>=</td> <td>"Fischer, Gerd", </td> <td></td> <td>"Name der Autoren: Nachname, Vorname" </td> </tr>
- <tr> <td>  editor</td><td>=</td> <td>"Rühmann, Heinz", </td> <td>  %% optional %%  </td> <td>"Editor des Werkes: Nachname, Vorname" </td> </tr>
- <tr> <td>  translator</td><td>=</td> <td>"Braun,Wilhelm", </td> <td>  %% optional %%  </td> <td>"Übersetzer des Werkes" </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1997", </td> <td></td> <td>"Veröffentlichungsjahr" </td> </tr>
- <tr> <td>  address</td><td>=</td> <td>"Berlin", </td> <td></td> <td>"Ort der Veröffentlichung" </td> </tr>
- <tr> <td>  publisher</td><td>=</td> <td>"Vieweg Studium", </td> <td>  %% optional %%  </td> <td>"Verlag" </td> </tr>
- <tr><td colspan="4">} </td></tr>
-</tbody>
-</table>
-</pre></p></li></ul>
+<p>Im Fall eines Aufsatzes in einem Sammelwerk (hierunter fallen auch
+Artikel in Lexika) lautet die Syntax:</p>
+<pre>
+{[{
+@INCOLLECTION{brodersen,                             % Kurzform
+  author    = "Brodersen, Kai",                      % Name der Autoren: Nachname, Vorname
+  title     = "Gebet und Fluch, Zeichen und Traum.", % Titel des Aufsatzes
+  editor    = "Brodersen, Kai",                      % Name der Herausgeber: Nachname, Vorname
+  booktitle = "Briefe in die Unterwelt.",            % Name des Sammelwerkes/Lexikons
+  address   = "Münster",                             % Ort der Veröffentlichung
+  year      = "1990",                                % Jahr der Veröffentlichung
+  pages     = "27--42",                              % Seitenumfang im Sammelwerk
+}
+})}
+</pre>
 
-<ul><li><p> Im Fall eines Artikels in einer Zeitschrift/Journal lautet die Syntax (bei Zeitungsartikeln bitte das
-vollständige Datum angeben):</p>
-<p><pre>
-<table cellspacing="0px">
- <colgroup> 
-  <col width="100">
-  <col width="5">
-  <col width="150">
-  <col width="100">
- </colgroup>
-<tbody>
- <tr><td colspan="3">@ARTICLE{heisenbergDeutung, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  author</td><td>=</td> <td>"Heisenberg, Werner and Bohr, Niels", </td> <td>"Name der Autoren: Nachname, Vorname" </td> </tr>
- <tr> <td>  title</td><td>=</td> <td>"Die Kopenhagener Deutung der Quantentheorie", </td> <td>"Vollständiger Titel des Artikels" </td> </tr>
- <tr> <td>  journal</td><td>=</td> <td>"Physik und Philosophie", </td> <td>"Name des Journals, in dem der Artikel veröffentlicht wurde" </td> </tr>
- <tr> <td>  volume</td><td>=</td> <td>"12", </td> <td>"Nummer des Jahrgangs/Journals" </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>"Veröffentlichungsjahr" </td> </tr>
- <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>"Seitenumfang im Journal" </td> </tr>
- <tr><td colspan="4">} </td></tr>
-</tbody>
-</table>
-</pre></p></li></ul>
+<p>Im Fall einer URL bzw. Internetreferenz lautet die Syntax:</p>
+<pre>
+{[{
+@BOOKLET{mpgBericht,                                          % Kurzform
+  url     = "http://www.mpg.de/180882/Jahresbericht",         % Internetadresse
+  urldate = "2012-07-02",                                     % Datum des Abrufes: YYYY-MM-DD
+  title   = "Jahresbericht der Max-Planck-Gesellschaft 2010", % Titel der Internetreferenz
+  author  = "Max-Planck-Gesellschaft",                        % Namen der Autoren (optional)
+}
+})}
+</pre>
 
-<ul><li><p> Im Fall eines Aufsatzes in einem Sammelwerk (hierunter fallen auch Artikel in Lexika)
-lautet die Syntax:</p>
-<p><pre>
-<table cellspacing="0px">
- <colgroup> 
-  <col width="100">
-  <col width="5">
-  <col width="150">
-  <col width="100">
- </colgroup>
-<tbody>
- <tr><td colspan="3">@INCOLLECTION{brodersen, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  author</td><td>=</td> <td>"Brodersen, Kai", </td> <td>"Name der Autoren: Nachname, Vorname" </td> </tr>
- <tr> <td>  title</td><td>=</td> <td>"Gebet und Fluch, Zeichen und Traum.", </td> <td>"Titel des Aufsatzes" </td> </tr>
- <tr> <td>  editor</td><td>=</td> <td>"Brodersen, Kai", </td> <td>"Name der Herausgeber: Nachname, Vorname" </td> </tr>
- <tr> <td>  booktitle</td><td>=</td> <td>"Briefe in die Unterwelt.", </td> <td>"Name des Sammelwerkes/Lexikons" </td> </tr>
- <tr> <td>  address</td><td>=</td> <td>"Münster", </td> <td>"Ort der Veröffentlichung" </td> </tr>
- <tr> <td>  year</td><td>=</td> <td>"1990", </td> <td>"Jahr der Veröffentlichung" </td> </tr>
- <tr> <td>  pages</td><td>=</td> <td>"27--42", </td> <td>"Seitenumfang im Sammelwerk" </td> </tr>
- <tr><td colspan="4">} </td></tr>
-</tbody>
-</table>
-</pre></p></li></ul>
+<p>Die Beispiele dienen zur Illustration der Verwendung der
+Literaturangaben. In der Kürze ist es natürlich nicht möglich, alle
+Spezialfälle abzudecken. Wenn du eine Literaturangabe hast, die du
+in keines der oben genannten Schemata packen kannst, dann schreib die
+fertig formatierte Literaturangabe in eine eigene Ednote. Um die
+endgültige Formatierung kümmern wir uns dann in der Redaktion.</p></div>
 
-<ul><li><p> Im Fall einer URL bzw. Internetreferenz lautet die Syntax:</p>
-<p><pre>
-<table cellspacing="0px">
- <colgroup> 
-  <col width="100">
-  <col width="5">
-  <col width="150">
-  <col width="100">
- </colgroup>
-<tbody>
- <tr><td colspan="4">@BOOKLET{mpgBericht, </td> <td>"Kurzform"</td></tr>
- <tr> <td>  url</td><td>=</td> <td>"http://www.mpg.de/180882/Jahresbericht", </td> <td> </td> <td>"Internetadresse" </td> </tr>
- <tr> <td>  urldate</td><td>=</td> <td>"2012-07-02", </td> <td></td> <td> "Datum des Abrufes: YYYY-MM-DD" </td>  </tr>
- <tr> <td>  tile</td><td>=</td> <td>"Jahresbericht der Max-Planck-Gesellschaft 2010", </td> <td> </td> <td>"Titel der Internetreferenz" </td> </tr>
- <tr> <td>  author</td><td>=</td> <td>"Max-Planck-Gesellschaft", </td> <td>%% optional %% </td> <td>"Namen der Autoren" </td> </tr>
- <tr><td colspan="4">} </td></tr>
-</tbody>
-</table>
-</pre></p></li></ul>
+<h2>Vorlagen zum Kopieren</h2>
+Nicht zutreffende Felder bitte löschen.
+<pre>
+{[{
+@BOOK{fischer97,
+  title      = "",
+  author     = "",
+  editor     = "",
+  translator = "",
+  year       = "",
+  address    = "",
+  publisher  = "",
+}
 
-<p> Die obigen Beispiele dienen zur Illustration der Verwendung der Literaturangaben. In der Kürze ist es natürlich
-nicht möglich, alle Spezialfälle abzudecken. Wenn ihr eine Literaturangabe habt, die ihr in keines der oben genannten
-Schemata packen könnt, dann schreibt die fertig formatierte Literaturangabe in eine eigene Ednote. Um die endgültige
-Formatierung kümmern wir uns dann in der Redaktion.</p>
-</div>
+@ARTICLE{heisenbergDeutung,
+  author  = "",
+  title   = "",
+  journal = "",
+  volume  = "",
+  year    = "",
+  pages   = "",
+}
+
+@INCOLLECTION{brodersen,
+  author    = "",
+  title     = "",
+  editor    = "",
+  booktitle = "",
+  address   = "",
+  year      = "",
+  pages     = "",
+}
+
+@BOOKLET{mpgBericht,
+  url     = "",
+  urldate = "",
+  title   = "",
+  author  = "",
+}
+})}
+</pre>

@@ -31,6 +31,12 @@ except AttributeError:
     def Upload(filename):
         return (filename,)
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
+
 teststrings = [
     (u"simple string", u"simple string"),
     (u"some chars <>/& here", u"some chars &lt;&gt;/&amp; here"),
@@ -228,11 +234,13 @@ permissions = df_meta True,akademie_meta_aca123 False
 
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
+    size = None
+
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
         self.pathconfig = PathConfig()
         self.pathconfig.rootdir = self.tmpdir
-        createexample.main(size=1, pc=self.pathconfig)
+        createexample.main(size=self.size, pc=self.pathconfig)
         app = buildapp(self.pathconfig)
         app = validator(app)
         self.app = webtest.TestApp(app)
@@ -255,6 +263,20 @@ class DokuforgeWebTests(DfTestCase):
 
     def is_loggedin(self):
         self.res.mustcontain("/logout")
+
+class DokuforgeBigWebTests(DokuforgeWebTests):
+    size = 100
+
+    def testCourseLessPrivileged(self):
+        self.do_login(username="arthur", password="mypass")
+        self.res = self.res.click(description="Beste Akademie ever")
+        self.res.mustcontain("Helenistische Heldenideale")
+        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res.mustcontain("Example Section")
+        self.is_loggedin()
+
+class DokuforgeSmallWebTests(DokuforgeWebTests):
+    size = 1
 
     def testLogin(self):
         self.do_login()
@@ -283,7 +305,7 @@ class DokuforgeWebTests(DfTestCase):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.is_loggedin()
-        self.res.mustcontain("Exportieren")
+        self.res.mustcontain("Export")
 
     def testCourse(self):
         self.do_login()
@@ -306,7 +328,7 @@ class DokuforgeWebTests(DfTestCase):
         self.res = self.res.click(href=re.compile("course01/$"))
         self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
         for (inputstr, outputstr) in teststrings:
-            self.res = self.res.click(description="Editieren")
+            self.res = self.res.click(description="Editieren", index=0)
             form = self.res.forms[1]
             form["content"] = inputstr
             self.res = form.submit(name="saveshow")
@@ -318,7 +340,7 @@ class DokuforgeWebTests(DfTestCase):
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
         self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(description="Editieren")
+        self.res = self.res.click(description="Editieren", index=1)
         form = self.res.forms[1]
         form["content"] = \
 """[Section]
@@ -516,45 +538,51 @@ permissions = df_superadmin True,df_admin True
     def testStyleguide(self):
         self.res = self.app.get("/")
         self.res = self.res.click(href=re.compile("/style/$"))
-        self.res.mustcontain("Richtlinien für die Erstellung der Dokumentation")
-        self.res = self.res.click(href=re.compile("/style/intro$"))
-        self.res.mustcontain(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/hilfe$"))
-        self.res.mustcontain("Ein kurzer Leitfaden für die Benutzung von DokuForge")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
+        self.res.mustcontain("Hier erfährst du, was bei der Eingabe der Texte in DokuForge")
         self.res = self.res.click(href=re.compile("/style/grundlagen$"))
-        self.res.mustcontain("Grundlagen von DokuForge")
+        self.res.mustcontain("Bedienung von DokuForge")
         self.res = self.res.click(href=re.compile("/style/$"), index=0)
         self.res = self.res.click(href=re.compile("/style/abbildungen$"))
-        self.res.mustcontain(u"Wie werden Abbildungen in DokuForge eingefügt?")
+        self.res.mustcontain(u"Abbildungen")
         self.res = self.res.click(href=re.compile("/style/$"), index=0)
         self.res = self.res.click(href=re.compile("/style/mathe$"))
-        self.res.mustcontain("Wie werden Formeln gesetzt?")
+        self.res.mustcontain("Mathematik-Umgebung")
         self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/spezielles$"))
-        self.res.mustcontain(u"Sondersonderwünsche")
+        self.res = self.res.click(href=re.compile("/style/gedichte$"))
+        self.res.mustcontain(u"Gedichte")
+        self.res = self.res.click(href=re.compile("/style/$"), index=0)
+        self.res = self.res.click(href=re.compile("/style/literatur$"))
+        self.res.mustcontain(u"Literatur")
+        self.res = self.res.click(href=re.compile("/style/$"), index=0)
+        self.res = self.res.click(href=re.compile("/style/tabellen$"))
+        self.res.mustcontain(u"Tabellen")
+        self.res = self.res.click(href=re.compile("/style/$"), index=0)
+        self.res = self.res.click(href=re.compile("/style/konflikte$"))
+        self.res.mustcontain(u"Konflikte")
         self.res = self.res.click(description="Login")
         self.do_login()
         self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res.mustcontain("Richtlinien für die Erstellung der Dokumentation")
-        self.res = self.res.click(href=re.compile("/style/intro$"))
-        self.res.mustcontain(u"Über die Geschichte, den Sinn und die Philosophie von DokuForge")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/hilfe$"))
-        self.res.mustcontain("Ein kurzer Leitfaden für die Benutzung von DokuForge")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
+        self.res.mustcontain("Hier erfährst du, was bei der Eingabe der Texte in DokuForge")
         self.res = self.res.click(href=re.compile("/style/grundlagen$"))
-        self.res.mustcontain("Grundlagen von DokuForge")
+        self.res.mustcontain("Bedienung von DokuForge")
         self.res = self.res.click(href=re.compile("/style/$"), index=0)
         self.res = self.res.click(href=re.compile("/style/abbildungen$"))
-        self.res.mustcontain(u"Wie werden Abbildungen in DokuForge eingefügt?")
+        self.res.mustcontain(u"Abbildungen")
         self.res = self.res.click(href=re.compile("/style/$"), index=0)
         self.res = self.res.click(href=re.compile("/style/mathe$"))
-        self.res.mustcontain("Wie werden Formeln gesetzt?")
+        self.res.mustcontain("Mathematik-Umgebung")
         self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/spezielles$"))
-        self.res.mustcontain(u"Sondersonderwünsche")
+        self.res = self.res.click(href=re.compile("/style/gedichte$"))
+        self.res.mustcontain(u"Gedichte")
+        self.res = self.res.click(href=re.compile("/style/$"), index=0)
+        self.res = self.res.click(href=re.compile("/style/literatur$"))
+        self.res.mustcontain(u"Literatur")
+        self.res = self.res.click(href=re.compile("/style/$"), index=0)
+        self.res = self.res.click(href=re.compile("/style/tabellen$"))
+        self.res.mustcontain(u"Tabellen")
+        self.res = self.res.click(href=re.compile("/style/$"), index=0)
+        self.res = self.res.click(href=re.compile("/style/konflikte$"))
+        self.res.mustcontain(u"Konflikte")
         self.is_loggedin()
 
     def testAddBlob(self):
@@ -591,7 +619,7 @@ permissions = df_superadmin True,df_admin True
                                      'fig_platzhalter2.PNG'  : 'fig_platzhalter2.png' ,
                                      'Fuzzi-Hut-Logo2.PDF'   : 'Fuzzi-Hut-Logo2.pdf'   }
 
-        imageFilenames = imageFilenamesUnchanged + imageFilenamesToBeChanged.keys()
+        imageFilenames = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.keys())
 
         self.do_login()
         os.chdir('testData')
@@ -611,10 +639,11 @@ permissions = df_superadmin True,df_admin True
             counter = counter+1
         os.chdir('..')
 
-        expectedFilenamesInExport = imageFilenamesUnchanged + imageFilenamesToBeChanged.values()
+        expectedFilenamesInExport = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.values())
 
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(description="Exportieren")
+        #self.res = self.res.click(description="Exportieren")
+        self.res = self.res.click(description="Export")
         tarFile = tarfile.open(mode='r',fileobj=io.BytesIO(self.res.body))
         memberNames = tarFile.getnames()
         filenamesInExport = []
@@ -708,7 +737,7 @@ permissions = df_superadmin True,df_admin True
         form["content"] = Upload("README-rlog.txt")
         self.res = form.submit()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
-        form = self.res.forms[2]
+        form = self.res.forms[3]
         self.res = form.submit()
         self.res.mustcontain("Keine Bilder zu diesem Teil gefunden.",
                              no="#[0] (README-rlog.txt)")
@@ -727,7 +756,7 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
         self.res = form.submit()
-        form = self.res.forms[2]
+        form = self.res.forms[3]
         self.res = form.submit()
         self.res.mustcontain("Keine Bilder zu diesem Teil gefunden.",
                              no="#[0] (README-rlog.txt)")
@@ -755,7 +784,7 @@ permissions = df_superadmin True,df_admin True
     def testAcademyExport(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(description="Exportieren")
+        self.res = self.res.click(description="Export")
         self.assertIsTarGz(self.res.body)
 
     def testRawCourseExport(self):
@@ -770,9 +799,24 @@ permissions = df_superadmin True,df_admin True
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
         self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(description="rcs")
+        self.res = self.res.click(description="rcs", index=0)
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.res.body.startswith(b"head"))
+
+    def testPartDeletion(self):
+        self.do_login()
+        self.res = self.res.click(description="X-Akademie")
+        self.res.mustcontain("Area51")
+        self.res = self.res.click(href=re.compile("/.*createcourse$"))
+        form = self.res.forms[1]
+        form["name"] = "bug"
+        form["title"] = "bug"
+        self.res = form.submit()
+        self.res.mustcontain("Area51", "bug")
+        self.res = self.res.click(href=re.compile("/bug/$"))
+        self.res = self.res.forms[1].submit() # create new part
+        self.res = self.res.click(href=re.compile("/bug/0/$"), index=0)
+        self.res = self.res.forms[1].submit() # delete only part
 
 class CourseTests(DfTestCase):
     def setUp(self):
