@@ -576,13 +576,13 @@ tilde = Escaper(u'~', TerminalString(u'\\@~'))
 
 spacedUTF8ellipsis = Escaper(u' …', TerminalString(u'~\\@\\dots{}'))
 
-UTF8ellipsis = Escaper(u'…', TerminalString(u'\\@\\dots{}'))
+utf8ellipsis = Escaper(u'…', TerminalString(u'\\@\\dots{}'))
 
-UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
+utf8endash = Escaper(u'–', TerminalString(u'\\@--'))
 
-UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
+utf8emdash = Escaper(u'—', TerminalString(u'\\@---'))
 
-UTF8SingleQuotes = Escapers((u'‚', u'‘', u'’', u'‹', u'›'),
+utf8SingleQuotes = Escapers((u'‚', u'‘', u'’', u'‹', u'›'),
                             TerminalString(u'\\@\''))
 
 nonStandardSpace = Escapers((u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ',
@@ -793,15 +793,15 @@ def defaultMicrotype(text):
                 lawReferences, numberSpacing, formatDashes,
                 # ellipses with and without spacing before splitting at spaces
                 bracketEllipsis, spacedEllipsis, ellipsis,
-                spacedUTF8ellipsis, UTF8ellipsis,
+                spacedUTF8ellipsis, utf8ellipsis,
                 lonelyOpenQuotationMark, lonelyCloseQuotationMark,
                 ## no splitting at ' ' before the previous features
                 SplitSeparators(separators[0]), # separator ' ' only
                 percent, ampersand, hashmark, quote, leftCurlyBracket,
                 rightCurlyBracket, caret, tilde,
                 spaceMultipartStandardAbbreviations,
-                UTF8endash, UTF8emdash,
-                UTF8SingleQuotes,
+                utf8endash, utf8emdash,
+                utf8SingleQuotes,
                 nonStandardSpace,
                 # fullStop after ellipsis and spaceMultipartStandardAbbreviations
                 fullStop, naturalNumbers,
