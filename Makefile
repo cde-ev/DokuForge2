@@ -29,6 +29,10 @@ test-exported-strings:
 		$$py -m unittest test.DokuforgeParserUnitTests test.DokuforgeMicrotypeUnitTests test.DokuforgeTitleParserTests test.DokuforgeCaptionParserTests ;\
 	done
 
+test-exporter: test-exported-strings
+	for py in python2 python3 ; do\
+		$$py -m unittest test.DokuforgeExporterTests ;\
+	done
 
 .coverage:$(wildcard dokuforge/*.py) test.py
 	${PYTHON3} -m coverage -x test.py
