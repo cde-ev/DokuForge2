@@ -133,7 +133,6 @@ class Escaper:
     def __call__(self, word):
         return intersperse(word.split(self.sequence), self.escaped)
 
-
 def acronym(word):
     """
     All-capital words should be displayed in smaller font.
@@ -575,9 +574,12 @@ UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
 
 UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
 
-UTF8SingleQuotes = [ Escaper(q, TerminalString(u'\\@\'')) for q in (u'‚', u'‘', u'’', u'‹', u'›') ]
+UTF8SingleQuotes = [Escaper(q, TerminalString(u'\\@\''))
+                    for q in (u'‚', u'‘', u'’', u'‹', u'›')]
 
-NonStandardSpace = [ Escaper(q, TerminalString(u'\\@ ')) for q in (u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ', u'​', u' ', u' ', u'﻿') ]
+NonStandardSpace = [Escaper(q, TerminalString(u'\\@ '))
+                    for q in (u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ',
+                              u' ', u' ', u' ', u' ', u'​', u' ', u' ', u'﻿')]
 
 def formatCode(word):
     """
