@@ -133,6 +133,14 @@ class Escaper:
     def __call__(self, word):
         return intersperse(word.split(self.sequence), self.escaped)
 
+class Escapers:
+    def __init__(self, sequences, escaped):
+        self.pattern = re.compile('|'.join(sequences))
+        self.escaped = escaped
+
+    def __call__(self, word):
+        return intersperse(self.pattern.split(word), self.escaped)
+
 def acronym(word):
     """
     All-capital words should be displayed in smaller font.
@@ -574,12 +582,12 @@ UTF8endash = Escaper(u'–', TerminalString(u'\\@--'))
 
 UTF8emdash = Escaper(u'—', TerminalString(u'\\@---'))
 
-UTF8SingleQuotes = [Escaper(q, TerminalString(u'\\@\''))
-                    for q in (u'‚', u'‘', u'’', u'‹', u'›')]
+UTF8SingleQuotes = Escapers((u'‚', u'‘', u'’', u'‹', u'›'),
+                            TerminalString(u'\\@\''))
 
-NonStandardSpace = [Escaper(q, TerminalString(u'\\@ '))
-                    for q in (u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ',
-                              u' ', u' ', u' ', u' ', u'​', u' ', u' ', u'﻿')]
+nonStandardSpace = Escapers((u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ',
+                              u' ', u' ', u' ', u' ', u'​', u' ', u' ', u'﻿'),
+                            TerminalString(u'\\@ '))
 
 def formatCode(word):
     """
@@ -792,10 +800,10 @@ def defaultMicrotype(text):
                 percent, ampersand, hashmark, quote, leftCurlyBracket,
                 rightCurlyBracket, caret, tilde,
                 spaceMultipartStandardAbbreviations,
-                UTF8endash, UTF8emdash ] + \
-                UTF8SingleQuotes + \
-                NonStandardSpace + \
-              [ # fullStop after ellipsis and spaceMultipartStandardAbbreviations
+                UTF8endash, UTF8emdash,
+                UTF8SingleQuotes,
+                nonStandardSpace,
+                # fullStop after ellipsis and spaceMultipartStandardAbbreviations
                 fullStop, naturalNumbers,
                 ## no splitting at '-' before numbers
                 SplitSeparators(separators[-1]), # separator '-' only
