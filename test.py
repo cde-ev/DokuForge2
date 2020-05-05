@@ -1232,6 +1232,39 @@ class ExporterTestStrings:
     codeAndLengthyParagraph = [ [u'Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet\nlirem ipsum dolor sit amet lorem ipsum dolor sit amet\nlurem ipsum dolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so weiter.',
                                  u'Larem ipsum dolor sit amet \\@\\lstinline|rhoncus| lerem ipsum dolor sit\namet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum\ndolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so\nweiter.'] ]
 
+    lengthyParagraph = [ [u"""Zwei lange Absätze, aber durch Leerzeile getrennt. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+
+Da brauchen wir keinen Hinweis. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.""",
+                          u"""Zwei lange Absätze, aber durch Leerzeile getrennt. Franz jagt im
+komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
+jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
+fume.
+
+Da brauchen wir keinen Hinweis. Franz jagt im komplett verwahrlosten
+Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog.
+Portez ce vieux whisky au juge blond qui fume."""],
+
+                         [u"""Drei kurze Zeilen, jeweils ohne Leerzeilen dazwischen.
+Falsches Üben von Xylophonmusik quält jeden größeren Zwerg.
+Da brauchen wir auch keinen Hinweis.""",
+                          u"""Drei kurze Zeilen, jeweils ohne Leerzeilen dazwischen. Falsches Üben
+von Xylophonmusik quält jeden größeren Zwerg. Da brauchen wir auch
+keinen Hinweis."""],
+
+                         [u"""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.""",
+                          u"""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im
+komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
+jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
+fume.\@\@\@ Das sieht verdächtig aus. Franz jagt im komplett
+verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
+the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
+Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi
+quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez
+ce vieux whisky au juge blond qui fume."""] ]
+
+
     ednoteEscape = [ [u"""before
 
 {{
@@ -1287,7 +1320,8 @@ class ExporterTestCases:
                   [ ExporterTestStrings.itemizeAndCo,
                     ExporterTestStrings.code,
                     ExporterTestStrings.ednoteEscape,
-                    ExporterTestStrings.codeAndLengthyParagraph  ]
+                    ExporterTestStrings.codeAndLengthyParagraph,
+                    ExporterTestStrings.lengthyParagraph ]
 
     lineGroupTests = testsInText + \
                      [ ExporterTestStrings.sectionsAndAuthors,
