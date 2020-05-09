@@ -26,12 +26,12 @@ test: test.py
 # only test exporting of text (microtypography, titles etc.)
 test-exported-strings:
 	for py in python2 python3 ; do\
-		$$py -m unittest test.DokuforgeParserUnitTests test.DokuforgeMicrotypeUnitTests test.DokuforgeTitleParserTests test.DokuforgeCaptionParserTests ;\
+		$$py test.py DokuforgeParserUnitTests DokuforgeMicrotypeUnitTests DokuforgeTitleParserTests DokuforgeCaptionParserTests ;\
 	done
 
 test-exporter: test-exported-strings
 	for py in python2 python3 ; do\
-		$$py -m unittest test.DokuforgeExporterTests ;\
+		$$py test.py DokuforgeExporterTests ;\
 	done
 
 .coverage:$(wildcard dokuforge/*.py) test.py
