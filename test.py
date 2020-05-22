@@ -753,11 +753,38 @@ permissions = df_superadmin True,df_admin True
         self.res = self.res.forms[1].submit() # delete only part
 
 class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
+
+    def _getExportAsTar(self):
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(description="Export")
+        tarFile = tarfile.open(mode='r', fileobj=io.BytesIO(self.res.body))
+        return tarFile
+
     def testAcademyExport(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(description="Export")
         self.assertIsTarGz(self.res.body)
+
+    def testExpectedFilesExist(self):
+        self.do_login()
+        tarFile = self._getExportAsTar()
+        expectedMembers = ['texexport_xa2011-1/WARNING',
+                           'texexport_xa2011-1/course01/chap.tex',
+                           'texexport_xa2011-1/course02/chap.tex',
+                           'texexport_xa2011-1/contents.tex']
+        memberNames = tarFile.getnames()
+        for filename in expectedMembers:
+            self.assertTrue(filename in memberNames)
+
+    def testExpectedInfrastructureFileContents(self):
+        self.do_login()
+        tarFile = self._getExportAsTar()
+        warningText = tarFile.extractfile("texexport_xa2011-1/WARNING").read().decode()
+        self.assertGreater(len(warningText), 50)
+        contentsText = tarFile.extractfile("texexport_xa2011-1/contents.tex").read().decode()
+        self.assertTrue(r"\input{course01/chap}" in contentsText)
+        self.assertTrue(r"\input{course02/chap}" in contentsText)
 
     def testAddDifferentImageBlobs(self):
         imageFilenamesUnchanged = ['fig_platzhalter.jpg',
@@ -780,7 +807,6 @@ class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
         imageFilenames = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.keys())
 
         def _addImagesToCourse01():
-            self.do_login()
             os.chdir('testData')
             counter = 0  # to achieve distinct labels
             for imageFilename in imageFilenames:
@@ -797,12 +823,6 @@ class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
                 self.res = form.submit()
                 counter = counter + 1
             os.chdir('..')
-
-        def _getExportAsTar():
-            self.res = self.res.click(description="X-Akademie")
-            self.res = self.res.click(description="Export")
-            tarFile = tarfile.open(mode='r', fileobj=io.BytesIO(self.res.body))
-            return tarFile
 
         def _checkExportedFilenames(tarFile):
             expectedFilenamesInExport = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.values())
@@ -847,8 +867,9 @@ class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
                                     % (filename,)
                 self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
 
+        self.do_login()
         _addImagesToCourse01()
-        tarFile = _getExportAsTar()
+        tarFile = self._getExportAsTar()
         _checkExportedFilenames(tarFile)
 
         exportedCourseTexWithImages = tarFile.extractfile("texexport_xa2011-1/course01/chap.tex").read().decode()
