@@ -779,72 +779,82 @@ class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
 
         imageFilenames = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.keys())
 
-        self.do_login()
-        os.chdir('testData')
-        counter=0 # to achieve distinct labels
-        for imageFilename in imageFilenames:
+        def _addImagesToCourse01():
+            self.do_login()
+            os.chdir('testData')
+            counter = 0  # to achieve distinct labels
+            for imageFilename in imageFilenames:
+                self.res = self.res.click(description="X-Akademie")
+                self.res = self.res.click(href=re.compile("course01/$"))
+                self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+                self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+                form = self.res.forms[1]
+                form["comment"] = "Kommentar"
+                form["label"] = "blob" + str(counter)
+                self.res = form.submit()
+                form = self.res.forms[1]
+                form["content"] = Upload(imageFilename)
+                self.res = form.submit()
+                counter = counter + 1
+            os.chdir('..')
+
+        def _getExportAsTar():
             self.res = self.res.click(description="X-Akademie")
-            self.res = self.res.click(href=re.compile("course01/$"))
-            self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-            self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
-            form = self.res.forms[1]
-            form["comment"] = "Kommentar"
-            form["label"] = "blob"+str(counter)
-            self.res = form.submit()
-            form = self.res.forms[1]
-            form["content"] = Upload(imageFilename)
-            self.res = form.submit()
-            counter = counter+1
-        os.chdir('..')
+            self.res = self.res.click(description="Export")
+            tarFile = tarfile.open(mode='r', fileobj=io.BytesIO(self.res.body))
+            return tarFile
 
-        expectedFilenamesInExport = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.values())
+        def _checkExportedFilenames(tarFile):
+            expectedFilenamesInExport = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.values())
+            memberNames = tarFile.getnames()
 
-        self.res = self.res.click(description="X-Akademie")
-        #self.res = self.res.click(description="Exportieren")
-        self.res = self.res.click(description="Export")
-        tarFile = tarfile.open(mode='r',fileobj=io.BytesIO(self.res.body))
-        memberNames = tarFile.getnames()
-        filenamesInExport = []
-        for m in memberNames:
-            filenamesInExport.append( m.split('/')[-1] )
+            filenamesInExport = []
+            for m in memberNames:
+                filenamesInExport.append(m.split('/')[-1])
 
-        # check if all expected file names are present
-        # note that they are prefixed by blob_#_ when exporting
-        allFound = True
-        for expectedFilename in expectedFilenamesInExport:
-            found = False
-            for f in filenamesInExport:
-                if f.endswith(expectedFilename):
-                    found = True
-            allFound &= found
+            # check if all expected file names are present
+            # note that they are prefixed by blob_#_ when exporting
+            for expectedFilename in expectedFilenamesInExport:
+                found = False
+                for f in filenamesInExport:
+                    if f.endswith(expectedFilename):
+                        found = True
+                self.assertTrue(found)
 
-        self.assertTrue(allFound)
+        def _checkFilenamesInComment(exportedCourseTexWithImages):
+            filenamesExpectedInComment = imageFilenamesToBeChanged.keys()
+            for filename in filenamesExpectedInComment:
+                expectedLine = "%% Original-Dateiname: %s" % (filename,)
+                self.assertTrue(expectedLine in exportedCourseTexWithImages)
+
+        def _checkFilenamesInIncludegraphics(exportedCourseTexWithImages):
+            filenamesExpectedInIncludegraphics = imageFilenamesToBeChanged.values()
+            for filename in filenamesExpectedInIncludegraphics:
+                expectedLineRegex = r"\\includegraphics\[height=12\\baselineskip\]\{course01/blob_\d+_%s\}" \
+                                    % (filename,)
+                self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+
+        def _checkFilenamesExpectedNotIncluded(exportedCourseTexWithImages):
+            filenamesExpectedNotIncluded = {i for i in imageFilenamesUnchanged
+                                            if (not i.endswith('.jpg') and
+                                                not i.endswith('.png') and
+                                                not i.endswith('.pdf'))}
+            for filename in filenamesExpectedNotIncluded:
+                expectedLineRegex = r"%%\\includegraphics\[height=12\\baselineskip\]\{course01/blob_\d+_%s\}" \
+                                    % (filename,)
+                self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+                expectedLineRegex = r"(Binaerdatei \\verb\|%s\| nicht als Bild eingebunden)" \
+                                    % (filename,)
+                self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+
+        _addImagesToCourse01()
+        tarFile = _getExportAsTar()
+        _checkExportedFilenames(tarFile)
 
         exportedCourseTexWithImages = tarFile.extractfile("texexport_xa2011-1/course01/chap.tex").read().decode()
-
-        filenamesExpectedInComment = imageFilenamesToBeChanged.keys()
-        for filename in filenamesExpectedInComment:
-            expectedLine = "%% Original-Dateiname: %s" % (filename,)
-            print(expectedLine)
-            self.assertTrue(expectedLine in exportedCourseTexWithImages)
-
-        filenamesExpectedInIncludegraphics = imageFilenamesToBeChanged.values()
-        for filename in filenamesExpectedInIncludegraphics:
-            expectedLineRegex = r"\\includegraphics\[height=12\\baselineskip\]\{course01/blob_\d+_%s\}"\
-                                % (filename,)
-            self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
-
-        filenamesExpectedAsNotIncluded = {i for i in imageFilenamesUnchanged
-                                          if (not i.endswith('.jpg') and
-                                              not i.endswith('.png') and
-                                              not i.endswith('.pdf'))}
-        for filename in filenamesExpectedAsNotIncluded:
-            expectedLineRegex = r"%%\\includegraphics\[height=12\\baselineskip\]\{course01/blob_\d+_%s\}"\
-                                % (filename,)
-            self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
-            expectedLineRegex = r"(Binaerdatei \\verb\|%s\| nicht als Bild eingebunden)"\
-                                % (filename,)
-            self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+        _checkFilenamesInComment(exportedCourseTexWithImages)
+        _checkFilenamesInIncludegraphics(exportedCourseTexWithImages)
+        _checkFilenamesExpectedNotIncluded(exportedCourseTexWithImages)
 
 
 class CourseTests(DfTestCase):
