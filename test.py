@@ -820,6 +820,32 @@ class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
 
         self.assertTrue(allFound)
 
+        exportedCourseTexWithImages = tarFile.extractfile("texexport_xa2011-1/course01/chap.tex").read().decode()
+
+        filenamesExpectedInComment = imageFilenamesToBeChanged.keys()
+        for filename in filenamesExpectedInComment:
+            expectedLine = "%% Original-Dateiname: %s" % (filename,)
+            print(expectedLine)
+            self.assertTrue(expectedLine in exportedCourseTexWithImages)
+
+        filenamesExpectedInIncludegraphics = imageFilenamesToBeChanged.values()
+        for filename in filenamesExpectedInIncludegraphics:
+            expectedLineRegex = r"\\includegraphics\[height=12\\baselineskip\]\{course01/blob_\d+_%s\}"\
+                                % (filename,)
+            self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+
+        filenamesExpectedAsNotIncluded = {i for i in imageFilenamesUnchanged
+                                          if (not i.endswith('.jpg') and
+                                              not i.endswith('.png') and
+                                              not i.endswith('.pdf'))}
+        for filename in filenamesExpectedAsNotIncluded:
+            expectedLineRegex = r"%%\\includegraphics\[height=12\\baselineskip\]\{course01/blob_\d+_%s\}"\
+                                % (filename,)
+            self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+            expectedLineRegex = r"(Binaerdatei \\verb\|%s\| nicht als Bild eingebunden)"\
+                                % (filename,)
+            self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+
 
 class CourseTests(DfTestCase):
     def setUp(self):
