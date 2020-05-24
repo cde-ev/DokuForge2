@@ -13,6 +13,7 @@ from wsgiref.validate import validator
 import webtest
 import datetime
 import tarfile
+import subprocess
 
 import createexample
 from dokuforge import buildapp
@@ -876,6 +877,49 @@ class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
         _checkFilenamesInComment(exportedCourseTexWithImages)
         _checkFilenamesInIncludegraphics(exportedCourseTexWithImages)
         _checkFilenamesExpectedNotIncluded(exportedCourseTexWithImages)
+
+
+class LocalExportScriptTest(unittest.TestCase):
+    testExportDir = "testData/texexport_txa2011-1"
+
+    def testLocalExportScript(self):
+        def _runLocalExport():
+            self.assertFalse(os.path.isdir(self.testExportDir))
+            with open(os.devnull, 'w') as devnull:
+                subprocess.call("./localExport.sh testData/txa2011-1.tar.gz testData/dokuforge-export-static_test/",
+                                shell=True, stdout=devnull, stderr=devnull)
+
+        def _cleanUp():
+            shutil.rmtree(self.testExportDir)
+
+        def _verifyDokforgeStaticFilesExist():
+            fileName = os.path.join(self.testExportDir, "someFile.txt")
+            self.assertTrue(os.path.isfile(fileName))
+            with open(fileName, 'r') as someFile:
+                someFileContents = someFile.read()
+                self.assertTrue("Just some file ..." in someFileContents)
+
+        def _verifyInputDf2FileContents():
+            for fileName in (os.path.join(self.testExportDir, "course01/input.df2"),
+                             os.path.join(self.testExportDir, "course02/input.df2")):
+                self.assertTrue(os.path.isfile(fileName))
+                with open(fileName, 'r') as df2InputFile:
+                    df2InputContents = df2InputFile.read()
+                    self.assertTrue("title" in df2InputContents)
+                    self.assertTrue("page0" in df2InputContents)
+                    self.assertTrue("page1" in df2InputContents)
+
+        def _verifyWarningContainsGitHash():
+            with open(os.path.join(self.testExportDir, "WARNING"), 'r') as warningFile:
+                warningContents = warningFile.read()
+                currentGitRevision = subprocess.check_output("git rev-parse HEAD", shell=True).strip().decode()
+                self.assertTrue(currentGitRevision in warningContents)
+
+        _runLocalExport()
+        _verifyDokforgeStaticFilesExist()
+        _verifyInputDf2FileContents()
+        _verifyWarningContainsGitHash()
+        _cleanUp()
 
 
 class CourseTests(DfTestCase):

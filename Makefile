@@ -31,7 +31,7 @@ test-exported-strings:
 
 test-exporter: test-exported-strings
 	for py in python2 python3 ; do\
-		$$py test.py DokuforgeExporterTests ;\
+		$$py test.py DokuforgeExporterTests LocalExportScriptTest ;\
 	done
 
 .coverage:$(wildcard dokuforge/*.py) test.py
