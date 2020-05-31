@@ -157,7 +157,10 @@ werden in DokuForge mit drei Punkten und einem Leerzeichen davor
 gesetzt: <code>...</code></p>
 <h2><a name="anfuehrungszeichen"></a> Anführungszeichen</h2>
 <p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur)
-eingegeben werden. Wir machen daraus später »schöne« Anführungszeichen.</p>
+eingegeben werden. Wir machen daraus später »schöne« Anführungszeichen.
+Einfache Anführungszeichen für Zitate innerhalb wörtlicher Rede sowie
+Apostrophe wie in &quot;So geht's&quot; werden als ' (Shift-# auf der
+deutschen Tastatur) eingegeben.</p>
 <h2><a name="bindestrich"></a> Bindestrich</h2>
 <p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und
 Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden
