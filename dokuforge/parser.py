@@ -644,13 +644,7 @@ class EscapeCommands:
             else:
                 yield part
 
-escapeCommands = EscapeCommands()
-escapeMathCommands = EscapeCommands(
-    allowed = set(u"\\" + symbol for symbol in [
-    # produced by our own microtypography or otherwise essential
-    u' ', u',', u'%', u'dots', u'\\', u'"', u'acronym', u'&',
-    u'#', u'caret', u'{', u'}', u'@',
-    # other allowed commands; FIXME: complete and put to a separate file
+allowedMathSymbolCommands = [
     ## list of useful math commands mostly taken
     ## from 'A Guide To LaTeX' by Kopka
     ## greek letters
@@ -719,7 +713,15 @@ escapeMathCommands = EscapeCommands(
     u'ch',
     ## misc
     u'stackrel', u'binom', u'mathbb',
-    ]))
+  ]
+
+escapeCommands = EscapeCommands()
+escapeMathCommands = EscapeCommands(
+    allowed = set(u"\\" + symbol for symbol in [
+    # produced by our own microtypography or otherwise essential
+    u' ', u',', u'%', u'dots', u'\\', u'"', u'acronym', u'&',
+    u'#', u'caret', u'{', u'}', u'@',
+    ] + allowedMathSymbolCommands ))
 
 escapeEndEdnote = Escaper(u"\\end{ednote}", u"\\@|end{ednote}")
 # Escape the string \\end{ednote}, so that ednotes end
