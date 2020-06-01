@@ -705,7 +705,7 @@ allowedMathSymbolCommands = [
     u'hom', u'liminf', u'min', u'sup',
     ## accents
     u'hat', u'breve', u'grave', u'bar', u'check', u'acute',
-    u'ti1de', u'vec', u'dot', u'ddot', u'mathring',
+    u'tilde', u'vec', u'dot', u'ddot', u'mathring',
     ## parens
     u'left', u'right', u'lfloor', u'rfloor', u'lceil', u'rceil',
     u'langle', u'rangle',
