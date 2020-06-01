@@ -62,7 +62,6 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 {%- endif -%}
 {%- if user.allowedMeta(academy) %}
 <a href="{{ buildurl("coursetitle")|e }}">Titel bearbeiten</a>
-</a>
 {%- endif -%}
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>
