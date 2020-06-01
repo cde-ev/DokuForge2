@@ -18,7 +18,7 @@ import subprocess
 import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
-from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser, Estimate
+from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser, Estimate, allowedMathSymbolCommands
 from dokuforge.common import TarWriter
 from dokuforge.common import UTC
 from dokuforge.course import Course
@@ -1115,6 +1115,8 @@ class ExporterTestStrings:
                  [u'Tilde~ist unklar. $Auch~hier$.',
                   u'Tilde\\@~ist unklar. $Auch\\@~hier$.'] ]
 
+    mathSymbols = [ [u'$\\'+i+u'$', u'$\\'+i+u'$'] for i in allowedMathSymbolCommands ]
+
     mathEnvironments = [ [u'b $$\\circ \\cap \\inf \\times$$ e',
                           u'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
                          [u'b $$\n\\circ \\cap \\inf \\times\n$$ e',
@@ -1407,6 +1409,7 @@ class ExporterTestCases:
                         ExporterTestStrings.abbreviation,
                         ExporterTestStrings.acronym,
                         ExporterTestStrings.escaping,
+                        ExporterTestStrings.mathSymbols,
                         ExporterTestStrings.mathEnvironments,
                         ExporterTestStrings.evilUTF8,
                         ExporterTestStrings.nonstandardSpace,
