@@ -292,7 +292,7 @@ class Storage(object):
             logger.debug("storing conflict %r current=%r vs edited=%r" %
                          (self.fullpath(), currentversion, version))
             try:
-                subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
+                subprocess.check_call([b"co", b"-f", b"-q", b"-l%s" % version,
                                        self.fullpath()], env=RCSENV)
             except CalledProcessError:
                 raise RcsUserInputError(u"specified rcs version does not exist",
@@ -307,7 +307,7 @@ class Storage(object):
             subprocess.check_call(args, env=RCSENV)
             # 2.) merge in head
             os.chmod(self.fullpath(), 0o600)
-            subprocess.call(["rcsmerge", "-q", "-r%s" % version,
+            subprocess.call([b"rcsmerge", b"-q", b"-r%s" % version,
                              self.fullpath()]) # Note: non-zero exit status is
                                                # OK!
             with open(self.fullpath(), "rb") as objfile:
