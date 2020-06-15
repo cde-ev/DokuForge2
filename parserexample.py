@@ -79,21 +79,20 @@ Und wieder ganz normaler Text.
 
 parsed = dfLineGroupParser(teststring);
 
-print parsed.debug()
+print(parsed.debug())
 
-print "========================================"
+print("========================================")
 
-print parsed.toDF().encode("utf8")
+print(parsed.toDF().encode("utf8"))
 
-print "========================================"
+print("========================================")
 
-print parsed.toHtml().encode("utf8")
+print(parsed.toHtml().encode("utf8"))
 
-print "========================================"
+print("========================================")
 
-print parsed.toTex().encode("utf8")
+print(parsed.toTex().encode("utf8"))
 
-print "========================================"
+print("========================================")
 
-print parsed.toEstimate()
-
+print(parsed.toEstimate())
