@@ -1,17 +1,17 @@
 Prerequisites:
 ~~~~~~~~~~~~~~
 
- * Python (version >= 2.6)
+ * Python (version >= 3.7)
  * werkzeug
    Required: yes
    Homepage: http://werkzeug.pocoo.org/
-   Debian: python-werkzeug
+   Debian: python3-werkzeug
    FreeBSD: www/py-werkzeug
    Gentoo: dev-python/werkzeug
  * jinja (version 2.x)
    Required: yes
    Homepage: http://jinja.pocoo.org/
-   Debian: python-jinja2
+   Debian: python3-jinja2
    FreeBSD: devel/py-Jinja2
    Gentoo: dev-python/jinja
  * rcs
@@ -23,7 +23,7 @@ Prerequisites:
  * webtest
    Required: only for the test suite
    Homepage: http://webtest.pythonpaste.org
-   Debian: python-webtest
+   Debian: python3-webtest
    FreeBSD: www/py-WebTest
    Gentoo: dev-python/webtest
  * wsgitools
@@ -43,22 +43,22 @@ Prerequisites:
  * epydoc
    Required:
    Homepage: http://epydoc.sourceforge.net/
-   Debian: python-epydoc
+   Debian: formerly python-epydoc
    FreeBSD: devel/epydoc
    Gentoo: dev-python/epydoc
 
  Short forms:
-  * Debian: aptitude install python-werkzeug python-jinja2 rcs python-webtest python-epydoc libjs-mathjax
+  * Debian: aptitude install python3-werkzeug python3-jinja2 rcs python3-webtest libjs-mathjax
   * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-WebTest devel/epydoc devel/py-wsgitools
   * Gentoo: emerge dev-python/werkzeug dev-python/jinja dev-vcs/rcs dev-python/webtest dev-python/epydoc
 
 Configuration:
 ~~~~~~~~~~~~~~
 Copy dokuforge.conf.sample and update it. A basic data set for testing can be
-created by invoking python createexample.py.
+created by invoking python3 createexample.py.
 
 Running:
 ~~~~~~~~
 The simplest form is
-python -m dokuforge.serve_simple path_to_your_dokuforge.conf
+python3 -m dokuforge.serve_simple path_to_your_dokuforge.conf
 It will start a webserver on localhost:8800.
