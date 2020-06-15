@@ -1,7 +1,4 @@
-try:
-    from ConfigParser import SafeConfigParser as ConfigParser
-except ImportError:
-    from configparser import ConfigParser
+import configparser
 import io
 
 from dokuforge.storage import CachingStorage
@@ -26,16 +23,16 @@ class PathConfig(object):
     section = "path"
     def __init__(self,config=None):
         if config is None:
-            self.cp = ConfigParser()
-            self.cp.readfp(io.StringIO(default_config))
+            self.cp = configparser.ConfigParser()
+            self.cp.read_string(default_config)
         else:
             self.cp = config
 
     def read(self, configfile):
-        self.cp = ConfigParser()
+        self.cp = configparser.ConfigParser()
         # can be switched to plain open when dropping support for Python2.X
         with io.open(configfile, encoding=config_encoding) as opencfg:
-            self.cp.readfp(opencfg)
+            self.cp.read_file(opencfg)
 
     @property
     def rootdir(self):

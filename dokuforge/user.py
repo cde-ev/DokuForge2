@@ -1,9 +1,5 @@
+import configparser
 import random
-try:
-    from ConfigParser import SafeConfigParser as ConfigParser
-except ImportError:
-    from configparser import ConfigParser
-import io
 
 sysrand = random.SystemRandom()
 
@@ -382,11 +378,11 @@ class UserDB:
         ## if nothing is changed return
         if self.storage.timestamp() <= self.timestamp:
             return
-        config = ConfigParser()
-        content = io.StringIO(self.storage.content().decode("utf8"))
+        config = configparser.ConfigParser()
+        content = self.storage.content().decode("utf8")
         ## update time, since we read the new content
         self.timestamp = self.storage.cachedtime
-        config.readfp(content)
+        config.read_string(content)
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():

@@ -18,17 +18,10 @@ from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
 from dokuforge.common import TarWriter
-from dokuforge.common import UTC
 from dokuforge.course import Course
 from dokuforge.academy import Academy
 from dokuforge.user import UserDB
 from dokuforge.storage import CachingStorage
-
-try:
-    Upload = webtest.Upload
-except AttributeError:
-    def Upload(filename):
-        return (filename,)
 
 teststrings = [
     ("simple string", "simple string"),
@@ -60,7 +53,7 @@ class DfTestCase(unittest.TestCase):
 class TarWriterTests(DfTestCase):
     def testUncompressed(self):
         timeStampNow = datetime.datetime.utcnow()
-        timeStampNow.replace(tzinfo=UTC())
+        timeStampNow.replace(tzinfo=datetime.timezone.utc)
         tarwriter = TarWriter()
         tar = b''
         tar = tar + tarwriter.addChunk(b'myFile', b'contents', timeStampNow)
@@ -69,7 +62,7 @@ class TarWriterTests(DfTestCase):
 
     def testGzip(self):
         timeStampNow = datetime.datetime.utcnow()
-        timeStampNow.replace(tzinfo=UTC())
+        timeStampNow.replace(tzinfo=datetime.timezone.utc)
         tarwriter = TarWriter(gzip=True)
         tar = b''
         tar = tar + tarwriter.addChunk(b'myFile', b'contents', timeStampNow)
@@ -603,7 +596,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit()
         form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
+        form["content"] = webtest.Upload("README-rlog.txt")
         self.res = form.submit()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         self.is_loggedin()
@@ -619,7 +612,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit()
         form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
+        form["content"] = webtest.Upload("README-rlog.txt")
         self.res = form.submit()
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
         self.res.mustcontain("Bildunterschrift/Kommentar: Shiny blob",
@@ -637,7 +630,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit()
         form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
+        form["content"] = webtest.Upload("README-rlog.txt")
         self.res = form.submit()
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
         self.res = self.res.click(href=re.compile("course01/0/0/.*md5$"))
@@ -655,7 +648,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit()
         form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
+        form["content"] = webtest.Upload("README-rlog.txt")
         self.res = form.submit()
         self.res = self.res.click(href=re.compile("course01/0/0/$"))
         self.res = self.res.click(href=re.compile("course01/0/0/.*edit$"))
@@ -680,7 +673,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit()
         form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
+        form["content"] = webtest.Upload("README-rlog.txt")
         self.res = form.submit()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         form = self.res.forms[3]
@@ -700,7 +693,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = "blob"
         self.res = form.submit()
         form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
+        form["content"] = webtest.Upload("README-rlog.txt")
         self.res = form.submit()
         form = self.res.forms[3]
         self.res = form.submit()

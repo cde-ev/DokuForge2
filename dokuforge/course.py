@@ -3,7 +3,6 @@ import datetime
 
 from werkzeug.datastructures import FileStorage
 
-from dokuforge.common import check_output
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
 from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser

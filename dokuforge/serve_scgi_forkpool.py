@@ -4,15 +4,13 @@ Forking server listening on scgi://localhost with a spamassassin like
 worker model. The port to listen will be taken from the configuration file
 """
 
+import configparser
+
 from wsgitools.scgi.forkpool import SCGIServer
 
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig, config_encoding
 
-try:
-    from ConfigParser import SafeConfigParser as ConfigParser
-except ImportError:
-    from configparser import ConfigParser
 import io
 import sys
 import syslog
@@ -47,9 +45,9 @@ def parsesize(s):
     return int(float(s) * f)
 
 def main(configfile):
-    config = ConfigParser()
+    config = configparser.ConfigParser()
     with io.open(configfile, encoding=config_encoding) as openconfig:
-        config.readfp(openconfig)
+        config.read_file(openconfig)
     port = int(config.get('scgi', 'port'))
     limitas = parsesize(config.get('scgi', 'limitas'))
     limitdata = parsesize(config.get('scgi', 'limitdata'))

@@ -166,7 +166,7 @@ class Academy(StorageDir):
         yield a tar archive containing the tex-export of the academy.
         """
         timeStampNow = datetime.datetime.utcnow()
-        timeStampNow.replace(tzinfo=common.utc)
+        timeStampNow.replace(tzinfo=datetime.timezone.utc)
         yield tarwriter.addChunk(b"WARNING",
 ("""The precise semantics of the exporter is still
 subject to discussion and may change in future versions.

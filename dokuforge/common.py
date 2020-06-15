@@ -1,29 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import configparser
 import io
 import random
 import subprocess
 import re
 import os
-try:
-    import ConfigParser as configparser
-    from ConfigParser import SafeConfigParser as ConfigParser
-except ImportError:
-    import configparser
-    from configparser import ConfigParser
 import tarfile
 import datetime
 import calendar
-
-try:
-    check_output = subprocess.check_output
-except AttributeError:
-    def check_output(cmdline, **kwargs):
-        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE, **kwargs)
-        output, _ = proc.communicate()
-        if proc.returncode:
-            raise subprocess.CalledProcessError()
-        return output
 
 sysrand = random.SystemRandom()
 
@@ -54,18 +39,7 @@ class CheckError(Exception):
     def __str__(self):
         return self.message
 
-class UTC(datetime.tzinfo):
-    """UTC implementation taken from the Python documentation"""
-    def utcoffset(self, dt):
-        return datetime.timedelta(0)
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return datetime.timedelta(0)
-utc = UTC()
-epoch = datetime.datetime(1970, 1, 1, tzinfo=utc)
+epoch = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
 
 def validateGroupstring(groupstring, allgroups):
     """
@@ -222,9 +196,9 @@ def validateUserConfig(config):
     @type config: str
     """
     assert isinstance(config, str)
-    parser = ConfigParser()
+    parser = configparser.ConfigParser()
     try:
-        parser.readfp(io.StringIO(config))
+        parser.read_string(config)
     except configparser.ParsingError as err:
         raise CheckError("Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
@@ -250,9 +224,9 @@ def validateGroupConfig(config):
     @type config: str
     """
     assert isinstance(config, str)
-    parser = ConfigParser()
+    parser = configparser.ConfigParser()
     try:
-        parser.readfp(io.StringIO(config))
+        parser.read_string(config)
     except configparser.Error as err:
         raise CheckError("Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)

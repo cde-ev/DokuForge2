@@ -7,7 +7,7 @@ import time
 import subprocess
 import re
 
-from dokuforge.common import check_output, utc, epoch
+from dokuforge.common import epoch
 from dokuforge.common import validateRcsRevision
 from dokuforge.common import RcsUserInputError
 
@@ -60,8 +60,10 @@ def rloghead(filename):
 
     revision = rlogv(filename)
     answer[b'revision'] = revision
-    rlog = check_output(["rlog","-q","-r%s" % revision.decode("ascii"),
-                         filename], env=RCSENV)
+    rlog = subprocess.check_output(["rlog", "-q",
+                                    "-r%s" % revision.decode("ascii"),
+                                    filename],
+                                   env=RCSENV)
     lines = rlog.splitlines()
     while lines[0] != rcsseparator or lines[1].split()[0] != b'revision':
         lines.pop(0)
@@ -76,7 +78,7 @@ def rloghead(filename):
 
     date = datetime.datetime.strptime(answer[b"date"].decode("ascii"),
                                       "%Y/%m/%d %H:%M:%S")
-    answer[b"date"] = date.replace(tzinfo=utc)
+    answer[b"date"] = date.replace(tzinfo=datetime.timezone.utc)
     return answer
 
 class LockDir:
@@ -223,8 +225,9 @@ class Storage(object):
     def content(self, havelock=None):
         self.ensureexistence(havelock = havelock)
         logger.debug("retrieving content for %r" % self.fullpath())
-        return check_output(["co", "-q", "-p", "-kb", self.fullpath()],
-                            env=RCSENV)
+        return subprocess.check_output(["co", "-q", "-p", "-kb",
+                                        self.fullpath()],
+                                       env=RCSENV)
 
     def startedit(self, havelock=None):
         """
@@ -319,7 +322,7 @@ class Storage(object):
         self.ensureexistence(havelock = havelock)
         ts = os.path.getmtime(self.fullpath(postfix=b",v"))
         ts = datetime.datetime.utcfromtimestamp(ts)
-        return ts.replace(tzinfo=utc)
+        return ts.replace(tzinfo=datetime.timezone.utc)
 
 class CachingStorage(Storage):
     """

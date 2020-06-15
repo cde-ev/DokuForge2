@@ -1,16 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-try:
-    import ConfigParser as configparser
-    from ConfigParser import SafeConfigParser as ConfigParser
-except ImportError:
-    import configparser
-    from configparser import ConfigParser
+import configparser
 import copy
 import datetime
 from hashlib import md5 as getmd5
-import io
 import logging
 import operator
 import os
@@ -19,10 +13,7 @@ import sqlite3
 import sys
 import time
 import urllib
-try:
-    import urlparse
-except ImportError:
-    from urllib import parse as urlparse
+from urllib import parse as urlparse
 
 import jinja2
 import werkzeug.exceptions
@@ -452,8 +443,8 @@ class Application:
         @returns: a dict of all groups with their titles as values
         """
         try:
-            config = ConfigParser()
-            config.readfp(io.StringIO(self.groupstore.content().decode("utf8")))
+            config = configparser.ConfigParser()
+            config.read_string(self.groupstore.content().decode("utf8"))
         except configparser.ParsingError as err:
             return {}
         ret = {}
