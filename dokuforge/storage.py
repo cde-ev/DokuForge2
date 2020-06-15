@@ -6,10 +6,6 @@ import shutil
 import time
 import subprocess
 import re
-try:
-    unicode
-except NameError:
-    unicode = str
 
 from dokuforge.common import check_output, utc, epoch
 from dokuforge.common import validateRcsRevision
@@ -34,7 +30,7 @@ def rlogv(filename):
     logger.debug("rlogv: looking up revision for %r" % filename)
     with open(filename, "rb") as f:
         firstline = f.readline()
-    m = re.match(u'^\\s*head\\s*([0-9.]+)\\s*;', firstline.decode("ascii"))
+    m = re.match('^\\s*head\\s*([0-9.]+)\\s*;', firstline.decode("ascii"))
     if m:
         return m.groups()[0].encode("ascii")
     else:
@@ -165,7 +161,7 @@ class Storage(object):
         @type message: bytes
         @type user: None or bytes
         """
-        assert not isinstance(content, unicode)
+        assert not isinstance(content, str)
         assert isinstance(message, bytes)
         if isinstance(content, bytes):
             content = io.BytesIO(content)
@@ -295,8 +291,8 @@ class Storage(object):
                 subprocess.check_call([b"co", b"-f", b"-q", b"-l%s" % version,
                                        self.fullpath()], env=RCSENV)
             except CalledProcessError:
-                raise RcsUserInputError(u"specified rcs version does not exist",
-                                        u"can only happen in hand-crafted requests")
+                raise RcsUserInputError("specified rcs version does not exist",
+                                        "can only happen in hand-crafted requests")
             with open(self.fullpath(), "wb") as objfile:
                 objfile.write(newcontent)
             args = ["ci", "-f", "-q", "-u"]

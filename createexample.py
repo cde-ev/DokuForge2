@@ -3,18 +3,13 @@
 
 import os
 
-try:
-    unicode
-except NameError:
-    unicode = str
-
 from werkzeug.datastructures import FileStorage
 
 from dokuforge.application import Application
 from dokuforge.paths import PathConfig
 
 def createaca(app, name, title, groups, courses):
-    assert isinstance(title, unicode)
+    assert isinstance(title, str)
     aca = app.createAcademy(name, title, groups)
     for c in courses:
         aca.createCourse(c[0], c[1])
@@ -74,42 +69,45 @@ title = Archiv aelterer CdE-Akademien
     userdb = pc.loaduserdb()
     app = Application(pc)
     if size > 50:
-        aca = createaca(app, u"za2011-1", u"Beste Akademie ever", [u"cde"],
-                        [(u'course01',u"Internethumor und seine Schuld am Weltuntergang", 3),
-                         (u'course02', u"Helenistische Heldenideale", 2)])
-        (version, cont) = aca.getCourse(u'course01').editpage(0)
-        aca.getCourse(u'course01').savepage(0, version, 
-u"""[Example Section]
+        aca = createaca(app, "za2011-1", "Beste Akademie ever", ["cde"],
+                        [('course01',
+                          "Internethumor und seine Schuld am Weltuntergang",
+                          3),
+                         ('course02', "Helenistische Heldenideale", 2)])
+        (version, cont) = aca.getCourse('course01').editpage(0)
+        aca.getCourse('course01').savepage(0, version,
+r"""[Example Section]
 This is an example with some nice math: $e^{i\pi}+1=0$.
 
 And even a mathematical limmerick!
 
-$$\int_1^{\sqrt[3]{3}} z^2 dz \cdot \cos(\\frac{3\pi}{9}) = \ln(\sqrt[3]{e})$$
+$$\int_1^{\sqrt[3]{3}} z^2 dz \cdot \cos(\frac{3\pi}{9}) = \ln(\sqrt[3]{e})$$
 """, 
-        u"init")
+                                           "init")
         with open("./dokuforge/academy.py", mode="rb") as f:
-            aca.getCourse(u'course01').attachblob(
+            aca.getCourse('course01').attachblob(
                 0, FileStorage(filename="academy.py", stream=f),
-                u"Ein lustiges Bild", u"myx", user=u"init")
+                "Ein lustiges Bild", "myx", user="init")
         with open("./dokuforge/storage.py", mode="rb") as f:
-            aca.getCourse(u'course01').attachblob(
+            aca.getCourse('course01').attachblob(
                 1, FileStorage(filename="storage.py", stream=f),
-                u"Ein anderes lustiges Bild", u"somey", user=u"init")
+                "Ein anderes lustiges Bild", "somey", user="init")
         with open("./dokuforge/course.py", mode="rb") as f:
-            aca.getCourse(u'course01').attachblob(
+            aca.getCourse('course01').attachblob(
                 0, FileStorage(filename="course.py", stream=f),
-                u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
+                "Noch ein lustiges Bild", "ultimatez", user="init")
     if size > 25:
-        aca = createaca(app, u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
-                        [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),
-                         (u'course02',u"Die Hedonistische Internationale", 3),
-                         (u'course03', u"Orgateams und ihre Geschichte", 4)])
+        aca = createaca(app, "ya2011-1", "Why? Akademie", ["qed", "cde"],
+                        [('course01', "Kursqualitaet und ihre Kontrolle", 2),
+                         ('course02', "Die Hedonistische Internationale", 3),
+                         ('course03', "Orgateams und ihre Geschichte", 4)])
 
     if size > 0:
-        aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
-                        [(u'course01', u"Area51", 2), (u"course02", u"Markup test", 3)])
-        (version, cont) = aca.getCourse(u'course02').editpage(1)
-        aca.getCourse(u'course02').savepage(1, version, u"""
+        aca = createaca(app, "xa2011-1", "X-Akademie", ["cde"],
+                        [('course01', "Area51", 2),
+                         ("course02", "Markup test", 3)])
+        (version, cont) = aca.getCourse('course02').editpage(1)
+        aca.getCourse('course02').savepage(1, version, """
 [Ueberschrift]
 (Autor)
 
@@ -185,7 +183,7 @@ Und auch Mathematik, z.B. $x^2 + y^2$
 oder auch $x_1 + x_2$.
 
 Und dieser Absatz enthaelt boese
-Mathematik wie $ \$ $ oder
+Mathematik wie $ \\$ $ oder
 $ \\\\$.
 
 *Modularitaet* ist die Wesentliche Idee hinter
@@ -244,7 +242,7 @@ Normaler Text. Bla Bla bla ...
 *Keyword ist dann einfach das erste Wort.
 
 """,
-        u"init")
+        "init")
 
 if __name__ == '__main__':
     main()

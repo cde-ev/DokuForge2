@@ -1,11 +1,6 @@
 import os.path
 import re
 
-try:
-    unicode
-except NameError:
-    unicode = str
-
 from dokuforge.storage import Storage
 from dokuforge.view import LazyView
 import dokuforge.common as common
@@ -77,7 +72,7 @@ class StorageDir:
     def gettitle(self):
         """
         @returns: contents of the "title" Storage
-        @rtype: unicode
+        @rtype: str
         """
         return self.getcontent(b"title").decode("utf8")
 
@@ -86,12 +81,12 @@ class StorageDir:
         Updates the "title" Storage.
 
         @param title: display name of the academy
-        @type title: unicode
+        @type title: str
         @rtype: bool
         @returns: True when successful
         @raises CheckError: if the user input is malformed.
         """
-        assert isinstance(title, unicode)
+        assert isinstance(title, str)
         common.validateTitle(title)
         self.getstorage(b"title").store(title.encode("utf8"))
         return True
@@ -103,7 +98,7 @@ class StorageDir:
             this dict
         @rtype: LazyView
         @returns: a mapping providing the keys name(bytes) and
-            title(unicode) as well as the keys from extrafunctions
+            title(str) as well as the keys from extrafunctions
         """
         functions = dict(
             name=lambda:self.name,

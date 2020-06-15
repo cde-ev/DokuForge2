@@ -5,11 +5,6 @@ except ImportError:
     from configparser import ConfigParser
 import io
 
-try:
-    unicode
-except NameError:
-    unicode = str
-
 sysrand = random.SystemRandom()
 
 from dokuforge.common import strtobool, epoch
@@ -101,15 +96,15 @@ class User:
         """
         User-Class Constructor
 
-        @type name: unicode
-        @type status: unicode
-        @type password: unicode or None
+        @type name: str
+        @type status: str
+        @type password: str or None
         @param password: a plaintext password or None if it should be generated
         @type permissions: dictionary of permissions
         """
-        assert isinstance(name, unicode)
-        assert isinstance(status, unicode)
-        assert password is None or isinstance(password, unicode)
+        assert isinstance(name, str)
+        assert isinstance(status, str)
+        assert password is None or isinstance(password, str)
         self.name = name
         self.status = status
         if password is None:
@@ -120,20 +115,20 @@ class User:
     def hasPermission(self, perm):
         """
         check if user has a permission
-        @type perm: unicode
+        @type perm: str
         @rtype: bool
         """
-        assert isinstance(perm, unicode)
+        assert isinstance(perm, str)
         ## cast None to False
         return bool(self.permissions.get(perm))
 
     def revokedPermission(self, perm):
         """
         check if user has a permission
-        @type perm: unicode
+        @type perm: str
         @rtype: bool
         """
-        assert isinstance(perm, unicode)
+        assert isinstance(perm, str)
         state = self.permissions.get(perm)
         if state is not None and state == False:
             return True
@@ -150,7 +145,7 @@ class User:
         @rtype: bool
         """
         ## first check global priveleges
-        if self.hasPermission(u"df_read") or self.isSuperAdmin():
+        if self.hasPermission("df_read") or self.isSuperAdmin():
             return True
         ## now we need to resolve aca and course
         ## a bit care has to be taken since we need the groups too
@@ -170,22 +165,22 @@ class User:
             course = course.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if course is None:
-            if self.revokedPermission(u"akademie_read_%s" % aca) or \
-                self.revokedPermission(u"akademie_view_%s" % aca):
+            if self.revokedPermission("akademie_read_%s" % aca) or \
+                self.revokedPermission("akademie_view_%s" % aca):
                 return False
         else:
-            if self.revokedPermission(u"kurs_read_%s_%s" % (aca, course)):
+            if self.revokedPermission("kurs_read_%s_%s" % (aca, course)):
                 return False
-            if self.revokedPermission(u"akademie_read_%s" % aca) and \
-                not self.hasPermission(u"kurs_read_%s_%s" % (aca, course)):
+            if self.revokedPermission("akademie_read_%s" % aca) and \
+               not self.hasPermission("kurs_read_%s_%s" % (aca, course)):
                 return False
         ## now we are done with revoked permissions and can continue
         ## third check group level privileges
         for g in groups:
-            if self.hasPermission(u"gruppe_read_%s" % g):
+            if self.hasPermission("gruppe_read_%s" % g):
                 return True
         ## fourth check the academy level priveleges
-        if self.hasPermission(u"akademie_read_%s" % aca):
+        if self.hasPermission("akademie_read_%s" % aca):
             return True
         if course is None:
             ## we only want to read an academy entry
@@ -194,9 +189,9 @@ class User:
             if recursive:
                 return False
             ## in non-recursive case we check akademie_view_*
-            return self.hasPermission(u"akademie_view_%s" % aca)
+            return self.hasPermission("akademie_view_%s" % aca)
         ## at this point we ask for a read privelege of a specific course
-        return self.hasPermission(u"kurs_read_%s_%s" % (aca, course))
+        return self.hasPermission("kurs_read_%s_%s" % (aca, course))
 
     def allowedWrite(self, aca, course = None):
         """
@@ -205,7 +200,7 @@ class User:
         @rtype: bool
         """
         ## first check global priveleges
-        if self.hasPermission(u"df_write") or self.isSuperAdmin():
+        if self.hasPermission("df_write") or self.isSuperAdmin():
             return True
         ## now we need to resolve aca and course
         ## a bit care has to be taken since we need the groups too
@@ -225,27 +220,27 @@ class User:
             course = course.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if course is None:
-            if self.revokedPermission(u"akademie_write_%s" % aca):
+            if self.revokedPermission("akademie_write_%s" % aca):
                 return False
         else:
-            if self.revokedPermission(u"kurs_write_%s_%s" % (aca, course)):
+            if self.revokedPermission("kurs_write_%s_%s" % (aca, course)):
                 return False
-            if self.revokedPermission(u"akademie_write_%s" % aca) and \
-                not self.hasPermission(u"kurs_write_%s_%s" % (aca, course)):
+            if self.revokedPermission("akademie_write_%s" % aca) and \
+               not self.hasPermission("kurs_write_%s_%s" % (aca, course)):
                 return False
         ## now we are done with revoked permissions and can continue
         ## third check group level privileges
         for g in groups:
-            if self.hasPermission(u"gruppe_write_%s" % g):
+            if self.hasPermission("gruppe_write_%s" % g):
                 return True
         ## fourth check the academy level priveleges
-        if self.hasPermission(u"akademie_write_%s" % aca):
+        if self.hasPermission("akademie_write_%s" % aca):
             return True
         if course is None:
             ## no write access to the academy
             return False
         ## at this point we ask for a write privelege of a specific course
-        return self.hasPermission(u"kurs_write_%s_%s" % (aca, course))
+        return self.hasPermission("kurs_write_%s_%s" % (aca, course))
 
     def allowedMeta(self, aca):
         """
@@ -253,7 +248,7 @@ class User:
         @rtype: bool
         """
         ## first check global priveleges
-        if self.hasPermission(u"df_meta") or self.isSuperAdmin():
+        if self.hasPermission("df_meta") or self.isSuperAdmin():
             return True
         ## now we need to resolve aca
         ## a bit care has to be taken since we need the groups too
@@ -265,15 +260,15 @@ class User:
             groups = aca.getgroups()
             aca = aca.name.decode("ascii")
         ## second check for explicitly revoked privilege
-        if self.revokedPermission(u"akademie_meta_%s" % aca):
+        if self.revokedPermission("akademie_meta_%s" % aca):
             return False
         ## now we are done with revoked permissions and can continue
         ## third check group level privileges
         for g in groups:
-            if self.hasPermission(u"gruppe_meta_%s" % g):
+            if self.hasPermission("gruppe_meta_%s" % g):
                 return True
         ## fourth check the academy level priveleges
-        return self.hasPermission(u"akademie_meta_%s" % aca)
+        return self.hasPermission("akademie_meta_%s" % aca)
 
     def mayExport(self, aca):
         """
@@ -289,40 +284,40 @@ class User:
         if not self.allowedRead(aca, recursive = True):
             return False
         ## now we have to check the export privelege
-        return self.hasPermission(u"df_export")
+        return self.hasPermission("df_export")
 
     def mayCreate(self):
         """
         @rtype: bool
         """
-        return self.hasPermission(u"df_create") or self.isSuperAdmin()
+        return self.hasPermission("df_create") or self.isSuperAdmin()
 
     def allowedList(self, groupname):
         """
-        @type groupname: unicode
+        @type groupname: str
         @rtype: bool
         """
-        assert isinstance(groupname, unicode)
-        return self.isSuperAdmin() or self.hasPermission(u"df_show") or \
-            self.hasPermission(u"gruppe_show_%s" % groupname)
+        assert isinstance(groupname, str)
+        return self.isSuperAdmin() or self.hasPermission("df_show") or \
+            self.hasPermission("gruppe_show_%s" % groupname)
 
     def isAdmin(self):
         """
         @rtype: bool
         """
-        return self.isSuperAdmin() or self.hasPermission(u"df_admin")
+        return self.isSuperAdmin() or self.hasPermission("df_admin")
 
     def isSuperAdmin(self):
         """
         @rtype: bool
         """
-        return self.hasPermission(u"df_superadmin")
+        return self.hasPermission("df_superadmin")
 
     def defaultGroup(self):
         """Return the default group of a user. This is the first part (separated by
         underscore) of the status.
 
-        @rtype: unicode
+        @rtype: str
         """
         ret = self.status.split('_')[0]
         return ret
@@ -331,7 +326,7 @@ class UserDB:
     """
     Class for the user database
 
-    @type db: {unicode: User}
+    @type db: {str: User}
     @ivar db: dictionary containing (username, User object) pairs
     @ivar storage: storage.CachingStorage object holding the userdb
     @ivar timestamp: time of last update, this is compared to the mtime of
@@ -349,16 +344,16 @@ class UserDB:
         """
         add a user to the database in memory
 
-        @type name: unicode
-        @type status: unicode
-        @type password: unicode
+        @type name: str
+        @type status: str
+        @type password: str
         @param permissions: dictionary of permissions
-        @type permissions: {unicode: bool}
+        @type permissions: {str: bool}
         """
-        assert isinstance(name, unicode)
-        assert isinstance(status, unicode)
-        assert isinstance(password, unicode)
-        assert all(isinstance(key, unicode) and isinstance(value, bool)
+        assert isinstance(name, str)
+        assert isinstance(status, str)
+        assert isinstance(password, str)
+        assert all(isinstance(key, str) and isinstance(value, bool)
                    for key, value in permissions.items())
         if name in self.db:
             return False
@@ -367,12 +362,12 @@ class UserDB:
 
     def checkLogin(self, name, password):
         """
-        @type name: unicode
-        @type password: unicode
+        @type name: str
+        @type password: str
         @returns: True if name and password match an existing user, False otherwise
         """
-        assert isinstance(name, unicode)
-        assert isinstance(password, unicode)
+        assert isinstance(name, str)
+        assert isinstance(password, str)
         try:
             return self.db[name].password == password
         except KeyError:
@@ -395,8 +390,8 @@ class UserDB:
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():
-            permissions = dict((perm.strip().split(u' ')[0],
-                                strtobool(perm.strip().split(u' ')[1]))
-                for perm in config.get(name, u'permissions').split(u','))
-            self.addUser(name, config.get(name, u'status'),
-                         config.get(name, u'password'), permissions)
+            permissions = dict((perm.strip().split(' ')[0],
+                                strtobool(perm.strip().split(' ')[1]))
+                for perm in config.get(name, 'permissions').split(','))
+            self.addUser(name, config.get(name, 'status'),
+                         config.get(name, 'password'), permissions)

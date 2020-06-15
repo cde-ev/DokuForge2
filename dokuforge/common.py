@@ -25,11 +25,6 @@ except AttributeError:
             raise subprocess.CalledProcessError()
         return output
 
-try:
-    unicode
-except NameError:
-    unicode = str
-
 sysrand = random.SystemRandom()
 
 def randstring(n=6):
@@ -44,16 +39,16 @@ def randstring(n=6):
 def strtobool(s):
     """
     @returns: Boolean version of s
-    @type s: unicode
+    @type s: str
     @rtype: bool
     """
-    return s in (u"True", u"true", u"t")
+    return s in ("True", "true", "t")
 
 class CheckError(Exception):
     def __init__(self, msg, exp):
         Exception.__init__(self, msg)
-        assert isinstance(msg, unicode)
-        assert isinstance(exp, unicode)
+        assert isinstance(msg, str)
+        assert isinstance(exp, str)
         self.message = msg
         self.explanation = exp
     def __str__(self):
@@ -78,11 +73,11 @@ def validateGroupstring(groupstring, allgroups):
     it may not be empty and it may not contain non-existent groups. If a
     check fails a CheckError is raised.
 
-    @type groupstring: unicode
+    @type groupstring: str
     @param groupstring: contains groups seperated by whitespace
     @raises CheckError:
     """
-    assert isinstance(groupstring, unicode)
+    assert isinstance(groupstring, str)
     validateGroups(groupstring.split(), allgroups)
 
 
@@ -92,63 +87,63 @@ def validateGroups(groups, allgroups):
     it may not be empty and it may not contain non-existent groups. If a
     check fails a CheckError is raised.
 
-    @type groups: [unicode]
+    @type groups: [str]
     @param groups: a list of groups to validate
     @raises CheckError:
     """
-    assert all(isinstance(g, unicode) for g in groups)
+    assert all(isinstance(g, str) for g in groups)
     if len(groups) == 0:
-        raise CheckError(u"Keine Gruppen gefunden!",
-                         u"Jede Akademie muss mindestens einer Gruppe angehören. Bitte korrigieren und erneut versuchen.")
+        raise CheckError("Keine Gruppen gefunden!",
+                         "Jede Akademie muss mindestens einer Gruppe angehören. Bitte korrigieren und erneut versuchen.")
     for g in groups:
         if g not in allgroups:
-            raise CheckError(u"Nichtexistente Gruppe gefunden!",
-                             u"Bitte korrigieren und erneut versuchen.")
+            raise CheckError("Nichtexistente Gruppe gefunden!",
+                             "Bitte korrigieren und erneut versuchen.")
 
 def validateTitle(title):
     """
     check whether the title is valid, this means nonempty. If not raise
     a CheckError exception.
 
-    @type title: unicode
+    @type title: str
     @param title: title to check
     @raises CheckError:
     """
-    assert isinstance(title, unicode)
-    if title == u"":
-        raise CheckError(u"Leerer Titel!",
-                         u"Der Titel darf nicht leer sein.")
-    if re.match(u'^[ \t]*$', title) is not None:
-        raise CheckError(u"Leerer Titel!",
-                         u"Der Titel darf nicht nur aus Leerzeichen bestehen.")
+    assert isinstance(title, str)
+    if title == "":
+        raise CheckError("Leerer Titel!",
+                         "Der Titel darf nicht leer sein.")
+    if re.match('^[ \t]*$', title) is not None:
+        raise CheckError("Leerer Titel!",
+                         "Der Titel darf nicht nur aus Leerzeichen bestehen.")
 
 def validateBlobLabel(label):
     """
     check whether a label for a blob is valid. This means matching a certain
     regexp. Otherwise raise a CheckError.
 
-    @type label: unicode
+    @type label: str
     @param label: label to check
     @raises CheckError:
     """
-    assert isinstance(label, unicode)
-    if re.match(u'^[a-z0-9]{1,200}$', label) is None:
-        raise CheckError(u"Kürzel nicht wohlgeformt!",
-                         u"Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten, nicht leer sein und nicht mehr als 200 Zeichen enthalten.")
+    assert isinstance(label, str)
+    if re.match('^[a-z0-9]{1,200}$', label) is None:
+        raise CheckError("Kürzel nicht wohlgeformt!",
+                         "Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten, nicht leer sein und nicht mehr als 200 Zeichen enthalten.")
 
 def validateBlobComment(comment):
     """
     check whether a label for a blob is valid. This means beeing
     nonempty. Otherwise raise a CheckError.
 
-    @type comment: unicode
+    @type comment: str
     @param comment: comment to check
     @raises CheckError:
     """
-    assert isinstance(comment, unicode)
-    if comment == u"":
-        raise CheckError(u"Keine Bildunterschrift gefunden!",
-                         u"Bitte eine Bildunterschrift eingeben und erneut versuchen.")
+    assert isinstance(comment, str)
+    if comment == "":
+        raise CheckError("Keine Bildunterschrift gefunden!",
+                         "Bitte eine Bildunterschrift eingeben und erneut versuchen.")
 
 class InvalidBlobFilename(CheckError):
     pass
@@ -164,8 +159,8 @@ def validateBlobFilename(filename):
     """
     assert isinstance(filename, bytes)
     if re.match(b'^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
-        raise InvalidBlobFilename(u"Dateiname nicht wohlgeformt!",
-                                  u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen. Der Dateinahme darf nicht mehr als 200 Zeichen enthalten.")
+        raise InvalidBlobFilename("Dateiname nicht wohlgeformt!",
+                                  "Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen. Der Dateinahme darf nicht mehr als 200 Zeichen enthalten.")
 
 def validateInternalName(name):
     """
@@ -173,14 +168,14 @@ def validateInternalName(name):
     for the internal representation. This means matching a certain
     regexp. Otherwise raise a CheckError.
 
-    @type name: unicode
+    @type name: str
     @param name: name to check
     @raises CheckError:
     """
-    assert isinstance(name, unicode)
-    if re.match(u'^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
-        raise CheckError(u"Interner Name nicht wohlgeformt!",
-                         u"Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten, muss mit einem Buchstaben beginnen und darf nicht mehr als 200 Zeichen enthalten.")
+    assert isinstance(name, str)
+    if re.match('^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
+        raise CheckError("Interner Name nicht wohlgeformt!",
+                         "Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten, muss mit einem Buchstaben beginnen und darf nicht mehr als 200 Zeichen enthalten.")
 
 def validateNonExistence(path, name):
     """
@@ -197,8 +192,8 @@ def validateNonExistence(path, name):
     assert isinstance(path, bytes)
     if os.path.exists(os.path.join(path, name)) or \
            os.path.exists(os.path.join(path, name + b",v")):
-        raise CheckError(u"Interner Name bereits vergeben!",
-                         u"Wähle einen anderen Namen.")
+        raise CheckError("Interner Name bereits vergeben!",
+                         "Wähle einen anderen Namen.")
 
 def validateExistence(path, name):
     """
@@ -213,60 +208,60 @@ def validateExistence(path, name):
     assert isinstance(name, bytes)
     assert isinstance(path, bytes)
     if not os.path.exists(os.path.join(path, name)):
-        raise CheckError(u"Interner Name existiert nicht!",
-                         u"Bitte den Namen korrigieren.")
+        raise CheckError("Interner Name existiert nicht!",
+                         "Bitte den Namen korrigieren.")
 
 def sanitizeBlobFilename(name):
-    return u"einedatei.dat"
+    return "einedatei.dat"
 
 def validateUserConfig(config):
     """
     Try parsing the supplied config with ConfigParser. If this fails
     raise a CheckError saying so.
 
-    @type config: unicode
+    @type config: str
     """
-    assert isinstance(config, unicode)
+    assert isinstance(config, str)
     parser = ConfigParser()
     try:
         parser.readfp(io.StringIO(config))
     except configparser.ParsingError as err:
-        raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+        raise CheckError("Es ist ein allgemeiner Parser-Fehler aufgetreten!",
+                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
-            for perm in parser.get(name, u'permissions').split(u','):
-                if len(perm.strip().split(u' ')) != 2:
+            for perm in parser.get(name, 'permissions').split(','):
+                if len(perm.strip().split(' ')) != 2:
                     raise CheckError(
-                        u"Fehler in Permissions.",
-                        u"Das Recht '%s' für '%s' ist nicht wohlgeformt." %
+                        "Fehler in Permissions.",
+                        "Das Recht '%s' für '%s' ist nicht wohlgeformt." %
                         (perm, name))
-            parser.get(name, u'status')
-            parser.get(name, u'password')
+            parser.get(name, 'status')
+            parser.get(name, 'password')
     except configparser.NoOptionError as err:
-        raise CheckError(u"Es fehlt eine Angabe!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+        raise CheckError("Es fehlt eine Angabe!",
+                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
 def validateGroupConfig(config):
     """
     Try parsing the supplied config with ConfigParser. If this fails
     raise a CheckError saying so.
 
-    @type config: unicode
+    @type config: str
     """
-    assert isinstance(config, unicode)
+    assert isinstance(config, str)
     parser = ConfigParser()
     try:
         parser.readfp(io.StringIO(config))
     except configparser.Error as err:
-        raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+        raise CheckError("Es ist ein allgemeiner Parser-Fehler aufgetreten!",
+                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     try:
         for name in parser.sections():
-            parser.get(name, u'title')
+            parser.get(name, 'title')
     except configparser.NoOptionError as err:
-        raise CheckError(u"Es fehlt eine Angabe!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+        raise CheckError("Es fehlt eine Angabe!",
+                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
 class RcsUserInputError(CheckError):
     pass
@@ -282,10 +277,10 @@ def validateRcsRevision(versionnumber):
     # Decoding with this encoding will not fail. Non-ascii bytes will be
     # rejected by the regex.
     versionnumber = versionnumber.decode("iso8859-1")
-    if re.match(u'^[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}(\\.[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}){0,5}$',
+    if re.match('^[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}(\\.[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}){0,5}$',
                 versionnumber) is None:
-        raise RcsUserInputError(u"rcs version number syntactically malformed",
-                                u"can only happen in hand-crafted requests")
+        raise RcsUserInputError("rcs version number syntactically malformed",
+                                "can only happen in hand-crafted requests")
 
 class TarWriter:
     def __init__(self, gzip=False):
@@ -315,9 +310,7 @@ class TarWriter:
         """
         assert isinstance(dirname, bytes)
         assert b"/" not in dirname
-        if not isinstance(dirname, str):
-            dirname = dirname.decode("iso8859-1")
-        self.dirs.append(dirname)
+        self.dirs.append(dirname.decode("iso8859-1"))
 
     def popd(self):
         """Pop the topmost directory off the directory stack.
@@ -345,8 +338,7 @@ class TarWriter:
         """
         assert isinstance(name, bytes)
         assert isinstance(content, bytes)
-        if not isinstance(name, str):
-            name = name.decode("iso8859-1")
+        name = name.decode("iso8859-1")
         assert isinstance(lastchanged, datetime.datetime)
 
         info = tarfile.TarInfo(self.prefix + name)
@@ -363,8 +355,8 @@ class TarWriter:
         @type filename: bytes
         @rtype: bytes
         """
-        if not isinstance(name, str):
-            name = name.decode("iso8859-1")
+        assert isinstance(name, bytes)
+        name = name.decode("iso8859-1")
         info = tarfile.TarInfo(self.prefix + name)
         with open(filename, "rb") as infile:
             infile.seek(0, 2)
@@ -418,5 +410,5 @@ def findlastchange(changes):
     @rtype: {str:object}
     @returns: returns the dictionary with the latest date
     """
-    return max(changes + [{'author': u'unkown', 'revision' : u'?',
-                           'date' : epoch}], key=lambda x: x["date"])
+    return max(changes + [{'author': 'unkown', 'revision': '?',
+                           'date': epoch}], key=lambda x: x["date"])

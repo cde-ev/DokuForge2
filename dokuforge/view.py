@@ -55,6 +55,6 @@ class LazyView(Mapping):
 def liftdecodeutf8(fun):
     """
     @returns: a function returning fun().decode("utf8")
-    @rtype: () -> unicode
+    @rtype: () -> str
     """
     return lambda:fun().decode("utf8")

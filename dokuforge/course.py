@@ -1,11 +1,6 @@
 import os
 import datetime
 
-try:
-    unicode
-except NameError:
-    unicode = str
-
 from werkzeug.datastructures import FileStorage
 
 from dokuforge.common import check_output
@@ -22,20 +17,21 @@ class Outline:
         """
         self.number = number
         self.content = []
-        self.lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : common.epoch}
+        self.lastchange = {'author': 'unkown', 'revision': '?',
+                           'date': common.epoch}
         self.estimate = Estimate.fromNothing()
     def addheading(self, title):
         """
-        @type title: unicode
+        @type title: str
         """
-        assert isinstance(title, unicode)
+        assert isinstance(title, str)
         if title:
             self.content.append(("heading", title))
     def addsubheading(self, title):
         """
-        @type title: unicode
+        @type title: str
         """
-        assert isinstance(title, unicode)
+        assert isinstance(title, str)
         if title:
             self.content.append(("subheading", title))
     def addParsed(self, headinglist):
@@ -49,7 +45,7 @@ class Outline:
                 self.addsubheading(heading.getTitle())
     def items(self):
         """
-        @rtype: [(str, unicode)]
+        @rtype: [(str, str)]
         """
         return self.content
     def addEstimate(self, estimate):
@@ -63,7 +59,7 @@ class Outline:
         Add information about the last commit. Must contain at
         least revision, date, and author
 
-        @type info: {unicode: unicode or datetime}
+        @type info: {str: str or datetime}
         """
         assert 'date' in info.keys()
         assert 'author'  in info.keys()
@@ -73,9 +69,9 @@ class Outline:
     @property
     def versionstring(self):
         """
-        @rtype: unicode
+        @rtype: str
         """
-        return u"%s/%s (%s)" % (self.lastchange['revision'],
+        return "%s/%s (%s)" % (self.lastchange['revision'],
                                 self.lastchange['author'],
                                 self.lastchange['date'].strftime("%Y/%m/%d %H:%M:%S %Z"))
 
@@ -186,9 +182,9 @@ class Course(StorageDir):
     def getcommit(self, page):
         """
         @type page: int
-        @rtype: {unicode: unicode or datetime}
+        @rtype: {str: str or datetime}
         """
-        page = (u"page%d" % page).encode("ascii")
+        page = ("page%d" % page).encode("ascii")
         info = self.getstorage(page).commitstatus()
         return dict((k.decode("ascii"), v) if k == b"date"
                     else (k.decode("ascii"), v.decode("utf8"))
@@ -247,9 +243,9 @@ class Course(StorageDir):
 
         @type number: int
         @param number: the internal number of that page
-        @rtype: unicode
+        @rtype: str
         """
-        page = (u"page%d" % number).encode("ascii")
+        page = ("page%d" % number).encode("ascii")
         return self.getcontent(page).decode("utf8")
 
     def getrcs(self, page):
@@ -262,29 +258,29 @@ class Course(StorageDir):
             return ""
         if page >= self.nextpage():
             return ""
-        page = (u"page%d" % page).encode("ascii")
+        page = ("page%d" % page).encode("ascii")
         return self.getstorage(page).asrcs()
 
     def newpage(self, user=None):
         """
         create a new page in this course and return its internal number
-        @type user: None or unicode
+        @type user: None or str
         @rtype: int
         """
         if user is not None:
-            assert isinstance(user, unicode)
+            assert isinstance(user, str)
             user = user.encode("utf8")
         index = self.getstorage(b"Index")
         nextpagestore = self.getstorage(b"nextpage")
         with index.lock as gotlockindex:
             with nextpagestore.lock as gotlocknextpage:
                 newnumber = self.nextpage(havelock = gotlocknextpage)
-                nextpagestore.store((u"%d" % (newnumber+1)).encode("ascii"),
+                nextpagestore.store(("%d" % (newnumber+1)).encode("ascii"),
                                     havelock = gotlocknextpage, user = user)
                 indexcontents = index.content(havelock = gotlockindex)
                 if indexcontents == b"\n":
                     indexcontents = b""
-                indexcontents += (u"%s\n" % newnumber).encode("ascii")
+                indexcontents += ("%s\n" % newnumber).encode("ascii")
                 index.store(indexcontents, havelock = gotlockindex, user = user)
                 return newnumber
 
@@ -294,10 +290,10 @@ class Course(StorageDir):
 
         @param number: the internal page number
         @type number: int
-        @type user: None or unicode
+        @type user: None or str
         """
         if user is not None:
-            assert isinstance(user, unicode)
+            assert isinstance(user, str)
             user = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         with indexstore.lock as gotlock:
@@ -320,10 +316,10 @@ class Course(StorageDir):
 
         @param number: the internal page number
         @type number: int
-        @type user: None or unicode
+        @type user: None or str
         """
         if user is not None:
-            assert isinstance(user, unicode)
+            assert isinstance(user, str)
             user = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         with indexstore.lock as gotlock:
@@ -342,10 +338,10 @@ class Course(StorageDir):
         swap the page at the given current position with its predecessor
 
         @type position: int
-        @type user: None or unicode
+        @type user: None or str
         """
         if user is not None:
-            assert isinstance(user, unicode)
+            assert isinstance(user, str)
             user = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         with indexstore.lock as gotlock:
@@ -362,10 +358,10 @@ class Course(StorageDir):
         """
         relink a (usually deleted) page to the index
         @type page: int
-        @type user: None or unicode
+        @type user: None or str
         """
         if user is not None:
-            assert isinstance(user, unicode)
+            assert isinstance(user, str)
             user = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         nextpage = self.getstorage(b"nextpage")
@@ -383,7 +379,7 @@ class Course(StorageDir):
                     if page in [int(x.split()[0]) for x in lines]:
                         pass # page already present
                     else:
-                        lines.append((u"%d" % page).encode("ascii"))
+                        lines.append(("%d" % page).encode("ascii"))
                         newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex,
                                          user = user)
@@ -393,10 +389,10 @@ class Course(StorageDir):
         relink a (usually deleted) blob to the given page in the index
         @type number: int
         @type page: int
-        @type user: None or unicode
+        @type user: None or str
         """
         if user is not None:
-            assert isinstance(user, unicode)
+            assert isinstance(user, str)
             user = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         nextblob = self.getstorage(b"nextblob")
@@ -415,7 +411,7 @@ class Course(StorageDir):
                         if number in [int(x) for x in lineparts[1:]]:
                             pass # want a set-like semantics
                         else:
-                            lines[i] += (u" %d" % number).encode("ascii")
+                            lines[i] += (" %d" % number).encode("ascii")
             newindex = b"".join(map(b"%s\n".__mod__, lines))
             indexstore.store(newindex, havelock = gotlockindex, user = user)
 
@@ -427,9 +423,9 @@ class Course(StorageDir):
         @param number: the internal page number
         @type number: int
         @returns: a pair of an opaque version string and the contents of this page
-        @rtype: (unicode, unicode)
+        @rtype: (str, str)
         """
-        page = self.getstorage((u"page%d" % number).encode("ascii"))
+        page = self.getstorage(("page%d" % number).encode("ascii"))
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -442,22 +438,22 @@ class Course(StorageDir):
         @param newcontent: the new content of the page, based on editing the said version
         @param user: the df-login name of the user to carried out the edit
         @type number: int
-        @type version: unicode
-        @type newcontent: unicode
-        @type user: unicode
+        @type version: str
+        @type newcontent: str
+        @type user: str
 
         @returns: a triple (ok, newversion, mergedcontent) where ok is a
                   boolean indicating whether no confilct has occured and
                   (newversion, mergedcontent) a pair for further editing that
                   can be handled as if obtained from editpage
-        @rtype: (unicode, unicode, unicode)
+        @rtype: (str, str, str)
         """
-        assert isinstance(version, unicode)
-        assert isinstance(newcontent, unicode)
+        assert isinstance(version, str)
+        assert isinstance(newcontent, str)
         if user is not None:
-            assert isinstance(user, unicode)
+            assert isinstance(user, str)
             user = user.encode("utf8")
-        page = self.getstorage((u"page%d" % number).encode("ascii"))
+        page = self.getstorage(("page%d" % number).encode("ascii"))
         ok, version, mergedcontent = page.endedit(version.encode("utf8"),
                                                   newcontent.encode("utf8"),
                                                   user = user)
@@ -476,23 +472,23 @@ class Course(StorageDir):
         @param user: the df-login name of the user to carried out the edit
         @type number: int
         @type data: str or file-like
-        @type label: unicode
-        @type comment: unicode
-        @type user: unicode or None
+        @type label: str
+        @type comment: str
+        @type user: str or None
         @returns: None on failure or the created blob number
         """
         assert isinstance(data, FileStorage)
-        assert isinstance(comment, unicode)
-        assert isinstance(label, unicode)
+        assert isinstance(comment, str)
+        assert isinstance(label, str)
 
         common.validateBlobLabel(label)
         common.validateBlobComment(comment)
         # Note: Some browsers may be unable to set the filename.
-        filename = (data.filename or u"").encode("utf8")
+        filename = (data.filename or "").encode("utf8")
         common.validateBlobFilename(filename)
 
         if user is not None:
-            assert isinstance(user, unicode)
+            assert isinstance(user, str)
             user = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         nextblobstore = self.getstorage(b"nextblob")
@@ -500,18 +496,18 @@ class Course(StorageDir):
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
                 newnumber = self.nextblob(havelock = gotlocknextblob)
-                nextblobstore.store((u"%d" % (newnumber+1)).encode("ascii"),
+                nextblobstore.store(("%d" % (newnumber+1)).encode("ascii"),
                                     havelock = gotlocknextblob)
                 index = indexstore.content()
                 lines = index.splitlines()
                 for i in range(len(lines)):
                     entries = lines[i].split()
                     if entries and int(entries[0]) == number:
-                        lines[i] += (u" %d" % newnumber).encode("ascii")
+                        lines[i] += (" %d" % newnumber).encode("ascii")
                         newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex)
 
-        blobbase = (u"blob%d" % newnumber).encode("ascii")
+        blobbase = ("blob%d" % newnumber).encode("ascii")
         blob = self.getstorage(blobbase)
         bloblabel = self.getstorage(blobbase + b".label")
         blobcomment = self.getstorage(blobbase + b".comment")
@@ -544,11 +540,11 @@ class Course(StorageDir):
         @param number: the internal number of the blob
         @type number: int
         @rtype: LazyView
-        @returns: a mapping providing the keys: data(str), label(unicode),
-                  comment(unicode), filename(unicode) and number(int)
+        @returns: a mapping providing the keys: data(str), label(str),
+                  comment(str), filename(str) and number(int)
         """
         ldu = liftdecodeutf8
-        blobbase = (u"blob%d" % number).encode("ascii")
+        blobbase = ("blob%d" % number).encode("ascii")
         return LazyView(dict(
             data = self.getstorage(blobbase).content,
             label = ldu(self.getstorage(blobbase + b".label").content),
@@ -561,10 +557,10 @@ class Course(StorageDir):
         modify the blob given by number with the data in the other parameters.
         @raises CheckError: if the input data is malformed
         """
-        assert isinstance(label, unicode)
-        assert isinstance(comment, unicode)
-        assert isinstance(filename, unicode)
-        assert isinstance(user, unicode)
+        assert isinstance(label, str)
+        assert isinstance(comment, str)
+        assert isinstance(filename, str)
+        assert isinstance(user, str)
 
         # store requires user to be bytes, so encode
         user = user.encode("utf-8")
@@ -574,7 +570,7 @@ class Course(StorageDir):
         common.validateBlobComment(comment)
         common.validateBlobFilename(filename)
 
-        blobbase = (u"blob%d" % number).encode("ascii")
+        blobbase = ("blob%d" % number).encode("ascii")
         bloblabel = self.getstorage(blobbase + b".label")
         blobcomment = self.getstorage(blobbase + b".comment")
         blobname = self.getstorage(blobbase + b".filename")
@@ -586,14 +582,14 @@ class Course(StorageDir):
         return common.findlastchange([self.getcommit(p) for p in self.listpages()])
 
     def timestamp(self):
-        return max([self.getstorage((u"page%d" % p).encode("ascii")).timestamp()
+        return max([self.getstorage(("page%d" % p).encode("ascii")).timestamp()
                     for p in self.listpages()] + [common.epoch])
 
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
         @returns: a mapping providing the keys: name(bytes), pages([int]),
-                deadpages([int]), title(unicode), outlines([Outline])
+                deadpages([int]), title(str), outlines([Outline])
         """
         functions = dict(
             pages = self.listpages,
@@ -609,36 +605,36 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
-        tex = u"\\course{%02d}{%s}" % (self.number,
+        tex = "\\course{%02d}{%s}" % (self.number,
                                        dfTitleParser(self.gettitle()).toTex().strip())
         for p in self.listpages():
-            tex += u"\n\n%%%%%% Part %d\n" % p
+            tex += "\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
             tex += dfLineGroupParser(page).toTex()
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
-                blobbase = (u"blob%d" % b).encode("ascii")
+                blobbase = ("blob%d" % b).encode("ascii")
                 blobdate = self.getstorage(blobbase).commitstatus()[b'date']
-                tex += u"\n\n%% blob %d\n" % b
-                tex += u"\\begin{figure}\n\\centering\n"
+                tex += "\n\n%% blob %d\n" % b
+                tex += "\\begin{figure}\n\\centering\n"
                 fileName = blob['filename']
                 includegraphics = \
-                    (u"\\includegraphics" +
-                     u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
+                    ("\\includegraphics" +
+                     "[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
                     (self.name.decode('ascii'), b, fileName)
                 if fileName.lower().endswith((".png", ".jpg", ".pdf")):
                     tex += includegraphics
                 else:
-                    tex += (u"%%%s(Binaerdatei \\verb|%s|" +
-                            u" nicht als Bild eingebunden)\n") % \
+                    tex += ("%%%s(Binaerdatei \\verb|%s|" +
+                            " nicht als Bild eingebunden)\n") % \
                            (includegraphics, fileName)
-                tex += u"\\caption{%s}\n" % dfCaptionParser(
+                tex += "\\caption{%s}\n" % dfCaptionParser(
                     blob['comment']).toTex().strip()
-                tex += u"\\label{fig_%s_%d_%s}\n" % (
+                tex += "\\label{fig_%s_%d_%s}\n" % (
                     self.name.decode('ascii'), b, blob['label'])
-                tex += u"\\end{figure}\n"
+                tex += "\\end{figure}\n"
                 yield tarwriter.addChunk(self.name +
-                                         (u"/blob_%d_" % b).encode("ascii") +
+                                         ("/blob_%d_" % b).encode("ascii") +
                                          blob['filename'].encode('utf8'),
                                          blob['data'],
                                          blobdate)

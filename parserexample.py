@@ -3,7 +3,7 @@
 
 from dokuforge.parser import dfLineGroupParser
 
-teststring = u"""
+teststring = """
 [Eine Ueberschrift]
 [[Eine Unterueberschrift]]
 (Autor, Korrektor und Chef)
@@ -83,15 +83,15 @@ print(parsed.debug())
 
 print("========================================")
 
-print(parsed.toDF().encode("utf8"))
+print(parsed.toDF())
 
 print("========================================")
 
-print(parsed.toHtml().encode("utf8"))
+print(parsed.toHtml())
 
 print("========================================")
 
-print(parsed.toTex().encode("utf8"))
+print(parsed.toTex())
 
 print("========================================")
 

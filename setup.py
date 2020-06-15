@@ -19,7 +19,7 @@ def add_versioninfo():
     commitid = commitid.strip()
     with open(os.path.join(workdir, "dokuforge", "versioninfo.py"),
               "w") as verfile:
-        verfile.write('commitid = u"%s"\n' % commitid)
+        verfile.write('commitid = "%s"\n' % commitid)
 
 def clean_versioninfo():
     try:

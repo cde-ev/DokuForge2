@@ -23,10 +23,6 @@ try:
     import urlparse
 except ImportError:
     from urllib import parse as urlparse
-try:
-    unicode
-except NameError:
-    unicode = str
 
 import jinja2
 import werkzeug.exceptions
@@ -42,7 +38,7 @@ from dokuforge.parser import dfLineGroupParser, Estimate
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
-    commitid = u"unknown"
+    commitid = "unknown"
 
 sysrand = random.SystemRandom()
 
@@ -52,10 +48,10 @@ def gensid(bits=64):
     """
     @type bits: int
     @param bits: randomness in bits of the resulting string
-    @rtype: unicode
+    @rtype: str
     @returns: a random string
     """
-    return u"%x" % sysrand.getrandbits(bits)
+    return "%x" % sysrand.getrandbits(bits)
 
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database. The database
@@ -79,7 +75,7 @@ class SessionHandler:
     def get(self, request):
         """Find a user session.
         @type request: werkzeug.wrappers.Request
-        @rtype: (unicode or None, unicode or None)
+        @rtype: (str or None, str or None)
         @returns: a pair (sid, username). sid is None if the cookie is missing
                 and username is None if sid cannot be found in the database
         """
@@ -100,7 +96,7 @@ class SessionHandler:
             cur.close()
             return (sid, None)
         username, updated = results[0]
-        assert isinstance(username, unicode)
+        assert isinstance(username, str)
         if updated + self.hit_interval < now:
             cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
                              (now, sid))
@@ -114,9 +110,9 @@ class SessionHandler:
     def set(self, response, username, sid=None):
         """Initiate a user session.
         @type response: werkzeug.wrappers.Response
-        @type username: unicode
-        @type sid: unicode or None
-        @rtype: unicode
+        @type username: str
+        @type sid: str or None
+        @rtype: str
         @returns: sid
         """
         action = "reusing"
@@ -359,11 +355,9 @@ class Application:
         @type name: str
         @param name: filename to serve statically
         @returns: url for the file
-        @rtype: unicode
+        @rtype: str
         """
         assert isinstance(name, str)
-        if not isinstance(name, unicode):
-            name = name.decode("ascii")
         ## If staticservepath is a full url, the join is the staticservepath.
         static = urlparse.urljoin(rs.request.url_root, self.staticservepath)
         return urlparse.urljoin(static, name)
@@ -374,11 +368,9 @@ class Application:
         @type name: str
         @param name: filename to serve from mathjax
         @returns: url for the file
-        @rtype: unicode
+        @rtype: str
         """
         assert isinstance(name, str)
-        if not isinstance(name, unicode):
-            name = name.decode("ascii")
         ## If mathjaxuri is a full url, the join is the mathjaxuri.
         mathjax = urlparse.urljoin(rs.request.url_root, self.mathjaxuri)
         return urlparse.urljoin(mathjax, name)
@@ -388,12 +380,12 @@ class Application:
         look up an academy for a given name. If none is found raise a
         werkzeug.exceptions.NotFound.
 
-        @type name: unicode
+        @type name: str
         @type user: None or User
         @rtype: Academy
         @raises werkzeug.exceptions.HTTPException:
         """
-        assert isinstance(name, unicode)
+        assert isinstance(name, str)
         try:
             common.validateInternalName(name)
             name = name.encode("utf8")
@@ -408,12 +400,12 @@ class Application:
     def getCourse(self, aca, coursename, user=None):
         """
         @type aca: Academy
-        @type coursename: unicode
+        @type coursename: str
         @type user: None or User
         @rtype: Course
         @raises werkzeug.exceptions.HTTPException:
         """
-        assert isinstance(coursename, unicode)
+        assert isinstance(coursename, str)
         c = aca.getCourse(coursename) # checks name
         if c is None:
             raise werkzeug.exceptions.NotFound()
@@ -425,14 +417,14 @@ class Application:
         """
         create an academy. If the user data is malformed raise a CheckError.
 
-        @type name: unicode
-        @type title: unicode
+        @type name: str
+        @type title: str
         @rtype: None or Academy
         @raises CheckError:
         """
-        assert isinstance(name, unicode)
-        assert isinstance(title, unicode)
-        assert all(isinstance(group, unicode) for group in groups)
+        assert isinstance(name, str)
+        assert isinstance(title, str)
+        assert all(isinstance(group, str) for group in groups)
         common.validateInternalName(name)
         name = name.encode("utf8")
         common.validateNonExistence(self.acapath, name)
@@ -456,7 +448,7 @@ class Application:
 
     def listGroups(self):
         """
-        @rtype: {unicode: unicode}
+        @rtype: {str: str}
         @returns: a dict of all groups with their titles as values
         """
         try:
@@ -466,7 +458,7 @@ class Application:
             return {}
         ret = {}
         for group in config.sections():
-            ret[group] = config.get(group, u'title')
+            ret[group] = config.get(group, 'title')
         return ret
 
     @Request.application
@@ -541,8 +533,8 @@ class Application:
         version = version.decode("utf8")
         content = content.decode("utf8")
         if not ok:
-            error = CheckError(u"Es ist ein Konflikt mit einer anderen Änderung aufgetreten!",
-                               u"Bitte löse den Konflikt auf und speichere danach erneut.")
+            error = CheckError("Es ist ein Konflikt mit einer anderen Änderung aufgetreten!",
+                               "Bitte löse den Konflikt auf und speichere danach erneut.")
             return self.render_file(rs, template, version, content, ok=False,
                                     error = error, extraparams=extraparams)
         if not savehook is None:
@@ -565,7 +557,7 @@ class Application:
         """
         assert isinstance(template, str)
         content = getter()
-        assert isinstance(content, unicode)
+        assert isinstance(content, str)
         return self.render_property(rs, template, content,
                                     extraparams=extraparams)
 
@@ -638,7 +630,7 @@ class Application:
     def do_groupindex(self, rs, group=None):
         """
         @type rs: RequestState
-        @type group: None or unicode
+        @type group: None or str
         """
         self.check_login(rs)
         return self.render_index(rs, group)
@@ -646,7 +638,7 @@ class Application:
     def do_academy(self, rs, academy = None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -656,8 +648,8 @@ class Application:
     def do_course(self, rs, academy = None, course = None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -668,8 +660,8 @@ class Application:
     def do_showdeadpages(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -682,8 +674,8 @@ class Application:
     def do_showdeadblobs(self, rs, academy=None, course=None, page=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -697,7 +689,7 @@ class Application:
     def do_createcoursequiz(self, rs, academy=None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -709,7 +701,7 @@ class Application:
     def do_createcourse(self, rs, academy=None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -754,27 +746,24 @@ class Application:
         """
         @type rs: RequestState
         """
-        return self.do_styleguidetopic(rs, u"index")
+        return self.do_styleguidetopic(rs, "index")
 
     def do_styleguidetopic(self, rs, topic=None):
         """
         @type rs: RequestState
-        @type topic: unicode
+        @type topic: str
         """
-        assert isinstance(topic, unicode)
-        strtopic = topic
-        if not isinstance(topic, str):
-            strtopic = topic.encode("utf8")
-        if not strtopic in os.listdir(os.path.join(self.templatepath,
-                                                   "style")):
+        assert isinstance(topic, str)
+        if topic not in os.listdir(os.path.join(self.templatepath,
+                                                "style")):
             raise werkzeug.exceptions.NotFound()
         return self.render_styleguide(rs, topic)
 
     def do_deletecourse(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -788,8 +777,8 @@ class Application:
     def do_undeletecourse(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -803,8 +792,8 @@ class Application:
     def do_createpage(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -818,8 +807,8 @@ class Application:
     def do_delete(self, rs, academy=None, course=None, page=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -835,8 +824,8 @@ class Application:
                       blob=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         @type blob: int
         """
@@ -853,8 +842,8 @@ class Application:
     def do_relink(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -873,8 +862,8 @@ class Application:
     def do_relinkblob(self, rs, academy=None, course=None, page=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -894,8 +883,8 @@ class Application:
     def do_showblob(self, rs, academy=None, course=None, page=None, blob=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         @type blob: int
         """
@@ -911,8 +900,8 @@ class Application:
     def do_editblob(self, rs, academy=None, course=None, page=None, blob=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         @type blob: int
         """
@@ -929,8 +918,8 @@ class Application:
     def do_saveblob(self, rs, academy=None, course=None, page=None, blob=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         @type blob: int
         """
@@ -957,8 +946,8 @@ class Application:
     def do_md5blob(self, rs, academy=None, course=None, page=None, blob=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         @type blob: int
         """
@@ -979,8 +968,8 @@ class Application:
                         blob=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         @type blob: int
         """
@@ -1001,8 +990,8 @@ class Application:
     def do_rcs(self, rs, academy=None, course=None, page=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -1020,8 +1009,8 @@ class Application:
     def do_raw(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -1046,7 +1035,7 @@ class Application:
     def do_rawacademy(self, rs, academy=None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -1072,7 +1061,7 @@ class Application:
     def do_export(self, rs, academy=None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -1098,8 +1087,8 @@ class Application:
     def do_moveup(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -1118,8 +1107,8 @@ class Application:
     def do_page(self, rs, academy = None, course = None, page = None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -1131,8 +1120,8 @@ class Application:
     def do_edit(self, rs, academy = None, course = None, page = None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -1147,8 +1136,8 @@ class Application:
     def do_addblob(self, rs, academy = None, course = None, page = None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -1162,8 +1151,8 @@ class Application:
     def do_uploadblob(self, rs, academy = None, course = None, page = None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -1187,8 +1176,8 @@ class Application:
     def do_attachblob(self, rs, academy = None, course = None, page = None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -1229,8 +1218,8 @@ class Application:
     def do_save(self, rs, academy = None, course = None, page = None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         @type page: int
         """
         assert academy is not None and course is not None and page is not None
@@ -1255,7 +1244,7 @@ class Application:
     def do_academygroups(self, rs, academy=None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -1267,7 +1256,7 @@ class Application:
     def do_academygroupssave(self, rs, academy=None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -1285,7 +1274,7 @@ class Application:
     def do_deadcourses(self, rs, academy=None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -1297,7 +1286,7 @@ class Application:
     def do_academytitle(self, rs, academy=None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -1311,7 +1300,7 @@ class Application:
     def do_academytitlesave(self, rs, academy=None):
         """
         @type rs: RequestState
-        @type academy: unicode
+        @type academy: str
         """
         assert academy is not None
         self.check_login(rs)
@@ -1325,8 +1314,8 @@ class Application:
     def do_coursetitle(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -1342,8 +1331,8 @@ class Application:
     def do_coursetitlesave(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
-        @type academy: unicode
-        @type course: unicode
+        @type academy: str
+        @type course: str
         """
         assert academy is not None and course is not None
         self.check_login(rs)
@@ -1406,15 +1395,12 @@ class Application:
     def render_styleguide(self, rs, topic):
         """
         @type rs: RequestState
-        @type topic: unicode
+        @type topic: str
         """
-        assert isinstance(topic, unicode)
-        strtopic = topic
-        if not isinstance(topic, str):
-            strtopic = topic.encode("utf8")
+        assert isinstance(topic, str)
         params = dict(
             topic = topic,
-            includepath = os.path.join("style", strtopic)
+            includepath=os.path.join("style", topic)
             )
         return self.render("style.html", rs, params)
 
@@ -1425,12 +1411,12 @@ class Application:
         @type theacademy: Academy
         @type thecourse: Course
         @type thepage: int
-        @type theversion: unicode
-        @type thecontent: unicode
+        @type theversion: str
+        @type thecontent: str
         @type ok: None or bool
         """
-        assert isinstance(theversion, unicode)
-        assert isinstance(thecontent, unicode)
+        assert isinstance(theversion, str)
+        assert isinstance(thecontent, str)
         params = dict(
             academy=theacademy.view(),
             course=thecourse.view(),
@@ -1447,7 +1433,7 @@ class Application:
     def render_index(self, rs, group = None):
         """
         @type rs: RequestState
-        @type group: None or unicode
+        @type group: None or str
         """
         if group is None:
             group = rs.user.defaultGroup()
@@ -1650,15 +1636,15 @@ class Application:
         """
         @type rs: RequestState
         @type templatename: str
-        @type theversion: unicode
-        @type thecontent: unicode
+        @type theversion: str
+        @type thecontent: str
         @type ok: None or Booleon
         @type error: None or CheckError
         @type extraparams: dict
         """
         assert isinstance(templatename, str)
-        assert isinstance(theversion, unicode)
-        assert isinstance(thecontent, unicode)
+        assert isinstance(theversion, str)
+        assert isinstance(thecontent, str)
         params = dict(
             ## Note: must use the provided content, as it has to fit with the
             ## version
@@ -1675,13 +1661,13 @@ class Application:
         """
         @type rs: RequestState
         @type templatename: str
-        @type thecontent: unicode
+        @type thecontent: str
         @type ok: None or Booleon
         @type error: None or CheckError
         @type extraparams: dict
         """
         assert isinstance(templatename, str)
-        assert isinstance(thecontent, unicode)
+        assert isinstance(thecontent, str)
         params = dict(
             content=thecontent,
             ok=ok,

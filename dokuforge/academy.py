@@ -12,12 +12,7 @@ from dokuforge.common import CheckError
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
-    commitid = u"unknown"
-
-try:
-    unicode
-except NameError:
-    unicode = str
+    commitid = "unknown"
 
 class Academy(StorageDir):
     """
@@ -43,7 +38,7 @@ class Academy(StorageDir):
         loads the current groups from disk, list version.
 
         @returns: the groups of which this academy is a member
-        @rtype: [unicode]
+        @rtype: [str]
         """
         return self.getcontent(b"groups").decode("utf8").split()
 
@@ -52,7 +47,7 @@ class Academy(StorageDir):
         loads the current groups from disk, string version.
 
         @returns: the groups of which this academy is a member
-        @rtype: unicode
+        @rtype: str
         """
         return self.getcontent(b"groups").decode("utf8")
 
@@ -99,11 +94,11 @@ class Academy(StorageDir):
         deleted. If none is found raise a werkzeug.exceptions.NotFound.
 
         @param coursename: internal name of course
-        @type coursename: unicode
+        @type coursename: str
         @returns: Course object for course with name coursename
         @raises werkzeug.exceptions.NotFound: if the course does not exist
         """
-        assert isinstance(coursename, unicode)
+        assert isinstance(coursename, str)
         try:
             common.validateInternalName(coursename)
             coursename = coursename.encode("utf8")
@@ -118,13 +113,13 @@ class Academy(StorageDir):
         the input is malformed raise a CheckError.
 
         @param groups: groups to set
-        @type groups: list of unicode
+        @type groups: list of str
         """
-        if isinstance(groups, unicode):
+        if isinstance(groups, str):
             groups = groups.split()
-        assert all(isinstance(group, unicode) for group in groups)
+        assert all(isinstance(group, str) for group in groups)
         common.validateGroups(groups, self.listAllGroups())
-        content = u" ".join(groups)
+        content = " ".join(groups)
         self.getstorage(b"groups").store(content.encode("utf8"))
 
     def createCourse(self, name, title):
@@ -134,12 +129,12 @@ class Academy(StorageDir):
 
         @param name: internal name of the course
         @param title: displayed name of the course
-        @type name: unicode (restricted char-set)
-        @type title: unicode
+        @type name: str (restricted char-set)
+        @type title: str
         @raises CheckError:
         """
-        assert isinstance(name, unicode)
-        assert isinstance(title, unicode)
+        assert isinstance(name, str)
+        assert isinstance(title, str)
         common.validateInternalName(name)
         name = name.encode("utf8")
         common.validateNonExistence(self.path, name)
@@ -155,8 +150,8 @@ class Academy(StorageDir):
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
-        @returns: a mapping providing the keys: name(bytes), title(unicode),
-            courses([Course.view()]), groups([unicode])
+        @returns: a mapping providing the keys: name(bytes), title(str),
+            courses([Course.view()]), groups([str])
         """
         functions = dict(courses=self.viewCourses,
                          deadcourses=self.viewDeadCourses,
@@ -173,7 +168,7 @@ class Academy(StorageDir):
         timeStampNow = datetime.datetime.utcnow()
         timeStampNow.replace(tzinfo=common.utc)
         yield tarwriter.addChunk(b"WARNING",
-(u"""The precise semantics of the exporter is still
+("""The precise semantics of the exporter is still
 subject to discussion and may change in future versions.
 If you think you might need to reproduce an export with the
 same exporter semantics, keep the following version string
@@ -184,9 +179,9 @@ for your reference
         if static is not None:
             for chunk in tarwriter.addDirChunk(b"", static, excludes=[b".svn"]):
                 yield chunk
-        contents = u""
+        contents = ""
         for course in self.listCourses():
-            contents += u"\\include{%s/chap}\n" % course.name.decode("ascii")
+            contents += "\\include{%s/chap}\n" % course.name.decode("ascii")
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
         yield tarwriter.addChunk(b"contents.tex",
