@@ -9,28 +9,28 @@ import os
 import tarfile
 import datetime
 import calendar
+import typing
 
 sysrand = random.SystemRandom()
 
-def randstring(n=6):
+
+def randstring(n: int = 6) -> str:
     """
     @returns: random string of length n
-    @type n: int
-    @rtype: str
     """
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     return ''.join(sysrand.choice(chars) for x in range(n))
 
-def strtobool(s):
+
+def strtobool(s: str) -> bool:
     """
     @returns: Boolean version of s
-    @type s: str
-    @rtype: bool
     """
     return s in ("True", "true", "t")
 
+
 class CheckError(Exception):
-    def __init__(self, msg, exp):
+    def __init__(self, msg: str, exp: str) -> None:
         Exception.__init__(self, msg)
         assert isinstance(msg, str)
         assert isinstance(exp, str)
@@ -41,13 +41,13 @@ class CheckError(Exception):
 
 epoch = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
 
-def validateGroupstring(groupstring, allgroups):
+
+def validateGroupstring(groupstring: str, allgroups) -> None:
     """
     check whether groupstring contains a valid set of groups. This means
     it may not be empty and it may not contain non-existent groups. If a
     check fails a CheckError is raised.
 
-    @type groupstring: str
     @param groupstring: contains groups seperated by whitespace
     @raises CheckError:
     """
@@ -55,13 +55,12 @@ def validateGroupstring(groupstring, allgroups):
     validateGroups(groupstring.split(), allgroups)
 
 
-def validateGroups(groups, allgroups):
+def validateGroups(groups: typing.List[str], allgroups) -> None:
     """
     check whether list of groups is a valid set of groups. This means
     it may not be empty and it may not contain non-existent groups. If a
     check fails a CheckError is raised.
 
-    @type groups: [str]
     @param groups: a list of groups to validate
     @raises CheckError:
     """
@@ -74,12 +73,12 @@ def validateGroups(groups, allgroups):
             raise CheckError("Nichtexistente Gruppe gefunden!",
                              "Bitte korrigieren und erneut versuchen.")
 
-def validateTitle(title):
+
+def validateTitle(title: str) -> None:
     """
     check whether the title is valid, this means nonempty. If not raise
     a CheckError exception.
 
-    @type title: str
     @param title: title to check
     @raises CheckError:
     """
@@ -91,12 +90,12 @@ def validateTitle(title):
         raise CheckError("Leerer Titel!",
                          "Der Titel darf nicht nur aus Leerzeichen bestehen.")
 
-def validateBlobLabel(label):
+
+def validateBlobLabel(label: str) -> None:
     """
     check whether a label for a blob is valid. This means matching a certain
     regexp. Otherwise raise a CheckError.
 
-    @type label: str
     @param label: label to check
     @raises CheckError:
     """
@@ -105,12 +104,12 @@ def validateBlobLabel(label):
         raise CheckError("Kürzel nicht wohlgeformt!",
                          "Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten, nicht leer sein und nicht mehr als 200 Zeichen enthalten.")
 
-def validateBlobComment(comment):
+
+def validateBlobComment(comment: str) -> None:
     """
     check whether a label for a blob is valid. This means beeing
     nonempty. Otherwise raise a CheckError.
 
-    @type comment: str
     @param comment: comment to check
     @raises CheckError:
     """
@@ -119,15 +118,16 @@ def validateBlobComment(comment):
         raise CheckError("Keine Bildunterschrift gefunden!",
                          "Bitte eine Bildunterschrift eingeben und erneut versuchen.")
 
+
 class InvalidBlobFilename(CheckError):
     pass
 
-def validateBlobFilename(filename):
+
+def validateBlobFilename(filename: bytes) -> None:
     """
     check whether a filename for a blob is valid. This means matching a certain
     regexp. Otherwise raise a CheckError.
 
-    @type filename: bytes
     @param filename: filename to check
     @raises InvalidBlobFilename:
     """
@@ -136,13 +136,13 @@ def validateBlobFilename(filename):
         raise InvalidBlobFilename("Dateiname nicht wohlgeformt!",
                                   "Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen. Der Dateinahme darf nicht mehr als 200 Zeichen enthalten.")
 
-def validateInternalName(name):
+
+def validateInternalName(name: str) -> None:
     """
     check whether a name is accepted for representing something on disk, i.e.
     for the internal representation. This means matching a certain
     regexp. Otherwise raise a CheckError.
 
-    @type name: str
     @param name: name to check
     @raises CheckError:
     """
@@ -151,13 +151,12 @@ def validateInternalName(name):
         raise CheckError("Interner Name nicht wohlgeformt!",
                          "Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten, muss mit einem Buchstaben beginnen und darf nicht mehr als 200 Zeichen enthalten.")
 
-def validateNonExistence(path, name):
+
+def validateNonExistence(path: bytes, name: bytes) -> None:
     """
     check whether a name is already in use as internal representation, if so
     raise a CheckError. This also checks for additional rcs file extensions.
 
-    @type name: bytes
-    @type path: bytes
     @param name: name to check for existence
     @param path: base path in which to check for the name
     @raises CheckError:
@@ -169,12 +168,11 @@ def validateNonExistence(path, name):
         raise CheckError("Interner Name bereits vergeben!",
                          "Wähle einen anderen Namen.")
 
-def validateExistence(path, name):
+
+def validateExistence(path: bytes, name: bytes) -> None:
     """
     check whether a name exsits. If not raise a CheckError.
 
-    @type name: bytes
-    @type path: bytes
     @param name: name to check for existence
     @param path: base path in which to check for the name
     @raises CheckError:
@@ -188,12 +186,11 @@ def validateExistence(path, name):
 def sanitizeBlobFilename(name):
     return "einedatei.dat"
 
-def validateUserConfig(config):
+
+def validateUserConfig(config: str) -> None:
     """
     Try parsing the supplied config with ConfigParser. If this fails
     raise a CheckError saying so.
-
-    @type config: str
     """
     assert isinstance(config, str)
     parser = configparser.ConfigParser()
@@ -216,12 +213,11 @@ def validateUserConfig(config):
         raise CheckError("Es fehlt eine Angabe!",
                          "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
-def validateGroupConfig(config):
+
+def validateGroupConfig(config: str) -> None:
     """
     Try parsing the supplied config with ConfigParser. If this fails
     raise a CheckError saying so.
-
-    @type config: str
     """
     assert isinstance(config, str)
     parser = configparser.ConfigParser()
@@ -240,11 +236,11 @@ def validateGroupConfig(config):
 class RcsUserInputError(CheckError):
     pass
 
-def validateRcsRevision(versionnumber):
+
+def validateRcsRevision(versionnumber: bytes) -> None:
     """
     Check if versionnumber is a syntactically well-formed rcs version number
 
-    @type versionnumber: bytes
     @raises RcsUserInputError:
     """
     assert isinstance(versionnumber, bytes)
@@ -257,7 +253,7 @@ def validateRcsRevision(versionnumber):
                                 "can only happen in hand-crafted requests")
 
 class TarWriter:
-    def __init__(self, gzip=False):
+    def __init__(self, gzip=False) -> None:
         self.io = io.BytesIO()
         # tarfile requires the use of decoded strings, so choose any encoding
         # that will never fail decoding arbitrary bytes. In particular choose
@@ -275,20 +271,18 @@ class TarWriter:
     def prefix(self):
         return "".join(map(lambda s: s + "/", self.dirs))
 
-    def pushd(self, dirname):
+    def pushd(self, dirname: bytes) -> None:
         """Push a new directory on the directory stack. Further add* calls will
         place their files into this directory. The operation must be reverted
         using popd before close is called. The directory name must not contain
         a slash.
-        @type dirname: bytes
         """
         assert isinstance(dirname, bytes)
         assert b"/" not in dirname
         self.dirs.append(dirname.decode("iso8859-1"))
 
-    def popd(self):
+    def popd(self) -> str:
         """Pop the topmost directory off the directory stack.
-        @rtype: str
         @returns: the basename popped
         """
         assert self.dirs
@@ -300,15 +294,11 @@ class TarWriter:
         self.io.truncate(0)
         return data
 
-    def addChunk(self, name, content, lastchanged):
+    def addChunk(self, name: bytes, content: bytes,
+                 lastchanged: datetime.datetime) -> bytes:
         """
         Add a file with given content and return some tar content generated
         along the way.
-
-        @type name: bytes
-        @type content: bytes
-        @rtype: bytes
-        @lastchanged: datetime
         """
         assert isinstance(name, bytes)
         assert isinstance(content, bytes)
@@ -321,13 +311,10 @@ class TarWriter:
         self.tar.addfile(info, io.BytesIO(content))
         return self.read()
 
-    def addFileChunk(self, name, filename):
+    def addFileChunk(self, name: bytes, filename: bytes) -> bytes:
         """
         Add a regular file with given (tar) name and given (filesystem)
         filename and return some tar content generated along the way.
-        @type name: bytes
-        @type filename: bytes
-        @rtype: bytes
         """
         assert isinstance(name, bytes)
         name = name.decode("iso8859-1")
@@ -340,14 +327,12 @@ class TarWriter:
             self.tar.addfile(info, infile)
         return self.read()
 
-    def addDirChunk(self, name, dirname, excludes=[]):
+    def addDirChunk(self, name: bytes, dirname: bytes, excludes=[]):
         """
         Recursively add a filesystem directory dirname using the given name.
         Only regular files and directories are considered. Any basename that
         is contained in excludes is left out. The tar content generated along
         the way is returned as a bytes iterator.
-        @type name: bytes
-        @type dirname: bytes
         @param excludes: an object that provides __contains__
         """
         self.pushd(name)
@@ -365,23 +350,22 @@ class TarWriter:
         finally:
             self.popd()
 
-    def close(self):
+    def close(self) -> bytes:
         """
         Close the TarWriter and return the remaining content.
-        @rtype: bytes
         """
         assert not self.dirs
         self.tar.close()
         return self.io.getvalue()
 
-def findlastchange(changes):
+
+def findlastchange(changes: typing.List[typing.Dict[str, typing.Any]]) -> \
+        typing.Dict[str, typing.Any]:
     """
     Given a list of rcs revision informations find the newest change.
 
     @param changes: list of dictionary containing the keys 'author',
                     'revision' and 'date'
-    @type changes: [{str:object}]
-    @rtype: {str:object}
     @returns: returns the dictionary with the latest date
     """
     return max(changes + [{'author': 'unkown', 'revision': '?',

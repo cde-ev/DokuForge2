@@ -5,6 +5,7 @@ import itertools
 import textwrap
 import math
 import re
+import typing
 
 ## How To Read This File?
 ##
@@ -114,7 +115,7 @@ def intersperse(iterable, delimiter):
         yield x
 
 class Escaper:
-    def __init__(self, sequence, escaped):
+    def __init__(self, sequence, escaped) -> None:
         self.sequence = sequence
         self.escaped = escaped
 
@@ -324,18 +325,18 @@ escapeEndEdnote = Escaper("\\end{ednote}", "|end{ednote}")
 # where we expect them to end.
 
 class SplitSeparators:
-    def __init__(self, separators):
+    def __init__(self, separators) -> None:
         self.splitre = re.compile("([%s])" % re.escape(separators))
 
     def __call__(self, word):
         return self.splitre.split(word)
 
-def applyMicrotypefeatures(wordlist, featurelist):
+
+def applyMicrotypefeatures(wordlist: typing.List[str], featurelist):
     """
     sequentially apply (in the sense wordlist >>= feature)
     the features to the wordlist. Return the concatenation
     of the result.
-    @type wordlist: [str]
     """
     for feature in featurelist:
         wordlistlist = []
@@ -345,10 +346,8 @@ def applyMicrotypefeatures(wordlist, featurelist):
         wordlist = itertools.chain(*wordlistlist)
     return ''.join(wordlist)
 
-def defaultMicrotype(text):
-    """
-    @type text: str
-    """
+
+def defaultMicrotype(text: str):
     assert isinstance(text, str)
     # FIXME '-' should not be a separator so we are able to detect dashes '--'
     #       however this will break NaturalNumbers for negative inputs
@@ -409,10 +408,7 @@ class PTree:
         """
         raise NotImplementedError
 
-    def toEstimate(self):
-        """
-        @rtype: Estimate
-        """
+    def toEstimate(self) -> Estimate:
         raise NotImplementedError
 
 class PSequence(PTree):
@@ -420,7 +416,7 @@ class PSequence(PTree):
     A piece of text formed by juxtaposition of several
     Parse Trees (usually paragraphs).
     """
-    def __init__(self, parts):
+    def __init__(self, parts) -> None:
         self.parts = parts
 
     def debug(self):
@@ -453,7 +449,7 @@ class PLeaf(PTree):
     """
     A piece of text that contains no further substructure.
     """
-    def __init__(self, text):
+    def __init__(self, text: str) -> None:
         assert isinstance(text, str)
         self.text = text
 
@@ -485,7 +481,7 @@ class PEmph(PTree):
     """
     An emphasized piece of text.
     """
-    def __init__(self, text):
+    def __init__(self, text) -> None:
         self.text = PLeaf(text)
 
     def debug(self):
@@ -507,7 +503,7 @@ class PMath(PTree):
     """
     An non-display math area.
     """
-    def __init__(self, text):
+    def __init__(self, text) -> None:
         self.text = PLeaf(text)
 
     def debug(self):
@@ -529,7 +525,7 @@ class PDisplayMath(PTree):
     """
     An display math area.
     """
-    def __init__(self, text):
+    def __init__(self, text) -> None:
         self.text = PLeaf(text)
 
     def debug(self):
@@ -552,7 +548,7 @@ class PEdnote(PTree):
     """
     An Ednote; contents are compeletly unchanged.
     """
-    def __init__(self, text):
+    def __init__(self, text) -> None:
         self.text = PLeaf(text)
 
     def isEmpty(self):
@@ -582,7 +578,7 @@ class PEdnote(PTree):
         return Estimate.fromEdnote(self.text.text)
 
 class PParagraph(PTree):
-    def __init__(self, subtree):
+    def __init__(self, subtree) -> None:
         self.it = subtree
 
     def debug(self):
@@ -604,7 +600,7 @@ class PParagraph(PTree):
         return self.it.toEstimate().fullline()
 
 class PHeading(PTree):
-    def __init__(self, title, level):
+    def __init__(self, title, level) -> None:
         self.title = PLeaf(title)
         self.level = level
 
@@ -632,7 +628,7 @@ class PHeading(PTree):
         return Estimate.fromTitle(self.getTitle())
 
 class PAuthor(PTree):
-    def __init__(self, author):
+    def __init__(self, author) -> None:
         self.author = PLeaf(author)
 
     def getAuthor(self):
@@ -654,7 +650,7 @@ class PAuthor(PTree):
         return Estimate.fromParagraph(self.getAuthor())
 
 class PDescription(PTree):
-    def __init__(self, key, value):
+    def __init__(self, key, value) -> None:
         self.key = key
         self.value = value
 
@@ -674,7 +670,7 @@ class PDescription(PTree):
         return self.key.toEstimate() + self.value.toEstimate()
 
 class PItemize(PTree):
-    def __init__(self, items):
+    def __init__(self, items) -> None:
         self.items = items
         self.isEnum = False
         if len(self.items) > 0:
@@ -711,7 +707,7 @@ class PItemize(PTree):
                 Estimate.emptyLines(2)
 
 class PItem(PTree):
-    def __init__(self, subtree, number=None):
+    def __init__(self, subtree, number=None) -> None:
         self.it = subtree
         self.number=number
 
@@ -748,12 +744,12 @@ class Chargroup:
     a line group, forming a logical unit within that line
     group, like an emphasis, or a math environment.
     """
-    def __init__(self, initial=None):
+    def __init__(self, initial=None) -> None:
         self.text = ''
         if initial is not None:
             self.append(initial)
 
-    def append(self, chars):
+    def append(self, chars) -> None:
         """
         Append the given (possibly empty) sequence of chars to that group.
         """
@@ -793,14 +789,14 @@ class Simplegroup(Chargroup):
     """
     The default char group, without any special markup.
     """
-    def __init__(self, initial=None):
+    def __init__(self, initial=None) -> None:
         Chargroup.__init__(self, initial=initial)
 
 class Emphgroup(Chargroup):
     """
     The group for _emphasized text_.
     """
-    def __init__(self, initial=None):
+    def __init__(self, initial=None) -> None:
         Chargroup.__init__(self, initial=initial)
 
     @classmethod
@@ -830,7 +826,7 @@ class Mathgroup(Chargroup):
     The group for simple (non dislay) math,
     like $a^2 + b^2$.
     """
-    def __init__(self, initial=None):
+    def __init__(self, initial=None) -> None:
         self.trailingbackslashs = 0
         self.done = False
         self.count = 0
@@ -840,7 +836,7 @@ class Mathgroup(Chargroup):
     def startshere(self, char, lookahead=None):
         return char == '$' and lookahead != '$'
 
-    def append(self, chars):
+    def append(self, chars) -> None:
         for c in chars:
             self.text = self.text + c
             self.count = self.count + 1
@@ -873,7 +869,7 @@ class DisplayMathGroup(Chargroup):
     The group for display math
     like $$ a^2 + b^2 = c^2$$
     """
-    def __init__(self, initial=None):
+    def __init__(self, initial=None) -> None:
         self.done = False
         self.trailingbackslashs = 0
         self.trailingdollar = 0
@@ -884,7 +880,7 @@ class DisplayMathGroup(Chargroup):
     def startshere(self, char, lookahead=None):
         return char == '$' and lookahead == '$'
 
-    def append(self, chars):
+    def append(self, chars) -> None:
         for c in chars:
             self.text = self.text + c
             self.count = self.count + 1
@@ -955,10 +951,7 @@ def groupchars(text, supportedgroups):
     return groups
 
 
-def defaultInnerParse(lines):
-    """
-    @type lines: [str]
-    """
+def defaultInnerParse(lines: typing.List[str]):
     features = [Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup]
     text = '\n'.join(lines)
     groups = groupchars(text, features)
@@ -981,7 +974,7 @@ class Linegroup:
     item-entries cann be grouped to an itemization environment, thus
     yielding a parse tree of the whole dokument.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         self.lines = []
 
     @classmethod
@@ -1026,7 +1019,7 @@ class Paragraph(Linegroup):
     A standard paragraph. This hopefully should be the most common
     line group in a document.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         Linegroup.__init__(self)
 
     def appendline(self, line):
@@ -1100,7 +1093,7 @@ class Ednote(Linegroup):
     Notes to the editor; also used to enter text without any changes or
     further parsing. May contain empty lines.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         Linegroup.__init__(self)
 
     @classmethod
@@ -1142,7 +1135,7 @@ class Heading(Linegroup):
     """
     Headings, marked [As such] in dokuforge
     """
-    def __init__(self):
+    def __init__(self) -> None:
         Linegroup.__init__(self)
 
     @classmethod
@@ -1173,7 +1166,7 @@ class Subheading(Heading):
     """
     Subheadings, markes [[as such]] in dokuforge
     """
-    def __init__(self):
+    def __init__(self) -> None:
         Heading.__init__(self)
 
     @classmethod
@@ -1187,7 +1180,7 @@ class Author(Linegroup):
     """
     List of authors, marked (Some Author) in dokuforge
     """
-    def __init__(self):
+    def __init__(self) -> None:
         Linegroup.__init__(self)
 
     @classmethod
@@ -1219,7 +1212,7 @@ class Item(Linegroup):
     - third
     in DokuForge.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         Linegroup.__init__(self)
 
     @classmethod
@@ -1244,7 +1237,7 @@ class EnumerateItem(Linegroup):
     3. and so on
     in DokuForge
     """
-    def __init__(self):
+    def __init__(self) -> None:
         Linegroup.__init__(self)
 
     @classmethod
@@ -1267,7 +1260,7 @@ class Description(Linegroup):
     """
     *Description* explain a word in a gloassary
     """
-    def __init__(self):
+    def __init__(self) -> None:
         Linegroup.__init__(self)
 
     @classmethod
@@ -1357,10 +1350,8 @@ def groupItems(ptrees):
 ### Features used by DokuForge
 dffeatures =  [Paragraph, Heading, Author, Subheading, Item, EnumerateItem, Description, Ednote]
 
-def dfLineGroupParser(text):
-    """
-    @type text: str
-    """
+
+def dfLineGroupParser(text: str):
     groups = grouplines(text.splitlines(), dffeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)

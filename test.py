@@ -37,7 +37,7 @@ class DfTestCase(unittest.TestCase):
     class itself only provides utility functions and does not
     contain any tests.
     """
-    def assertIsTar(self, octets):
+    def assertIsTar(self, octets) -> None:
         blocksize = 512
         # there must be at least the 2 terminating 0-blocks
         self.assertTrue(len(octets) >= 2 * blocksize)
@@ -46,12 +46,12 @@ class DfTestCase(unittest.TestCase):
         # there is at least the terminating 0-block
         self.assertTrue(b"\0\0\0\0\0\0\0\0\0\0" in octets)
 
-    def assertIsTarGz(self, octets):
+    def assertIsTarGz(self, octets) -> None:
         f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
         self.assertIsTar(f.read())
 
 class TarWriterTests(DfTestCase):
-    def testUncompressed(self):
+    def testUncompressed(self) -> None:
         timeStampNow = datetime.datetime.utcnow()
         timeStampNow.replace(tzinfo=datetime.timezone.utc)
         tarwriter = TarWriter()
@@ -60,7 +60,7 @@ class TarWriterTests(DfTestCase):
         tar = tar + tarwriter.close()
         self.assertIsTar(tar)
 
-    def testGzip(self):
+    def testGzip(self) -> None:
         timeStampNow = datetime.datetime.utcnow()
         timeStampNow.replace(tzinfo=datetime.timezone.utc)
         tarwriter = TarWriter(gzip=True)
@@ -70,7 +70,7 @@ class TarWriterTests(DfTestCase):
         self.assertIsTarGz(tar)
 
 class UserDBTests(DfTestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.tmpdir = tempfile.mkdtemp(prefix="dokuforge").encode("ascii")
         self.storage = CachingStorage(self.tmpdir, b"db")
         self.userdb = UserDB(self.storage)
@@ -80,20 +80,17 @@ class UserDBTests(DfTestCase):
                                lambda: ['abc', 'cde'])
         self.academy.setgroups(['cde'])
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         shutil.rmtree(self.tmpdir, True)
 
-    def getUser(self, user):
-        """
-        @type user: str
-        """
+    def getUser(self, user: str):
         self.userdb.load()
         return self.userdb.db.get(user)
 
-    def writeUserDbFile(self, contents):
+    def writeUserDbFile(self, contents) -> None:
         self.storage.store(contents)
 
-    def testReadSimple(self):
+    def testReadSimple(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -107,7 +104,7 @@ permissions = akademie_view_aca123 True,kurs_read_aca123_course42 True
         self.assertFalse(user.allowedRead(self.academy,
                                           self.academy.getCourse('course4711')))
 
-    def testReadRecursive(self):
+    def testReadRecursive(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -122,7 +119,7 @@ permissions = akademie_read_aca123 True
         self.assertTrue(user.allowedRead(self.academy,
                                          self.academy.getCourse('course4711')))
 
-    def testReadNonRecursive(self):
+    def testReadNonRecursive(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -132,7 +129,7 @@ permissions = akademie_view_aca123 True
         user = self.getUser("userfoo")
         self.assertFalse(user.allowedRead(self.academy, recursive=True))
 
-    def testReadRevoke(self):
+    def testReadRevoke(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -146,7 +143,7 @@ permissions = akademie_read_aca123 True,kurs_read_aca123_course42 False
         self.assertTrue(user.allowedRead(self.academy,
                                          self.academy.getCourse('course4711')))
 
-    def testWriteSimple(self):
+    def testWriteSimple(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -160,7 +157,7 @@ permissions = kurs_write_aca123_course42 True
         self.assertFalse(user.allowedWrite(self.academy,
                                            self.academy.getCourse('course4711')))
 
-    def testWriteRevoke(self):
+    def testWriteRevoke(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -174,7 +171,7 @@ permissions = akademie_write_aca123 True,kurs_write_aca123_course42 False
         self.assertTrue(user.allowedWrite(self.academy,
                                           self.academy.getCourse('course4711')))
 
-    def testAdminNonrevokable(self):
+    def testAdminNonrevokable(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -192,7 +189,7 @@ permissions = df_superadmin True,kurs_read_aca123_course42 False,kurs_write_aca1
         self.assertTrue(user.allowedWrite(self.academy,
                                           self.academy.getCourse('course4711')))
 
-    def testMetaSimple(self):
+    def testMetaSimple(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -202,7 +199,7 @@ permissions = akademie_meta_aca123 True
         user = self.getUser("userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
-    def testMetaGroup(self):
+    def testMetaGroup(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -212,7 +209,7 @@ permissions = gruppe_meta_cde True
         user = self.getUser("userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
-    def testMetaRevoke(self):
+    def testMetaRevoke(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -222,7 +219,7 @@ permissions = gruppe_meta_cde True,akademie_meta_aca123 False
         user = self.getUser("userfoo")
         self.assertFalse(user.allowedMeta(self.academy))
 
-    def testGlobalNonRevoke(self):
+    def testGlobalNonRevoke(self) -> None:
         self.writeUserDbFile(b"""
 [userfoo]
 status = cde_dokubeauftragter
@@ -236,7 +233,7 @@ class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
     size = None
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.tmpdir = tempfile.mkdtemp(prefix="dokuforge").encode("ascii")
         self.pathconfig = PathConfig()
         self.pathconfig.rootdir = self.tmpdir
@@ -246,10 +243,10 @@ class DokuforgeWebTests(DfTestCase):
         self.app = webtest.TestApp(app)
         self.res = None
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         shutil.rmtree(self.tmpdir, True)
 
-    def do_login(self, username="bob", password="secret"):
+    def do_login(self, username="bob", password="secret") -> None:
         self.res = self.app.get("/")
         # raises TypeError if there is more than one form
         form = self.res.form
@@ -257,17 +254,17 @@ class DokuforgeWebTests(DfTestCase):
         form["password"] = password
         self.res = form.submit("submit")
 
-    def do_logout(self):
+    def do_logout(self) -> None:
         form = self.res.form
         self.res = form.submit("submit")
 
-    def is_loggedin(self):
+    def is_loggedin(self) -> None:
         self.res.mustcontain("/logout")
 
 class DokuforgeBigWebTests(DokuforgeWebTests):
     size = 100
 
-    def testCourseLessPrivileged(self):
+    def testCourseLessPrivileged(self) -> None:
         self.do_login(username="arthur", password="mypass")
         self.res = self.res.click(description="Beste Akademie ever")
         self.res.mustcontain("Helenistische Heldenideale")
@@ -278,43 +275,43 @@ class DokuforgeBigWebTests(DokuforgeWebTests):
 class DokuforgeSmallWebTests(DokuforgeWebTests):
     size = 1
 
-    def testLogin(self):
+    def testLogin(self) -> None:
         self.do_login()
         self.is_loggedin()
 
-    def testLoginFailedUsername(self):
+    def testLoginFailedUsername(self) -> None:
         self.do_login(username="nonexistent")
         # FIXME: sane error message
         self.assertEqual(self.res.body, b"wrong password")
 
-    def testLoginFailedPassword(self):
+    def testLoginFailedPassword(self) -> None:
         self.do_login(password="wrong")
         self.assertEqual(self.res.body, b"wrong password")
 
-    def testLoginClick(self):
+    def testLoginClick(self) -> None:
         self.do_login()
         self.res = self.res.click(description="DokuForge")
         self.is_loggedin()
 
-    def testLogout(self):
+    def testLogout(self) -> None:
         self.do_login()
         self.do_logout()
         self.res.mustcontain(no="/logout")
 
-    def testAcademy(self):
+    def testAcademy(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.is_loggedin()
         self.res.mustcontain("Testexport")
 
-    def testCourse(self):
+    def testCourse(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
         self.is_loggedin()
         self.res.mustcontain("df2-Rohdaten")
 
-    def testPage(self):
+    def testPage(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -322,7 +319,7 @@ class DokuforgeSmallWebTests(DokuforgeWebTests):
         self.is_loggedin()
         self.res.mustcontain("neues Bild hinzuf")
 
-    def testEdit(self):
+    def testEdit(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -335,7 +332,7 @@ class DokuforgeSmallWebTests(DokuforgeWebTests):
             self.res.mustcontain(outputstr)
         self.is_loggedin()
 
-    def testMarkup(self):
+    def testMarkup(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -356,7 +353,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res.mustcontain("$\\sqrt{2}$", "ednote \\end{ednote}")
         self.is_loggedin()
 
-    def testMovePage(self):
+    def testMovePage(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -364,7 +361,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = form.submit()
         self.is_loggedin()
 
-    def testCreatePage(self):
+    def testCreatePage(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -373,7 +370,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.is_loggedin()
         self.res.mustcontain("Teil&nbsp;#2")
 
-    def testCourseTitle(self):
+    def testCourseTitle(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -385,7 +382,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
             self.res.mustcontain(outputstr)
         self.is_loggedin()
 
-    def testDeletePage(self):
+    def testDeletePage(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -395,7 +392,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res.mustcontain(no="Teil&nbsp;#0")
         self.is_loggedin()
 
-    def testRestorePage(self):
+    def testRestorePage(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -408,7 +405,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res.mustcontain("Teil&nbsp;#0")
         self.is_loggedin()
 
-    def testAcademyTitle(self):
+    def testAcademyTitle(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("/.*title$"))
@@ -419,7 +416,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
             self.res.mustcontain(outputstr)
         self.is_loggedin()
 
-    def testAcademyGroups(self):
+    def testAcademyGroups(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(description="Gruppen bearbeiten")
@@ -433,7 +430,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res.mustcontain("Nichtexistente Gruppe gefunden!")
         self.is_loggedin()
 
-    def testCreateCourse(self):
+    def testCreateCourse(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("/.*createcourse$"))
@@ -450,7 +447,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res.mustcontain("Interner Name nicht wohlgeformt!")
         self.is_loggedin()
 
-    def testCourseDeletion(self):
+    def testCourseDeletion(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain("Area51")
@@ -465,7 +462,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain("Area51")
 
-    def testCreateAcademy(self):
+    def testCreateAcademy(self) -> None:
         self.do_login()
         self.res = self.res.click(href=re.compile("/createacademy$"))
         form = self.res.forms[1]
@@ -489,7 +486,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res.mustcontain("Nichtexistente Gruppe gefunden!")
         self.is_loggedin()
 
-    def testGroups(self):
+    def testGroups(self) -> None:
         self.do_login()
         self.res = self.res.click(href=re.compile("/groups/$"))
         form = self.res.forms[1]
@@ -512,7 +509,7 @@ title = Wie der Name sagt
         self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
         self.is_loggedin()
 
-    def testAdmin(self):
+    def testAdmin(self) -> None:
         self.do_login()
         self.res = self.res.click(href=re.compile("/admin/$"))
         form = self.res.forms[1]
@@ -535,7 +532,7 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
         self.is_loggedin()
 
-    def testStyleguide(self):
+    def testStyleguide(self) -> None:
         self.res = self.app.get("/")
         self.res = self.res.click(href=re.compile("/style/$"))
         self.res.mustcontain("Hier erfährst du, was bei der Eingabe der Texte in DokuForge")
@@ -585,7 +582,7 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("Konflikte")
         self.is_loggedin()
 
-    def testAddBlob(self):
+    def testAddBlob(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -601,7 +598,7 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         self.is_loggedin()
 
-    def testShowBlob(self):
+    def testShowBlob(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -619,7 +616,7 @@ permissions = df_superadmin True,df_admin True
                              "K&uuml;rzel: blob")
         self.is_loggedin()
 
-    def testMD5Blob(self):
+    def testMD5Blob(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -637,7 +634,7 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("MD5 Summe des Bildes ist")
         self.is_loggedin()
 
-    def testEditBlob(self):
+    def testEditBlob(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -662,7 +659,7 @@ permissions = df_superadmin True,df_admin True
                              "Dateiname: README")
         self.is_loggedin()
 
-    def testDeleteBlob(self):
+    def testDeleteBlob(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -682,7 +679,7 @@ permissions = df_superadmin True,df_admin True
                              no="#[0] (README-rlog.txt)")
         self.is_loggedin()
 
-    def testRestoreBlob(self):
+    def testRestoreBlob(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -706,7 +703,7 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         self.is_loggedin()
 
-    def testAddBlobEmptyLabel(self):
+    def testAddBlobEmptyLabel(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -720,20 +717,20 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("Kürzel nicht wohlgeformt!")
         self.is_loggedin()
 
-    def testAcademyExport(self):
+    def testAcademyExport(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(description="Testexport")
         self.assertIsTarGz(self.res.body)
 
-    def testRawCourseExport(self):
+    def testRawCourseExport(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course02/$"))
         self.res = self.res.click(description="df2-Rohdaten")
         self.assertIsTarGz(self.res.body)
 
-    def testRawPageExport(self):
+    def testRawPageExport(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href=re.compile("course01/$"))
@@ -742,7 +739,7 @@ permissions = df_superadmin True,df_admin True
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.res.body.startswith(b"head"))
 
-    def testPartDeletion(self):
+    def testPartDeletion(self) -> None:
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain("Area51")
@@ -758,27 +755,27 @@ permissions = df_superadmin True,df_admin True
         self.res = self.res.forms[1].submit() # delete only part
 
 class CourseTests(DfTestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.tmpdir = tempfile.mkdtemp(prefix="dokuforge").encode("ascii")
         self.course = Course(os.path.join(self.tmpdir, b'example'))
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         shutil.rmtree(self.tmpdir, True)
 
-    def testIsDeletedDefault(self):
+    def testIsDeletedDefault(self) -> None:
         self.assertFalse(self.course.isDeleted)
 
-    def testDelete(self):
+    def testDelete(self) -> None:
         self.course.delete()
         self.assertTrue(self.course.isDeleted)
 
-    def testUnDelete(self):
+    def testUnDelete(self) -> None:
         self.course.delete()
         self.course.undelete()
         self.assertFalse(self.course.isDeleted)
 
 class AcademyTest(DfTestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.tmpdir = tempfile.mkdtemp(prefix='dokuforge').encode("ascii")
         os.makedirs(os.path.join(self.tmpdir, b'example/legacy'))
         self.academy = Academy(os.path.join(self.tmpdir, b'example'),
@@ -786,32 +783,32 @@ class AcademyTest(DfTestCase):
         self.academy.createCourse('new01', 'erster neuer Kurs')
         self.academy.createCourse('new02', 'zweiter neuer Kurs')
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         shutil.rmtree(self.tmpdir, True)
 
-    def assertCourses(self, names):
+    def assertCourses(self, names) -> None:
         namesfound = [c.name for c in self.academy.listCourses()]
         self.assertEqual(set(names), set(namesfound))
 
-    def assertDeadCourses(self, names):
+    def assertDeadCourses(self, names) -> None:
         namesfound = [c.name for c in self.academy.listDeadCourses()]
         self.assertEqual(set(names), set(namesfound))
 
-    def testLegacyCoursePresent(self):
+    def testLegacyCoursePresent(self) -> None:
         self.assertCourses([b'legacy', b'new01', b'new02'])
         self.assertDeadCourses([])
 
-    def testDeleteCourse(self):
+    def testDeleteCourse(self) -> None:
         self.academy.getCourse('new01').delete()
         self.assertCourses([b'legacy', b'new02'])
         self.assertDeadCourses([b'new01'])
 
-    def testDeleteLegacyCourse(self):
+    def testDeleteLegacyCourse(self) -> None:
         self.academy.getCourse('legacy').delete()
         self.assertCourses([b'new01', b'new02'])
         self.assertDeadCourses([b'legacy'])
 
-    def testCourseDeleteUndelete(self):
+    def testCourseDeleteUndelete(self) -> None:
         self.academy.getCourse('new01').delete()
         self.assertDeadCourses([b'new01'])
         self.academy.getCourse('new01').undelete()
@@ -819,41 +816,41 @@ class AcademyTest(DfTestCase):
         self.assertDeadCourses([])
 
 class DokuforgeMockTests(DfTestCase):
-    def verify_idempotency(self, inp):
+    def verify_idempotency(self, inp) -> None:
         inp2 = dfLineGroupParser(inp).toDF()
         inp3 = dfLineGroupParser(inp2).toDF()
         self.assertEqual(inp2, inp3, "original input was %r" % inp)
 
-    def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
+    def testParserIdempotency(self, rounds=100, minlength=10,
+                              maxlength=99) -> None:
         for _ in range(rounds):
             for l in range(minlength, maxlength):
                 inp = "".join(random.choice("aA \n*[()]1.$<>&\"{}_\\-")
                               for _ in range(l))
                 self.verify_idempotency(inp)
 
-    def testParserIdempotency1(self):
+    def testParserIdempotency1(self) -> None:
         self.verify_idempotency('_a\n[[[\n\n"')
 
-    def testHeadingHtmlEscape(self):
+    def testHeadingHtmlEscape(self) -> None:
         out = dfLineGroupParser("[bad < html chars >]").toHtml().strip()
         self.assertEqual(out, "<h1>bad &lt; html chars &gt;</h1>")
 
-    def testAuthorHtmlEscape(self):
+    def testAuthorHtmlEscape(self) -> None:
         out = dfLineGroupParser("[ok]\n(bad < author >)").toHtml().strip()
         self.assertEqual(out, "<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
 
 class DokuforgeMicrotypeUnitTests(DfTestCase):
-    def verifyExportsTo(self, df, tex):
+    def verifyExportsTo(self, df, tex) -> None:
         obtained = dfLineGroupParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    def testItemize(self):
+    def testItemize(self) -> None:
         self.verifyExportsTo('- Text',
                              '\\begin{itemize}\n\\item Text\n\\end{itemize}')
         self.verifyExportsTo('-Text', '-Text')
 
-
-    def testQuotes(self):
+    def testQuotes(self) -> None:
         self.verifyExportsTo('Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                              'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
         self.verifyExportsTo('"Am Anfang" ...',
@@ -865,19 +862,19 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('"Vor und"\n"nach" Zeilenumbrüchen.',
                              '"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
 
-    def testAbbrev(self):
+    def testAbbrev(self) -> None:
         self.verifyExportsTo('Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
                              'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
         self.verifyExportsTo('Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., er...',
                              'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., er\\dots{}')
 
-    def testAcronym(self):
+    def testAcronym(self) -> None:
         self.verifyExportsTo('Bitte ACRONYME anders setzen.',
                              'Bitte \\acronym{ACRONYME} anders setzen.')
         self.verifyExportsTo('Unterscheide T-shirt und DNA-Sequenz.',
                              'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
 
-    def testEscaping(self):
+    def testEscaping(self) -> None:
         self.verifyExportsTo('Do not allow \\dangerous commands!',
                              'Do not allow \\forbidden\\dangerous commands!')
         self.verifyExportsTo('\\\\ok',
@@ -895,13 +892,13 @@ class DokuforgeMicrotypeUnitTests(DfTestCase):
         self.verifyExportsTo('Escaping in math: $\\evilmath$, but $\\mathbb C$',
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
-    def testTrails(self):
+    def testTrails(self) -> None:
         self.verifyExportsTo('trailing space ',
                              'trailing space')
         self.verifyExportsTo('trailing backslash \\',
                              'trailing backslash \\@\\textbackslash{}')
 
-    def testEdnoteEscape(self):
+    def testEdnoteEscape(self) -> None:
         self.verifyExportsTo(
 """
 
@@ -926,7 +923,7 @@ Bobby Tables...
 
 \\end{ednote}""")
 
-    def testStructures(self):
+    def testStructures(self) -> None:
         self.verifyExportsTo('[foo]\n(bar)',
                              '\\section{foo}\n\\authors{bar}')
         self.verifyExportsTo('[[foo]]\n\n(bar)',
@@ -935,16 +932,17 @@ Bobby Tables...
                              '\\begin{itemize}\n\\item item\n\\end{itemize}\n\n-nonitem')
         self.verifyExportsTo('1. item',
                              '\\begin{enumerate}\n% 1\n\\item item\n\\end{enumerate}')
-    def testNumeralScope(self):
+
+    def testNumeralScope(self) -> None:
         self.verifyExportsTo('10\xb3 Meter sind ein km',
                              '10\xb3 Meter sind ein km')
 
 class DokuforgeTitleParserTests(DfTestCase):
-    def verifyExportsTo(self, df, tex):
+    def verifyExportsTo(self, df, tex) -> None:
         obtained = dfTitleParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    def testEscaping(self):
+    def testEscaping(self) -> None:
         self.verifyExportsTo('Do not allow \\dangerous commands!',
                              'Do not allow \\forbidden\\dangerous commands!')
         self.verifyExportsTo('\\\\ok',
@@ -963,11 +961,11 @@ class DokuforgeTitleParserTests(DfTestCase):
                              'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
 
 class DokuforgeCaptionParserTests(DfTestCase):
-    def verifyExportsTo(self, df, tex):
+    def verifyExportsTo(self, df, tex) -> None:
         obtained = dfTitleParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    def testEscaping(self):
+    def testEscaping(self) -> None:
         self.verifyExportsTo('Do not allow \\dangerous commands!',
                              'Do not allow \\forbidden\\dangerous commands!')
         self.verifyExportsTo('\\\\ok',

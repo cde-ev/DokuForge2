@@ -10,24 +10,26 @@ from dokuforge.course import Course
 from dokuforge.parser import dfLineGroupParser
 
 class PseudoTarWriter:
-    def __init__(self, directory):
+    def __init__(self, directory) -> None:
         self.directory = directory
 
-    def addChunk(self, filename, content, lastchanged):
+    def addChunk(self, filename, content, lastchanged) -> None:
         # Drop leading component. It is contained both in self.directory and in
         # filename.
         filename = filename.split('/', 1)[1]
         with open(os.path.join(self.directory, filename), "w") as output:
             output.write(content)
 
-def process_course(directory):
+
+def process_course(directory) -> None:
     print("Processing %s..." % directory)
     tw = PseudoTarWriter(directory)
     c = Course(directory)
     for _ in c.texExportIterator(tw):
         pass
 
-def process(directory):
+
+def process(directory) -> None:
     if os.path.exists(os.path.join(directory, "Index,v")):
         process_course(directory)
     else:
@@ -36,7 +38,8 @@ def process(directory):
             if os.path.isdir(entry):
                 process(entry)
 
-def main():
+
+def main() -> None:
     basedir = sys.argv[1]
     process(basedir)
 

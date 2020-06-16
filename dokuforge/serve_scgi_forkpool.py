@@ -17,11 +17,12 @@ import syslog
 import resource
 import traceback
 
-def do_syslog(msg):
+
+def do_syslog(msg) -> None:
     syslog.syslog(syslog.LOG_ERR | syslog.LOG_DAEMON | syslog.LOG_PID, msg)
 
 class ExceptionsToSyslog:
-    def __init__(self, app):
+    def __init__(self, app) -> None:
         self.app = app
 
     def __call__(self, environ, start_response):
@@ -44,7 +45,8 @@ def parsesize(s):
         f = 1024*1024
     return int(float(s) * f)
 
-def main(configfile):
+
+def main(configfile) -> None:
     config = configparser.ConfigParser()
     with io.open(configfile, encoding=config_encoding) as openconfig:
         config.read_file(openconfig)

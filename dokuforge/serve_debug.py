@@ -13,7 +13,8 @@ from werkzeug.debug import DebuggedApplication
 
 from dokuforge import buildapp
 
-def main():
+
+def main() -> None:
     logging.basicConfig(level=logging.DEBUG)
     app = buildapp()
     app = DebuggedApplication(app, evalex=True)

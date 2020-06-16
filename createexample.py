@@ -8,7 +8,8 @@ from werkzeug.datastructures import FileStorage
 from dokuforge.application import Application
 from dokuforge.paths import PathConfig
 
-def createaca(app, name, title, groups, courses):
+
+def createaca(app, name, title: str, groups, courses):
     assert isinstance(title, str)
     aca = app.createAcademy(name, title, groups)
     for c in courses:
@@ -17,10 +18,10 @@ def createaca(app, name, title, groups, courses):
             aca.getCourse(c[0]).newpage()
     return aca
 
-def main(size=100, pc=PathConfig()):
+
+def main(size=100, pc: PathConfig = PathConfig()) -> None:
     """
     @param size: regulate size of example from 0 for empty to 100 for complete
-    @type pc: PathConfig
     """
     try:
         os.makedirs(pc.admindir)

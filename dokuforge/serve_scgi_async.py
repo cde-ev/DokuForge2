@@ -7,7 +7,8 @@ from wsgitools.scgi.asynchronous import SCGIServer
 
 from dokuforge import buildapp
 
-def main():
+
+def main() -> None:
     app = buildapp()
     SCGIServer(app, 4000).run()
 

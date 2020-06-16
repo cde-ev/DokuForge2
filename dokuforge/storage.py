@@ -6,6 +6,7 @@ import shutil
 import time
 import subprocess
 import re
+import typing
 
 from dokuforge.common import epoch
 from dokuforge.common import validateRcsRevision
@@ -18,13 +19,12 @@ logger = logging.getLogger(__name__)
 RCSENV = os.environ.copy()
 RCSENV["LC_ALL"] = "C"
 
-def rlogv(filename):
+
+def rlogv(filename: bytes) -> typing.Optional[bytes]:
     """
     Return the head revision of an rcs file
 
     (needed, as rlog -v is a FreeBSD extension)
-    @type filename: bytes
-    @rtype: bytes or None
     """
     assert isinstance(filename, bytes)
     logger.debug("rlogv: looking up revision for %r" % filename)
@@ -38,11 +38,11 @@ def rlogv(filename):
 
 rcsseparator = b'----------------------------'
 
-def rloghead(filename):
+
+def rloghead(filename: bytes):
     """
     Get relevant information for the head revision of the given rcs file
 
-    @type filename: bytes
     @returns: a bytes-object dict with information about the head commit; in
               particular, it will contain the keys b'revision', b'author', and
               b'date'. All values are bytes, except for the b'date' key which
@@ -82,10 +82,7 @@ def rloghead(filename):
     return answer
 
 class LockDir:
-    def __init__(self, path):
-        """
-        @type path: bytes"
-        """
+    def __init__(self, path: bytes) -> None:
         assert isinstance(path, bytes)
         self.path = path
         self.lockcount = 0
@@ -123,27 +120,22 @@ class LockDir:
 
 
 class Storage(object):
-    def __init__(self, path, filename):
+    def __init__(self, path: bytes, filename: bytes) -> None:
         """
         A simple storage unit is described by a directory and the basename
         of a file in this direcotry. With the filename is also associated
         #lock.filename and filename,v as well as any rcs internal locks
         associated with it.
-        @type path: bytes
-        @type filename: bytes
         """
         assert isinstance(path, bytes)
         assert isinstance(filename, bytes)
         self.path = path
         self.filename = filename
 
-    def fullpath(self, prefix=b"", postfix=b""):
+    def fullpath(self, prefix: bytes = b"", postfix: bytes = b"") -> bytes:
         """Construct a derived path based on the storage. The passed prefix is
         inserted between the base directory and the filename. The postfix is
         appended to the filename.
-        @type prefix: bytes
-        @type postfix: bytes
-        @rtype: bytes
         """
         assert isinstance(prefix, bytes)
         assert isinstance(postfix, bytes)
@@ -153,15 +145,14 @@ class Storage(object):
     def lock(self):
         return LockDir(self.fullpath(prefix=b"#lock."))
 
-    def store(self, content, user=None, message=b"store called", havelock=None):
+    def store(self, content, user: typing.Optional[bytes] = None,
+              message: bytes = b"store called", havelock=None) -> None:
         """
         Store the given contents; rcs file is create if it does not
         exist already.
 
         @type content: bytes or raw filelike 
         @param content: the content of the file
-        @type message: bytes
-        @type user: None or bytes
         """
         assert not isinstance(content, str)
         assert isinstance(message, bytes)
@@ -181,7 +172,7 @@ class Storage(object):
             args.append(self.fullpath())
             subprocess.check_call(args, env=RCSENV)
 
-    def ensureexistence(self, havelock=None):
+    def ensureexistence(self, havelock=None) -> None:
         if not os.path.exists(self.fullpath(postfix=b",v")):
             with havelock or self.lock:
                 if not os.path.exists(self.fullpath(postfix=b",v")):
@@ -201,10 +192,7 @@ class Storage(object):
                 content = f.read()
             return content
 
-    def status(self, havelock=None):
-        """
-        @rtype: str
-        """
+    def status(self, havelock=None) -> str:
         self.ensureexistence(havelock = havelock)
         result = rlogv(self.fullpath(postfix=b",v"))
         if result is None:
@@ -229,7 +217,7 @@ class Storage(object):
                                         self.fullpath()],
                                        env=RCSENV)
 
-    def startedit(self, havelock=None):
+    def startedit(self, havelock=None) -> typing.Tuple[bytes, str]:
         """
         start editing a file (optimistic synchronisation)
 
@@ -238,7 +226,6 @@ class Storage(object):
         that version is still the head revision.
 
         @returns: an opaque version string and the contents of the file
-        @rtype: (bytes, str)
         """
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
@@ -246,7 +233,8 @@ class Storage(object):
             content = self.content(havelock = gotlock)
             return status, content
 
-    def endedit(self, version, newcontent, user=None, havelock=None):
+    def endedit(self, version: bytes, newcontent: bytes,
+                user: typing.Optional[bytes] = None, havelock=None):
         """
         Store new contents in a safe way.
 
@@ -254,13 +242,10 @@ class Storage(object):
         store it as new head revision. If not, store it to a branch,
         merge with new head revision and return new version content pair.
 
-        @type version: bytes
         @param version: the opaque version string optained from startedit
                         when the user started editing the file
-        @type newcontent: bytes
         @param newcontent: the new content, produced by the user starting from
                            the content at the provided version
-        @type user: None or bytes
         @returns: a triple (ok, newversion, mergedcontent) where ok is boolen
             with value True if the save was sucessfull (if not, a merge has
             to be done manually), and (newversion, mergedcontent) is a state
@@ -315,10 +300,7 @@ class Storage(object):
             # 3) return new state
             return False, currentversion, mergedcontent
 
-    def timestamp(self, havelock=None):
-        """
-        @rtype: datetime
-        """
+    def timestamp(self, havelock=None) -> datetime.datetime:
         self.ensureexistence(havelock = havelock)
         ts = os.path.getmtime(self.fullpath(postfix=b",v"))
         ts = datetime.datetime.utcfromtimestamp(ts)
@@ -330,7 +312,7 @@ class CachingStorage(Storage):
     of read is attemted
     """
 
-    def __init__(self, path, filename):
+    def __init__(self, path, filename) -> None:
         Storage.__init__(self, path, filename)
         self.cachedtime = epoch # Jan 1, 1970 -- way before the first dokuforge2 installation
         self.cachedvalue = b""

@@ -1,7 +1,8 @@
 import os.path
 import re
+import typing
 
-from dokuforge.storage import Storage
+from dokuforge.storage import LockDir, Storage
 from dokuforge.view import LazyView
 import dokuforge.common as common
 
@@ -9,58 +10,45 @@ class StorageDir:
     """Backend for manipulating file structures within a directory. It brings
     a few methods that C{Academy}s and C{Course}s have in common.
     """
-    def __init__(self, obj):
-        """
-        @type obj: bytes or StorageDir
-        """
+    def __init__(self, obj: typing.Union[bytes, "StorageDir"]) -> None:
         if isinstance(obj, StorageDir):
             obj = obj.path
         assert isinstance(obj, bytes)
         self.path = obj
 
-    def getstorage(self, filename):
+    def getstorage(self, filename: bytes) -> Storage:
         """
-        @type filename: bytes
         @param filename: passed to Storage as second param
-        @rtype: Storage
         @returns: a Storage build from self.path and filename
         """
         assert isinstance(filename, bytes)
         return Storage(self.path, filename)
 
-    def getcontent(self, filename, havelock=None):
+    def getcontent(self, filename: bytes,
+                   havelock: typing.Optional[LockDir] = None) -> str:
         """
-        @type filename: bytes
         @param filename: passed to Storage as second param
-        @type havelock: None or LockDir
-        @rtype: str
         @returns: the content of the Storage build from self.path and filename
         """
         return self.getstorage(filename).content(havelock)
 
     @property
-    def name(self):
-        """
-        @rtype: bytes
-        """
+    def name(self) -> bytes:
         return os.path.basename(self.path)
 
-    def rawExportIterator(self, tarwriter):
+    def rawExportIterator(self, tarwriter: common.TarWriter) -> \
+            typing.Iterable[str]:
         """
-        @type tarwriter: TarWriter
         @returns: a tar ball containing the full internal information about
                 this storage dir
-        @rtype: iter(str)
         """
         for chunk in tarwriter.addDirChunk(self.name, self.path):
             yield chunk
 
     @property
-    def number(self):
+    def number(self) -> int:
         """
         A best guess of a number associated with this directory.
-
-        @rtype: int
         """
         digits = re.compile(b"[^0-9]*([0-9]+)")
         basename = os.path.basename(self.path)
@@ -69,20 +57,17 @@ class StorageDir:
             return 0
         return int(m.group(1))
 
-    def gettitle(self):
+    def gettitle(self) -> str:
         """
         @returns: contents of the "title" Storage
-        @rtype: str
         """
         return self.getcontent(b"title").decode("utf8")
 
-    def settitle(self, title):
+    def settitle(self, title: str) -> bool:
         """
         Updates the "title" Storage.
 
         @param title: display name of the academy
-        @type title: str
-        @rtype: bool
         @returns: True when successful
         @raises CheckError: if the user input is malformed.
         """
@@ -91,12 +76,11 @@ class StorageDir:
         self.getstorage(b"title").store(title.encode("utf8"))
         return True
 
-    def view(self, extrafunctions=dict()):
+    def view(self, extrafunctions=dict()) -> LazyView:
         """
         @type extrafunctions: {str: function}
         @param extrafunctions: the dict passed to LazyView is updated with
             this dict
-        @rtype: LazyView
         @returns: a mapping providing the keys name(bytes) and
             title(str) as well as the keys from extrafunctions
         """

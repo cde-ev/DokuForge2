@@ -6,7 +6,8 @@ import subprocess
 
 workdir = os.path.dirname(os.path.realpath(__file__))
 
-def add_versioninfo():
+
+def add_versioninfo() -> None:
     try:
         p = subprocess.Popen(["git", "show", "-s", "--format=%H"],
                              stdout=subprocess.PIPE,
@@ -21,7 +22,8 @@ def add_versioninfo():
               "w") as verfile:
         verfile.write('commitid = "%s"\n' % commitid)
 
-def clean_versioninfo():
+
+def clean_versioninfo() -> None:
     try:
         os.unlink(os.path.join(workdir, "dokuforge", "versioninfo.py"))
     except OSError:

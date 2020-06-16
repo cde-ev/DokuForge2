@@ -1,8 +1,10 @@
 import os
 import datetime
+import typing
 
 from werkzeug.datastructures import FileStorage
 
+from dokuforge.storage import LockDir
 from dokuforge.storagedir import StorageDir
 from dokuforge.view import LazyView, liftdecodeutf8
 from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
@@ -10,55 +12,45 @@ from dokuforge.parser import Estimate, PHeading
 import dokuforge.common as common
 
 class Outline:
-    def __init__(self, number):
-        """
-        @type number: int
-        """
+    def __init__(self, number: int) -> None:
         self.number = number
         self.content = []
         self.lastchange = {'author': 'unkown', 'revision': '?',
                            'date': common.epoch}
         self.estimate = Estimate.fromNothing()
-    def addheading(self, title):
-        """
-        @type title: str
-        """
+
+    def addheading(self, title: str) -> None:
         assert isinstance(title, str)
         if title:
             self.content.append(("heading", title))
-    def addsubheading(self, title):
-        """
-        @type title: str
-        """
+
+    def addsubheading(self, title: str) -> None:
         assert isinstance(title, str)
         if title:
             self.content.append(("subheading", title))
-    def addParsed(self, headinglist):
-        """
-        @type headinglist: [PHeading]
-        """
+
+    def addParsed(self, headinglist: typing.List[PHeading]) -> None:
         for heading in headinglist:
             if heading.getLevel() == 0:
                 self.addheading(heading.getTitle())
             else:
                 self.addsubheading(heading.getTitle())
-    def items(self):
-        """
-        @rtype: [(str, str)]
-        """
+
+    def items(self) -> typing.List[typing.Tuple[str, str]]:
         return self.content
-    def addEstimate(self, estimate):
-        """
-        @type estimate: Estimate
-        """
+
+    def addEstimate(self, estimate: Estimate) -> None:
         assert isinstance(estimate, Estimate)
         self.estimate = estimate
-    def addcommitinfo(self, info):
+
+    def addcommitinfo(self,
+                      info: typing.Dict[str,
+                                        typing.Union[str,
+                                                     datetime.datetime]]) -> \
+            None:
         """
         Add information about the last commit. Must contain at
         least revision, date, and author
-
-        @type info: {str: str or datetime}
         """
         assert 'date' in info.keys()
         assert 'author'  in info.keys()
@@ -66,10 +58,7 @@ class Outline:
 
         self.lastchange = info
     @property
-    def versionstring(self):
-        """
-        @rtype: str
-        """
+    def versionstring(self) -> str:
         return "%s/%s (%s)" % (self.lastchange['revision'],
                                 self.lastchange['author'],
                                 self.lastchange['date'].strftime("%Y/%m/%d %H:%M:%S %Z"))
@@ -106,12 +95,11 @@ class Course(StorageDir):
      - nextblob,v --
          contains the number of the next available blob
     """
-    def __init__(self, obj):
+    def __init__(self, obj: typing.Union[bytes, "Course"]) -> None:
         """
         constructor for Course objects
 
         @param obj: either the path to a coures or a Course object
-        @type obj: bytes or Course
         """
         StorageDir.__init__(self, obj)
         try:
@@ -124,45 +112,39 @@ class Course(StorageDir):
         value = self.getcontent(b"isDeleted")
         return value == b"True"
 
-    def delete(self):
+    def delete(self) -> None:
         self.getstorage(b"isDeleted").store(b"True")
 
-    def undelete(self):
+    def undelete(self) -> None:
         self.getstorage(b"isDeleted").store(b"False")
 
-    def nextpage(self, havelock=None):
+    def nextpage(self, havelock: typing.Optional[LockDir] = None) -> int:
         """
         internal function: return the number of the next available page, but don't do anything
-        @type havelock: None or LockDir
-        @rtype: int
         """
         return int(self.getcontent(b"nextpage", havelock) or "0")
 
-    def nextblob(self, havelock=None):
+    def nextblob(self, havelock: typing.Optional[LockDir] = None) -> int:
         """
         internal function: return the number of the next available blob, but don't do anything
 
-        @type havelock: None or LockDir
         @returns: number of next available blob
-        @rtype: int
         """
         return int(self.getcontent(b"nextblob", havelock) or "0")
 
-    def listpages(self, havelock=None):
+    def listpages(self, havelock: typing.Optional[LockDir] = None) -> \
+            typing.List[int]:
         """
-        @type havelock: None or LockDir
         @returns: a list of the available page numbers in correct order
-        @rtype: [int]
         """
         lines = self.getcontent(b"Index", havelock).splitlines()
         return [int(line.split()[0]) for line in lines if line != b""]
 
-    def outlinepages(self, havelock=None):
+    def outlinepages(self, havelock: typing.Optional[LockDir] = None) -> \
+            typing.List[Outline]:
         """
-        @type havelock: None or LockDir
         @returns: a list of the available pages with information such as
             headings cointained in correct order
-        @rtype: [Outline]
         """
         pages = self.listpages()
         outlines = []
@@ -178,21 +160,17 @@ class Course(StorageDir):
             outlines.append(outline)
         return outlines
 
-    def getcommit(self, page):
-        """
-        @type page: int
-        @rtype: {str: str or datetime}
-        """
+    def getcommit(self, page: int) -> \
+            typing.Dict[str, typing.Union[str, datetime.datetime]]:
         page = ("page%d" % page).encode("ascii")
         info = self.getstorage(page).commitstatus()
         return dict((k.decode("ascii"), v) if k == b"date"
                     else (k.decode("ascii"), v.decode("utf8"))
                     for k, v in info.items())
 
-    def listdeadpages(self):
+    def listdeadpages(self) -> typing.List[int]:
         """
         @returns: a list of the pages not currently linked in the index
-        @rtype: [int]
         """
         indexstore = self.getstorage(b"Index")
         nextpage = self.getstorage(b"nextpage")
@@ -202,11 +180,10 @@ class Course(StorageDir):
                 linkedpages = self.listpages(havelock = gotlockindex)
                 return [x for x in range(np) if x not in linkedpages]
 
-    def outlinedeadpages(self):
+    def outlinedeadpages(self) -> typing.List[Outline]:
         """
         @returns: a list of the outlines of the pages not currently linked
             in the index (shortened to headings).
-        @rtype: [Outline]
         """
         outlines = []
         for p in self.listdeadpages():
@@ -217,10 +194,9 @@ class Course(StorageDir):
             outlines.append(outline)
         return outlines
 
-    def listdeadblobs(self):
+    def listdeadblobs(self) -> typing.List[int]:
         """
         @returns: a list of the blobs not currently linked to the index
-        @rtype: [int]
         """
         indexstore = self.getstorage(b"Index")
         nextblob = self.getstorage(b"nextblob")
@@ -235,23 +211,19 @@ class Course(StorageDir):
                 nextblobindex = self.nextblob(havelock = gotlocknextblob)
                 return [n for n in range(nextblobindex) if n not in availableblobs]
 
-
-    def showpage(self, number):
+    def showpage(self, number: int) -> str:
         """
         Show the contents of a page
 
-        @type number: int
         @param number: the internal number of that page
-        @rtype: str
         """
         page = ("page%d" % number).encode("ascii")
         return self.getcontent(page).decode("utf8")
 
-    def getrcs(self, page):
+    def getrcs(self, page) -> str:
         """
         @param page: the internal number of the page
         @returns: an rcs file describing all versions of this page
-        @rtype: str
         """
         if 0 > page:
             return ""
@@ -260,11 +232,9 @@ class Course(StorageDir):
         page = ("page%d" % page).encode("ascii")
         return self.getstorage(page).asrcs()
 
-    def newpage(self, user=None):
+    def newpage(self, user: typing.Optional[str] = None) -> int:
         """
         create a new page in this course and return its internal number
-        @type user: None or str
-        @rtype: int
         """
         if user is not None:
             assert isinstance(user, str)
@@ -283,13 +253,11 @@ class Course(StorageDir):
                 index.store(indexcontents, havelock = gotlockindex, user = user)
                 return newnumber
 
-    def delblob(self, number, user=None):
+    def delblob(self, number: int, user: typing.Optional[str] = None) -> None:
         """
         Delete a page
 
         @param number: the internal page number
-        @type number: int
-        @type user: None or str
         """
         if user is not None:
             assert isinstance(user, str)
@@ -309,13 +277,11 @@ class Course(StorageDir):
             newindex = b"".join(map(b"%s\n".__mod__, newlines))
             indexstore.store(newindex, havelock = gotlock, user = user)
 
-    def delpage(self, number, user=None):
+    def delpage(self, number: int, user: typing.Optional[str] = None) -> None:
         """
         Delete a page
 
         @param number: the internal page number
-        @type number: int
-        @type user: None or str
         """
         if user is not None:
             assert isinstance(user, str)
@@ -332,12 +298,10 @@ class Course(StorageDir):
             newindex = b"".join(map(b"%s\n".__mod__, newlines))
             indexstore.store(newindex, havelock = gotlock, user = user)
 
-    def swappages(self, position, user=None):
+    def swappages(self, position: int, user: typing.Optional[str] = None) -> \
+            None:
         """
         swap the page at the given current position with its predecessor
-
-        @type position: int
-        @type user: None or str
         """
         if user is not None:
             assert isinstance(user, str)
@@ -353,11 +317,9 @@ class Course(StorageDir):
             newindex = b"".join(map(b"%s\n".__mod__, lines))
             indexstore.store(newindex, havelock = gotlock, user = user)
 
-    def relink(self, page, user=None):
+    def relink(self, page: int, user: typing.Optional[str] = None) -> None:
         """
         relink a (usually deleted) page to the index
-        @type page: int
-        @type user: None or str
         """
         if user is not None:
             assert isinstance(user, str)
@@ -383,12 +345,10 @@ class Course(StorageDir):
                         indexstore.store(newindex, havelock = gotlockindex,
                                          user = user)
 
-    def relinkblob(self, number, page, user=None):
+    def relinkblob(self, number: int, page: int,
+                   user: typing.Optional[str] = None) -> None:
         """
         relink a (usually deleted) blob to the given page in the index
-        @type number: int
-        @type page: int
-        @type user: None or str
         """
         if user is not None:
             assert isinstance(user, str)
@@ -414,21 +374,19 @@ class Course(StorageDir):
             newindex = b"".join(map(b"%s\n".__mod__, lines))
             indexstore.store(newindex, havelock = gotlockindex, user = user)
 
-
-    def editpage(self, number):
+    def editpage(self, number: int) -> typing.Tuple[str, str]:
         """
         Start editing a page;
 
         @param number: the internal page number
-        @type number: int
         @returns: a pair of an opaque version string and the contents of this page
-        @rtype: (str, str)
         """
         page = self.getstorage(("page%d" % number).encode("ascii"))
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
-    def savepage(self, number, version, newcontent, user=None):
+    def savepage(self, number: int, version: str, newcontent: str,
+                 user: str = None) -> typing.Tuple[str, str, str]:
         """
         Finish editing a page
 
@@ -436,16 +394,10 @@ class Course(StorageDir):
         @param version: the opaque version string, as obtained from edit page
         @param newcontent: the new content of the page, based on editing the said version
         @param user: the df-login name of the user to carried out the edit
-        @type number: int
-        @type version: str
-        @type newcontent: str
-        @type user: str
-
         @returns: a triple (ok, newversion, mergedcontent) where ok is a
                   boolean indicating whether no confilct has occured and
                   (newversion, mergedcontent) a pair for further editing that
                   can be handled as if obtained from editpage
-        @rtype: (str, str, str)
         """
         assert isinstance(version, str)
         assert isinstance(newcontent, str)
@@ -458,8 +410,9 @@ class Course(StorageDir):
                                                   user = user)
         return (ok, version.decode("utf8"), mergedcontent.decode("utf8"))
 
-    def attachblob(self, number, data, comment="unknown blob", label="fig",
-                   user=None):
+    def attachblob(self, number: int, data: FileStorage,
+                   comment: str = "unknown blob", label: str = "fig",
+                   user: typing.Optional[str] = None):
         """
         Attach a blob to a page
 
@@ -469,11 +422,7 @@ class Course(StorageDir):
         @param label: a short label for the blob (only small letters and
             digits allowed)
         @param user: the df-login name of the user to carried out the edit
-        @type number: int
         @type data: str or file-like
-        @type label: str
-        @type comment: str
-        @type user: str or None
         @returns: None on failure or the created blob number
         """
         assert isinstance(data, FileStorage)
@@ -517,13 +466,11 @@ class Course(StorageDir):
         blobname.store(filename, user=user)
         return newnumber
 
-    def listblobs(self, number):
+    def listblobs(self, number: int) -> typing.List[int]:
         """
         return a list of the blobs associated with the given page
 
         @param number: the internal page number
-        @type number: int
-        @rtype: [int]
         """
         for line in self.getcontent(b"Index").splitlines():
             entries = line.split()
@@ -532,13 +479,11 @@ class Course(StorageDir):
                 return [int(x) for x in entries]
         return []
 
-    def viewblob(self, number):
+    def viewblob(self, number: int) -> LazyView:
         """
         return the corresponding blob
 
         @param number: the internal number of the blob
-        @type number: int
-        @rtype: LazyView
         @returns: a mapping providing the keys: data(str), label(str),
                   comment(str), filename(str) and number(int)
         """
@@ -551,7 +496,8 @@ class Course(StorageDir):
             filename = ldu(self.getstorage(blobbase + b".filename").content),
             number = lambda:number))
 
-    def modifyblob(self, number, label, comment, filename, user):
+    def modifyblob(self, number, label: str, comment: str, filename: str,
+                   user: str) -> None:
         """
         modify the blob given by number with the data in the other parameters.
         @raises CheckError: if the input data is malformed
@@ -584,9 +530,8 @@ class Course(StorageDir):
         return max([self.getstorage(("page%d" % p).encode("ascii")).timestamp()
                     for p in self.listpages()] + [common.epoch])
 
-    def view(self, extrafunctions=dict()):
+    def view(self, extrafunctions=dict()) -> LazyView:
         """
-        @rtype: LazyView
         @returns: a mapping providing the keys: name(bytes), pages([int]),
                 deadpages([int]), title(str), outlines([Outline])
         """

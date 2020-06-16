@@ -21,14 +21,15 @@ mathjaxuri = %(staticservepath)s/mathjax/
 
 class PathConfig(object):
     section = "path"
-    def __init__(self,config=None):
+
+    def __init__(self, config=None) -> None:
         if config is None:
             self.cp = configparser.ConfigParser()
             self.cp.read_string(default_config)
         else:
             self.cp = config
 
-    def read(self, configfile):
+    def read(self, configfile) -> None:
         self.cp = configparser.ConfigParser()
         # can be switched to plain open when dropping support for Python2.X
         with io.open(configfile, encoding=config_encoding) as opencfg:

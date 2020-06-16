@@ -2,6 +2,7 @@
 import os
 import operator
 import datetime
+import typing
 
 import werkzeug.exceptions
 
@@ -9,6 +10,7 @@ from dokuforge.course import Course
 from dokuforge.storagedir import StorageDir
 import dokuforge.common as common
 from dokuforge.common import CheckError
+from dokuforge.view import LazyView
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
@@ -25,29 +27,27 @@ class Academy(StorageDir):
     title,v    The title of this display name of this academy
     groups,v   The groups in which this academy is a member
     """
-    def __init__(self, obj, listAllGroups):
+    def __init__(self, obj: typing.Union[bytes, "Academy"],
+                 listAllGroups) -> None:
         """
         @param obj: either a path or an Academy object
-        @type obj: bytes or Academy
         """
         StorageDir.__init__(self, obj)
         self.listAllGroups = listAllGroups
 
-    def getgroups(self):
+    def getgroups(self) -> typing.List[str]:
         """
         loads the current groups from disk, list version.
 
         @returns: the groups of which this academy is a member
-        @rtype: [str]
         """
         return self.getcontent(b"groups").decode("utf8").split()
 
-    def getgroupsstring(self):
+    def getgroupsstring(self) -> str:
         """
         loads the current groups from disk, string version.
 
         @returns: the groups of which this academy is a member
-        @rtype: str
         """
         return self.getcontent(b"groups").decode("utf8")
 
@@ -88,13 +88,12 @@ class Academy(StorageDir):
         """
         return [c for c in self.listAllCourses() if c.isDeleted]
 
-    def getCourse(self, coursename):
+    def getCourse(self, coursename: str):
         """
         find a course of this academy to a given name. The course may be
         deleted. If none is found raise a werkzeug.exceptions.NotFound.
 
         @param coursename: internal name of course
-        @type coursename: str
         @returns: Course object for course with name coursename
         @raises werkzeug.exceptions.NotFound: if the course does not exist
         """
@@ -107,13 +106,12 @@ class Academy(StorageDir):
             raise werkzeug.exceptions.NotFound()
         return Course(os.path.join(self.path, coursename))
 
-    def setgroups(self, groups):
+    def setgroups(self, groups: typing.List[str]) -> None:
         """
         Set the groups of this academy to determine when to display it. If
         the input is malformed raise a CheckError.
 
         @param groups: groups to set
-        @type groups: list of str
         """
         if isinstance(groups, str):
             groups = groups.split()
@@ -122,7 +120,7 @@ class Academy(StorageDir):
         content = " ".join(groups)
         self.getstorage(b"groups").store(content.encode("utf8"))
 
-    def createCourse(self, name, title):
+    def createCourse(self, name: str, title: str) -> None:
         """
         create a new course. If the user input is malformed raise a check
         error.
@@ -130,7 +128,6 @@ class Academy(StorageDir):
         @param name: internal name of the course
         @param title: displayed name of the course
         @type name: str (restricted char-set)
-        @type title: str
         @raises CheckError:
         """
         assert isinstance(name, str)
@@ -147,9 +144,8 @@ class Academy(StorageDir):
     def timestamp(self):
         return max([c.timestamp() for c in self.listCourses()] + [-1])
 
-    def view(self, extrafunctions=dict()):
+    def view(self, extrafunctions=dict()) -> LazyView:
         """
-        @rtype: LazyView
         @returns: a mapping providing the keys: name(bytes), title(str),
             courses([Course.view()]), groups([str])
         """

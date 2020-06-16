@@ -5,10 +5,8 @@ from werkzeug.middleware.shared_data import SharedDataMiddleware
 from dokuforge.application import Application
 from dokuforge.paths import PathConfig
 
-def buildapp(pathconfig=PathConfig()):
-    """
-    @type pathconfig: PathConfig
-    """
+
+def buildapp(pathconfig: PathConfig = PathConfig()):
     app = Application(pathconfig)
     app = SharedDataMiddleware(
         app, {"/%s" % pathconfig.staticservepath:

@@ -11,7 +11,8 @@ from wsgitools.middlewares import TracebackMiddleware
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 
-def main():
+
+def main() -> None:
     configfile = "./dokuforge.conf.sample"
     if len(sys.argv) > 1:
         configfile = sys.argv[1]

@@ -14,7 +14,7 @@ class LazyView(Mapping):
     additional difference to normal dicts is that attempting to write to a
     LazyView will fail with a TypeError (as defined by collections.Mapping).
     """
-    def __init__(self, functions):
+    def __init__(self, functions) -> None:
         """
         @type functions: {key: callable}
         @param functions: from arbitrary keys to parameterless functions

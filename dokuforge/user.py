@@ -1,18 +1,19 @@
 import configparser
 import random
+import typing
 
 sysrand = random.SystemRandom()
 
 from dokuforge.common import strtobool, epoch
 from dokuforge.course import Course
 from dokuforge.academy import Academy
+from dokuforge.storage import Storage
 from dokuforge.view import LazyView
 
-def randpasswordstring(n=6):
+
+def randpasswordstring(n: int = 6) -> str:
     """
     @returns: random string of length n which is easily readable
-    @type n: int
-    @rtype: str
     """
     chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789'
     return ''.join(sysrand.choice(chars) for x in range(n))
@@ -88,13 +89,11 @@ class User:
         more explicit entry -- the most explicit applicable entry decides
         the actual privilege.
     """
-    def __init__(self, name, status, password, permissions):
+    def __init__(self, name: str, status: str, password: typing.Optional[str],
+                 permissions) -> None:
         """
         User-Class Constructor
 
-        @type name: str
-        @type status: str
-        @type password: str or None
         @param password: a plaintext password or None if it should be generated
         @type permissions: dictionary of permissions
         """
@@ -108,21 +107,17 @@ class User:
         self.password = password
         self.permissions = permissions
 
-    def hasPermission(self, perm):
+    def hasPermission(self, perm: str) -> bool:
         """
         check if user has a permission
-        @type perm: str
-        @rtype: bool
         """
         assert isinstance(perm, str)
         ## cast None to False
         return bool(self.permissions.get(perm))
 
-    def revokedPermission(self, perm):
+    def revokedPermission(self, perm: str) -> bool:
         """
         check if user has a permission
-        @type perm: str
-        @rtype: bool
         """
         assert isinstance(perm, str)
         state = self.permissions.get(perm)
@@ -131,14 +126,13 @@ class User:
         else:
             return False
 
-    def allowedRead(self, aca, course = None, recursive = False):
+    def allowedRead(self, aca: typing.Union[Academy, LazyView],
+                    course: typing.Optional[typing.Union[Course,
+                                                         LazyView]] = None,
+                    recursive: bool = False) -> bool:
         """
-        @type aca: Academy or LazyView
-        @type course: None or Course or LazyView
-        @type recursive: bool
         @param recursive: check for recursive read priveleges. This means that
             akademie_view_* is not enough.
-        @rtype: bool
         """
         ## first check global priveleges
         if self.hasPermission("df_read") or self.isSuperAdmin():
@@ -189,12 +183,9 @@ class User:
         ## at this point we ask for a read privelege of a specific course
         return self.hasPermission("kurs_read_%s_%s" % (aca, course))
 
-    def allowedWrite(self, aca, course = None):
-        """
-        @type aca: Academy or LazyView
-        @type course: None or Course or LazyView
-        @rtype: bool
-        """
+    def allowedWrite(self, aca: typing.Union[Academy, LazyView],
+                     course: typing.Optional[
+                         typing.Union[Course, LazyView]] = None) -> bool:
         ## first check global priveleges
         if self.hasPermission("df_write") or self.isSuperAdmin():
             return True
@@ -238,11 +229,7 @@ class User:
         ## at this point we ask for a write privelege of a specific course
         return self.hasPermission("kurs_write_%s_%s" % (aca, course))
 
-    def allowedMeta(self, aca):
-        """
-        @type aca: Academy or LazyView
-        @rtype: bool
-        """
+    def allowedMeta(self, aca: typing.Union[Academy, LazyView]) -> bool:
         ## first check global priveleges
         if self.hasPermission("df_meta") or self.isSuperAdmin():
             return True
@@ -266,11 +253,7 @@ class User:
         ## fourth check the academy level priveleges
         return self.hasPermission("akademie_meta_%s" % aca)
 
-    def mayExport(self, aca):
-        """
-        @type aca: Academy or LazyView
-        @rtype: bool
-        """
+    def mayExport(self, aca: typing.Union[Academy, LazyView]) -> bool:
         assert isinstance(aca, Academy) or isinstance(aca, LazyView)
         ## superadmin is allowed to do everything
         if self.isSuperAdmin():
@@ -282,38 +265,23 @@ class User:
         ## now we have to check the export privelege
         return self.hasPermission("df_export")
 
-    def mayCreate(self):
-        """
-        @rtype: bool
-        """
+    def mayCreate(self) -> bool:
         return self.hasPermission("df_create") or self.isSuperAdmin()
 
-    def allowedList(self, groupname):
-        """
-        @type groupname: str
-        @rtype: bool
-        """
+    def allowedList(self, groupname: str) -> bool:
         assert isinstance(groupname, str)
         return self.isSuperAdmin() or self.hasPermission("df_show") or \
             self.hasPermission("gruppe_show_%s" % groupname)
 
-    def isAdmin(self):
-        """
-        @rtype: bool
-        """
+    def isAdmin(self) -> bool:
         return self.isSuperAdmin() or self.hasPermission("df_admin")
 
-    def isSuperAdmin(self):
-        """
-        @rtype: bool
-        """
+    def isSuperAdmin(self) -> bool:
         return self.hasPermission("df_superadmin")
 
-    def defaultGroup(self):
+    def defaultGroup(self) -> str:
         """Return the default group of a user. This is the first part (separated by
         underscore) of the status.
-
-        @rtype: str
         """
         ret = self.status.split('_')[0]
         return ret
@@ -322,29 +290,22 @@ class UserDB:
     """
     Class for the user database
 
-    @type db: {str: User}
     @ivar db: dictionary containing (username, User object) pairs
     @ivar storage: storage.CachingStorage object holding the userdb
     @ivar timestamp: time of last update, this is compared to the mtime of
         the CachingStorage
     """
-    def __init__(self, storage):
-        """
-        @type storage: storage.Storage
-        """
-        self.db = dict()
+    def __init__(self, storage: Storage) -> None:
+        self.db: typing.Dict[str, User] = dict()
         self.storage = storage
         self.timestamp = epoch
 
-    def addUser(self, name, status, password, permissions):
+    def addUser(self, name: str, status: str, password: str,
+                permissions: typing.Dict[str, bool]):
         """
         add a user to the database in memory
 
-        @type name: str
-        @type status: str
-        @type password: str
         @param permissions: dictionary of permissions
-        @type permissions: {str: bool}
         """
         assert isinstance(name, str)
         assert isinstance(status, str)
@@ -356,10 +317,8 @@ class UserDB:
         self.db[name] = User(name, status, password, permissions)
         return True
 
-    def checkLogin(self, name, password):
+    def checkLogin(self, name: str, password: str):
         """
-        @type name: str
-        @type password: str
         @returns: True if name and password match an existing user, False otherwise
         """
         assert isinstance(name, str)
@@ -369,7 +328,7 @@ class UserDB:
         except KeyError:
             return False
 
-    def load(self):
+    def load(self) -> None:
         """
         Load the user database from disk.
 
