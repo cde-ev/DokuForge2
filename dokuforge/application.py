@@ -567,27 +567,25 @@ class Application:
         self.check_login(rs)
         return self.render_index(rs, None)
 
-    def do_groupindex(self, rs: RequestState,
+    def do_groupindex(self, rs: RequestState, *,
                       group: typing.Optional[str] = None):
         self.check_login(rs)
         return self.render_index(rs, group)
 
-    def do_academy(self, rs: RequestState, academy: str = None):
+    def do_academy(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         return self.render_academy(rs, aca)
 
-    def do_course(self, rs: RequestState, academy: str = None,
-                  course: str = None):
+    def do_course(self, rs: RequestState, *, academy: str, course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         return self.render_course(rs, aca, c)
 
-    def do_showdeadpages(self, rs: RequestState, academy: str = None,
-                         course: str = None):
+    def do_showdeadpages(self, rs: RequestState, *, academy: str, course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -596,8 +594,8 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_deadpages(rs, aca, c)
 
-    def do_showdeadblobs(self, rs: RequestState, academy: str = None,
-                         course: str = None, page: int = None):
+    def do_showdeadblobs(self, rs: RequestState, *, academy: str, course: str,
+                         page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -606,7 +604,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_deadblobs(rs, aca, c, page)
 
-    def do_createcoursequiz(self, rs: RequestState, academy: str = None):
+    def do_createcoursequiz(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -614,7 +612,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_createcoursequiz(rs, aca)
 
-    def do_createcourse(self, rs: RequestState, academy: str = None):
+    def do_createcourse(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -649,17 +647,16 @@ class Application:
         return self.render_index(rs)
 
     def do_styleguide(self, rs: RequestState):
-        return self.do_styleguidetopic(rs, "index")
+        return self.do_styleguidetopic(rs, topic="index")
 
-    def do_styleguidetopic(self, rs: RequestState, topic: str = None):
+    def do_styleguidetopic(self, rs: RequestState, *, topic: str):
         assert isinstance(topic, str)
         if topic not in os.listdir(os.path.join(self.templatepath,
                                                 "style")):
             raise werkzeug.exceptions.NotFound()
         return self.render_styleguide(rs, topic)
 
-    def do_deletecourse(self, rs: RequestState, academy: str = None,
-                        course: str = None):
+    def do_deletecourse(self, rs: RequestState, *, academy: str, course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -669,8 +666,8 @@ class Application:
         c.delete()
         return self.render_academy(rs, aca)
 
-    def do_undeletecourse(self, rs: RequestState, academy: str = None,
-                          course: str = None):
+    def do_undeletecourse(self, rs: RequestState, *, academy: str,
+                          course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -680,8 +677,7 @@ class Application:
         c.undelete()
         return self.render_academy(rs, aca)
 
-    def do_createpage(self, rs: RequestState, academy: str = None,
-                      course: str = None):
+    def do_createpage(self, rs: RequestState, *, academy: str, course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -691,8 +687,8 @@ class Application:
         c.newpage(user=rs.user.name)
         return self.render_course(rs, aca, c)
 
-    def do_delete(self, rs: RequestState, academy: str = None,
-                  course: str = None, page: int = None):
+    def do_delete(self, rs: RequestState, *, academy: str, course: str,
+                  page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -702,8 +698,8 @@ class Application:
         c.delpage(page, user=rs.user.name)
         return self.render_course(rs, aca, c)
 
-    def do_blobdelete(self, rs: RequestState, academy: str = None,
-                      course: str = None, page: int = None, blob: int = None):
+    def do_blobdelete(self, rs: RequestState, *, academy: str, course: str,
+                      page: int, blob: int):
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -714,8 +710,7 @@ class Application:
         c.delblob(blob, user=rs.user.name)
         return self.render_show(rs, aca, c, page)
 
-    def do_relink(self, rs: RequestState, academy: str = None,
-                  course: str = None):
+    def do_relink(self, rs: RequestState, *, academy: str, course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -730,8 +725,8 @@ class Application:
         c.relink(number, user=rs.user.name)
         return self.render_course(rs, aca, c)
 
-    def do_relinkblob(self, rs: RequestState, academy: str = None,
-                      course: str = None, page: int = None):
+    def do_relinkblob(self, rs: RequestState, *, academy: str, course: str,
+                      page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -746,8 +741,8 @@ class Application:
         c.relinkblob(number, page, user=rs.user.name)
         return self.render_show(rs, aca, c, page)
 
-    def do_showblob(self, rs: RequestState, academy: str = None,
-                    course: str = None, page: int = None, blob: int = None):
+    def do_showblob(self, rs: RequestState, *, academy: str, course: str,
+                    page: int, blob: int):
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -757,8 +752,8 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_showblob(rs, aca, c, page, blob)
 
-    def do_editblob(self, rs: RequestState, academy: str = None,
-                    course: str = None, page: int = None, blob: int = None):
+    def do_editblob(self, rs: RequestState, *, academy: str, course: str,
+                    page: int, blob: int):
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -768,8 +763,8 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_editblob(rs, aca, c, page, blob)
 
-    def do_saveblob(self, rs: RequestState, academy: str = None,
-                    course: str = None, page: int = None, blob: int = None):
+    def do_saveblob(self, rs: RequestState, *, academy: str, course: str,
+                    page: int, blob: int):
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -789,8 +784,8 @@ class Application:
                                         error=error)
         return self.render_showblob(rs, aca, c, page, blob)
 
-    def do_md5blob(self, rs: RequestState, academy: str = None,
-                   course: str = None, page: int = None, blob: int = None):
+    def do_md5blob(self, rs: RequestState, *, academy: str, course: str,
+                   page: int, blob: int):
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -804,9 +799,8 @@ class Application:
         blobhash = h.hexdigest()
         return self.render_showblob(rs, aca, c, page, blob, blobhash=blobhash)
 
-    def do_downloadblob(self, rs: RequestState, academy: str = None,
-                        course: str = None, page: int = None,
-                        blob: int = None):
+    def do_downloadblob(self, rs: RequestState, *, academy: str, course: str,
+                        page: int, blob: int):
         assert academy is not None and course is not None and \
                page is not None and blob is not None
         self.check_login(rs)
@@ -821,8 +815,8 @@ class Application:
                 "attachment; filename=%s" % theblob["filename"]
         return rs.response
 
-    def do_rcs(self, rs: RequestState, academy: str = None, course: str = None,
-               page: int = None):
+    def do_rcs(self, rs: RequestState, *, academy: str, course: str,
+               page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -835,8 +829,7 @@ class Application:
                 "attachment; filename=%d,v" % (page)
         return rs.response
 
-    def do_raw(self, rs: RequestState, academy: str = None,
-               course: str = None):
+    def do_raw(self, rs: RequestState, *, academy: str, course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -857,7 +850,7 @@ class Application:
                 "attachment; filename=" + filename
         return rs.response
 
-    def do_rawacademy(self, rs: RequestState, academy: str = None):
+    def do_rawacademy(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -879,7 +872,7 @@ class Application:
                 "attachment; filename=" + filename
         return rs.response
 
-    def do_export(self, rs: RequestState, academy: str = None):
+    def do_export(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -901,8 +894,7 @@ class Application:
                 "attachment; filename=%s.tar.gz" % prefix
         return rs.response
 
-    def do_moveup(self, rs: RequestState, academy: str = None,
-                  course: str = None):
+    def do_moveup(self, rs: RequestState, *, academy: str, course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -917,16 +909,16 @@ class Application:
         c.swappages(number, user=rs.user.name)
         return self.render_course(rs, aca, c)
 
-    def do_page(self, rs: RequestState, academy: str = None,
-                course: str = None, page: int = None):
+    def do_page(self, rs: RequestState, *, academy: str, course: str,
+                page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
         c = self.getCourse(aca, course, rs.user)
         return self.render_show(rs, aca, c, page)
 
-    def do_edit(self, rs: RequestState, academy: str = None,
-                course: str = None, page: int = None):
+    def do_edit(self, rs: RequestState, *, academy: str, course: str,
+                page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -936,8 +928,8 @@ class Application:
         version, content = c.editpage(page)
         return self.render_edit(rs, aca, c, page, version, content)
 
-    def do_addblob(self, rs: RequestState, academy: str = None,
-                   course: str = None, page: int = None):
+    def do_addblob(self, rs: RequestState, *, academy: str, course: str,
+                   page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -946,8 +938,8 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_addblob(rs, aca, c, page)
 
-    def do_uploadblob(self, rs: RequestState, academy: str = None,
-                      course: str = None, page: int = None):
+    def do_uploadblob(self, rs: RequestState, *, academy: str, course: str,
+                      page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -966,8 +958,8 @@ class Application:
                                        error=error)
         return self.render_uploadblob(rs, aca, c, page)
 
-    def do_attachblob(self, rs: RequestState, academy: str = None,
-                      course: str = None, page: int = None):
+    def do_attachblob(self, rs: RequestState, *, academy: str, course: str,
+                      page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -1003,8 +995,8 @@ class Application:
         else:
             return self.render_show(rs, aca, c, page)
 
-    def do_save(self, rs: RequestState, academy: str = None,
-                course: str = None, page: int = None):
+    def do_save(self, rs: RequestState, *, academy: str, course: str,
+                page: int):
         assert academy is not None and course is not None and page is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -1024,7 +1016,7 @@ class Application:
 
         return self.render_edit(rs, aca, c, page, version, content, ok=ok)
 
-    def do_academygroups(self, rs: RequestState, academy: str = None):
+    def do_academygroups(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -1032,7 +1024,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_academygroups(rs, aca)
 
-    def do_academygroupssave(self, rs: RequestState, academy: str = None):
+    def do_academygroupssave(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -1046,7 +1038,7 @@ class Application:
                                              error = error)
         return self.render_academygroups(rs, aca, ok = True)
 
-    def do_deadcourses(self, rs: RequestState, academy: str = None):
+    def do_deadcourses(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -1054,7 +1046,7 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.render_deadcourses(rs, aca)
 
-    def do_academytitle(self, rs: RequestState, academy: str = None):
+    def do_academytitle(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -1064,7 +1056,7 @@ class Application:
                                 "academytitle.html",
                                 extraparams={'academy': aca.view()})
 
-    def do_academytitlesave(self, rs: RequestState, academy: str = None):
+    def do_academytitlesave(self, rs: RequestState, *, academy: str):
         assert academy is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -1074,8 +1066,7 @@ class Application:
                                     "academytitle.html",
                                     extraparams = {'academy': aca.view()})
 
-    def do_coursetitle(self, rs: RequestState, academy: str = None,
-                       course: str = None):
+    def do_coursetitle(self, rs: RequestState, *, academy: str, course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
@@ -1087,8 +1078,8 @@ class Application:
                                 extraparams={'academy': aca.view(),
                                              'course': c.view()})
 
-    def do_coursetitlesave(self, rs: RequestState, academy: str = None,
-                           course: str = None):
+    def do_coursetitlesave(self, rs: RequestState, *, academy: str,
+                           course: str):
         assert academy is not None and course is not None
         self.check_login(rs)
         aca = self.getAcademy(academy, rs.user)
