@@ -162,8 +162,7 @@ class Course(StorageDir):
 
     def getcommit(self, page: int) -> \
             typing.Dict[str, typing.Union[str, datetime.datetime]]:
-        page = ("page%d" % page).encode("ascii")
-        info = self.getstorage(page).commitstatus()
+        info = self.getstorage(b"page%d" % page).commitstatus()
         return dict((k.decode("ascii"), v) if k == b"date"
                     else (k.decode("ascii"), v.decode("utf8"))
                     for k, v in info.items())
@@ -217,8 +216,7 @@ class Course(StorageDir):
 
         @param number: the internal number of that page
         """
-        page = ("page%d" % number).encode("ascii")
-        return self.getcontent(page).decode("utf8")
+        return self.getcontent(b"page%d" % number).decode("utf8")
 
     def getrcs(self, page) -> str:
         """
@@ -229,8 +227,7 @@ class Course(StorageDir):
             return ""
         if page >= self.nextpage():
             return ""
-        page = ("page%d" % page).encode("ascii")
-        return self.getstorage(page).asrcs()
+        return self.getstorage(b"page%d" % page).asrcs()
 
     def newpage(self, user: typing.Optional[str] = None) -> int:
         """
@@ -244,12 +241,12 @@ class Course(StorageDir):
         with index.lock as gotlockindex:
             with nextpagestore.lock as gotlocknextpage:
                 newnumber = self.nextpage(havelock = gotlocknextpage)
-                nextpagestore.store(("%d" % (newnumber+1)).encode("ascii"),
+                nextpagestore.store(b"%d" % (newnumber + 1),
                                     havelock = gotlocknextpage, user = user)
                 indexcontents = index.content(havelock = gotlockindex)
                 if indexcontents == b"\n":
                     indexcontents = b""
-                indexcontents += ("%s\n" % newnumber).encode("ascii")
+                indexcontents += b"%d\n" % newnumber
                 index.store(indexcontents, havelock = gotlockindex, user = user)
                 return newnumber
 
@@ -340,7 +337,7 @@ class Course(StorageDir):
                     if page in [int(x.split()[0]) for x in lines]:
                         pass # page already present
                     else:
-                        lines.append(("%d" % page).encode("ascii"))
+                        lines.append(b"%d" % page)
                         newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex,
                                          user = user)
@@ -370,7 +367,7 @@ class Course(StorageDir):
                         if number in [int(x) for x in lineparts[1:]]:
                             pass # want a set-like semantics
                         else:
-                            lines[i] += (" %d" % number).encode("ascii")
+                            lines[i] += b" %d" % number
             newindex = b"".join(map(b"%s\n".__mod__, lines))
             indexstore.store(newindex, havelock = gotlockindex, user = user)
 
@@ -381,7 +378,7 @@ class Course(StorageDir):
         @param number: the internal page number
         @returns: a pair of an opaque version string and the contents of this page
         """
-        page = self.getstorage(("page%d" % number).encode("ascii"))
+        page = self.getstorage(b"page%d" % number)
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -404,7 +401,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, str)
             user = user.encode("utf8")
-        page = self.getstorage(("page%d" % number).encode("ascii"))
+        page = self.getstorage(b"page%d" % number)
         ok, version, mergedcontent = page.endedit(version.encode("utf8"),
                                                   newcontent.encode("utf8"),
                                                   user = user)
@@ -444,18 +441,18 @@ class Course(StorageDir):
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
                 newnumber = self.nextblob(havelock = gotlocknextblob)
-                nextblobstore.store(("%d" % (newnumber+1)).encode("ascii"),
+                nextblobstore.store(b"%d" % (newnumber + 1),
                                     havelock = gotlocknextblob)
                 index = indexstore.content()
                 lines = index.splitlines()
                 for i in range(len(lines)):
                     entries = lines[i].split()
                     if entries and int(entries[0]) == number:
-                        lines[i] += (" %d" % newnumber).encode("ascii")
+                        lines[i] += b" %d" % newnumber
                         newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex)
 
-        blobbase = ("blob%d" % newnumber).encode("ascii")
+        blobbase = b"blob%d" % newnumber
         blob = self.getstorage(blobbase)
         bloblabel = self.getstorage(blobbase + b".label")
         blobcomment = self.getstorage(blobbase + b".comment")
@@ -488,7 +485,7 @@ class Course(StorageDir):
                   comment(str), filename(str) and number(int)
         """
         ldu = liftdecodeutf8
-        blobbase = ("blob%d" % number).encode("ascii")
+        blobbase = b"blob%d" % number
         return LazyView(dict(
             data = self.getstorage(blobbase).content,
             label = ldu(self.getstorage(blobbase + b".label").content),
@@ -515,7 +512,7 @@ class Course(StorageDir):
         common.validateBlobComment(comment)
         common.validateBlobFilename(filename)
 
-        blobbase = ("blob%d" % number).encode("ascii")
+        blobbase = b"blob%d" % number
         bloblabel = self.getstorage(blobbase + b".label")
         blobcomment = self.getstorage(blobbase + b".comment")
         blobname = self.getstorage(blobbase + b".filename")
@@ -527,7 +524,7 @@ class Course(StorageDir):
         return common.findlastchange([self.getcommit(p) for p in self.listpages()])
 
     def timestamp(self):
-        return max([self.getstorage(("page%d" % p).encode("ascii")).timestamp()
+        return max([self.getstorage(b"page%d" % p).timestamp()
                     for p in self.listpages()] + [common.epoch])
 
     def view(self, extrafunctions=dict()) -> LazyView:
@@ -557,7 +554,7 @@ class Course(StorageDir):
             tex += dfLineGroupParser(page).toTex()
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
-                blobbase = ("blob%d" % b).encode("ascii")
+                blobbase = b"blob%d" % b
                 blobdate = self.getstorage(blobbase).commitstatus()[b'date']
                 tex += "\n\n%% blob %d\n" % b
                 tex += "\\begin{figure}\n\\centering\n"
@@ -577,9 +574,9 @@ class Course(StorageDir):
                 tex += "\\label{fig_%s_%d_%s}\n" % (
                     self.name.decode('ascii'), b, blob['label'])
                 tex += "\\end{figure}\n"
-                yield tarwriter.addChunk(self.name +
-                                         ("/blob_%d_" % b).encode("ascii") +
-                                         blob['filename'].encode('utf8'),
+                yield tarwriter.addChunk(b"%s/blob_%d_%s" %
+                                         (self.name, b,
+                                          blob['filename'].encode("utf8")),
                                          blob['data'],
                                          blobdate)
 
