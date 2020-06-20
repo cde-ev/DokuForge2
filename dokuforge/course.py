@@ -379,7 +379,7 @@ class Course(StorageDir):
                 else:
                     index = indexstore.content(havelock = gotlockindex)
                     lines = index.splitlines()
-                    lines = [ x for x in lines if x != ""]
+                    lines = [x for x in lines if x != b""]
                     if page in [int(x.split()[0]) for x in lines]:
                         pass # page already present
                     else:
