@@ -25,7 +25,7 @@ class StorageDir:
         return Storage(self.path, filename)
 
     def getcontent(self, filename: bytes,
-                   havelock: typing.Optional[LockDir] = None) -> str:
+                   havelock: typing.Optional[LockDir] = None) -> bytes:
         """
         @param filename: passed to Storage as second param
         @returns: the content of the Storage build from self.path and filename
@@ -37,7 +37,7 @@ class StorageDir:
         return os.path.basename(self.path)
 
     def rawExportIterator(self, tarwriter: common.TarWriter) -> \
-            typing.Iterable[str]:
+            typing.Iterable[bytes]:
         """
         @returns: a tar ball containing the full internal information about
                 this storage dir

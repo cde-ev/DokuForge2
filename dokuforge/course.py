@@ -389,7 +389,8 @@ class Course(StorageDir):
         return (version.decode("utf8"), content.decode("utf8"))
 
     def savepage(self, number: int, version: str, newcontent: str,
-                 user: str = None) -> typing.Tuple[str, str, str]:
+                 user: typing.Optional[str] = None) -> \
+            typing.Tuple[bool, str, str]:
         """
         Finish editing a page
 

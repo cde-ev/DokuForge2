@@ -7,7 +7,7 @@ sysrand = random.SystemRandom()
 from dokuforge.common import strtobool, epoch
 from dokuforge.course import Course
 from dokuforge.academy import Academy
-from dokuforge.storage import Storage
+from dokuforge.storage import CachingStorage
 from dokuforge.view import LazyView
 
 
@@ -299,7 +299,7 @@ class UserDB:
     @ivar timestamp: time of last update, this is compared to the mtime of
         the CachingStorage
     """
-    def __init__(self, storage: Storage) -> None:
+    def __init__(self, storage: CachingStorage) -> None:
         self.db: typing.Dict[str, User] = dict()
         self.storage = storage
         self.timestamp = epoch

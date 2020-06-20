@@ -383,8 +383,7 @@ class Application:
             raise werkzeug.exceptions.Forbidden()
         return c
 
-    def createAcademy(self, name: str, title: str, groups) -> \
-            typing.Optional[Academy]:
+    def createAcademy(self, name: str, title: str, groups) -> Academy:
         """
         create an academy. If the user data is malformed raise a CheckError.
 

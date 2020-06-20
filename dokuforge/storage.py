@@ -192,7 +192,7 @@ class Storage(object):
                 content = f.read()
             return content
 
-    def status(self, havelock=None) -> str:
+    def status(self, havelock=None) -> bytes:
         self.ensureexistence(havelock = havelock)
         result = rlogv(self.fullpath(postfix=b",v"))
         if result is None:
@@ -210,14 +210,14 @@ class Storage(object):
         self.ensureexistence(havelock=havelock)
         return rloghead(self.fullpath(postfix=b",v"))
 
-    def content(self, havelock=None):
+    def content(self, havelock=None) -> bytes:
         self.ensureexistence(havelock = havelock)
         logger.debug("retrieving content for %r" % self.fullpath())
         return subprocess.check_output(["co", "-q", "-p", "-kb",
                                         self.fullpath()],
                                        env=RCSENV)
 
-    def startedit(self, havelock=None) -> typing.Tuple[bytes, str]:
+    def startedit(self, havelock=None) -> typing.Tuple[bytes, bytes]:
         """
         start editing a file (optimistic synchronisation)
 
