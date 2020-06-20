@@ -48,66 +48,69 @@ class Estimate:
     blobsperpage = 3.0
 
     @classmethod
-    def fromText(cls, s):
+    def fromText(cls, s: str) -> "Estimate":
         n = len(s)
         return cls(n, 0, n, 0)
 
     @classmethod
-    def fromParagraph(cls, s):
+    def fromParagraph(cls, s: str) -> "Estimate":
         return cls.fromText(s).fullline()
 
     @classmethod
-    def fromTitle(cls, s):
+    def fromTitle(cls, s: str) -> "Estimate":
         n = len(s)
         wc = math.ceil(n / cls.charsperline) * cls.charsperline * 2
         return cls(n, 0, wc, 0)
 
     @classmethod
-    def fromEdnote(cls, s):
+    def fromEdnote(cls, s: str) -> "Estimate":
         return cls(0, len(s), 0, 0)
 
     @classmethod
-    def fromBlobs(cls, blobs):
+    def fromBlobs(cls, blobs: typing.Sized) -> "Estimate":
         return cls(0, 0, 0, len(blobs))
 
     @classmethod
-    def fromNothing(cls):
+    def fromNothing(cls) -> "Estimate":
         return cls(0, 0, 0, 0)
 
     @classmethod
-    def emptyLines(cls, linecount=1):
+    def emptyLines(cls, linecount: float = 1) -> "Estimate":
         return cls(0, 0, cls.charsperline * linecount, 0)
 
     @property
-    def pages(self):
+    def pages(self) -> float:
         return self.weightedchars / self.charsperpage
 
     @property
-    def ednotepages(self):
+    def ednotepages(self) -> float:
         return self.ednotechars / self.charsperpage
 
     @property
-    def blobpages(self):
+    def blobpages(self) -> float:
         return self.blobs / self.blobsperpage
 
-    def fullline(self):
+    def fullline(self) -> "Estimate":
         weightedchars = math.ceil(self.weightedchars / self.charsperline) \
                 * self.charsperline
         return Estimate(self.chars, self.ednotechars, weightedchars, self.blobs)
 
-    def __add__(self, other):
+    def __add__(self, other: "Estimate") -> "Estimate":
         return Estimate(self.chars + other.chars,
                         self.ednotechars + other.ednotechars,
                         self.weightedchars + other.weightedchars,
                         self.blobs + other.blobs)
 
-    def __mul__(self, num):
+    def __mul__(self, num: int) -> "Estimate":
         return Estimate(num * self.chars, num * self.ednotechars,
                         num * self.weightedchars, num * self.blobs)
 
     __rmul__ = __mul__
 
-def intersperse(iterable, delimiter):
+
+T = typing.TypeVar('T')
+def intersperse(iterable: typing.Iterable[T], delimiter: T) -> \
+        typing.Iterable[T]:
     it = iter(iterable)
     for x in it:
         yield x
@@ -117,14 +120,15 @@ def intersperse(iterable, delimiter):
         yield x
 
 class Escaper:
-    def __init__(self, sequence, escaped) -> None:
+    def __init__(self, sequence: str, escaped: str) -> None:
         self.sequence = sequence
         self.escaped = escaped
 
-    def __call__(self, word):
+    def __call__(self, word: str) -> typing.Iterable[str]:
         return intersperse(word.split(self.sequence), self.escaped)
 
-def acronym(word):
+
+def acronym(word: str) -> typing.Iterable[str]:
     """
     All-capital words should be displayed in smaller font.
     But don't mangle things like 'T-Shirt' or 'E-Mail'.
@@ -133,7 +137,8 @@ def acronym(word):
         word = '\\acronym{%s}' % word
     yield word
 
-def  standardAbbreviations(word):
+
+def standardAbbreviations(word: str) -> typing.Iterable[str]:
     """
     Do spacing for standard abbreviations.
     """
@@ -161,7 +166,8 @@ def  standardAbbreviations(word):
 splitEllipsis = Escaper("...", "...")
 # Replace the ellipsis symbol ... by \dots
 
-def naturalNumbers(word):
+
+def naturalNumbers(word: str) -> typing.Iterable[str]:
     """
     Special Spacing for numbers.
     """
@@ -185,20 +191,23 @@ def naturalNumbers(word):
                 value = value // 1000
             yield '%d%s' % (value, result)
 
-def openQuotationMark(word):
+
+def openQuotationMark(word: str) -> typing.Iterable[str]:
     if len(word) > 1 and word.startswith('"'):
         yield '"`'
         word = word[1:]
     yield word
 
-def closeQuotationMark(word):
+
+def closeQuotationMark(word: str) -> typing.Iterable[str]:
     if len(word) > 1 and word.endswith('"'):
         yield word[:-1]
         yield '"\''
     else:
         yield word
 
-def fullStop(word):
+
+def fullStop(word: str) -> typing.Iterable[str]:
     if len(word) > 1 and word.endswith('.'):
         yield word[:-1]
         yield '.'
@@ -302,10 +311,10 @@ class EscapeCommands:
 
     command_re = re.compile("(%s(?:[a-zA-Z]+|.))" % re.escape(escapechar))
 
-    def forbid(self, word):
+    def forbid(self, word: str) -> str:
         return '\\forbidden' + word
 
-    def __call__(self, word):
+    def __call__(self, word: str) -> typing.Iterable[str]:
         for part in self.command_re.split(word):
             if part.startswith(self.escapechar):
                 if part in self.allowed:
@@ -327,14 +336,19 @@ escapeEndEdnote = Escaper("\\end{ednote}", "|end{ednote}")
 # where we expect them to end.
 
 class SplitSeparators:
-    def __init__(self, separators) -> None:
+    def __init__(self, separators: str) -> None:
         self.splitre = re.compile("([%s])" % re.escape(separators))
 
-    def __call__(self, word):
+    def __call__(self, word: str) -> typing.Iterable[str]:
         return self.splitre.split(word)
 
 
-def applyMicrotypefeatures(wordlist: typing.List[str], featurelist):
+MicrotypeFeature = typing.Callable[[str], typing.Iterable[str]]
+
+
+def applyMicrotypefeatures(wordlist: typing.Iterable[str],
+                           featurelist: typing.Iterable[MicrotypeFeature]) -> \
+        str:
     """
     sequentially apply (in the sense wordlist >>= feature)
     the features to the wordlist. Return the concatenation
@@ -349,29 +363,36 @@ def applyMicrotypefeatures(wordlist: typing.List[str], featurelist):
     return ''.join(wordlist)
 
 
-def defaultMicrotype(text: str):
+def defaultMicrotype(text: str) -> str:
     assert isinstance(text, str)
     # FIXME '-' should not be a separator so we are able to detect dashes '--'
     #       however this will break NaturalNumbers for negative inputs
     separators = ' \t,;()-\n' # no point, might be in abbreviations
-    features = [SplitSeparators(separators),
-                splitEllipsis, percent, ampersand, caret, hashmark, quote,
-                standardAbbreviations, fullStop, openQuotationMark,
-                closeQuotationMark, acronym, naturalNumbers, escapeCommands]
+    features: typing.List[MicrotypeFeature] = [
+        SplitSeparators(separators), splitEllipsis, percent, ampersand, caret,
+        hashmark, quote, standardAbbreviations, fullStop, openQuotationMark,
+        closeQuotationMark, acronym, naturalNumbers, escapeCommands
+    ]
     return applyMicrotypefeatures([text], features)
 
-def mathMicrotype(text):
+
+def mathMicrotype(text: str) -> str:
     # FIXME we want to substitute '...' -> '\dots{}' in math mode too
-    features = [percent, hashmark, naturalNumbers, escapeCommands]
+    features: typing.List[MicrotypeFeature] = [
+        percent, hashmark, naturalNumbers, escapeCommands
+    ]
     return applyMicrotypefeatures([text], features)
 
-def ednoteMicrotype(text):
+
+def ednoteMicrotype(text: str) -> str:
     return applyMicrotypefeatures([text], [escapeEndEdnote])
 
-def isemptyline(line):
-    return re.match('^[ \t]*$', line)
 
-def wrap(text, subsequent_indent=''):
+def isemptyline(line: str) -> bool:
+    return bool(re.match('^[ \t]*$', line))
+
+
+def wrap(text: str, subsequent_indent: str = '') -> str:
     """
     Wraps text to width 70.
     """
@@ -385,25 +406,25 @@ class PTree:
     """
     Abstract class where all parsed objects inherit from.
     """
-    def debug(self):
+    def debug(self) -> typing.Any:
         return None
 
-    def isEmpty(self):
+    def isEmpty(self) -> bool:
         return False
 
-    def toTex(self):
+    def toTex(self) -> str:
         """
         return a tex-representation of the parsed object.
         """
         raise NotImplementedError
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         """
         return a html-representation of the parsed object.
         """
         raise NotImplementedError
 
-    def toDF(self):
+    def toDF(self) -> str:
         """
         return a canonical representation of the text in
         dokuforge markup language.
@@ -418,31 +439,31 @@ class PSequence(PTree):
     A piece of text formed by juxtaposition of several
     Parse Trees (usually paragraphs).
     """
-    def __init__(self, parts) -> None:
+    def __init__(self, parts: typing.List[PTree]) -> None:
         self.parts = parts
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('Sequence', [part.debug() for part in self.parts])
 
-    def toTex(self):
+    def toTex(self) -> str:
         result = ''
         for part in self.parts:
             result = result + part.toTex()
         return result
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         result = ''
         for part in self.parts:
             result = result + part.toHtml()
         return result
 
-    def toDF(self):
+    def toDF(self) -> str:
         result = ''
         for part in self.parts:
             result = result + part.toDF()
         return result
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return functools.reduce(lambda a, b: a + b,
                       (part.toEstimate() for part in self.parts),
                       Estimate.fromNothing())
@@ -455,16 +476,16 @@ class PLeaf(PTree):
         assert isinstance(text, str)
         self.text = text
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return self.text
 
-    def isEmpty(self):
+    def isEmpty(self) -> bool:
         return isemptyline(self.text)
 
-    def toTex(self):
+    def toTex(self) -> str:
         return defaultMicrotype(self.text)
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         result = self.text
         result = result.replace('&', '&amp;')
         result = result.replace('<', '&lt;')
@@ -473,76 +494,76 @@ class PLeaf(PTree):
         result = result.replace("'", '&#39;')
         return result
 
-    def toDF(self):
+    def toDF(self) -> str:
         return self.text
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return Estimate.fromText(self.text)
 
 class PEmph(PTree):
     """
     An emphasized piece of text.
     """
-    def __init__(self, text) -> None:
+    def __init__(self, text: str) -> None:
         self.text = PLeaf(text)
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('emph', self.text.text)
 
-    def toTex(self):
+    def toTex(self) -> str:
         return '\\emph{%s}' % self.text.toTex()
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         return '<em>%s</em>' % self.text.toHtml()
 
-    def toDF(self):
+    def toDF(self) -> str:
         return '_%s_' % self.text.toDF()
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return self.text.toEstimate()
 
 class PMath(PTree):
     """
     An non-display math area.
     """
-    def __init__(self, text) -> None:
+    def __init__(self, text: str) -> None:
         self.text = PLeaf(text)
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('math', self.text.text)
 
-    def toTex(self):
+    def toTex(self) -> str:
         return '$%1s$' % mathMicrotype(self.text.text)
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         return '$%1s$' % self.text.toHtml()
 
-    def toDF(self):
+    def toDF(self) -> str:
         return '$%1s$' % self.text.toDF()
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return self.text.toEstimate()
 
 class PDisplayMath(PTree):
     """
     An display math area.
     """
-    def __init__(self, text) -> None:
+    def __init__(self, text: str) -> None:
         self.text = PLeaf(text)
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('displaymath', self.text.text)
 
-    def toTex(self):
+    def toTex(self) -> str:
         return '\\[%1s\\]' % mathMicrotype(self.text.text)
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         return "<div class=\"displaymath\">$$%1s$$</div>" % self.text.toHtml()
 
-    def toDF(self):
+    def toDF(self) -> str:
         return '$$%1s$$' % self.text.toDF()
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return Estimate.fromText(self.text.text).fullline() + \
                 Estimate.emptyLines(2)
 
@@ -550,25 +571,25 @@ class PEdnote(PTree):
     """
     An Ednote; contents are compeletly unchanged.
     """
-    def __init__(self, text) -> None:
+    def __init__(self, text: str) -> None:
         self.text = PLeaf(text)
 
-    def isEmpty(self):
+    def isEmpty(self) -> bool:
         # the mere fact that there was an Ednote
         # is already worth mentioning
         return False
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('Ednote', self.text.text)
 
-    def toTex(self):
+    def toTex(self) -> str:
         return '\n\\begin{ednote}\n%s\n\\end{ednote}\n' % \
                 ednoteMicrotype(self.text.text)
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         return '\n<pre class="ednote">\n%s\n</pre>\n' % self.text.toHtml()
 
-    def toDF(self):
+    def toDF(self) -> str:
         # find a bracket combination not in the text
         text = self.text.toDF()
         n = 1
@@ -576,120 +597,120 @@ class PEdnote(PTree):
             n += 1
         return '\n%s\n%s\n%s\n' % ('{' * n, text, '}' * n)
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return Estimate.fromEdnote(self.text.text)
 
 class PParagraph(PTree):
-    def __init__(self, subtree) -> None:
+    def __init__(self, subtree: PTree) -> None:
         self.it = subtree
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('Paragraph', self.it.debug())
 
-    def isEmpty(self):
+    def isEmpty(self) -> bool:
         return self.it.isEmpty()
 
-    def toTex(self):
+    def toTex(self) -> str:
         return '\n%s\n' % wrap(self.it.toTex())
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         return '\n<p>\n'  + self.it.toHtml() + '\n</p>\n'
 
-    def toDF(self):
+    def toDF(self) -> str:
         return '\n\n%s\n' % self.it.toDF()
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return self.it.toEstimate().fullline()
 
 class PHeading(PTree):
-    def __init__(self, title, level) -> None:
+    def __init__(self, title: str, level: int) -> None:
         self.title = PLeaf(title)
         self.level = level
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('Heading', self.level, self.getTitle())
 
-    def toTex(self):
+    def toTex(self) -> str:
         return '\n\\%ssection{%s}\n' % ("sub" * self.level, self.title.toTex())
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         n = self.level + 1
         return '\n<h%d>%s</h%d>\n' % (n, self.title.toHtml(), n)
 
-    def toDF(self):
+    def toDF(self) -> str:
         n = self.level + 1
         return '\n\n%s%s%s' % ('[' * n, self.title.toDF(), ']' * n)
 
-    def getLevel(self):
+    def getLevel(self) -> int:
         return self.level
 
-    def getTitle(self):
+    def getTitle(self) -> str:
         return self.title.text
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return Estimate.fromTitle(self.getTitle())
 
 class PAuthor(PTree):
-    def __init__(self, author) -> None:
+    def __init__(self, author: str) -> None:
         self.author = PLeaf(author)
 
-    def getAuthor(self):
+    def getAuthor(self) -> str:
         return self.author.text
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('Author', self.getAuthor())
 
-    def toTex(self):
+    def toTex(self) -> str:
         return '\\authors{%s}\n' % self.author.toTex()
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         return '<i>%s</i>' % self.author.toHtml()
 
-    def toDF(self):
+    def toDF(self) -> str:
         return '\n(%s)' % self.author.toDF()
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return Estimate.fromParagraph(self.getAuthor())
 
 class PDescription(PTree):
-    def __init__(self, key, value) -> None:
+    def __init__(self, key: PTree, value: PTree) -> None:
         self.key = key
         self.value = value
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('Description', self.key.debug(), self.value.debug())
 
-    def toTex(self):
+    def toTex(self) -> str:
         return '\n' + wrap('\\paragraph{' + self.key.toTex() + '} ' + self.value.toTex()) + '\n'
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         return '\n<p><b>' + self.key.toHtml() + '</b> ' + self.value.toHtml() + '\n</p>\n'
 
-    def toDF(self):
+    def toDF(self) -> str:
         return '\n\n*%1s* %s' % (self.key.toDF(), self.value.toDF())
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return self.key.toEstimate() + self.value.toEstimate()
 
 class PItemize(PTree):
-    def __init__(self, items) -> None:
+    def __init__(self, items: typing.List["PItem"]) -> None:
         self.items = items
         self.isEnum = False
         if len(self.items) > 0:
             self.isEnum = self.items[0].isEnumerate()
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('Itemize', [item.debug() for item in self.items])
 
-    def isEnumerate(self):
+    def isEnumerate(self) -> bool:
         return self.isEnum
 
-    def toTex(self):
+    def toTex(self) -> str:
         itemtype = 'enumerate' if self.isEnumerate() else 'itemize'
         body = ''.join(item.toTex() for item in self.items)
         return '\n\\begin{%s}%s\n\\end{%s}\n' % (itemtype, body, itemtype)
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         itemtype =  'ul'
         if self.isEnumerate():
             itemtype = 'ol'
@@ -699,43 +720,44 @@ class PItemize(PTree):
         result = result + ('\n</%s>\n' % itemtype)
         return result
 
-    def toDF(self):
+    def toDF(self) -> str:
         return "\n" + "".join(item.toDF() for item in self.items)
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return functools.reduce(lambda a, b: a + b + Estimate.emptyLines(0.5),
                       [item.toEstimate() for item in self.items],
                       Estimate.fromNothing()) + \
                 Estimate.emptyLines(2)
 
 class PItem(PTree):
-    def __init__(self, subtree, number=None) -> None:
+    def __init__(self, subtree: PTree,
+                 number: typing.Optional[str] = None) -> None:
         self.it = subtree
         self.number=number
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return ('Item', self.it.debug(), self.number)
 
-    def isEnumerate(self):
+    def isEnumerate(self) -> bool:
         return self.number is not None
 
-    def toTex(self):
+    def toTex(self) -> str:
         body = wrap('\\item ' + self.it.toTex(), subsequent_indent='  ')
         if self.number is None:
             return '\n' + body
         else:
             return '\n%% %s\n%s' % (self.number, body)
 
-    def toHtml(self):
+    def toHtml(self) -> str:
         return '\n<li> ' + self.it.toHtml()
 
-    def toDF(self):
+    def toDF(self) -> str:
         if self.number is None:
             return '\n- ' + self.it.toDF()
         else:
             return '\n%s. %s' % (self.number, self.it.toDF())
 
-    def toEstimate(self):
+    def toEstimate(self) -> Estimate:
         return self.it.toEstimate()
 
 class Chargroup:
@@ -746,25 +768,26 @@ class Chargroup:
     a line group, forming a logical unit within that line
     group, like an emphasis, or a math environment.
     """
-    def __init__(self, initial=None) -> None:
+    def __init__(self, initial: typing.Optional[str] = None) -> None:
         self.text = ''
         if initial is not None:
             self.append(initial)
 
-    def append(self, chars) -> None:
+    def append(self, chars: str) -> None:
         """
         Append the given (possibly empty) sequence of chars to that group.
         """
         self.text = self.text + chars
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return (self.__class__.__name__, self.text)
 
-    def parse(self):
+    def parse(self) -> PTree:
         return PLeaf(self.text)
 
     @classmethod
-    def startshere(self, char, lookahead=None):
+    def startshere(cls, char: str,
+                   lookahead: typing.Optional[str] = None) -> bool:
         """
         Return True, if a new chargroup of this type starts at the
         given char, which itself is followed by the lookahead.
@@ -773,14 +796,14 @@ class Chargroup:
         """
         return False
 
-    def enforcecontinuation(self, char):
+    def enforcecontinuation(self, char: str) -> bool:
         """
         Return True, if if this group insists in taking that next character,
         regardless of whether other groups might start here.
         """
         return False
 
-    def rejectcontinuation(self, char):
+    def rejectcontinuation(self, char: str) -> bool:
         """
         Return True, if this group refuses to accept that next character, even
         if that means a new Simplegroup has to be started.
@@ -791,32 +814,33 @@ class Simplegroup(Chargroup):
     """
     The default char group, without any special markup.
     """
-    def __init__(self, initial=None) -> None:
+    def __init__(self, initial: typing.Optional[str] = None) -> None:
         Chargroup.__init__(self, initial=initial)
 
 class Emphgroup(Chargroup):
     """
     The group for _emphasized text_.
     """
-    def __init__(self, initial=None) -> None:
+    def __init__(self, initial: typing.Optional[str] = None) -> None:
         Chargroup.__init__(self, initial=initial)
 
     @classmethod
-    def startshere(self, char, lookahead=None):
+    def startshere(cls, char: str,
+                   lookahead: typing.Optional[str] = None) -> bool:
         return char == '_'
 
-    def rejectcontinuation(self, char):
+    def rejectcontinuation(self, char: str) -> bool:
         if len(self.text) < 2:
             return False
         return self.text.endswith('_')
 
-    def enforcecontinuation(self, char):
+    def enforcecontinuation(self, char: str) -> bool:
         ## Force to get the closing _
         if self.rejectcontinuation(char):
             return False
         return char == '_'
 
-    def parse(self):
+    def parse(self) -> PTree:
         assert self.text.startswith("_")
         if self.text.endswith("_"):
             return PEmph(self.text[1:-1])
@@ -828,17 +852,18 @@ class Mathgroup(Chargroup):
     The group for simple (non dislay) math,
     like $a^2 + b^2$.
     """
-    def __init__(self, initial=None) -> None:
+    def __init__(self, initial: typing.Optional[str] = None) -> None:
         self.trailingbackslashs = 0
         self.done = False
         self.count = 0
         Chargroup.__init__(self, initial=initial)
 
     @classmethod
-    def startshere(self, char, lookahead=None):
+    def startshere(cls, char: str,
+                   lookahead: typing.Optional[str] = None) -> bool:
         return char == '$' and lookahead != '$'
 
-    def append(self, chars) -> None:
+    def append(self, chars: str) -> None:
         for c in chars:
             self.text = self.text + c
             self.count = self.count + 1
@@ -851,13 +876,13 @@ class Mathgroup(Chargroup):
             else:
                 self.trailingbackslashs = 0
 
-    def enforcecontinuation(self, char):
+    def enforcecontinuation(self, char: str) -> bool:
         return not self.done
 
-    def rejectcontinuation(self, char):
+    def rejectcontinuation(self, char: str) -> bool:
         return self.done
 
-    def parse(self):
+    def parse(self) -> PTree:
         result = self.text
         if result.startswith('$'):
             result = result[1:]
@@ -871,7 +896,7 @@ class DisplayMathGroup(Chargroup):
     The group for display math
     like $$ a^2 + b^2 = c^2$$
     """
-    def __init__(self, initial=None) -> None:
+    def __init__(self, initial: typing.Optional[str] = None) -> None:
         self.done = False
         self.trailingbackslashs = 0
         self.trailingdollar = 0
@@ -879,10 +904,11 @@ class DisplayMathGroup(Chargroup):
         Chargroup.__init__(self, initial=initial)
 
     @classmethod
-    def startshere(self, char, lookahead=None):
+    def startshere(cls, char: str,
+                   lookahead: typing.Optional[str] = None) -> bool:
         return char == '$' and lookahead == '$'
 
-    def append(self, chars) -> None:
+    def append(self, chars: str) -> None:
         for c in chars:
             self.text = self.text + c
             self.count = self.count + 1
@@ -902,13 +928,13 @@ class DisplayMathGroup(Chargroup):
                 self.trailingdollar = 0
                 self.trailingbackslashs = 0
 
-    def enforcecontinuation(self, char):
+    def enforcecontinuation(self, char: str) -> bool:
         return not self.done
 
-    def rejectcontinuation(self, char):
+    def rejectcontinuation(self, char: str) -> bool:
         return self.done
 
-    def parse(self):
+    def parse(self) -> PTree:
         result = self.text
         if result.startswith('$$'):
             result = result[2:]
@@ -919,15 +945,18 @@ class DisplayMathGroup(Chargroup):
         return PDisplayMath(result)
 
 
-def groupchars(text, supportedgroups):
+def groupchars(text: str,
+               supportedgroups: typing.Iterable[typing.Type[Chargroup]]) -> \
+        typing.List[Chargroup]:
     """
     Given a string (considered a list of chars) and a list of
     Chargroups to support, group the chars accordingly.
     """
-    current = Simplegroup()
-    groups = []
+    current: Chargroup = Simplegroup()
+    groups: typing.List[Chargroup] = []
     for i in range(len(text)):
         c = text[i]
+        lookahead: typing.Optional[str]
         if i + 1 < len(text):
             lookahead = text[i+1]
         else:
@@ -953,7 +982,7 @@ def groupchars(text, supportedgroups):
     return groups
 
 
-def defaultInnerParse(lines: typing.List[str]):
+def defaultInnerParse(lines: typing.List[str]) -> PTree:
     features = [Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup]
     text = '\n'.join(lines)
     groups = groupchars(text, features)
@@ -977,10 +1006,11 @@ class Linegroup:
     yielding a parse tree of the whole dokument.
     """
     def __init__(self) -> None:
-        self.lines = []
+        self.lines: typing.List[str] = []
 
     @classmethod
-    def startshere(self, line, after=None):
+    def startshere(cls, line: str,
+                   after: typing.Optional["Linegroup"] = None) -> bool:
         """
         Decide if this line starts a new group of the given type,
         assuming that it occurs after the group provided in in
@@ -988,14 +1018,14 @@ class Linegroup:
         """
         return False
 
-    def rejectcontinuation(self, line):
+    def rejectcontinuation(self, line: str) -> bool:
         """
         Decide that this group definitely does not want any more lines,
         and, in the worst case, a new paragraph has to be started.
         """
         return False
 
-    def enforcecontinuation(self, line):
+    def enforcecontinuation(self, line: str) -> bool:
         """
         Decide if this group enforces that the next line belongs to
         the current group, even though it could start a new group.
@@ -1003,16 +1033,16 @@ class Linegroup:
         """
         return False
 
-    def parse(self):
+    def parse(self) -> PTree:
         """
         Return a representation of this linegroup as PTree.
         """
         return defaultInnerParse(self.lines)
 
-    def appendline(self, line):
+    def appendline(self, line: str) -> None:
         self.lines.append(line)
 
-    def debug(self):
+    def debug(self) -> typing.Any:
         return (self.__class__.__name__, self.lines)
 
 
@@ -1024,18 +1054,20 @@ class Paragraph(Linegroup):
     def __init__(self) -> None:
         Linegroup.__init__(self)
 
-    def appendline(self, line):
+    def appendline(self, line: str) -> None:
         if not isemptyline(line):
             Linegroup.appendline(self, line)
 
     @classmethod
-    def startshere(self, line, after=None):
+    def startshere(cls, line: str,
+                   after: typing.Optional[Linegroup] = None) -> bool:
         return isemptyline(line)
 
-    def parse(self):
+    def parse(self) -> PTree:
         return PParagraph(defaultInnerParse(self.lines))
 
-def splitleftbracket(line):
+
+def splitleftbracket(line: str) -> typing.List[str]:
     openings = set(['(', '[', '{'])
     bracket, rest = '', ''
     stillbracket = True
@@ -1049,7 +1081,8 @@ def splitleftbracket(line):
             rest = rest + c
     return [bracket, rest]
 
-def splitrightbracket(line):
+
+def splitrightbracket(line: str) -> typing.List[str]:
     line = line.rstrip()
     closings = set([')', ']', '}'])
     bracket, rest = '', ''
@@ -1065,7 +1098,7 @@ def splitrightbracket(line):
     return [rest, bracket]
 
 
-def isMirrorBracket(firstline, lastline):
+def isMirrorBracket(firstline: str, lastline: str) -> bool:
     """
     Return True iff lastline ends with the matching
     bigbracket to the one the firstline starts with.
@@ -1099,20 +1132,21 @@ class Ednote(Linegroup):
         Linegroup.__init__(self)
 
     @classmethod
-    def startshere(self, line, after=None):
+    def startshere(cls, line: str,
+                   after: typing.Optional[Linegroup] = None) -> bool:
         return line.startswith('{')
 
-    def enforcecontinuation(self, line):
+    def enforcecontinuation(self, line: str) -> bool:
         if len(self.lines) < 1:
             return True
         if isMirrorBracket(self.lines[0], self.lines[-1]):
            return False
         return True
 
-    def rejectcontinuation(self, line):
+    def rejectcontinuation(self, line: str) -> bool:
         return not self.enforcecontinuation(line)
 
-    def parse(self):
+    def parse(self) -> PTree:
         ## first and last line contain the opening and closing brackets
         if len(self.lines) < 1:
             return PEdnote('\n'.join(self.lines))
@@ -1141,27 +1175,28 @@ class Heading(Linegroup):
         Linegroup.__init__(self)
 
     @classmethod
-    def startshere(self, line, after=None):
+    def startshere(cls, line: str,
+                   after: typing.Optional[Linegroup] = None) -> bool:
         return line.startswith('[') and not line.startswith('[[')
 
-    def enforcecontinuation(self, line):
+    def enforcecontinuation(self, line: str) -> bool:
         if isemptyline(line):
             return False
         if len(self.lines) < 1:
             return True
         return ']' not in set(self.lines[-1])
 
-    def rejectcontinuation(self, line):
+    def rejectcontinuation(self, line: str) -> bool:
         return not self.enforcecontinuation(line)
 
-    def getTitle(self):
+    def getTitle(self) -> str:
         title = ' '.join(self.lines)
         title = title.lstrip('[')
         title = title.rstrip(' \t')
         title = title.rstrip(']')
         return title
 
-    def parse(self):
+    def parse(self) -> PTree:
         return PHeading(self.getTitle(), 0)
 
 class Subheading(Heading):
@@ -1172,10 +1207,11 @@ class Subheading(Heading):
         Heading.__init__(self)
 
     @classmethod
-    def startshere(self, line, after=None):
+    def startshere(cls, line: str,
+                   after: typing.Optional[Linegroup] = None) -> bool:
         return line.startswith('[[') and not line.startswith('[[[')
 
-    def parse(self):
+    def parse(self) -> PTree:
         return PHeading(self.getTitle(), 1)
 
 class Author(Linegroup):
@@ -1186,20 +1222,21 @@ class Author(Linegroup):
         Linegroup.__init__(self)
 
     @classmethod
-    def startshere(self, line, after=None):
+    def startshere(cls, line: str,
+                   after: typing.Optional[Linegroup] = None) -> bool:
         return line.startswith('(') and isinstance(after, Heading)
 
-    def enforcecontinuation(self, line):
+    def enforcecontinuation(self, line: str) -> bool:
         if isemptyline(line):
             return False
         if len(self.lines) < 1:
             return True
         return ')' not in set(self.lines[-1])
 
-    def rejectcontinuation(self, line):
+    def rejectcontinuation(self, line: str) -> bool:
         return not self.enforcecontinuation(line)
 
-    def parse(self):
+    def parse(self) -> PTree:
         author = ' '.join(self.lines)
         author = author.lstrip('(')
         author = author.rstrip(' \t')
@@ -1218,10 +1255,11 @@ class Item(Linegroup):
         Linegroup.__init__(self)
 
     @classmethod
-    def startshere(self, line, after=None):
+    def startshere(cls, line: str,
+                   after: typing.Optional[Linegroup] = None) -> bool:
         return line.startswith('- ')
 
-    def parse(self):
+    def parse(self) -> PTree:
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines))
         firstline = self.lines[0]
@@ -1243,10 +1281,11 @@ class EnumerateItem(Linegroup):
         Linegroup.__init__(self)
 
     @classmethod
-    def startshere(self, line, after=None):
-        return re.match('^[0-9]+\.[ \t]', line)
+    def startshere(cls, line: str,
+                   after: typing.Optional[Linegroup] = None) -> bool:
+        return bool(re.match('^[0-9]+\\.[ \t]', line))
 
-    def parse(self):
+    def parse(self) -> PTree:
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines), number="1")
         firstline = self.lines[0]
@@ -1266,10 +1305,11 @@ class Description(Linegroup):
         Linegroup.__init__(self)
 
     @classmethod
-    def startshere(self, line, after=None):
+    def startshere(cls, line: str,
+                   after: typing.Optional[Linegroup] = None) -> bool:
         return line.startswith('*')
 
-    def parse(self):
+    def parse(self) -> PTree:
         if len(self.lines) < 1:
             return PLeaf('')
         text = '\n'.join(self.lines).strip()
@@ -1281,13 +1321,16 @@ class Description(Linegroup):
             keyrest = text.split(' ', 1)
         if len(keyrest) < 2:
             # No space either. Use line.
-            keyrest = (text, "")
-        key = keyrest[0]
-        rest = keyrest[1]
+            key, rest = text, ""
+        else:
+            key, rest = keyrest[:2]
         return PDescription(defaultInnerParse([key.strip()]),
                             defaultInnerParse([rest.strip()]));
 
-def grouplines(lines, supportedgroups):
+
+def grouplines(lines: typing.Iterable[str],
+               supportedgroups: typing.Iterable[typing.Type[Linegroup]]) -> \
+        typing.List[Linegroup]:
     """
     Given a list of lines and a list of Linegroup to support, group
     lines accordingly.
@@ -1295,8 +1338,8 @@ def grouplines(lines, supportedgroups):
     The grouping is done based on the startshere, enforcecontinuatuion,
     and rejectcontinuation methods provided by the supported linegroups.
     """
-    current = Paragraph()
-    groups = []
+    current: Linegroup = Paragraph()
+    groups: typing.List[Linegroup] = []
     for line in lines:
         if current.enforcecontinuation(line):
             current.appendline(line)
@@ -1319,7 +1362,8 @@ def grouplines(lines, supportedgroups):
     groups.append(current)
     return groups
 
-def removeEmpty(ptrees):
+
+def removeEmpty(ptrees: typing.List[PTree]) -> typing.List[PTree]:
     """
     Given a list of PTrees, return a list containing the
     same elements but the empty ones.
@@ -1330,30 +1374,31 @@ def removeEmpty(ptrees):
             result.append(ptree)
     return result
 
-def groupItems(ptrees):
+
+def groupItems(ptrees: typing.List[PTree]) -> typing.List[PTree]:
     """
     For a given list of PTrees, return the same list, but
     with every sequence of PItems replaced by an PItemize.
     """
-    result = []
-    pos = 0
-    while pos < len(ptrees):
-        if isinstance(ptrees[pos], PItem):
-            i = pos
-            while i < len(ptrees) and isinstance(ptrees[i], PItem):
-                i += 1
-            result.append(PItemize(ptrees[pos:i]))
-            pos = i
+    result: typing.List[PTree] = []
+    items: typing.List[PItem] = []
+    for tree in ptrees:
+        if isinstance(tree, PItem):
+            items.append(tree)
         else:
-            result.append(ptrees[pos])
-            pos += 1
+            if items:
+                result.append(PItemize(items))
+                items = []
+            result.append(tree)
+    if items:
+        result.append(PItemize(items))
     return result
 
 ### Features used by DokuForge
 dffeatures =  [Paragraph, Heading, Author, Subheading, Item, EnumerateItem, Description, Ednote]
 
 
-def dfLineGroupParser(text: str):
+def dfLineGroupParser(text: str) -> PSequence:
     groups = grouplines(text.splitlines(), dffeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
@@ -1362,7 +1407,8 @@ def dfLineGroupParser(text: str):
 
 titlefeatures =  [Paragraph]
 
-def dfTitleParser(text):
+
+def dfTitleParser(text: str) -> PSequence:
     groups = grouplines(text.splitlines(), titlefeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
@@ -1371,7 +1417,8 @@ def dfTitleParser(text):
 
 captionfeatures =  [Paragraph, Item, EnumerateItem, Description, Ednote]
 
-def dfCaptionParser(text):
+
+def dfCaptionParser(text: str) -> PSequence:
     groups = grouplines(text.splitlines(), dffeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
