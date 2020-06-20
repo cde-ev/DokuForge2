@@ -774,7 +774,8 @@ class AcademyTest(DfTestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u'dokuforge').encode("ascii")
         os.makedirs(os.path.join(self.tmpdir, b'example/legacy'))
-        self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
+        self.academy = Academy(os.path.join(self.tmpdir, b'example'),
+                               lambda: [])
         self.academy.createCourse(u'new01', u'erster neuer Kurs')
         self.academy.createCourse(u'new02', u'zweiter neuer Kurs')
 
