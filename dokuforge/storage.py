@@ -334,7 +334,7 @@ class CachingStorage(Storage):
     def __init__(self, path, filename):
         Storage.__init__(self, path, filename)
         self.cachedtime = epoch # Jan 1, 1970 -- way before the first dokuforge2 installation
-        self.cachedvalue = ""
+        self.cachedvalue = b""
 
     def content(self, havelock=None):
         mtime = self.timestamp()
