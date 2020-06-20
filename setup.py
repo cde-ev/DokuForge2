@@ -17,7 +17,7 @@ def add_versioninfo():
     if p.returncode != 0:
         return
     commitid = commitid.strip()
-    with file(os.path.join(workdir, "dokuforge", "versioninfo.py"),
+    with open(os.path.join(workdir, "dokuforge", "versioninfo.py"),
               "w") as verfile:
         verfile.write('commitid = u"%s"\n' % commitid)
 
