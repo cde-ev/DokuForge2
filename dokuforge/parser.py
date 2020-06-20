@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import collections
+import dataclasses
 import functools
 import itertools
 import textwrap
@@ -35,14 +35,13 @@ import typing
 ##    seamantics is given by
 ##    \w -> ((foldl (>>=) (return w) features) >>= id)
 
-class Estimate(collections.namedtuple("Estimate",
-            "chars ednotechars weightedchars blobs")):
-    """
-    @type chars: int
-    @type ednotechars: int
-    @type weightedchars: float
-    @type blobs: int
-    """
+@dataclasses.dataclass
+class Estimate:
+    chars: int
+    ednotechars: int
+    weightedchars: float
+    blobs: int
+
     # The following constants must be float in Py2.X to avoid int division.
     charsperpage = 3000.0
     charsperline = 80.0
@@ -97,13 +96,16 @@ class Estimate(collections.namedtuple("Estimate",
         return Estimate(self.chars, self.ednotechars, weightedchars, self.blobs)
 
     def __add__(self, other):
-        return Estimate(*[a + b for a, b in zip(self, other)])
+        return Estimate(self.chars + other.chars,
+                        self.ednotechars + other.ednotechars,
+                        self.weightedchars + other.weightedchars,
+                        self.blobs + other.blobs)
 
     def __mul__(self, num):
-        return Estimate(*[num * field for field in self])
+        return Estimate(num * self.chars, num * self.ednotechars,
+                        num * self.weightedchars, num * self.blobs)
 
     __rmul__ = __mul__
-
 
 def intersperse(iterable, delimiter):
     it = iter(iterable)
