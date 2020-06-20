@@ -361,11 +361,11 @@ class Application:
         assert isinstance(name, str)
         try:
             common.validateInternalName(name)
-            name = name.encode("utf8")
-            common.validateExistence(self.acapath, name)
+            nameb = name.encode("utf8")
+            common.validateExistence(self.acapath, nameb)
         except CheckError:
             raise werkzeug.exceptions.NotFound()
-        aca = Academy(os.path.join(self.acapath, name), self.listGroups)
+        aca = Academy(os.path.join(self.acapath, nameb), self.listGroups)
         if user is not None and not user.allowedRead(aca):
             raise werkzeug.exceptions.Forbidden()
         return aca
@@ -394,11 +394,11 @@ class Application:
         assert isinstance(title, str)
         assert all(isinstance(group, str) for group in groups)
         common.validateInternalName(name)
-        name = name.encode("utf8")
-        common.validateNonExistence(self.acapath, name)
+        nameb = name.encode("utf8")
+        common.validateNonExistence(self.acapath, nameb)
         common.validateTitle(title)
         common.validateGroups(groups, self.listGroups())
-        path = os.path.join(self.acapath, name)
+        path = os.path.join(self.acapath, nameb)
         os.makedirs(path)
         aca = Academy(path, self.listGroups)
         aca.settitle(title)
@@ -843,9 +843,7 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(c)
-        filename = b"%s_%s.tar.gz" % (aca.name, c.name)
-        if sys.version_info >= (3,):
-            filename = filename.decode("ascii")
+        filename = (b"%s_%s.tar.gz" % (aca.name, c.name)).decode("ascii")
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=" + filename
         return rs.response
@@ -865,9 +863,7 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(aca)
-        filename = b"%s.tar.gz" % aca.name
-        if sys.version_info >= (3,):
-            filename = filename.decode("ascii")
+        filename = "%s.tar.gz" % aca.name.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
                 "attachment; filename=" + filename
         return rs.response

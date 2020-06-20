@@ -303,8 +303,8 @@ class Storage(object):
     def timestamp(self, havelock=None) -> datetime.datetime:
         self.ensureexistence(havelock = havelock)
         ts = os.path.getmtime(self.fullpath(postfix=b",v"))
-        ts = datetime.datetime.utcfromtimestamp(ts)
-        return ts.replace(tzinfo=datetime.timezone.utc)
+        dts = datetime.datetime.utcfromtimestamp(ts)
+        return dts.replace(tzinfo=datetime.timezone.utc)
 
 class CachingStorage(Storage):
     """

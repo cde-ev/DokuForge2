@@ -68,11 +68,9 @@ class Academy(StorageDir):
         @returns: list of Course object; all courses of this academy, including
             deleted ones.
         """
-        ret = (os.path.join(self.path, entry)
-               for entry in os.listdir(self.path))
-        ret = filter(os.path.isdir, ret)
-        ret = map(Course, ret)
-        ret = list(ret)
+        paths = (os.path.join(self.path, entry)
+                 for entry in os.listdir(self.path))
+        ret = [Course(p) for p in paths if os.path.isdir(p)]
         ret.sort(key=operator.attrgetter('name'))
         return ret
 
@@ -100,11 +98,11 @@ class Academy(StorageDir):
         assert isinstance(coursename, str)
         try:
             common.validateInternalName(coursename)
-            coursename = coursename.encode("utf8")
-            common.validateExistence(self.path, coursename)
+            coursenameb = coursename.encode("utf8")
+            common.validateExistence(self.path, coursenameb)
         except CheckError:
             raise werkzeug.exceptions.NotFound()
-        return Course(os.path.join(self.path, coursename))
+        return Course(os.path.join(self.path, coursenameb))
 
     def setgroups(self, groups: typing.List[str]) -> None:
         """
@@ -133,10 +131,10 @@ class Academy(StorageDir):
         assert isinstance(name, str)
         assert isinstance(title, str)
         common.validateInternalName(name)
-        name = name.encode("utf8")
-        common.validateNonExistence(self.path, name)
+        nameb = name.encode("utf8")
+        common.validateNonExistence(self.path, nameb)
         common.validateTitle(title)
-        Course(os.path.join(self.path, name)).settitle(title)
+        Course(os.path.join(self.path, nameb)).settitle(title)
 
     def lastchange(self):
         return common.findlastchange([c.lastchange() for c in self.listCourses()])

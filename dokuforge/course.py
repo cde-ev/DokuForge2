@@ -233,21 +233,22 @@ class Course(StorageDir):
         """
         create a new page in this course and return its internal number
         """
+        userb = None
         if user is not None:
             assert isinstance(user, str)
-            user = user.encode("utf8")
+            userb = user.encode("utf8")
         index = self.getstorage(b"Index")
         nextpagestore = self.getstorage(b"nextpage")
         with index.lock as gotlockindex:
             with nextpagestore.lock as gotlocknextpage:
                 newnumber = self.nextpage(havelock = gotlocknextpage)
                 nextpagestore.store(b"%d" % (newnumber + 1),
-                                    havelock = gotlocknextpage, user = user)
+                                    havelock=gotlocknextpage, user=userb)
                 indexcontents = index.content(havelock = gotlockindex)
                 if indexcontents == b"\n":
                     indexcontents = b""
                 indexcontents += b"%d\n" % newnumber
-                index.store(indexcontents, havelock = gotlockindex, user = user)
+                index.store(indexcontents, havelock=gotlockindex, user=userb)
                 return newnumber
 
     def delblob(self, number: int, user: typing.Optional[str] = None) -> None:
@@ -256,9 +257,10 @@ class Course(StorageDir):
 
         @param number: the internal page number
         """
+        userb = None
         if user is not None:
             assert isinstance(user, str)
-            user = user.encode("utf8")
+            userb = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock = gotlock)
@@ -272,7 +274,7 @@ class Course(StorageDir):
                 newentries.extend([x for x in entries[1:] if int(x) != number])
                 newlines.append(b" ".join(newentries))
             newindex = b"".join(map(b"%s\n".__mod__, newlines))
-            indexstore.store(newindex, havelock = gotlock, user = user)
+            indexstore.store(newindex, havelock=gotlock, user=userb)
 
     def delpage(self, number: int, user: typing.Optional[str] = None) -> None:
         """
@@ -280,9 +282,10 @@ class Course(StorageDir):
 
         @param number: the internal page number
         """
+        userb = None
         if user is not None:
             assert isinstance(user, str)
-            user = user.encode("utf8")
+            userb = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock = gotlock)
@@ -293,16 +296,17 @@ class Course(StorageDir):
                 if entries and int(entries[0]) != number:
                     newlines.append(line)
             newindex = b"".join(map(b"%s\n".__mod__, newlines))
-            indexstore.store(newindex, havelock = gotlock, user = user)
+            indexstore.store(newindex, havelock=gotlock, user=userb)
 
     def swappages(self, position: int, user: typing.Optional[str] = None) -> \
             None:
         """
         swap the page at the given current position with its predecessor
         """
+        userb = None
         if user is not None:
             assert isinstance(user, str)
-            user = user.encode("utf8")
+            userb = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         with indexstore.lock as gotlock:
             index = indexstore.content(havelock = gotlock)
@@ -312,15 +316,16 @@ class Course(StorageDir):
                 lines[position-1] = lines[position]
                 lines[position] = tmp
             newindex = b"".join(map(b"%s\n".__mod__, lines))
-            indexstore.store(newindex, havelock = gotlock, user = user)
+            indexstore.store(newindex, havelock=gotlock, user=userb)
 
     def relink(self, page: int, user: typing.Optional[str] = None) -> None:
         """
         relink a (usually deleted) page to the index
         """
+        userb = None
         if user is not None:
             assert isinstance(user, str)
-            user = user.encode("utf8")
+            userb = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         nextpage = self.getstorage(b"nextpage")
         with indexstore.lock as gotlockindex:
@@ -340,16 +345,17 @@ class Course(StorageDir):
                         lines.append(b"%d" % page)
                         newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex,
-                                         user = user)
+                                         user=userb)
 
     def relinkblob(self, number: int, page: int,
                    user: typing.Optional[str] = None) -> None:
         """
         relink a (usually deleted) blob to the given page in the index
         """
+        userb = None
         if user is not None:
             assert isinstance(user, str)
-            user = user.encode("utf8")
+            userb = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         nextblob = self.getstorage(b"nextblob")
         with indexstore.lock as gotlockindex:
@@ -369,7 +375,7 @@ class Course(StorageDir):
                         else:
                             lines[i] += b" %d" % number
             newindex = b"".join(map(b"%s\n".__mod__, lines))
-            indexstore.store(newindex, havelock = gotlockindex, user = user)
+            indexstore.store(newindex, havelock=gotlockindex, user=userb)
 
     def editpage(self, number: int) -> typing.Tuple[str, str]:
         """
@@ -398,14 +404,15 @@ class Course(StorageDir):
         """
         assert isinstance(version, str)
         assert isinstance(newcontent, str)
+        userb = None
         if user is not None:
             assert isinstance(user, str)
-            user = user.encode("utf8")
+            userb = user.encode("utf8")
         page = self.getstorage(b"page%d" % number)
-        ok, version, mergedcontent = page.endedit(version.encode("utf8"),
-                                                  newcontent.encode("utf8"),
-                                                  user = user)
-        return (ok, version.decode("utf8"), mergedcontent.decode("utf8"))
+        ok, newversion, mergedcontent = page.endedit(version.encode("utf8"),
+                                                     newcontent.encode("utf8"),
+                                                     user=userb)
+        return (ok, newversion.decode("utf8"), mergedcontent.decode("utf8"))
 
     def attachblob(self, number: int, data: FileStorage,
                    comment: str = "unknown blob", label: str = "fig",
@@ -432,9 +439,10 @@ class Course(StorageDir):
         filename = (data.filename or "").encode("utf8")
         common.validateBlobFilename(filename)
 
+        userb = None
         if user is not None:
             assert isinstance(user, str)
-            user = user.encode("utf8")
+            userb = user.encode("utf8")
         indexstore = self.getstorage(b"Index")
         nextblobstore = self.getstorage(b"nextblob")
 
@@ -457,10 +465,10 @@ class Course(StorageDir):
         bloblabel = self.getstorage(blobbase + b".label")
         blobcomment = self.getstorage(blobbase + b".comment")
         blobname = self.getstorage(blobbase + b".filename")
-        blob.store(data, user = user)
-        bloblabel.store(label.encode("utf8"), user = user)
-        blobcomment.store(comment.encode("utf8"), user = user)
-        blobname.store(filename, user=user)
+        blob.store(data, user=userb)
+        bloblabel.store(label.encode("utf8"), user=userb)
+        blobcomment.store(comment.encode("utf8"), user=userb)
+        blobname.store(filename, user=userb)
         return newnumber
 
     def listblobs(self, number: int) -> typing.List[int]:
@@ -505,20 +513,20 @@ class Course(StorageDir):
         assert isinstance(user, str)
 
         # store requires user to be bytes, so encode
-        user = user.encode("utf-8")
+        userb = user.encode("utf-8")
 
-        filename = filename.encode("utf8")
+        filenameb = filename.encode("utf8")
         common.validateBlobLabel(label)
         common.validateBlobComment(comment)
-        common.validateBlobFilename(filename)
+        common.validateBlobFilename(filenameb)
 
         blobbase = b"blob%d" % number
         bloblabel = self.getstorage(blobbase + b".label")
         blobcomment = self.getstorage(blobbase + b".comment")
         blobname = self.getstorage(blobbase + b".filename")
-        bloblabel.store(label.encode("utf8"), user = user)
-        blobcomment.store(comment.encode("utf8"), user = user)
-        blobname.store(filename, user=user)
+        bloblabel.store(label.encode("utf8"), user=userb)
+        blobcomment.store(comment.encode("utf8"), user=userb)
+        blobname.store(filenameb, user=userb)
 
     def lastchange(self):
         return common.findlastchange([self.getcommit(p) for p in self.listpages()])

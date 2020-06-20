@@ -299,10 +299,9 @@ class TarWriter:
         """
         assert isinstance(name, bytes)
         assert isinstance(content, bytes)
-        name = name.decode("iso8859-1")
         assert isinstance(lastchanged, datetime.datetime)
 
-        info = tarfile.TarInfo(self.prefix + name)
+        info = tarfile.TarInfo(self.prefix + name.decode("iso8859-1"))
         info.size = len(content)
         info.mtime = calendar.timegm(lastchanged.utctimetuple())
         self.tar.addfile(info, io.BytesIO(content))
@@ -314,8 +313,7 @@ class TarWriter:
         filename and return some tar content generated along the way.
         """
         assert isinstance(name, bytes)
-        name = name.decode("iso8859-1")
-        info = tarfile.TarInfo(self.prefix + name)
+        info = tarfile.TarInfo(self.prefix + name.decode("iso8859-1"))
         with open(filename, "rb") as infile:
             infile.seek(0, 2)
             info.size = infile.tell()

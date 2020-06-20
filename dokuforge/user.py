@@ -141,28 +141,30 @@ class User:
         ## a bit care has to be taken since we need the groups too
         if isinstance(aca, LazyView):
             groups = aca["groups"]
-            aca = aca["name"].decode("ascii")
+            acaname = aca["name"].decode("ascii")
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
-            aca = aca.name.decode("ascii")
+            acaname = aca.name.decode("ascii")
         if course is None:
             pass
         elif isinstance(course, LazyView):
-            course = course["name"].decode("ascii")
+            coursename = course["name"].decode("ascii")
         else:
             assert isinstance(course, Course)
-            course = course.name.decode("ascii")
+            coursename = course.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if course is None:
-            if self.revokedPermission("akademie_read_%s" % aca) or \
-                self.revokedPermission("akademie_view_%s" % aca):
+            if self.revokedPermission("akademie_read_%s" % acaname) or \
+               self.revokedPermission("akademie_view_%s" % acaname):
                 return False
         else:
-            if self.revokedPermission("kurs_read_%s_%s" % (aca, course)):
+            if self.revokedPermission("kurs_read_%s_%s" %
+                                      (acaname, coursename)):
                 return False
-            if self.revokedPermission("akademie_read_%s" % aca) and \
-               not self.hasPermission("kurs_read_%s_%s" % (aca, course)):
+            if self.revokedPermission("akademie_read_%s" % acaname) and \
+               not self.hasPermission("kurs_read_%s_%s" %
+                                      (acaname, coursename)):
                 return False
         ## now we are done with revoked permissions and can continue
         ## third check group level privileges
@@ -170,7 +172,7 @@ class User:
             if self.hasPermission("gruppe_read_%s" % g):
                 return True
         ## fourth check the academy level priveleges
-        if self.hasPermission("akademie_read_%s" % aca):
+        if self.hasPermission("akademie_read_%s" % acaname):
             return True
         if course is None:
             ## we only want to read an academy entry
@@ -179,9 +181,9 @@ class User:
             if recursive:
                 return False
             ## in non-recursive case we check akademie_view_*
-            return self.hasPermission("akademie_view_%s" % aca)
+            return self.hasPermission("akademie_view_%s" % acaname)
         ## at this point we ask for a read privelege of a specific course
-        return self.hasPermission("kurs_read_%s_%s" % (aca, course))
+        return self.hasPermission("kurs_read_%s_%s" % (acaname, coursename))
 
     def allowedWrite(self, aca: typing.Union[Academy, LazyView],
                      course: typing.Optional[
@@ -193,27 +195,29 @@ class User:
         ## a bit care has to be taken since we need the groups too
         if isinstance(aca, LazyView):
             groups = aca["groups"]
-            aca = aca["name"].decode("ascii")
+            acaname = aca["name"].decode("ascii")
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
-            aca = aca.name.decode("ascii")
+            acaname = aca.name.decode("ascii")
         if course is None:
             pass
         elif isinstance(course, LazyView):
-            course = course["name"].decode("ascii")
+            coursename = course["name"].decode("ascii")
         else:
             assert isinstance(course, Course)
-            course = course.name.decode("ascii")
+            coursename = course.name.decode("ascii")
         ## second check for explicitly revoked privilege
         if course is None:
-            if self.revokedPermission("akademie_write_%s" % aca):
+            if self.revokedPermission("akademie_write_%s" % acaname):
                 return False
         else:
-            if self.revokedPermission("kurs_write_%s_%s" % (aca, course)):
+            if self.revokedPermission("kurs_write_%s_%s" %
+                                      (acaname, coursename)):
                 return False
-            if self.revokedPermission("akademie_write_%s" % aca) and \
-               not self.hasPermission("kurs_write_%s_%s" % (aca, course)):
+            if self.revokedPermission("akademie_write_%s" % acaname) and \
+               not self.hasPermission("kurs_write_%s_%s" %
+                                      (acaname, coursename)):
                 return False
         ## now we are done with revoked permissions and can continue
         ## third check group level privileges
@@ -221,13 +225,13 @@ class User:
             if self.hasPermission("gruppe_write_%s" % g):
                 return True
         ## fourth check the academy level priveleges
-        if self.hasPermission("akademie_write_%s" % aca):
+        if self.hasPermission("akademie_write_%s" % acaname):
             return True
         if course is None:
             ## no write access to the academy
             return False
         ## at this point we ask for a write privelege of a specific course
-        return self.hasPermission("kurs_write_%s_%s" % (aca, course))
+        return self.hasPermission("kurs_write_%s_%s" % (acaname, coursename))
 
     def allowedMeta(self, aca: typing.Union[Academy, LazyView]) -> bool:
         ## first check global priveleges
@@ -237,13 +241,13 @@ class User:
         ## a bit care has to be taken since we need the groups too
         if isinstance(aca, LazyView):
             groups = aca["groups"]
-            aca = aca["name"].decode("ascii")
+            acaname = aca["name"].decode("ascii")
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
-            aca = aca.name.decode("ascii")
+            acaname = aca.name.decode("ascii")
         ## second check for explicitly revoked privilege
-        if self.revokedPermission("akademie_meta_%s" % aca):
+        if self.revokedPermission("akademie_meta_%s" % acaname):
             return False
         ## now we are done with revoked permissions and can continue
         ## third check group level privileges
@@ -251,7 +255,7 @@ class User:
             if self.hasPermission("gruppe_meta_%s" % g):
                 return True
         ## fourth check the academy level priveleges
-        return self.hasPermission("akademie_meta_%s" % aca)
+        return self.hasPermission("akademie_meta_%s" % acaname)
 
     def mayExport(self, aca: typing.Union[Academy, LazyView]) -> bool:
         assert isinstance(aca, Academy) or isinstance(aca, LazyView)
