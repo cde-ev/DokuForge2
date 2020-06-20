@@ -1706,7 +1706,6 @@ class Application:
             commitid=commitid,
             form=rs.request.form,
             buildurl=lambda name, kwargs=dict(): self.buildurl(rs, name, kwargs),
-            basejoin = lambda tail: urllib.basejoin(rs.request.url_root, tail),
             staticjoin = lambda name: self.staticjoin(name, rs),
             mathjaxjoin = lambda name: self.mathjaxjoin(name, rs),
             allowMathChange = allowMathChange)
