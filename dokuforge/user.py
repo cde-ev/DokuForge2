@@ -113,7 +113,7 @@ class User:
         self.name = name
         self.status = status
         if password is None:
-            password = randpasswordstring(6).decode("utf8")
+            password = randpasswordstring(6)
         self.password = password
         self.permissions = permissions
 
