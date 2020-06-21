@@ -283,10 +283,12 @@ class Storage(object):
                                         "can only happen in hand-crafted requests")
             with open(self.fullpath(), "wb") as objfile:
                 objfile.write(newcontent)
-            args = ["ci", "-f", "-q", "-u"]
-            args.append("-mstoring original edit conflicting with %s in a branch" % currentversion)
+            args = [b"ci", b"-f", b"-q", b"-u"]
+            args.append(
+                b"-mstoring original edit conflicting with %s in a branch" %
+                currentversion)
             if user is not None:
-                args.append("-w%s" % user)
+                args.append(b"-w%s" % user)
             args.append(self.fullpath())
             subprocess.check_call(args, env=RCSENV)
             # 2.) merge in head
