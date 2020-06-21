@@ -886,7 +886,7 @@ class Application:
         rs.response.response = export_iterator(aca, self.staticexportdir,
                                                prefix)
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % prefix
+                "attachment; filename=%s.tar.gz" % prefix.decode("ascii")
         return rs.response
 
     def do_moveup(self, rs: RequestState, *, academy: str, course: str):
