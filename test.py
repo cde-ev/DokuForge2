@@ -731,22 +731,6 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain(u"Kürzel nicht wohlgeformt!")
         self.is_loggedin()
 
-    def testRawCourseExport(self):
-        self.do_login()
-        self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course02/$"))
-        self.res = self.res.click(description="df2-Rohdaten")
-        self.assertIsTarGz(self.res.body)
-
-    def testRawPageExport(self):
-        self.do_login()
-        self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(description="rcs", index=0)
-        # FIXME: find a better check for a rcs file
-        self.assertTrue(self.res.body.startswith(b"head"))
-
     def testPartDeletion(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
@@ -765,17 +749,33 @@ permissions = df_superadmin True,df_admin True
 class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
     """Check whether exporting data from within dokuforge works"""
 
-    def _getExportAsTar(self):
+    def testRawCourseExport(self):
+        self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(description="Export")
-        tarFile = tarfile.open(mode='r', fileobj=io.BytesIO(self.res.body))
-        return tarFile
+        self.res = self.res.click(href=re.compile("course02/$"))
+        self.res = self.res.click(description="df2-Rohdaten")
+        self.assertIsTarGz(self.res.body)
+
+    def testRawPageExport(self):
+        self.do_login()
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(description="rcs", index=0)
+        # FIXME: find a better check for a rcs file
+        self.assertTrue(self.res.body.startswith(b"head"))
 
     def testAcademyExport(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(description="Export")
         self.assertIsTarGz(self.res.body)
+
+    def _getExportAsTar(self):
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(description="Export")
+        tarFile = tarfile.open(mode='r', fileobj=io.BytesIO(self.res.body))
+        return tarFile
 
     def testExpectedFilesExist(self):
         self.do_login()
