@@ -235,7 +235,7 @@ permissions = df_meta True,akademie_meta_aca123 False
 
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
-    size = None
+    size = None  # will be set in derived classes
 
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
@@ -266,6 +266,8 @@ class DokuforgeWebTests(DfTestCase):
         self.res.mustcontain("/logout")
 
 class DokuforgeBigWebTests(DokuforgeWebTests):
+    """Tests requiring a big dokuforge example instance"""
+
     size = 100
 
     def testCourseLessPrivileged(self):
@@ -276,10 +278,17 @@ class DokuforgeBigWebTests(DokuforgeWebTests):
         self.res.mustcontain("Example Section")
         self.is_loggedin()
 
+
 class DokuforgeSmallWebTestsBase(DokuforgeWebTests):
+    """Base class for tests requiring a small dokuforge example instance"""
+
     size = 1
 
+
 class DokuforgeSmallWebTests(DokuforgeSmallWebTestsBase):
+    """Tests of dokuforge functionality (excluding exporting) for which a
+    small instance is sufficient"""
+
     def testLogin(self):
         self.do_login()
         self.is_loggedin()
@@ -754,6 +763,7 @@ permissions = df_superadmin True,df_admin True
         self.res = self.res.forms[1].submit() # delete only part
 
 class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
+    """Check whether exporting data from within dokuforge works"""
 
     def _getExportAsTar(self):
         self.res = self.res.click(description="X-Akademie")
@@ -880,6 +890,10 @@ class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
 
 
 class LocalExportScriptTest(unittest.TestCase):
+    """Check whether the script to create an export from a raw export works.
+    This calls the exporter externally and does not require a dokuforge example
+    instance."""
+
     testExportDir = "testData/texexport_txa2011-1"
 
     def testLocalExportScript(self):
@@ -1010,9 +1024,7 @@ class DokuforgeMockTests(DfTestCase):
         self.assertEqual(out, u"<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
 
 class ExporterTestStrings:
-    """
-    Input and expected output for testing exporter.
-    """
+    """Input and expected output for testing exporter"""
 
     itemizeAndCo = [[u'- Text',
                      u'\\begin{itemize}\n\\item Text\n\\end{itemize}'],
