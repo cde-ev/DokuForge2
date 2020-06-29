@@ -568,7 +568,7 @@ caret = Escaper(u'^', TerminalString(u'\\@\\caret{}'))
 
 spacedEllipsis = Escaper(u' ...', TerminalString(u'~\\@\\dots{}'))
 
-bracketEllipsis = Escaper(u'[...]', TerminalString(u'[\\@\\dots{}\kern-.16em]'))
+bracketEllipsis = Escaper(u'[...]', TerminalString(u'[\\@\\ZitatEllipse]'))
 
 ellipsis = Escaper(u'...', TerminalString(u'\\@\\dots{}'))
 
