@@ -278,16 +278,11 @@ class DokuforgeBigWebTests(DokuforgeWebTests):
         self.res.mustcontain("Example Section")
         self.is_loggedin()
 
-
-class DokuforgeSmallWebTestsBase(DokuforgeWebTests):
-    """Base class for tests requiring a small dokuforge example instance"""
-
-    size = 1
-
-
-class DokuforgeSmallWebTests(DokuforgeSmallWebTestsBase):
+class DokuforgeSmallWebTests(DokuforgeWebTests):
     """Tests of dokuforge functionality (excluding exporting) for which a
     small instance is sufficient"""
+
+    size = 1
 
     def testLogin(self):
         self.do_login()
@@ -746,8 +741,15 @@ permissions = df_superadmin True,df_admin True
         self.res = self.res.click(href=re.compile("/bug/0/$"), index=0)
         self.res = self.res.forms[1].submit() # delete only part
 
-class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
-    """Check whether exporting data from within dokuforge works"""
+class DokuforgeExporterTests(DokuforgeWebTests):
+    """Check whether exporting data from within dokuforge works.
+
+    This requires a small dokuforge example instance, hence inherits from
+    DokuforgeWebTests.
+    Microtypography (exporting of strings) is tested in ExporterTestCases.
+    """
+
+    size = 1
 
     def testRawCourseExport(self):
         self.do_login()
@@ -890,9 +892,9 @@ class DokuforgeExporterTests(DokuforgeSmallWebTestsBase):
 
 
 class LocalExportScriptTest(unittest.TestCase):
-    """Check whether the script to create an export from a raw export works.
-    This calls the exporter externally and does not require a dokuforge example
-    instance."""
+    """Check whether the script to create a (LaTeX) export from a raw export
+    works. This calls the exporter externally and does not require a dokuforge
+    example instance."""
 
     testExportDir = "testData/texexport_txa2011-1"
 
