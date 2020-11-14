@@ -1405,7 +1405,35 @@ Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux
 whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im
 komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
 jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
-fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""]]
+fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
+
+                         [u"""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen dazwischen.
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume $x$ Das sieht verdächtig aus $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume  $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
+                          u"""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen
+dazwischen.\@\@\@ Franz jagt im komplett verwahrlosten Taxi quer durch
+Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce
+vieux whisky au juge blond qui fume $x$ Das sieht verdächtig aus $x$
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The
+quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au
+juge blond qui fume  $x$ Franz jagt im komplett verwahrlosten Taxi
+quer durch Bayern."""],
+
+                         [u"""Lange Zeile mit Mathematik und Code.
+
+Bla blub. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. Bla blub. The quick brown fox jumps over the lazy dog. Bla blub. Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. Bla blub. The quick brown fox jumps over the lazy dog. Bla blub. Portez ce vieux whisky au juge blond qui fume.
+
+Das sieht verdächtig aus.""",
+                          u"""Lange Zeile mit Mathematik und Code.
+
+Bla blub. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.
+Bla blub. The quick brown fox jumps over the lazy dog. Bla blub.
+Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett
+verwahrlosten Taxi quer durch Bayern. Bla blub. The quick brown fox
+jumps over the lazy dog. Bla blub. Portez ce vieux whisky au juge
+blond qui fume.
+
+Das sieht verdächtig aus."""],
+]
 
     ednoteEscape = [ [u"""before
 
