@@ -1463,12 +1463,12 @@ class ExporterTestCases:
                   [ ExporterTestStrings.itemizeAndCo,
                     ExporterTestStrings.code,
                     ExporterTestStrings.ednoteEscape,
-                    ExporterTestStrings.codeAndLengthyParagraph,
-                    ExporterTestStrings.lengthyParagraph ]
+                    ExporterTestStrings.codeAndLengthyParagraph ]
 
     lineGroupTests = testsInText + \
                      [ ExporterTestStrings.sectionsAndAuthors,
-                       ExporterTestStrings.sectionsWithEmph ]
+                       ExporterTestStrings.sectionsWithEmph,
+                       ExporterTestStrings.lengthyParagraph ]
 
     titleTests = testsEverywhere
 
