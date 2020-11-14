@@ -1385,8 +1385,27 @@ verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
 the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
 Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi
 quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez
-ce vieux whisky au juge blond qui fume."""] ]
+ce vieux whisky au juge blond qui fume."""],
 
+                         [u"""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
+                          u"""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen.
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick
+brown fox jumps over the lazy dog. Portez ce vieux whisky au juge
+blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett
+verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
+the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
+
+                         [u"""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen dazwischen.
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
+                          u"""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen
+dazwischen.\@\@\@ Franz jagt im komplett verwahrlosten Taxi quer durch
+Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux
+whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im
+komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
+jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
+fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""]]
 
     ednoteEscape = [ [u"""before
 
