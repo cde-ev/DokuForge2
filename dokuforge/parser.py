@@ -833,7 +833,7 @@ def wrap(text, subsequent_indent=''):
     """
     Wraps text to width 70.
     """
-    # triple @ to label linebreaks after long lines before wrapping
+    # triple \@ to label linebreaks where we suspect the author forgot a double line break to indicate a new paragraph
     text = re.sub(r'([^\n]{160})\n', r'\1\\@\\@\\@\n', text)
     text = re.sub(r'\n([^\n]{160})', r'\\@\\@\\@\n\1', text)
     text = re.sub(r'\\@\\@\\@\\@\\@\\@', r'\\@\\@\\@', text)
