@@ -39,6 +39,7 @@ für die Weiterentwicklung von DokuForge auf dein Feedback angewiesen.</p>
 <li><a href="#abkuerzungen">Abkürzungen</a></li>
 <li><a href="#eigennamen">Eigennamen</a></li>
 <li><a href="#cde_vokabular">CdE-Vokabular</a></li>
+<li><a href="#gendern">Gendern</a></li>
 <li><a href="#ednotes">Ednotes</a></li>
 <li><a href="#urls">URLs</a></li>
 <li><a href="#urls">Code</a></li>
@@ -276,6 +277,15 @@ sehr schön umformulieren.</p>
 <li>KüA (Plural: KüAs)</li>
 <li>Orga-Team, Orga-Büro, Orga-Treffen etc.</li>
 </ul>
+
+<h2><a name="gendern"></a> Gendern</h2>
+<p>Wenn du gendern willst, empfehlen wir geschlechtsneutrale
+Formulierungen (z.B. Dokuschreibende) zu verwenden, wenn
+möglich. Ansonsten empfehlen wir die Schreibweise mit Doppelpunkt
+(z.B. Schüler:innen). Diese Variante schließt das gesamte
+Genderspektrum ein und ist sowohl im Allgemeinen als auch von
+Screenreadern gut lesbar.</p>
+
 <h2><a name="ednotes"></a> Ednotes</h2>
 <p>Falls du uns (denen, die die Doku endgültig setzen) etwas mitteilen
 oder Besonderheiten wie Tabellen oder Gedichte nutzen willst (siehe

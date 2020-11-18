@@ -29,7 +29,7 @@ auf der Doku-DVD verwenden zu dürfen. Diese Erlaubnis musst du selbst einholen.
 <p>Grafiken können über &quot;neues Bild hochladen&quot; am Ende einer Seite zu dem jeweiligen Kapitel hochgeladen werden. Beim Hochladen wirst du
 nach einem Kürzel und einer Bildunterschrift gefragt. Die Kürzel dürfen
 ausschließlich Kleinbuchstaben und Zahlen enthalten, die Bildunterschrift
-beginnt mit einem Großbuchstaben.</p>
+beginnt stets mit einem Großbuchstaben und endet nur dann mit einem Punkt, wenn sie ein ganzer Satz ist.</p>
 <p>Auf die genaue Positionierung der Bilder hast du keinen Einfluss.
 Bilder sind Fließobjekte, daher ist keine &quot;Hier&quot;-Positionierung möglich.
 Die Bilder werden in der Nähe ihrer ersten Referenz eingebunden werden,
