@@ -18,7 +18,7 @@ ACANAME=`basename $1 .tar.gz`
 DFWORKDIR=work/example/df
 DFACADIR=$DFWORKDIR/$ACANAME
 EXPORTSTATICDIR=$2
-EXPORTSTATICCLEANDIR=`mktemp -d --dry-run`
+EXPORTSTATICCLEANDIR=`mktemp -d`
 EXPORTEDACAFILENAME=texexport_$ACANAME.tar
 EXPORTEDACADIR=$EXPORTDIR/texexport_$ACANAME
 CURRENTDIR=`pwd`
@@ -48,6 +48,7 @@ mkdir -p work/example/df
 tar -C $DFWORKDIR -xvf $RAWEXPORT
 
 # clean directory of dokuforge-export-static files (no local files, e.g., backups)
+rmdir $EXPORTSTATICCLEANDIR
 svn export $EXPORTSTATICDIR $EXPORTSTATICCLEANDIR
 
 # perform actual export, this can take a few seconds without output
