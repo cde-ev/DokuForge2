@@ -1249,7 +1249,7 @@ class PItemize(PTree):
     def toTex(self):
         itemtype = u'enumerate' if self.isEnumerate() else u'itemize'
         body = u''.join(item.toTex() for item in self.items)
-        return u'\n\\begin{%s}%s\n\\end{%s}\n' % (itemtype, body, itemtype)
+        return u'\n\\begin{%s}[joinedup,packed]%s\n\\end{%s}\n' % (itemtype, body, itemtype)
 
     def toHtml(self):
         itemtype =  'ul'
