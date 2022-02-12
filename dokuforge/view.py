@@ -1,8 +1,8 @@
 try:
-    from collections import Mapping
-except ImportError:
-    # changed since python 3.10
+    # works since python 3.3
     from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
 import logging
 import traceback
 
