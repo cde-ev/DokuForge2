@@ -1,8 +1,10 @@
 html, body, #page {
-    background-color: #9999ff;
+    color: #222222;
+    background-color: #d3e3fc;
     margin: 0px;
     height:100%;
     overflow: hidden;
+    font-family: Cantarell, sans-serif;
 }
 
 #header {
@@ -26,7 +28,7 @@ html, body, #page {
     font-size: x-large;
     font-weight: bold;
     margin: 0ex;
-    margin-top: 0.5ex;
+    margin-top: -0.5ex;
   }
  #userinformation {
     float: right;
@@ -53,7 +55,7 @@ html, body, #page {
 
 #content {
     position: absolute;
-    background-color: #ccccff;
+    background-color: #fbfcff;
     padding: 2ex;
     bottom: 6ex;
     top: 14ex;
@@ -92,7 +94,7 @@ html, body, #page {
     padding-left: 1em;
     padding-right: 1em;
     text-align: right;
-    height: 4ex;
+    height: 4.8ex;
     bottom: 0ex;
     right: 0em;
 }
@@ -115,15 +117,16 @@ textarea {
     margin-left: 1em;
     margin-right: 1em;
     padding: .5ex 2ex .5ex 2ex;
-    background-color: #ddddff;
+    background-color: #ecf3fe;
+    font-family: Garamond, serif;
 }
 
 .ednote {
-    background-color: #aaddff;
+    background-color: rgba(170,221,255,0.8);
 }
 
 .dokucontent .ednote {
-    background-color: #aaddff;
+    background-color: #ccccff;
 }
 
 .dokucontent .displaymath {
@@ -131,11 +134,11 @@ textarea {
 }
 
 .versionstring {
-    font-size: 1.5ex;
+    font-size: 1.6ex;
     text-align: center;
 }
 .tocpart {
-    background-color: #aaaaff;
+    background-color: #f6f8fe;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
@@ -166,7 +169,7 @@ textarea {
 }
 
 .courseitem {
-    background-color: #aaaaff;
+    background-color: #f6f8fe;
     padding: 1ex;
     margin-top: 1ex;
     margin-bottom: 1ex;
@@ -203,27 +206,29 @@ a.inconspicuous:active {
 }
 
 a {
-    color: #5500aa;
+    color: #00887a;
+    text-decoration: none;
 }
 
 a:link {
-    color: #880088;
+    color: #007568;
 }
 
 a:visited {
-    color: #550055;
+    color: #007568;
 }
 
 a:focus {
-    color: #880088;
+    color: #007568;
 }
 
 a:hover {
-    color: #880088;
+    color: #007568;
+    text-decoration: underline;
 }
 
 a:active {
-    color: #880088;
+    color: #007568;
 }
 
 
