@@ -1,58 +1,30 @@
-html, body, #page {
-    background-color: #9999ff;
-    margin: 0px;
-    height:100%;
-    overflow: hidden;
+.page {
+    background: #fff;
+    padding-top: 10px;
+    padding-bottom: 25px;
+    margin-left: 10px;
+    margin-right: 20px;
+    position: relative;
+    min-height: 480px;
 }
 
-#header {
-    top: 0ex;
-    height: 13ex;
-    padding-top: 2ex;
-    padding-left: 1em;
-    padding-right: 1em;
-}
- #headings {
-    position: absolute;
-    left: 1em;
-    right: 21em;
-    height: 9ex;
- }
-  #dokuforgetitle {
+.title {
+    font-size: 2.5em;
     text-align: center;
-    margin: 0ex;
-  }
-  #subheading {
-    font-size: x-large;
-    font-weight: bold;
-    margin: 0ex;
-    margin-top: 0.5ex;
-  }
- #userinformation {
-    float: right;
-    height: 3ex;
- }
-  #userinformation form {
-    padding-left: 0.5em;
-  }
- #headerlinks {
-    position: absolute;
-    top: 6ex;
-    right: 1em;
-    text-align: right;
-    height: 4ex;
-    width: 21em;
- }
-  #headerlinks a {
-    padding-left: 1ex;
-  }
- #location {
-    position: absolute;
-    top: 11ex;
- }
+}
+
+.breadcrumb {
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.side-nav {
+    font-size: 0.9em;
+    margin-bottom: 20px;
+    background: unset;
+}
 
 #content {
-    position: absolute;
     background-color: #ccccff;
     padding: 2ex;
     bottom: 6ex;
@@ -62,14 +34,12 @@ html, body, #page {
 	overflow: auto;
 }
  #saveedit {
-    position: absolute;
     top: 1ex;
     bottom: 1ex;
     left: 2ex;
     right: 2ex;
  }
   #saveedittext {
-    position: absolute;
     left: 0em;
     right: 0em;
     top: 3ex;
@@ -80,21 +50,15 @@ html, body, #page {
     width: 100%
    }
   #saveeditinput {
-    position: absolute;
     bottom: 0ex;
     left: 0ex;
   }
 
 #footer {
-    position: absolute;
-    padding-top: 1ex;
-    padding-bottom: 1ex;
-    padding-left: 1em;
-    padding-right: 1em;
-    text-align: right;
-    height: 4ex;
-    bottom: 0ex;
-    right: 0em;
+    margin-top: 20px;
+    font-size: 85%;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 
