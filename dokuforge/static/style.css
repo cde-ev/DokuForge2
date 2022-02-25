@@ -169,6 +169,7 @@ a.inconspicuous:active {
 
 a {
     color: #5500aa;
+    text-decoration: unset;
 }
 
 a:link {
