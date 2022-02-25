@@ -1,11 +1,41 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
+
+{% block title %}
+    Kurs {{ course.title }}
 {% endblock %}
-{% block location %}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title)]) }}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("course"), course.title, active=True) }}
 {% endblock %}
+
+{% block navigation %}
+    {%- if user.allowedMeta(academy) or user.allowedWrite(academy, course) %}
+        <h6>Kurs</h6>
+        <div class="list-group side-nav">
+            {% if user.allowedMeta(academy) %}
+                {{ util.href(buildurl("coursetitle"), "Titel bearbeiten", aclass="list-group-item") }}
+            {% endif %}
+            {% if user.allowedWrite(academy, course) %}
+                {{ util.href(buildurl("showdeadpages"), "gelöschte Teile", aclass="list-group-item") }}
+            {% endif %}
+            {% if user.allowedMeta(academy) %}
+                {{ button(buildurl("deletecourse"), "Kurs löschen") }}
+            {% endif %}
+            {% if user.allowedWrite(academy, course) %}
+                {{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
+            {% endif %}
+        </div>
+    {% endif %}
+    {%- if user.mayExport(academy) %}
+        <h6>Export</h6>
+        <div class="list-group side-nav">
+            {{ util.href(buildurl("raw"), "df2-Rohdaten", aclass="list-group-item") }}
+        </div>
+    {%- endif -%}
+{% endblock %}
+
 {% block content %}
 Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 {{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
@@ -54,21 +84,4 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 <br>
 <em>Keine Teile gefunden.</em><br>
 {%- endif -%}
-<div class="courseoperations">
-{%- if user.mayExport(academy) %}
-<a href="{{ buildurl("raw")|e }}">df2-Rohdaten</a>
-{%- endif -%}
-{%- if user.allowedMeta(academy) %}
-<a href="{{ buildurl("coursetitle")|e }}">Titel bearbeiten</a>
-{%- endif -%}
-{%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>
-{{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
-{%- endif -%}
-{%- if user.allowedMeta(academy) %}
-<div class="rareCommands">
-{{ button(buildurl("deletecourse"), "Kurs löschen") }}
-</div>
-{%- endif -%}
-</div>
 {% endblock %}

@@ -1,13 +1,16 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
-{% endblock %}
-{% block location%}
-{{ navbar([("academy", {}, academy.title),
-           ("academygroups", {}, "Gruppenverwaltung")]) }}
-{% endblock %}
-{% block content %}
 
+{% block title %}
+    Gruppen bearbeiten
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("academygroups"), "Gruppenverwaltung", active=True) }}
+{% endblock %}
+
+{% block content %}
 {{ threeway(ok, "Bitte Gruppen bearbeiten.", "Gruppen erfolgreich bearbeitet.", error.message, error.explanation) }}
 <form action="{{ buildurl("academygroupssave")|e }}" method="post" id="save">
         Gruppen: <select name="groups" multiple="multiple">

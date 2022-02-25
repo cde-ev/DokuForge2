@@ -1,13 +1,16 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
+
+{% block title %}
+    Bild #{{ blob.number }} bearbeiten
 {% endblock %}
-{% block location %}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title),
-	   ("page", {}, "Teil #" ~ page),
-	   ("showblob", dict(blob=blob.number), "Bild #" ~ blob.number),
-	   ("editblob", dict(blob=blob.number), "Bild editieren")]) }}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("course"), course.title) }}
+    {{ util.breadcrumb_link(buildurl("page"), "Teil #" ~ page) }}
+    {{ util.breadcrumb_link(buildurl("showblob"), "Bild #" ~ blob.number) }}
+    {{ util.breadcrumb_link(buildurl("uploadblob"), "Bild editieren", active=True) }}
 {% endblock %}
 
 {% block content %}

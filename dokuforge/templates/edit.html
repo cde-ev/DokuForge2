@@ -1,15 +1,18 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
-{% endblock %}
-{% block location %}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title),
-	   ("page", {}, "Teil #" ~ page),
-	   ("edit", {}, "Editieren")]) }}
-{% endblock %}
-{% block content %}
 
+{% block title %}
+    Teil #{{ page }} bearbeiten
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("course"), course.title) }}
+    {{ util.breadcrumb_link(buildurl("page"), "Teil #" ~ page) }}
+    {{ util.breadcrumb_link(buildurl("edit"), "Editieren", active=True) }}
+{% endblock %}
+
+{% block content %}
 <form action="{{ buildurl("save")|e }}" method="post" id="saveedit">
   {% if ok is none %}
   Bitte Text eingeben und mit &quot;Speichern&quot; beenden.

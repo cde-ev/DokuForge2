@@ -1,10 +1,33 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
+
+{% block title %}
+    {{ academy.title }}
 {% endblock %}
-{% block location %}
-{{ navbar([("academy", {}, academy.title)]) }}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title, active=True) }}
 {% endblock %}
+
+{% block navigation %}
+    {%- if user.allowedMeta(academy) %}
+        <h6>Akademie</h6>
+        <div class="list-group side-nav">
+            {{ util.href(buildurl("academytitle"), "Titel bearbeiten", aclass="list-group-item") }}
+            {{ util.href(buildurl("academygroups"), "Gruppen bearbeiten", aclass="list-group-item") }}
+            {{ util.href(buildurl("createcoursequiz"), "Kurs hinzufügen", aclass="list-group-item") }}
+            {{ util.href(buildurl("deadcourses"), "Kurse wiederherstellen", aclass="list-group-item") }}
+        </div>
+    {%- endif -%}
+    {%- if user.mayExport(academy)%}
+        <h6>Export</h6>
+        <div class="list-group side-nav">
+            {{ util.href(buildurl("export"), "Testexport", aclass="list-group-item") }}
+            {{ util.href(buildurl("rawacademy"), "df2-Rohdaten", aclass="list-group-item") }}
+        </div>
+    {%- endif %}
+{% endblock %}
+
 {% block content %}
 {% if academy.courses %}
 <div class="courselist">
@@ -23,16 +46,4 @@
 {%- else -%}
 <em>Keine Kurse gefunden.</em><br>
 {%- endif -%}
-<div class="academyoperations">
-{%- if user.mayExport(academy)%}
-<a href="{{ buildurl("export")|e }}">Testexport</a>
-<a href="{{ buildurl("rawacademy")|e }}">df2-Rohdaten</a>
-{%- endif %}
-{%- if user.allowedMeta(academy) %}
-<a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a>
-<a href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a>
-<a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
-<a href="{{ buildurl("deadcourses")|e }}">gel&ouml;schte Kurse wiederherstellen</a>
-{%- endif -%}
-</div>
 {% endblock %}

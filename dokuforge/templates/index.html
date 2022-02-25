@@ -1,10 +1,13 @@
 {% extends "base.html" %}
-{% block subheading %}
-Übersicht
+
+{% block title %}
+    Übersicht
 {% endblock %}
-{% block location %}
-{{ navbar([("groupindex", dict(group=group), allgroups[group]|e)]) }}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht", active=True) }}
 {% endblock %}
+
 {% block content %}
     Willkommen bei Dokuforge!
     <ul>

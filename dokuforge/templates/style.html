@@ -1,11 +1,15 @@
 {% extends "base.html" %}
-{% block subheading %}
-So geht's
+
+{% block title %}
+    So geht's
 {% endblock %}
-{% block location%}
-{{ navbar([("styleguide", {}, "So geht's",),
-           ("styleguidetopic", dict(topic=topic), topic|capitalize)]) }}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("styleguide"), "So geht's") }}
+    {{ util.breadcrumb_link(buildurl("styleguidetopic", {'topic': topic}), topic|capitalize, active=True) }}
 {% endblock %}
+
 {% block content %}
 {% include includepath %}
 {% endblock %}

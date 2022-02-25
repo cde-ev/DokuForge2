@@ -1,13 +1,17 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
+
+{% block title %}
+    Bild hinzufügen
 {% endblock %}
-{% block location%}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title),
-	   ("page", {}, "Teil #" ~ page),
-	   ("uploadblob", {}, "Bild hochladen")]) }}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("course"), course.title) }}
+    {{ util.breadcrumb_link(buildurl("page"), "Teil #" ~ page) }}
+    {{ util.breadcrumb_link(buildurl("uploadblob"), "Bild hochladen", active=True) }}
 {% endblock %}
+
 {% block content %}
 <form action="{{ buildurl("attachblob")|e }}" method="post" enctype="multipart/form-data">
 Bildunterschrift/Kommentar:         <textarea disabled="disabled">{{form.get("comment", "")|e}}</textarea>

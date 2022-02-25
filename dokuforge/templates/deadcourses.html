@@ -1,10 +1,15 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
+
+{% block title %}
+    Gelöschte Kurse
 {% endblock %}
-{% block location %}
-{{ navbar([("academy", {}, academy.title)]) }}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("deadcourses"), "Gelöschte Kurse wiederherstellen", active=True) }}
 {% endblock %}
+
 {% block content %}
 {% if academy.deadcourses %}
 <div class="courselist">

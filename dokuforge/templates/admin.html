@@ -1,12 +1,15 @@
 {% extends "base.html" %}
-{% block subheading %}
-Nutzeradministration
-{% endblock %}
-{% block location%}
-{{ navbar([("admin", {}, "Administration")]) }}
-{% endblock %}
-{% block content %}
 
+{% block title %}
+    Nutzeradministration
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("admin"), "Administration", active=True) }}
+{% endblock %}
+
+{% block content %}
 {{ threeway(ok,
             'Bitte Text eingeben und mit "Speichern" beenden.',
             "Aenderungen erfolgreich gespeichert.",

@@ -1,13 +1,16 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
-{% endblock %}
-{% block location%}
-{{ navbar([("academy", {}, academy.title),
-           ("createcourse", {}, "Kurs hinzufügen")]) }}
-{% endblock %}
-{% block content %}
 
+{% block title %}
+    Kurs hinzufügen
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("createcourse"), "Kurs hinzufügen", active=True) }}
+{% endblock %}
+
+{% block content %}
 {{ threeway(ok, "Bitte die folgenden Angaben ergänzen.", "", error.message,
             error.explanation) }}
 <form action="{{ buildurl("createcourse")|e }}" method="post" id="createcourse">

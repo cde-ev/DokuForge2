@@ -1,27 +1,34 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
+
+{% block title %}
+    Bild #{{ blob.number }}
 {% endblock %}
-{% block location%}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title),
-	   ("page", {}, "Teil #" ~ page),
-	   ("showblob", {}, "Bild #" ~ blob.number)]) }}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("course"), course.title) }}
+    {{ util.breadcrumb_link(buildurl("page"), "Teil #" ~ page) }}
+    {{ util.breadcrumb_link(buildurl("showblob"), "Bild #" ~ blob.number, active=True) }}
 {% endblock %}
+
+{% block navigation %}
+    <h6>Bild</h6>
+    <div class="list-group side-nav">
+        {% if user.allowedWrite(academy, course) %}
+            {{ util.href(buildurl("editblob"), "Editieren", aclass="list-group-item") }}
+        {% endif %}
+        {{ util.href(buildurl("downloadblob"), "Herunterladen", aclass="list-group-item") }}
+        {{ util.href(buildurl("md5blob"), "MD5-Summe berechnen", aclass="list-group-item") }}
+    </div>
+{% endblock %}
+
 {% block content %}
 <p>Bildunterschrift/Kommentar: {{ blob.comment|e }}</p>
 <p>K&uuml;rzel: {{ blob.label|e }}</p>
 <p>Dateiname: {{ blob.filename|e }}</p>
 
-{% if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("editblob")|e }}">Editieren</a>
-{% endif %}
-
-<a href="{{ buildurl("downloadblob")|e }}">herunterladen</a>
-
 {% if blobhash is not none %}
 MD5 Summe des Bildes ist {{ blobhash|e }}.
-{% else %}
-<a href="{{ buildurl("md5blob")|e }}">MD5-Summe berechnen</a>
 {% endif %}
 {% endblock %}

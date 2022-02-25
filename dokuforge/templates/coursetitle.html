@@ -1,14 +1,17 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
-{% endblock %}
-{% block location%}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title),
-	   ("coursetitle", {}, "Titel")]) }}
-{% endblock %}
-{% block content %}
 
+{% block title %}
+    Kurstitel bearbeiten
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("course"), course.title) }}
+    {{ util.breadcrumb_link(buildurl("coursetitle"), "Titel", active=True) }}
+{% endblock %}
+
+{% block content %}
 {{ threeway(ok, 'Bitte Titel eingeben und mit "Speichern" beenden.',
             "Aenderungen erfolgreich gespeichert.", error.message,
             error.explanation) }}

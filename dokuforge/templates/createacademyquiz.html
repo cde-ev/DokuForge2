@@ -1,12 +1,15 @@
 {% extends "base.html" %}
-{% block subheading %}
-Neue Akademie
-{% endblock %}
-{% block location%}
-{{ navbar([("createacademy", {}, "Akademie anlegen")]) }}
-{% endblock %}
-{% block content %}
 
+{% block title %}
+    Neue Akademie
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("createacademy"), "Akademie anlegen", active=True) }}
+{% endblock %}
+
+{% block content %}
 {{ threeway(ok, "Bitte die folgenden Angaben ergaenzen.", "", error.message,
             error.explanation) }}
 <form action="{{ buildurl("createacademy")|e }}" method="post" id="createacademy">

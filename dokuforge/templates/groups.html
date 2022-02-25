@@ -1,12 +1,15 @@
 {% extends "base.html" %}
-{% block subheading %}
-Gruppenverwaltung
-{% endblock %}
-{% block location%}
-{{ navbar([("groups", {}, "Gruppenverwaltung")]) }}
-{% endblock %}
-{% block content %}
 
+{% block title %}
+    Gruppenverwaltung
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("groups"), "Gruppenverwaltung", active=True) }}
+{% endblock %}
+
+{% block content %}
 {{ threeway(ok,
             'Bitte Text eingeben und mit "Speichern" beenden.',
             "Aenderungen erfolgreich gespeichert.",
