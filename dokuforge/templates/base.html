@@ -1,3 +1,5 @@
+{% import "util.html" as util with context %}
+
 {% macro button(action, label, params={}) -%}
 <form action="{{ action|e }}" method="post" class="button">
 	{%- for key, value in params.items() -%}
@@ -5,17 +7,6 @@
 	{%- endfor -%}
 	<input type="submit" name="submit" value="{{ label|e }}">
 </form>
-{%- endmacro -%}
-
-{%- macro navbar(entries) -%}
-Navigation: <a href="{{ buildurl("index")|e }}">DokuForge</a>
-{%- for (point, args, title) in entries -%}
-{%- if url == '' -%}
-{# comment to protect space #} &gt; {{ title|e}}
-{%- else -%}
-{# comment to protect space #} &gt; <a href="{{ buildurl(point, args)|e }}">{{ title|e }}</a>
-{%- endif -%}
-{%- endfor -%}
 {%- endmacro -%}
 
 {%- macro threeway(ok, default, success, errormessage, errorexplanation) -%}
@@ -33,9 +24,11 @@ Navigation: <a href="{{ buildurl("index")|e }}">DokuForge</a>
 <html lang="de">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="{{ staticjoin("bootstrap.min.css")|e }}" media="all">
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("style.css")|e }}" media="all">
 	<link rel="stylesheet" type="text/css" href="{{ staticjoin("print.css")|e }}" media="print">
 	<title>DokuForge2</title>
+
 <script type="text/javascript">
 function checkMathCookie()
 {
@@ -91,77 +84,95 @@ if (checkMathCookie() == true){
 </script>
 {% endblock %}
 </head>
-<body onload="checkMathCookie()">
-<div id="page">
-{%- block header %}
- <div id="header">
-   <div id="headings">
-	 <h1 id="dokuforgetitle">DokuForge</h1>
-	 <div id="subheading">
-	   {%- block subheading %}Startseite{% endblock -%}
-	 </div>
-   </div>
-   <div id="userinformation">
-   {%- if user is not none %}
-       Hallo {{ user.name|e }}!
-       {{ button(buildurl("logout"), "Logout") }}
-   {%- else -%}
-   <a href="{{ buildurl("start")|e }}">Login</a>
-   {%- endif %}
-   </div>
-   <div id="headerlinks">
-   {%- if user is not none %}
-	{%- if user.isAdmin() %}
-	<a href="{{ buildurl("admin")|e }}">Administration</a>
-	{%- endif -%}
-	{%- if user.isSuperAdmin() %}
-	<a href="{{ buildurl("groups")|e }}">Gruppenverwaltung</a>
-	{%- endif -%}
-	<br>
-   {%- endif %}
-   {%- if allowMathChange %}
-       <script type="text/javascript">
-	 if (checkMathCookie() == true) {
-	   document.write('<a href="" onClick="disableMathCookie()">Formelvorschau ausschalten</a>')
-	 } else {
-	   document.write('<a href="" onClick="enableMathCookie()">Formelvorschau einschalten</a>')
-	 }
-       </script>
-       <noscript>
-	 Formelvorschau ist aus
-       </noscript>
-       {% else %}
-       <script type="text/javascript">
-	 if (checkMathCookie() == true) {
-	   document.write('Formelvorschau ist an')
-	 } else {
-	   document.write('Formelvorschau ist aus')
-	 }
-       </script>
-       <noscript>
-	 Formelvorschau ist aus
-       </noscript>
-   {% endif -%}
-   <a href="{{ buildurl("styleguide")|e }}">So geht's</a>
-   </div>
-   <div id="location">
-   {%- block location %}{% endblock -%}
-   </div>
- </div>
-{% endblock -%}
-<div id="content">
-{%- block content %}
-Dies sollte nicht sichtbar sein.
-{% endblock %}
-</div>
-{%- block footer %}
-   <div id="footer">
-   	Kontakt: team (at) dokuforge.de<br>
-   	DokuForge – Ein Projekt des CdE e.V.
-   </div>
-{% endblock -%}
-</div>
-</body>
+
+    <body onload="checkMathCookie()">
+        <div class="page">
+            {% block heading %}
+                <h1 class="title" style="margin-bottom: 10px" id="title">{{ self.title() }}</h1>
+            {% endblock %}
+
+            <div class="row">
+                <div class="col-lg-2">
+                    <!-- Seitennavigation  -->
+                    <nav id="sidebar" aria-label="Menü" class="sticky-top">
+                        <div id="sidebar-navigation">
+                            {%- if user is not none %}
+                                <h6>Meta</h6>
+                                <div class="list-group side-nav">
+                                    {% if user.isAdmin() %}
+                                        {{ util.href(buildurl("admin"), "Administration", aclass="list-group-item") }}
+                                    {% endif %}
+                                    {% if user.isSuperAdmin() %}
+                                        {{ util.href(buildurl("groups"), "Gruppenverwaltung", aclass="list-group-item") }}
+                                    {% endif %}
+                                    {%- if allowMathChange %}
+                                        <script type="text/javascript">
+                                            if (checkMathCookie() == true) {
+                                                document.write('<a href="" class="list-group-item" onClick="disableMathCookie()">Formelvorschau ausschalten</a>')
+                                            } else {
+                                                document.write('<a href="" class="list-group-item" onClick="enableMathCookie()">Formelvorschau einschalten</a>')
+                                            }
+                                        </script>
+                                        <noscript>
+                                            Formelvorschau ist aus
+                                        </noscript>
+                                    {% else %}
+                                        <script type="text/javascript">
+                                            if (checkMathCookie() == true) {
+                                                document.write('Formelvorschau ist an')
+                                            } else {
+                                                document.write('Formelvorschau ist aus')
+                                            }
+                                        </script>
+                                        <noscript>
+                                            Formelvorschau ist aus
+                                        </noscript>
+                                    {% endif -%}
+                                    {{ util.href(buildurl("styleguide"), "So geht's", aclass="list-group-item") }}
+                                    {{ button(buildurl("logout"), "Logout") }}
+                                </div>
+                            {% endif %}
+
+                            {% block navigation %}
+                            {% endblock %}
+                        </div>
+                    </nav>
+                </div>
+                <div class="col-lg-10">
+                    <div class="row">
+                        <!-- Breadcrumb Leiste -->
+                        <nav class="col-lg-10">
+                            <ol class="breadcrumb" style="margin-bottom: 7px" aria-labelledby="bc-title">
+                                {% block breadcrumb %}{% endblock %}
+                            </ol>
+                        </nav>
+                        <div class="col-lg-2" style="text-align: right">
+                            {% if user is not none %}
+                                Hallo {{ user.name|e }}!
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div id="content">
+                            {% block content %}
+                                Dies sollte nicht sichtbar sein.
+                            {% endblock %}
+                    </div>
+                </div>
+            </div>
+
+            {%- block footer %}
+               <footer id="footer" class="container">
+                    {% if user is none %}
+                        Kontakt: team (at) dokuforge.de<br>
+                    {% else %}
+                        Kontakt: {{ util.href("mailto:team@dokuforge.de", "team@dokuforge.de") }}<br>
+                    {% endif %}
+                    DokuForge – Ein Projekt des CdE e.V.
+               </footer>
+            {% endblock -%}
+
+        </div>
+    </body>
 <!-- DokuForge revision is {{ commitid }}. -->
 </html>
 {# vim:syntax=jinja
