@@ -25,7 +25,9 @@
 
   Teil #{{ page|string }}
   <div id="saveedittext">
-	<textarea name="content">{{ content|e }}</textarea>
+      <textarea name="content" rows="15">
+          {{- content|e -}}
+      </textarea>
   </div>
   <div id="saveeditinput">
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
