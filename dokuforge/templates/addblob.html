@@ -20,6 +20,6 @@
   K&uuml;rzel: <textarea name="label">{{form.get("label", "")|e}}</textarea>
 	<input type="submit" value="Bild auswählen">
 </form>
-Das K&uuml;rzel darf nur Kleinbuchstaben und Ziffern enthalten.
-
+Das K&uuml;rzel darf nur Kleinbuchstaben und Ziffern enthalten.<br>
+{{ util.href(buildurl("page"), "Abbrechen") }}
 {% endblock %}

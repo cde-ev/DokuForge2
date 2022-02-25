@@ -22,5 +22,5 @@
         </select>
 	<input type="submit" name="submit" value="Akademie anlegen">
 </form>
-<a href=" {{ buildurl("index")|e }}">Abbrechen</a>
+{{ util.href(buildurl("index"), "Abbrechen") }}
 {% endblock %}
