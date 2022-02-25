@@ -1,129 +1,100 @@
 {% extends "base.html" %}
-{% block subheading %}
-{{ academy.title|e }}
+
+{% block title %}
+    Teil #{{ page }}
 {% endblock %}
-{% block location %}
-{{ navbar([("academy", {}, academy.title),
-           ("course", {}, course.title),
-	   ("page", {}, "Teil #" ~ page)]) }}
+
+{% block breadcrumb %}
+    {{ util.breadcrumb_link(buildurl("index"), "Übersicht") }}
+    {{ util.breadcrumb_link(buildurl("academy"), academy.title) }}
+    {{ util.breadcrumb_link(buildurl("course"), course.title) }}
+    {{ util.breadcrumb_link(buildurl("page"), "Teil #" ~ page, active=True) }}
 {% endblock %}
+
+{% block navigation %}
+    <h6>Teil</h6>
+    {{ util.href(buildurl("rcs"), "rcs", aclass="list-group-item") }}
+    {%- if user.allowedWrite(academy, course) %}
+        <div class="list-group side-nav">
+            {{ util.href(buildurl("edit"), "Editieren", aclass="list-group-item") }}
+            {%- if page in course.pages -%}
+                {{ button(buildurl("delete"), "Löschen", dict()) }}
+            {%- else -%}
+                {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
+            {%- endif -%}
+        </div>
+    {% endif %}
+
+    {%- if user.allowedWrite(academy, course) %}
+        <h6>Bilder</h6>
+        <div class="list-group side-nav">
+            {{ util.href(buildurl("addblob"), "Bild hinzufügen", aclass="list-group-item") }}
+            {{ util.href(buildurl("showdeadblobs"), "Bild wiederherstellen", aclass="list-group-item") }}
+        </div>
+    {%- endif -%}
+{% endblock %}
+
+{% macro page_navigation(page, course) %}
+    {%- set pageindex = course.pages.index(page) %}
+    {%- if pageindex > 0 -%}
+        {{ util.href(buildurl('page', {'page': course.pages[pageindex-1]}), "<<") }}
+        &nbsp;
+    {%- else -%}
+        <span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
+    {%- endif -%}
+    {% for otherpage in course.pages %}
+        {% if otherpage==page -%}
+            <b>{{ loop.index|e }}</b>
+        {%- else -%}
+            {{ util.href(buildurl('page', {'page': otherpage}), loop.index) }}
+        {%- endif -%}
+    {%- endfor -%}
+    {% if course.pages[pageindex+1] is defined %}
+        &nbsp;
+        {{ util.href(buildurl('page', {'page': course.pages[pageindex+1]}), ">>") }}
+    {% else %}
+        &nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
+    {% endif %}
+{% endmacro %}
+
 {% block content %}
-Teil #{{ page|string }}
-[Version {{commit['revision'] | e }},
- zuletzt ge&auml;ndert von {{ commit['author'] | e }}
- am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
-({{estimate.pages | round(2) | e}} Seiten,
-{{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
-{{estimate.ednotepages | round(2) | e}} Seiten Ednotes)
-<hr>
-{%- if page in course.pages -%}
-{%- set pageindex = course.pages.index(page) %}
-{%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("edit")|e }}">Editieren</a>
-&nbsp;&nbsp;&nbsp;
-{%- endif -%}
-{%- if pageindex > 0 -%}
-<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>&nbsp;
-{%- else -%}
-<span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
-{%- endif -%}
-{% for otherpage in course.pages %}
+    Teil #{{ page|string }}
+    [Version {{ commit['revision'] | e }},
+    zuletzt ge&auml;ndert von {{ commit['author'] | e }}
+    am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
+    ({{ estimate.pages | round(2) | e }} Seiten,
+    {{ estimate.blobs | e }} Abbildungen [{{ estimate.blobpages | round(2) | e }} zus
+    &auml;tzliche Seiten],
+    {{ estimate.ednotepages | round(2) | e }} Seiten Ednotes)
 
-{% if otherpage==page -%}
-<b>{{loop.index|e}}</b>
-{%- else -%}
-<a href="{{ buildurl('page', {'page': otherpage})|e }}">{{loop.index|e}}</a>
-{%- endif -%}
-{%- endfor -%}
-{% if course.pages[pageindex+1] is defined %}
+    <hr>
+    {%- if page in course.pages -%}
+        {{ page_navigation(page, course) }}
+    {% endif %}
+    <div class="dokucontent">
+        {# content does not need to be escaped, since this is done by the parser #}
+        {{ content }}
+    </div>
+    {%- if page in course.pages -%}
+        {{ page_navigation(page, course) }}
+    {% endif %}
+    <hr>
 
-&nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
-{% else %}
-&nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
-
-{% endif %}
-<div class="rareCommands">
-<a href="{{ buildurl("rcs")|e }}">rcs</a>
-&nbsp;
-{%- if user.allowedWrite(academy, course) %}
-{%- if page in course.pages -%}
-{{ button(buildurl("delete"), "Löschen", dict()) }}
-{%- else -%}
-{{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
-{%- endif -%}
-{%- endif -%}
-</div>
-
-<hr>
-{% endif %}
-<div class="dokucontent">
-{# content does not need to be escaped, since this is done by the parser #}
-{{ content }}
-</div>
-<hr>
-
-
-{%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("edit")|e }}">Editieren</a>
-&nbsp;&nbsp;&nbsp;
-{%- endif -%}
-
-{%- if page in course.pages -%}
-{%- set pageindex = course.pages.index(page) %}
-{%- if pageindex > 0 -%}
-<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>&nbsp;
-{%- else -%}
-<span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
-{%- endif -%}
-{% for otherpage in course.pages %}
-
-{% if otherpage==page -%}
-<b>{{loop.index|e}}</b>
-{%- else -%}
-<a href="{{ buildurl('page', {'page': otherpage})|e }}">{{loop.index|e}}</a>
-{%- endif -%}
-{%- endfor -%}
-{% if course.pages[pageindex+1] is defined %}
-
-&nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
-{% else %}
-&nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
-
-{% endif %}
-{% endif %}
-
-<div class="rareCommands">
-<a href="{{ buildurl("rcs")|e }}">rcs</a>
-&nbsp;
-{%- if user.allowedWrite(academy, course) %}
-{%- if page in course.pages -%}
-{{ button(buildurl("delete"), "Löschen", dict()) }}
-{%- else -%}
-{{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
-{%- endif -%}
-{%- endif -%}
-</div>
-
-<hr>
-{%- if blobs %}
-Zugeordnete Bilder:
-<ul>
-{%- for blob in blobs %}
-<li>
-  <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}] ({{ blob.filename|e }})</a>
-{%- if user.allowedWrite(academy, course) %}
-{{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
-{%- endif -%}
-</li>
-{%- endfor %}
-</ul>
-{%- else -%}
-<em>Keine Bilder zu diesem Teil gefunden.</em>
-{%- endif -%}
-
-{%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
-<a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
-{%- endif -%}
+    {%- if blobs %}
+        Zugeordnete Bilder:
+        <ul>
+            {%- for blob in blobs %}
+                <li>
+                    <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}]
+                        ({{ blob.filename|e }})</a>
+                    {%- if user.allowedWrite(academy, course) %}
+                        {{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
+                    {%- endif -%}
+                </li>
+            {%- endfor %}
+        </ul>
+    {%- else -%}
+        <em>Keine Bilder zu diesem Teil gefunden.</em>
+    {%- endif -%}
 
 {% endblock %}
