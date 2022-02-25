@@ -1,0 +1,55 @@
+{# A really generic macro to generate <a href=""></a> tags.
+
+   ref        The full URL to reference to
+   label      The Link text. (Please consider to add some sr-only text, if this is empty, to maintain a11y.
+   readonly   If True, a simple text instead of a link is added
+   aclass     Additional HTML/CSS classes to be added to the link tag
+   active     If this link is part of a navigation menu, the current active page/tag can be highlighted by setting this
+              to True
+   title      A HTML `title` attribute (hover text) to add to the link
+   rel        Allows to set the rel attribute #}
+{% macro href(ref, label, readonly=False, aclass='', active=False, title=none, rel=none, anid="") -%}
+{% if readonly %}<span {% else %}<a href="{{ ref }}" {% if rel %} rel="{{ rel }}" {% endif %}{% endif %}
+{{ dict(
+    class=" ".join([
+        aclass,
+        "active" if active else "",
+        ("disabled" if 'btn' in aclass else "link-disabled") if readonly else "",
+    ]),
+    title=title,
+    id=anid,
+    **{ "aria-current": "page" if active }
+)|xmlattr }}{# We use the `active` attribute for navigation only #}>
+{{ label }}
+{%- if readonly %}</span>{%- else -%}</a>{% endif %}
+{%- endmacro %}
+
+
+{# Macro to generate breadcrumb links. Should be used like this in individual templates:
+
+       {% block breadcrumb %}
+            {{ super() }}
+            {{ util.breadcrumb_link(cdedblink("realm/intermediate_endpoint"), "Intermediate label") }}
+            {{ util.breadcrumb_link(cdedblink("realm/endpoint"), "Page link label", active=True) }}
+       {% endblock %}
+
+   Where the displayed link texts (`label`) directly correspond to the navigation links or button labels, the user has
+   to follow to reach this page.
+
+   The active=True parameter should be used exaclty for the link to the current page, which is alwas the las Breadcrumb
+   link. The readonly=True parameters should be used for rare cases, in which an intermediate page – which is normally
+   required to navigate to the currente page – is not accessible to the user (e.g. visible course listing of not yet
+   published event, only reachable via direct link).
+  #}
+{% macro breadcrumb_link(ref, label, active=False, readonly=False) %}
+    &nbsp;>&nbsp;
+    {%- if active or readonly -%} {#- TODO use actual bootstrap readonly anchor -#}
+        <li{% if active %} class="active" aria-current="location"{% endif %}>
+            {{ label -}}
+        </li>
+    {%- else -%}
+        <li><a href="{{ ref }}">
+            {{ label -}}
+        </a></li>
+    {%- endif -%}
+{% endmacro %}
