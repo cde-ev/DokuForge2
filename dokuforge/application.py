@@ -461,7 +461,7 @@ class Application:
         """
         try:
             config = ConfigParser()
-            config.readfp(io.StringIO(self.groupstore.content().decode("utf8")))
+            config.read_file(io.StringIO(self.groupstore.content().decode("utf8")))
         except configparser.ParsingError as err:
             return {}
         ret = {}

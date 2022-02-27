@@ -229,7 +229,7 @@ def validateUserConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser()
     try:
-        parser.readfp(io.StringIO(config))
+        parser.read_file(io.StringIO(config))
     except configparser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
@@ -257,7 +257,7 @@ def validateGroupConfig(config):
     assert isinstance(config, unicode)
     parser = ConfigParser()
     try:
-        parser.readfp(io.StringIO(config))
+        parser.read_file(io.StringIO(config))
     except configparser.Error as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
