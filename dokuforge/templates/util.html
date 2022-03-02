@@ -24,6 +24,23 @@
 {%- if readonly %}</span>{%- else -%}</a>{% endif %}
 {%- endmacro %}
 
+{% macro button(action, label, params={}, aclass='btn-primary', inline=False, navigation=False) -%}
+    <form action="{{ action|e }}" method="post" {% if inline %}class="display-inline"{% endif %}>
+        {%- for key, value in params.items() -%}
+        <input type="hidden" name="{{ key|e }}" value="{{ value|e }}">
+        {%- endfor -%}
+        <input type="submit" name="submit" value="{{ label|e }}" class="{% if not navigation %}btn{% endif %} {{ aclass }}">
+    </form>
+{%- endmacro -%}
+
+
+{% macro nav_button(action, label, params={}, aclass='btn-primary') -%}
+    {{ button(action, label, params, aclass='nav-item btn-nav ' + aclass, inline=False, navigation=True) }}
+{%- endmacro -%}
+
+{% macro nav_link(ref, label, readonly=False, aclass='', active=False, title=none, rel=none, anid="") %}
+    {{ href(ref, label, readonly, aclass='nav-item '+aclass, active=active, title=title, rel=rel, anid=anid) }}
+{% endmacro %}
 
 {# Macro to generate breadcrumb links. Should be used like this in individual templates:
 
