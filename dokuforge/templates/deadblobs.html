@@ -16,8 +16,9 @@
 {%- if blobs %}
 <ul>
 	{%- for blob in blobs %}
-	<li> #[{{ blob.number|string }}] ({{ blob.filename|e  }})
-         {{ button(buildurl("relinkblob"), "wiederherstellen", dict(number=blob.number)) }}
+	<li>
+        #[{{ blob.number|string }}] ({{ blob.filename|e  }})
+        {{ util.button(buildurl("relinkblob"), "wiederherstellen", dict(number=blob.number), aclass="btn-sm btn-success", inline=True) }}
 	</li>
 	{%- endfor -%}
 </ul>

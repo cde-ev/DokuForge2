@@ -13,17 +13,17 @@
     {%- if user.allowedMeta(academy) %}
         <h6>Akademie</h6>
         <div class="list-group side-nav">
-            {{ util.href(buildurl("academytitle"), "Titel bearbeiten", aclass="list-group-item") }}
-            {{ util.href(buildurl("academygroups"), "Gruppen bearbeiten", aclass="list-group-item") }}
-            {{ util.href(buildurl("createcoursequiz"), "Kurs hinzufügen", aclass="list-group-item") }}
-            {{ util.href(buildurl("deadcourses"), "Kurse wiederherstellen", aclass="list-group-item") }}
+            {{ util.nav_link(buildurl("academytitle"), "Titel bearbeiten", aclass="btn-warning") }}
+            {{ util.nav_link(buildurl("academygroups"), "Gruppen bearbeiten", aclass="btn-warning") }}
+            {{ util.nav_link(buildurl("createcoursequiz"), "Kurs hinzufügen", aclass="btn-success") }}
+            {{ util.nav_link(buildurl("deadcourses"), "Kurse wiederherstellen", aclass="btn-success") }}
         </div>
     {%- endif -%}
     {%- if user.mayExport(academy)%}
         <h6>Export</h6>
         <div class="list-group side-nav">
-            {{ util.href(buildurl("export"), "Testexport", aclass="list-group-item") }}
-            {{ util.href(buildurl("rawacademy"), "df2-Rohdaten", aclass="list-group-item") }}
+            {{ util.nav_link(buildurl("export"), "Testexport", aclass="btn-info") }}
+            {{ util.nav_link(buildurl("rawacademy"), "df2-Rohdaten", aclass="btn-info") }}
         </div>
     {%- endif %}
 {% endblock %}

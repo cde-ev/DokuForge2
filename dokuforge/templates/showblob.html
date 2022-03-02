@@ -16,10 +16,10 @@
     <h6>Bild</h6>
     <div class="list-group side-nav">
         {% if user.allowedWrite(academy, course) %}
-            {{ util.href(buildurl("editblob"), "Editieren", aclass="list-group-item") }}
+            {{ util.nav_link(buildurl("editblob"), "Editieren", aclass="btn-warning") }}
         {% endif %}
-        {{ util.href(buildurl("downloadblob"), "Herunterladen", aclass="list-group-item") }}
-        {{ util.href(buildurl("md5blob"), "MD5-Summe berechnen", aclass="list-group-item") }}
+        {{ util.nav_link(buildurl("downloadblob"), "Herunterladen", aclass="btn-info") }}
+        {{ util.nav_link(buildurl("md5blob"), "MD5-Summe berechnen", aclass="btn-info") }}
     </div>
 {% endblock %}
 

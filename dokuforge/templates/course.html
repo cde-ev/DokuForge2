@@ -15,23 +15,23 @@
         <h6>Kurs</h6>
         <div class="list-group side-nav">
             {% if user.allowedMeta(academy) %}
-                {{ util.href(buildurl("coursetitle"), "Titel bearbeiten", aclass="list-group-item") }}
+                {{ util.nav_link(buildurl("coursetitle"), "Titel bearbeiten", aclass="btn-warning") }}
             {% endif %}
             {% if user.allowedWrite(academy, course) %}
-                {{ util.href(buildurl("showdeadpages"), "gelöschte Teile", aclass="list-group-item") }}
+                {{ util.nav_link(buildurl("showdeadpages"), "gelöschte Teile", aclass="btn-info") }}
             {% endif %}
             {% if user.allowedMeta(academy) %}
-                {{ button(buildurl("deletecourse"), "Kurs löschen") }}
+                {{ util.nav_button(buildurl("deletecourse"), "Kurs löschen", aclass="btn-danger") }}
             {% endif %}
             {% if user.allowedWrite(academy, course) %}
-                {{ button(buildurl("createpage"), "Neuen Teil anlegen") }}
+                {{ util.nav_button(buildurl("createpage"), "Neuen Teil anlegen", aclass="btn-success") }}
             {% endif %}
         </div>
     {% endif %}
     {%- if user.mayExport(academy) %}
         <h6>Export</h6>
         <div class="list-group side-nav">
-            {{ util.href(buildurl("raw"), "df2-Rohdaten", aclass="list-group-item") }}
+            {{ util.nav_link(buildurl("raw"), "df2-Rohdaten", aclass="btn-info") }}
         </div>
     {%- endif -%}
 {% endblock %}
@@ -66,8 +66,7 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 		<td>
 		{%- if not loop.first -%}
 		   {%- if user.allowedWrite(academy, course) %}
-		      {{ button(buildurl("moveup"), "Hochrücken",
-	              	 dict(number=loop.index0)) }}
+               {{ util.button(buildurl("moveup"), "Hochrücken", dict(number=loop.index0), aclass="btn-sm btn-primary", inline=True) }}
 		   {%- endif -%}
 		{%- endif -%}
 		</td>

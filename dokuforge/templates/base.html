@@ -91,17 +91,17 @@ if (checkMathCookie() == true){
                                 <h6>Meta</h6>
                                 <div class="list-group side-nav">
                                     {% if user.isAdmin() %}
-                                        {{ util.href(buildurl("admin"), "Administration", aclass="list-group-item") }}
+                                        {{ util.nav_link(buildurl("admin"), "Administration", aclass="btn-primary") }}
                                     {% endif %}
                                     {% if user.isSuperAdmin() %}
-                                        {{ util.href(buildurl("groups"), "Gruppenverwaltung", aclass="list-group-item") }}
+                                        {{ util.nav_link(buildurl("groups"), "Gruppenverwaltung", aclass="btn-primary") }}
                                     {% endif %}
                                     {%- if allowMathChange %}
                                         <script type="text/javascript">
                                             if (checkMathCookie() == true) {
-                                                document.write('<a href="" class="list-group-item" onClick="disableMathCookie()">Formelvorschau ausschalten</a>')
+                                                document.write('<a href="" class="nav-item btn-success" onClick="disableMathCookie()">Formelvorschau an</a>')
                                             } else {
-                                                document.write('<a href="" class="list-group-item" onClick="enableMathCookie()">Formelvorschau einschalten</a>')
+                                                document.write('<a href="" class="nav-item btn-danger" onClick="enableMathCookie()">Formelvorschau aus</a>')
                                             }
                                         </script>
                                         <noscript>
@@ -110,17 +110,17 @@ if (checkMathCookie() == true){
                                     {% else %}
                                         <script type="text/javascript">
                                             if (checkMathCookie() == true) {
-                                                document.write('Formelvorschau ist an')
+                                                document.write('<span class="nav-item btn-success" disabled="disabled" onClick="disableMathCookie()">Formelvorschau an</span>')
                                             } else {
-                                                document.write('Formelvorschau ist aus')
+                                                document.write('<span class="nav-item btn-danger" disabled="disabeld" onClick="enableMathCookie()">Formelvorschau aus</span>')
                                             }
                                         </script>
                                         <noscript>
-                                            Formelvorschau ist aus
+                                            <span class="nav-item btn-danger" disabled="disabeld">Formelvorschau aus</span>
                                         </noscript>
                                     {% endif -%}
-                                    {{ util.href(buildurl("styleguide"), "So geht's", aclass="list-group-item") }}
-                                    {{ button(buildurl("logout"), "Logout") }}
+                                    {{ util.nav_button(buildurl("styleguide"), "So geht's", aclass="btn-info") }}
+                                    {{ util.nav_button(buildurl("logout"), "Logout", aclass="btn-danger") }}
                                 </div>
                             {% endif %}
 

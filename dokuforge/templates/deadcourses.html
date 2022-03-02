@@ -12,14 +12,14 @@
 
 {% block content %}
 {% if academy.deadcourses %}
-<div class="courselist">
+<ul>
 	{%- for course in academy.deadcourses -%}
-	    <div class="courseitem">
-	      <a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a><br>
-		  {{ button(buildurl("undeletecourse", dict(course=course.name)), "Kurs wiederherstellen") }}
-		</div>
+	    <li>
+	      <a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a>
+          {{ util.button(buildurl("undeletecourse", dict(course=course.name)), "wiederherstellen",  aclass="btn-sm btn-success", inline=True) }}
+		</li>
 	{%- endfor %}
-</div>
+</ul>
 {%- else -%}
 <em>Keine Kurse gefunden.</em><br>
 {%- endif -%}

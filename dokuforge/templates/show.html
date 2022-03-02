@@ -13,23 +13,24 @@
 
 {% block navigation %}
     <h6>Teil</h6>
-    {{ util.href(buildurl("rcs"), "rcs", aclass="list-group-item") }}
+    <div class="list-group side-nav">
     {%- if user.allowedWrite(academy, course) %}
-        <div class="list-group side-nav">
-            {{ util.href(buildurl("edit"), "Editieren", aclass="list-group-item") }}
+
+            {{ util.nav_link(buildurl("edit"), "Teil Editieren", aclass="btn-warning") }}
             {%- if page in course.pages -%}
-                {{ button(buildurl("delete"), "Löschen", dict()) }}
+                {{ util.nav_button(buildurl("delete"), "Teil Löschen", dict(), aclass="btn-danger") }}
             {%- else -%}
-                {{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
+                {{ util.nav_button(buildurl("relink"), "Teil Wiederherstellen", dict(number=page)) }}
             {%- endif -%}
-        </div>
     {% endif %}
+    {{ util.nav_link(buildurl("rcs"), "Teil Exportieren", aclass="btn-info") }}
+    </div>
 
     {%- if user.allowedWrite(academy, course) %}
         <h6>Bilder</h6>
         <div class="list-group side-nav">
-            {{ util.href(buildurl("addblob"), "Bild hinzufügen", aclass="list-group-item") }}
-            {{ util.href(buildurl("showdeadblobs"), "Bild wiederherstellen", aclass="list-group-item") }}
+            {{ util.nav_link(buildurl("addblob"), "Bild Hinzufügen", aclass="btn-success") }}
+            {{ util.nav_link(buildurl("showdeadblobs"), "Bild Wiederherstellen", aclass="btn-warning") }}
         </div>
     {%- endif -%}
 {% endblock %}
@@ -88,7 +89,7 @@
                     <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}]
                         ({{ blob.filename|e }})</a>
                     {%- if user.allowedWrite(academy, course) %}
-                        {{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
+                        {{ util.button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict(), aclass="btn-sm btn-danger", inline=True) }}
                     {%- endif -%}
                 </li>
             {%- endfor %}

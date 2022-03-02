@@ -15,8 +15,9 @@
 {%- if course.outlinesdead %}
 <ul>
 	{%- for page in course.outlinesdead %}
-	<li> #{{ page.number|string }}
-         {{ button(buildurl("relink"), "wiederherstellen", dict(number=page.number)) }}
+	<li class="hide-hover-container">
+         #{{ page.number|string }}
+         {{ util.button(buildurl("relink"), "wiederherstellen", dict(number=page.number), aclass="btn-sm btn-success", inline=True) }}
          {%- for (type, title) in page.items() -%}
 	            {%- if type == "heading" -%}
 	                <div class="tocheading">{{title|e}}</div>
