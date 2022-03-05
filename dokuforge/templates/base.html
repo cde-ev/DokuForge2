@@ -79,7 +79,7 @@ if (checkMathCookie() == true){
     <body onload="checkMathCookie()">
         <div class="page">
             {% block heading %}
-                <h1 class="title" style="margin-bottom: 10px" id="title">{{ self.title() }}</h1>
+                <h1 id="title">{{ self.title() }}</h1>
             {% endblock %}
 
             <div class="row">
@@ -166,7 +166,7 @@ if (checkMathCookie() == true){
                             {% endif %}
                         </div>
                     </div>
-                    <div id="content">
+                    <div id="content" class="content">
                             {% block content %}
                                 Dies sollte nicht sichtbar sein.
                             {% endblock %}

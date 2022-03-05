@@ -9,9 +9,16 @@
     overflow-x: hidden;
 }
 
-.title {
-    font-size: 2.5em;
+@media (max-width: 992px) {
+    .page {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+h1 {
     text-align: center;
+    margin-bottom: 10px
 }
 
 .breadcrumb {
@@ -27,7 +34,7 @@
 
 .navbar {
     border-radius: 0;
-    margin: 0 -25px 10px -25px;
+    margin: 2px -25px 10px -25px;
     padding: 0 10px 0 10px;
     z-index: 2;
     position: relative;
@@ -57,7 +64,6 @@
     float: left;
     height: 50px;
     padding: 15px 15px;
-    font-size: 18px;
     line-height: 20px;
     margin: 0;
 }
@@ -252,14 +258,16 @@
   clip: auto;
 }
 
-#content {
+.content {
     background-color: #ccccff;
     padding: 2ex;
-    bottom: 6ex;
-    top: 14ex;
-    left: 0ex;
-    right: 0ex;
 	overflow: auto;
+}
+@media (max-width: 992px) {
+    .content {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
 }
  #saveedit {
     top: 1ex;
