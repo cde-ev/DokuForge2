@@ -86,16 +86,16 @@ if (checkMathCookie() == true){
                 <div class="col-lg-2">
                     <!-- Seitennavigation  -->
                     <nav id="sidebar" aria-label="Menü" class="navbar sticky-top">
-                        <div class="navbar-header">
+                        <div class="navbar-header hide" id="sidebar-header">
                             <p class="navbar-collapse-header">Menü</p>
-                            <button type="button" class="navbar-toggle collapsed hide" onclick="toggleNavbar()" aria-expanded="false" id="button-navbar-toggle">
+                            <button type="button" class="navbar-toggle collapsed" onclick="toggleNavbar()" aria-expanded="false" id="button-navbar-toggle">
                                 <span class="sr-only">Menü anzeigen</span>
                                 <span class="icon-bar"></span>
                                 <span class="icon-bar"></span>
                                 <span class="icon-bar"></span>
                             </button>
                         </div>
-                        <div class="collapse navbar-collapse in" id="nav-sidebar">
+                        <div class="navbar-collapse" id="nav-sidebar">
                             {%- if user is not none %}
                                 <h6>Meta</h6>
                                 <div class="list-group side-nav">
@@ -138,8 +138,10 @@ if (checkMathCookie() == true){
                         </div>
                     </nav>
                     <script type="text/javascript">
-                        document.querySelector('#nav-sidebar').classList.remove('in');
-                        document.querySelector('#button-navbar-toggle').classList.remove('hide');
+                        {# collapse menu by default #}
+                        document.querySelector('#nav-sidebar').classList.add('collapse');
+                        {# make the sidebar header visible #}
+                        document.querySelector('#sidebar-header').classList.remove('hide');
                         function toggleNavbar() {
                             const navbar = document.querySelector('#nav-sidebar');
                             if (navbar.classList.contains('collapse')) {
