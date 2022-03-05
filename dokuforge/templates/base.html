@@ -85,8 +85,17 @@ if (checkMathCookie() == true){
             <div class="row">
                 <div class="col-lg-2">
                     <!-- Seitennavigation  -->
-                    <nav id="sidebar" aria-label="Menü" class="sticky-top">
-                        <div id="sidebar-navigation">
+                    <nav id="sidebar" aria-label="Menü" class="navbar sticky-top">
+                        <div class="navbar-header">
+                            <p class="navbar-collapse-header">Menü</p>
+                            <button type="button" class="navbar-toggle collapsed hide" onclick="toggleNavbar()" aria-expanded="false" id="button-navbar-toggle">
+                                <span class="sr-only">Menü anzeigen</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                        <div class="collapse navbar-collapse in" id="nav-sidebar">
                             {%- if user is not none %}
                                 <h6>Meta</h6>
                                 <div class="list-group side-nav">
@@ -128,6 +137,18 @@ if (checkMathCookie() == true){
                             {% endblock %}
                         </div>
                     </nav>
+                    <script type="text/javascript">
+                        document.querySelector('#nav-sidebar').classList.remove('in');
+                        document.querySelector('#button-navbar-toggle').classList.remove('hide');
+                        function toggleNavbar() {
+                            const navbar = document.querySelector('#nav-sidebar');
+                            if (navbar.classList.contains('collapse')) {
+                                navbar.classList.remove('collapse');
+                            } else {
+                                navbar.classList.add('collapse');
+                            }
+                        }
+                    </script>
                 </div>
                 <div class="col-lg-10">
                     <div class="row">
