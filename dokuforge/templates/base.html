@@ -112,30 +112,32 @@ if (checkMathCookie() == true){
                                     {% if user.isSuperAdmin() %}
                                         {{ util.nav_link(buildurl("groups"), "Gruppenverwaltung", aclass="btn-primary") }}
                                     {% endif %}
+                                    {{ util.nav_button(buildurl("styleguide"), "So geht's", aclass="btn-info") }}
                                     {%- if allowMathChange %}
                                         <script type="text/javascript">
                                             if (checkMathCookie() == true) {
-                                                document.write('<a href="" class="nav-item btn-success" onClick="disableMathCookie()">Formelvorschau an</a>')
+                                                document.write('<a href="" class="nav-item btn-success" onClick="disableMathCookie()">Formelvorschau ist an</a>')
                                             } else {
-                                                document.write('<a href="" class="nav-item btn-danger" onClick="enableMathCookie()">Formelvorschau aus</a>')
+                                                document.write('<a href="" class="nav-item btn-danger" onClick="enableMathCookie()">Formelvorschau ist aus</a>')
                                             }
                                         </script>
                                         <noscript>
-                                            Formelvorschau ist aus
+                                            {# TODO let button appear non clickable and slightly greyed #}
+                                            <span class="nav-item btn-danger" disabled="disabled">Formelvorschau ist aus</span>
                                         </noscript>
                                     {% else %}
                                         <script type="text/javascript">
+                                            {# TODO let button appear non clickable and slightly greyed #}
                                             if (checkMathCookie() == true) {
-                                                document.write('<span class="nav-item btn-success" disabled="disabled" onClick="disableMathCookie()">Formelvorschau an</span>')
+                                                document.write('<span class="nav-item btn-success" disabled="disabled">Formelvorschau ist an</span>')
                                             } else {
-                                                document.write('<span class="nav-item btn-danger" disabled="disabeld" onClick="enableMathCookie()">Formelvorschau aus</span>')
+                                                document.write('<span class="nav-item btn-danger" disabled="disabeld">Formelvorschau ist aus</span>')
                                             }
                                         </script>
                                         <noscript>
                                             <span class="nav-item btn-danger" disabled="disabeld">Formelvorschau aus</span>
                                         </noscript>
                                     {% endif -%}
-                                    {{ util.nav_button(buildurl("styleguide"), "So geht's", aclass="btn-info") }}
                                     {{ util.nav_button(buildurl("logout"), "Logout", aclass="btn-danger") }}
                                 </div>
                             {% endif %}
