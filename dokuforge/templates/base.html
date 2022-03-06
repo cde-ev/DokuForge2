@@ -171,19 +171,18 @@ if (checkMathCookie() == true){
                                 Dies sollte nicht sichtbar sein.
                             {% endblock %}
                     </div>
+                    {%- block footer %}
+                       <footer id="footer" class="container">
+                            {% if user is none %}
+                                Kontakt: team (at) dokuforge.de<br>
+                            {% else %}
+                                Kontakt: {{ util.href("mailto:team@dokuforge.de", "team@dokuforge.de") }}<br>
+                            {% endif %}
+                            DokuForge – Ein Projekt des CdE e.V.
+                       </footer>
+                    {% endblock -%}
                 </div>
             </div>
-
-            {%- block footer %}
-               <footer id="footer" class="container">
-                    {% if user is none %}
-                        Kontakt: team (at) dokuforge.de<br>
-                    {% else %}
-                        Kontakt: {{ util.href("mailto:team@dokuforge.de", "team@dokuforge.de") }}<br>
-                    {% endif %}
-                    DokuForge – Ein Projekt des CdE e.V.
-               </footer>
-            {% endblock -%}
 
         </div>
     </body>
