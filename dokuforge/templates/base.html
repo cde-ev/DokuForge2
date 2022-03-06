@@ -78,10 +78,17 @@ if (checkMathCookie() == true){
 
     <body onload="checkMathCookie()">
         <div class="page">
-            {% block heading %}
-                <h1 id="title">{{ self.title() }}</h1>
-            {% endblock %}
+            <div class="row">
+                <div class="col-2 df2-logo">
+                    df2
+                </div>
+                <div class="col-10 df2-title">
+                    {% block heading %}
+                        <h1 id="title">{{ self.title() }}</h1>
+                    {% endblock %}
+                </div>
 
+            </div>
             <div class="row">
                 <div class="col-lg-2">
                     <!-- Seitennavigation  -->
@@ -160,9 +167,11 @@ if (checkMathCookie() == true){
                                 {% block breadcrumb %}{% endblock %}
                             </ol>
                         </nav>
-                        <div class="col-lg-2" style="text-align: right">
+                        <div class="col-lg-2">
                             {% if user is not none %}
-                                Hallo {{ user.name|e }}!
+                                <div class="df2-user">
+                                    Hallo {{ user.name|e }}!
+                                </div>
                             {% endif %}
                         </div>
                     </div>
