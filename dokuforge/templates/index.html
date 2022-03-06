@@ -8,6 +8,15 @@
     {{ util.breadcrumb_link(buildurl("index"), "Übersicht", active=True) }}
 {% endblock %}
 
+{% block navigation %}
+    {% if user.mayCreate() %}
+        <h6>Akademien</h6>
+        <div class="list-group side-nav">
+            {{ util.nav_link(buildurl("createacademy"), "Neue Akademie anlegen", aclass="btn-success") }}
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     Willkommen bei Dokuforge!
     <ul>
@@ -32,9 +41,4 @@
             {% endif %}
         {% endfor %}
     </ul>
-
-    {% if user.mayCreate() %}
-        <a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
-    {% endif %}
-
 {% endblock %}
