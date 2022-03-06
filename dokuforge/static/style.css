@@ -52,8 +52,6 @@
     border-radius: 0;
     margin: 2px -25px 10px -25px;
     padding: 0 10px 0 10px;
-    z-index: 2;
-    position: relative;
     min-height: 50px;
 }
 @media (max-width: 992px) {
@@ -119,7 +117,6 @@
 }
 
 .navbar-toggle {
-  position: relative;
   float: right;
   padding: 9px 10px;
   margin-right: 15px;
