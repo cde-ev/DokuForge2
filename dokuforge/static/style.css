@@ -1,3 +1,4 @@
+/* General layout of the page */
 .page {
     background: #fff;
     padding-top: 10px;
@@ -16,6 +17,7 @@
     }
 }
 
+/* Logo and Page title */
 .df2-logo {
     margin-top: 0;
     margin-bottom: 10px;
@@ -32,16 +34,17 @@
     margin-bottom: 10px
 }
 
+/* Breadcrum row */
+.breadcrumb {
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
 .df2-user {
     text-align: right;
     margin-right: 5px;
 }
 
-.breadcrumb {
-    font-size: 0.9em;
-    margin-bottom: 15px;
-}
-
+/* Sidebar menu*/
 .side-nav {
     font-size: 0.9em;
     margin-bottom: 20px;
@@ -192,6 +195,8 @@
     opacity: 100%;
 }
 
+/* Nicer buttons */
+
 .btn-primary {
     color: #fff;
     background-color: #337ab7;
@@ -330,11 +335,16 @@ textarea {
     display: inline;
 }
 .dokucontent {
-    margin-left: 1em;
-    margin-right: 1em;
-    padding: .5ex 2ex .5ex 2ex;
+    padding: .5ex .5ex .5ex .5ex;
     background-color: #ddddff;
     font-family: serif;
+}
+@media (min-width: 992px) {
+    .dokucontent {
+        margin-left: 1em;
+        margin-right: 1em;
+        padding: .5ex 2ex .5ex 2ex;
+    }
 }
 .dokucontent-edit {
     font-family: monospace;
