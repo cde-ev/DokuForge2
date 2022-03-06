@@ -35,7 +35,7 @@
 
 
 {% macro nav_button(action, label, params={}, aclass='btn-primary') -%}
-    {{ button(action, label, params, aclass='nav-item btn-nav ' + aclass, inline=False, navigation=True) }}
+    {{ button(action, label, params, aclass='nav-item btn btn-nav ' + aclass, inline=False, navigation=True) }}
 {%- endmacro -%}
 
 {% macro nav_link(ref, label, readonly=False, aclass='', active=False, title=none, rel=none, anid="") %}
