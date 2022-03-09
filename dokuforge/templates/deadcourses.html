@@ -3,7 +3,8 @@
 {{ academy.title|e }}
 {% endblock %}
 {% block location %}
-{{ navbar([("academy", {}, academy.title)]) }}
+{{ navbar([("academy", {}, academy.title),
+           ("deadcourses", {}, "Attic")]) }}
 {% endblock %}
 {% block content %}
 {% if academy.deadcourses %}
