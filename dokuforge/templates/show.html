@@ -7,16 +7,9 @@
            ("course", {}, course.title),
 	   ("page", {}, "Teil #" ~ page)]) }}
 {% endblock %}
-{% block content %}
-Teil #{{ page|string }}
-[Version {{commit['revision'] | e }},
- zuletzt ge&auml;ndert von {{ commit['author'] | e }}
- am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
-({{estimate.pages | round(2) | e}} Seiten,
-{{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
-{{estimate.ednotepages | round(2) | e}} Seiten Ednotes)
+
+{% macro page_navigation(page, course) %}
 <hr>
-{%- if page in course.pages -%}
 {%- set pageindex = course.pages.index(page) %}
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("edit")|e }}">Editieren</a>
@@ -28,19 +21,16 @@ Teil #{{ page|string }}
 <span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
 {%- endif -%}
 {% for otherpage in course.pages %}
-
 {% if otherpage==page -%}
-<b>{{loop.index|e}}</b>
+<b>{{ loop.index|e }}</b>
 {%- else -%}
 <a href="{{ buildurl('page', {'page': otherpage})|e }}">{{loop.index|e}}</a>
 {%- endif -%}
 {%- endfor -%}
 {% if course.pages[pageindex+1] is defined %}
-
 &nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
 {% else %}
 &nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
-
 {% endif %}
 <div class="rareCommands">
 <a href="{{ buildurl("rcs")|e }}">rcs</a>
@@ -53,58 +43,29 @@ Teil #{{ page|string }}
 {%- endif -%}
 {%- endif -%}
 </div>
-
 <hr>
+{% endmacro %}
+
+{% block content %}
+Teil #{{ page|string }}
+[Version {{ commit['revision'] | e }},
+zuletzt ge&auml;ndert von {{ commit['author'] | e }}
+am {{ commit['date'].strftime("%Y/%m/%d %H:%M:%S %Z") | e }}]
+({{ estimate.pages | round(2) | e }} Seiten,
+{{ estimate.blobs | e }} Abbildungen [{{ estimate.blobpages | round(2) | e }} zusätzliche Seiten],
+{{ estimate.ednotepages | round(2) | e }} Seiten Ednotes)
+
+{%- if page in course.pages -%}
+{{ page_navigation(page, course) }}
 {% endif %}
 <div class="dokucontent">
 {# content does not need to be escaped, since this is done by the parser #}
 {{ content }}
 </div>
-<hr>
-
-
-{%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("edit")|e }}">Editieren</a>
-&nbsp;&nbsp;&nbsp;
-{%- endif -%}
-
 {%- if page in course.pages -%}
-{%- set pageindex = course.pages.index(page) %}
-{%- if pageindex > 0 -%}
-<a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>&nbsp;
-{%- else -%}
-<span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
-{%- endif -%}
-{% for otherpage in course.pages %}
-
-{% if otherpage==page -%}
-<b>{{loop.index|e}}</b>
-{%- else -%}
-<a href="{{ buildurl('page', {'page': otherpage})|e }}">{{loop.index|e}}</a>
-{%- endif -%}
-{%- endfor -%}
-{% if course.pages[pageindex+1] is defined %}
-
-&nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
-{% else %}
-&nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
-
-{% endif %}
+{{ page_navigation(page, course) }}
 {% endif %}
 
-<div class="rareCommands">
-<a href="{{ buildurl("rcs")|e }}">rcs</a>
-&nbsp;
-{%- if user.allowedWrite(academy, course) %}
-{%- if page in course.pages -%}
-{{ button(buildurl("delete"), "Löschen", dict()) }}
-{%- else -%}
-{{ button(buildurl("relink"), "wiederherstellen", dict(number=page)) }}
-{%- endif -%}
-{%- endif -%}
-</div>
-
-<hr>
 {%- if blobs %}
 Zugeordnete Bilder:
 <ul>
