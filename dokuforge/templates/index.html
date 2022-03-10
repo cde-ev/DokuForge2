@@ -31,4 +31,10 @@
 {% if user.mayCreate() %}
 <a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
 {% endif%}
+{%- if user.isAdmin() %}
+    <a href="{{ buildurl("admin")|e }}">Administration</a>
+{%- endif -%}
+{%- if user.isSuperAdmin() %}
+    <a href="{{ buildurl("groups")|e }}">Gruppenverwaltung</a>
+{%- endif -%}
 {% endblock %}

@@ -92,76 +92,73 @@ if (checkMathCookie() == true){
 </script>
 {% endblock %}
 </head>
-<body onload="checkMathCookie()">
-<div id="page">
-{%- block header %}
- <div id="header">
-   <div id="headings">
-	 <h1 id="dokuforgetitle">DokuForge</h1>
-	 <div id="subheading">
-	   {%- block subheading %}Startseite{% endblock -%}
-	 </div>
-   </div>
-   <div id="userinformation">
-   {%- if user is not none %}
-       Hallo {{ user.name|e }}!
-       {{ button(buildurl("logout"), "Logout") }}
-   {%- else -%}
-   <a href="{{ buildurl("start")|e }}">Login</a>
-   {%- endif %}
-   </div>
-   <div id="headerlinks">
-   {%- if user is not none %}
-	{%- if user.isAdmin() %}
-	<a href="{{ buildurl("admin")|e }}">Administration</a>
-	{%- endif -%}
-	{%- if user.isSuperAdmin() %}
-	<a href="{{ buildurl("groups")|e }}">Gruppenverwaltung</a>
-	{%- endif -%}
-	<br>
-   {%- endif %}
-   {%- if allowMathChange %}
-       <script type="text/javascript">
-	 if (checkMathCookie() == true) {
-	   document.write('<a href="" onClick="disableMathCookie()">Formelvorschau ausschalten</a>')
-	 } else {
-	   document.write('<a href="" onClick="enableMathCookie()">Formelvorschau einschalten</a>')
-	 }
-       </script>
-       <noscript>
-	 Formelvorschau ist aus
-       </noscript>
-       {% else %}
-       <script type="text/javascript">
-	 if (checkMathCookie() == true) {
-	   document.write('Formelvorschau ist an')
-	 } else {
-	   document.write('Formelvorschau ist aus')
-	 }
-       </script>
-       <noscript>
-	 Formelvorschau ist aus
-       </noscript>
-   {% endif -%}
-   <a href="{{ buildurl("styleguide")|e }}">So geht's</a>
-   </div>
-   <div id="location">
-   {%- block location %}{% endblock -%}
-   </div>
- </div>
-{% endblock -%}
-<div id="content">
-{%- block content %}
-Dies sollte nicht sichtbar sein.
-{% endblock %}
-</div>
-{%- block footer %}
-   <div id="footer">
-   	Kontakt: team (at) dokuforge.de<br>
-   	DokuForge – Ein Projekt des CdE e.V.
-   </div>
-{% endblock -%}
-</div>
+<body class="df2-body" onload="checkMathCookie()">
+    <header class="navbar" id="header">
+        {%- block header %}
+            <div class="container-fluid">
+                <h1 id="dokuforgetitle">
+                    {%- block subheading %}{% endblock -%}
+                </h1>
+                <div>
+                    {% if user is not none %}
+                        Hallo {{ user.name|e }}!
+                        {{ button(buildurl("logout"), "Logout") }}
+                    {%- endif %}
+                </div>
+            </div>
+            <nav class="container-fluid">
+                <div id="location">
+                    {%- block location %}{% endblock -%}
+                </div>
+                <div class="userinfo" id="userinformation">
+                    <div class="userlinks">
+                        {% if user is not none %}
+                            {%- if allowMathChange %}
+                                <script type="text/javascript">
+                                    if (checkMathCookie() == true) {
+                                        document.write('<a href="" onClick="disableMathCookie()">Formelvorschau ausschalten</a>')
+                                    } else {
+                                        document.write('<a href="" onClick="enableMathCookie()">Formelvorschau einschalten</a>')
+                                    }
+                                </script>
+                                <noscript>
+                                    Formelvorschau ist aus
+                                </noscript>
+                            {% else %}
+                                <script type="text/javascript">
+                                    if (checkMathCookie() == true) {
+                                        document.write('Formelvorschau ist an')
+                                    } else {
+                                        document.write('Formelvorschau ist aus')
+                                    }
+                                </script>
+                                <noscript>
+                                    Formelvorschau ist aus
+                                </noscript>
+                            {% endif -%}
+                        {% endif %}
+                        <a href="{{ buildurl("styleguide")|e }}">So geht's</a>
+                    </div>
+                </div>
+            </nav>
+        {% endblock -%}
+    </header>
+    <div class="container-fluid" id="content">
+        {%- block content %}
+            Dies sollte nicht sichtbar sein.
+        {% endblock %}
+    </div>
+    <footer id="footer" class="container-fluid">
+        {%- block footer %}
+            {% if user is none %}
+                Kontakt: team (at) dokuforge.de<br>
+            {% else %}
+                Kontakt: <a href="mailto:team@dokuforge.de">team@dokuforge.de</a>
+                <br>
+            {% endif %}
+            DokuForge – Ein Projekt des CdE e.V.
+        {% endblock -%}
+    </footer>
 </body>
 <!-- DokuForge revision is {{ commitid }}. -->
 </html>
