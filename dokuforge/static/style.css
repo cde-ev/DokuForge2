@@ -1,102 +1,39 @@
-html, body, #page {
-    background-color: #9999ff;
-    margin: 0px;
-    height:100%;
-    overflow: hidden;
+/* general page layout */
+
+html, body.df2-body {
+    background-color: #b0b0ff;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
 }
 
-#header {
-    top: 0ex;
-    height: 13ex;
-    padding-top: 2ex;
-    padding-left: 1em;
-    padding-right: 1em;
+header {
+    background-color: #b0b0ff;
 }
- #headings {
-    position: absolute;
-    left: 1em;
-    right: 21em;
-    height: 9ex;
- }
-  #dokuforgetitle {
-    text-align: center;
-    margin: 0ex;
-  }
-  #subheading {
-    font-size: x-large;
-    font-weight: bold;
-    margin: 0ex;
-    margin-top: 0.5ex;
-  }
- #userinformation {
-    float: right;
-    height: 3ex;
- }
-  #userinformation form {
-    padding-left: 0.5em;
-  }
- #headerlinks {
-    position: absolute;
-    top: 6ex;
-    right: 1em;
+
+.userinfo {
     text-align: right;
-    height: 4ex;
-    width: 21em;
- }
-  #headerlinks a {
-    padding-left: 1ex;
-  }
- #location {
-    position: absolute;
-    top: 11ex;
- }
+}
+
+.userlinks {
+    text-align: right;
+}
 
 #content {
-    position: absolute;
     background-color: #ccccff;
-    padding: 2ex;
-    bottom: 6ex;
-    top: 14ex;
-    left: 0ex;
-    right: 0ex;
 	overflow: auto;
+    min-height: 75vh;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
 }
- #saveedit {
-    position: absolute;
-    top: 1ex;
-    bottom: 1ex;
-    left: 2ex;
-    right: 2ex;
- }
-  #saveedittext {
-    position: absolute;
-    left: 0em;
-    right: 0em;
-    top: 3ex;
-    bottom: 4.5ex;
-  }
-   #saveedittext textarea {
-    height: 100%;
-    width: 100%
-   }
-  #saveeditinput {
-    position: absolute;
-    bottom: 0ex;
-    left: 0ex;
-  }
 
 #footer {
-    position: absolute;
-    padding-top: 1ex;
-    padding-bottom: 1ex;
-    padding-left: 1em;
-    padding-right: 1em;
-    text-align: right;
-    height: 4ex;
-    bottom: 0ex;
-    right: 0em;
+    text-align: center;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
 }
 
+/* one part of a course */
 
 textarea {
 	width: 100%;
@@ -112,10 +49,9 @@ textarea {
     display: inline;
 }
 .dokucontent {
-    margin-left: 1em;
-    margin-right: 1em;
     padding: .5ex 2ex .5ex 2ex;
     background-color: #ddddff;
+    font-family: serif;
 }
 
 .ednote {
@@ -130,103 +66,6 @@ textarea {
     text-align: center;
 }
 
-.versionstring {
-    font-size: 1.5ex;
-    text-align: center;
-}
-.tocpart {
-    background-color: #aaaaff;
-    padding: 1ex;
-    margin-top: 1ex;
-    margin-bottom: 1ex;
-}
-
-.tocnumber {
-    font-size: 5ex;
-    text-align: center;
-}
-
-.tocheading {
-    font-weight: bold;
-    padding-left: 1em;
-}
-
-.tocsubheading {
-    font-weight: bold;
-    padding-left: 5em;
-}
-
-.tocempty {
-    font-style: italic;
-    padding-left: 1em;
-}
-
-.tocoutline {
-    width: 100%;
-}
-
-.courseitem {
-    background-color: #aaaaff;
-    padding: 1ex;
-    margin-top: 1ex;
-    margin-bottom: 1ex;
-}
-
-a.inconspicuous {
-    color: #000000;
-    text-decoration: none;
-}
-
-a.inconspicuous:link {
-    color: #000000;
-    text-decoration: none;
-}
-
-a.inconspicuous:visited {
-    color: #000000;
-    text-decoration: none;
-}
-
-a.inconspicuous:focus {
-    color: #000000;
-    text-decoration: none;
-}
-
-a.inconspicuous:hover {
-    color: #000000;
-    text-decoration: none;
-}
-
-a.inconspicuous:active {
-    color: #000000;
-    text-decoration: none;
-}
-
-a {
-    color: #5500aa;
-}
-
-a:link {
-    color: #880088;
-}
-
-a:visited {
-    color: #550055;
-}
-
-a:focus {
-    color: #880088;
-}
-
-a:hover {
-    color: #880088;
-}
-
-a:active {
-    color: #880088;
-}
-
-
 .rareCommands {
   display: inline-block;
   float: right;
@@ -234,4 +73,78 @@ a:active {
 
 .inactiveNavigation {
 	visibility: hidden;
+}
+
+/* one course of an academy */
+
+div.tocpart {
+    background-color: #ddddff;
+    padding: 1ex;
+    margin: 1ex 0 1ex 0;
+}
+
+.tocnumber {
+    font-size: 5ex;
+    margin-bottom: -10px;
+}
+
+.tocpartnumber {
+    font-size: small;
+}
+
+.tocheading {
+    font-weight: bold;
+}
+
+.tocsubheading {
+    font-weight: bold;
+    padding-left: 1em;
+}
+
+.tocempty {
+    font-style: italic;
+}
+
+.versionstring {
+    font-size: small;
+}
+
+/* one academy */
+
+.courseitem {
+    background-color: #ddddff;
+    padding: 1ex;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+}
+
+/* links */
+
+a {
+    color: #880088;
+    text-decoration: none!important;
+}
+
+a:link {
+    color: #880088;
+}
+
+a:visited {
+    color: #880088;
+}
+
+a:focus {
+    color: #880088;
+}
+
+a:hover {
+    color: #cc00cc!important;
+}
+
+a:active {
+    color: #880088;
+}
+
+a.inconspicuous {
+    color: #000000;
 }
