@@ -12,7 +12,7 @@ Nutzeradministration
             "Aenderungen erfolgreich gespeichert.",
             error.message, error.explanation) }}
 <form action="{{ buildurl("adminsave")|e }}" method="post" id="save">
-	<textarea name="content">{{ content|e }}</textarea>
+	<textarea name="content" rows="20">{{ content|e }}</textarea>
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
