@@ -11,43 +11,42 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 {{estimate.blobs | e}} Abbildungen [{{estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
 {{estimate.ednotepages | round(2) | e}} Seiten Ednotes
 {%- if course.pages %}
-<div class="toc">
-	{%- for page in course.outlines %}
-	<div class="tocpart">
-	   <table>
-	     <tr>
-	       <td >
-		 <div class="tocnumber">
-		   <a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{loop.index|e}}</a></div>
-                 <a href="{{ buildurl('page', {'page': page.number})|e }}"> Teil&nbsp;#{{ page.number|string }}</a>
-		 </td>
-	         <td class="tocoutline">
-                {%- for (type, title) in page.items() -%}
-		    {# FIXME links currently link only to a page, not to a specific heading. #}
-	            {%- if type == "heading" -%}
-	                <div class="tocheading"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{title|e}}</a></div>
-	            {%- elif type == "subheading" -%}
-	                <div class="tocsubheading"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{title|e}}</a></div>
-	            {%- endif -%}
-		{%- else -%}
-	                <div class="tocempty"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">(...)</a></div>
-                {%- endfor -%}
-		</td>
-		<td>
-		{%- if not loop.first -%}
-		   {%- if user.allowedWrite(academy, course) %}
-		      {{ button(buildurl("moveup"), "Hochrücken",
-	              	 dict(number=loop.index0)) }}
-		   {%- endif -%}
-		{%- endif -%}
-		</td>
-	      </tr>
-	   </table>
-           <div class="versionstring">{{ page.versionstring|e }} ({{page.estimate.pages | round(2) | e}} Seiten,
-{{page.estimate.blobs | e}} Abbildungen [{{page.estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
-{{page.estimate.ednotepages | round(2) | e}} Seiten Ednotes)</div>
-	</div>
-	
+<div id="toc">
+    {%- for page in course.outlines %}
+        <div class="tocpart">
+            <div class="row align-items-end">
+                <div class="col-sm-1 tocnumber">
+                    <a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{loop.index|e}}</a>
+                </div>
+                <div class="col-sm-10">
+                    {%- for (type, title) in page.items() -%}
+                        {# FIXME links currently link only to a page, not to a specific heading. #}
+                        {%- if type == "heading" -%}
+                            <div class="tocheading"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{title|e}}</a></div>
+                        {%- elif type == "subheading" -%}
+                            <div class="tocsubheading"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">{{title|e}}</a></div>
+                        {%- endif -%}
+                    {%- else -%}
+                        <div class="tocempty"><a href="{{ buildurl('page', {'page': page.number})|e }}" class="inconspicuous">(...)</a></div>
+                    {%- endfor -%}
+                </div>
+                <div class="col-sm-1">
+                    {%- if not loop.first and user.allowedWrite(academy, course) -%}
+                        {{ button(buildurl("moveup"), "Hochrücken", dict(number=loop.index0)) }}
+                    {%- endif -%}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-1 tocpartnumber">
+                        <a href="{{ buildurl('page', {'page': page.number})|e }}"> Teil&nbsp;#{{ page.number|string }}</a>
+                    </div>
+                <div class="col-sm-11 versionstring">
+                    {{ page.versionstring|e }} ({{page.estimate.pages | round(2) | e}} Seiten,
+                    {{page.estimate.blobs | e}} Abbildungen [{{page.estimate.blobpages | round(2) | e}} zus&auml;tzliche Seiten],
+                    {{page.estimate.ednotepages | round(2) | e}} Seiten Ednotes)
+                </div>
+            </div>
+	    </div>
 	{%- endfor %}
 </div>
 {%- else -%}
