@@ -103,6 +103,8 @@ if (checkMathCookie() == true){
                     {% if user is not none %}
                         Hallo {{ user.name|e }}!
                         {{ button(buildurl("logout"), "Logout") }}
+                    {% else %}
+                        <a href="{{ buildurl("start")|e }}">Login</a>
                     {%- endif %}
                 </div>
             </div>
