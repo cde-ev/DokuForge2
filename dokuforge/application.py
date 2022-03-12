@@ -1453,11 +1453,10 @@ class Application:
             group = rs.user.defaultGroup()
         academies = [academy.view() for academy in self.listAcademies()
                      if group in academy.view()["groups"]]
-        othergroups = self.listGroups()
-        group = othergroups.pop(group)
+        groups = self.listGroups()
         params = dict(
             academies=academies,
-            othergroups=othergroups,
+            groups=groups,
             group=group)
         return self.render("index.html", rs, params)
 

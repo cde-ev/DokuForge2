@@ -7,7 +7,22 @@
 {% endblock %}
 
 {% block content %}
-    {{ group }}:
+    {% if groups|length > 1 %}
+        Alle Gruppen:
+        <ul style="margin-top: 0">
+            {%- for onegroup in groups.keys()|sort -%}
+                {% if onegroup == group %}
+                    <li>{{ groups[onegroup]|e }}</li>
+                {%- elif user.allowedList(onegroup) -%}
+                    <li>
+                        <a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ groups[onegroup]|e }}</a>
+                    </li>
+                {%- endif -%}
+            {%- endfor -%}
+        </ul>
+        <hr>
+    {% endif %}
+    {{ groups[group]|e }}:
     <ul style="margin-top: 0">
         {%- for academy in academies -%}
             {%- if user.allowedRead(academy) %}
@@ -21,20 +36,6 @@
             <li><em>Keine Akademien gefunden.</em></li>
         {%- endfor -%}
     </ul>
-
-    {% if othergroups %}
-        <hr>
-        Weitere Gruppen:
-        <ul style="margin-top: 0">
-            {%- for onegroup in othergroups.keys()|sort -%}
-                {%- if user.allowedList(onegroup) -%}
-                    <li>
-                        <a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ othergroups[onegroup]|e }}</a>
-                    </li>
-                {%- endif -%}
-            {%- endfor -%}
-        </ul>
-    {% endif %}
 {% if user.mayCreate() %}
 <a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
 {% endif%}
