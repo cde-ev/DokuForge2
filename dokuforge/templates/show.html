@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block subheading %}
-    Teil #{{ page }}
+    Teil #{{ page|e }}
 {% endblock %}
 {% block location %}
 {{ navbar([("academy", {}, academy.title),

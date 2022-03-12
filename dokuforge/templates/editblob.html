@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block subheading %}
-    Bild #{{ blob.number }} bearbeiten
+    Bild #{{ blob.number|e }} bearbeiten
 {% endblock %}
 {% block location %}
 {{ navbar([("academy", {}, academy.title),
