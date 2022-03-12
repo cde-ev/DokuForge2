@@ -10,28 +10,30 @@
 
 {% macro page_navigation(page, course) %}
     <hr>
-    {%- set pageindex = course.pages.index(page) %}
-    {%- if user.allowedWrite(academy, course) %}
-        <a href="{{ buildurl("edit")|e }}">Editieren</a>
-        &nbsp;&nbsp;&nbsp;
-    {%- endif -%}
-    {%- if pageindex > 0 -%}
-        <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>
-        &nbsp;
-    {%- else -%}
-        <span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
-    {%- endif -%}
-    {% for otherpage in course.pages %}
-        {% if otherpage==page -%}
-            <b>{{ loop.index|e }}</b>
-        {%- else -%}
-            <a href="{{ buildurl('page', {'page': otherpage})|e }}">{{ loop.index|e }}</a>
+    {%- if page in course.pages -%}
+        {%- set pageindex = course.pages.index(page) %}
+        {%- if user.allowedWrite(academy, course) %}
+            <a href="{{ buildurl("edit")|e }}">Editieren</a>
+            &nbsp;&nbsp;&nbsp;
         {%- endif -%}
-    {%- endfor -%}
-    {% if course.pages[pageindex+1] is defined %}
-        &nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
-    {% else %}
-        &nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
+        {%- if pageindex > 0 -%}
+            <a href="{{ buildurl('page', {'page': course.pages[pageindex-1]})|e }}">&lt;&lt;</a>
+            &nbsp;
+        {%- else -%}
+            <span class="inactiveNavigation">&lt;&lt;</span>&nbsp;
+        {%- endif -%}
+        {% for otherpage in course.pages %}
+            {% if otherpage==page -%}
+                <b>{{ loop.index|e }}</b>
+            {%- else -%}
+                <a href="{{ buildurl('page', {'page': otherpage})|e }}">{{ loop.index|e }}</a>
+            {%- endif -%}
+        {%- endfor -%}
+        {% if course.pages[pageindex+1] is defined %}
+            &nbsp;<a href="{{ buildurl('page', {'page': course.pages[pageindex+1]})|e }}">&gt;&gt;</a>
+        {% else %}
+            &nbsp;<span class="inactiveNavigation">&gt;&gt;</span>
+        {% endif %}
     {% endif %}
     <div class="rareCommands">
         <a href="{{ buildurl("rcs")|e }}">rcs</a>
@@ -57,16 +59,12 @@
     zusätzliche Seiten],
     {{ estimate.ednotepages | round(2) | e }} Seiten Ednotes)
 
-    {%- if page in course.pages -%}
-        {{ page_navigation(page, course) }}
-    {% endif %}
+    {{ page_navigation(page, course) }}
     <div class="dokucontent">
         {# content does not need to be escaped, since this is done by the parser #}
         {{ content }}
     </div>
-    {%- if page in course.pages -%}
-        {{ page_navigation(page, course) }}
-    {% endif %}
+    {{ page_navigation(page, course) }}
 
     {%- if blobs %}
         Zugeordnete Bilder:
