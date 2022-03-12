@@ -1,0 +1,11 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: test
+  image: python:3.9
+  commands:
+  - pip install --no-cache-dir -r requirements.txt
+  - apt-get update && apt-get install -y rcs  # this is rather small and no python package
+  - make check

@@ -1,0 +1,6 @@
+Werkzeug==2.0.3
+Jinja2==3.0.3
+WebTest==3.0.0
+wsgitools==0.3.1
+mathjax==0.1.2
+epydoc==3.0.1
