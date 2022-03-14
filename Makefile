@@ -23,8 +23,8 @@ test: test.py
 	${PYTHON3} test.py
 
 .coverage:$(wildcard dokuforge/*.py) test.py
-	${PYTHON3} -m coverage -x test.py
+	${PYTHON3} -m coverage run --include=dokuforge/*.py,test.py ./test.py
 coverage: .coverage
-	${PYTHON3} -m coverage -r -m -i "dokuforge/*.py"
+	${PYTHON3} -m coverage report -i -m test.py dokuforge/*.py
 
 .PHONY: all doc clean setup test check
