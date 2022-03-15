@@ -384,7 +384,8 @@ class TarWriter:
         @type dirname: bytes
         @param excludes: an object that provides __contains__
         """
-        self.pushd(name)
+        if name:
+            self.pushd(name)
         try:
             for entry in os.listdir(dirname):
                 if entry in excludes:
@@ -397,7 +398,8 @@ class TarWriter:
                                                   excludes=excludes):
                         yield chunk
         finally:
-            self.popd()
+            if name:
+                self.popd()
 
     def close(self):
         """
