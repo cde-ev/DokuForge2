@@ -27,7 +27,7 @@
 {%- if user.mayExport(academy)%}
 <a href="{{ buildurl("export")|e }}">Testexport</a> |
 <a href="{{ buildurl("rawacademy")|e }}">df2-Rohdaten</a>
-{%- if user.allowedMeta(academy) %}|{%- endif %}
+    {%- if user.allowedMeta(academy) %} |{%- endif %}
 {%- endif %}
 {%- if user.allowedMeta(academy) %}
 <a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a> |
