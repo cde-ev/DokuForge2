@@ -39,5 +39,7 @@ steps:
   - apt-get install -y libjs-mathjax > /dev/null
   # install python packages
   - pip install --no-cache-dir -r requirements.txt
+  - pip install --no-cache-dir coverage
   # perform the tests
   - make check
+  - make coverage
