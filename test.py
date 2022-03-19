@@ -299,7 +299,6 @@ class DokuforgeSmallWebTests(DokuforgeWebTests):
 
     def testLoginClick(self):
         self.do_login()
-        self.res = self.res.click(description="DokuForge")
         self.is_loggedin()
 
     def testLogout(self):
@@ -463,12 +462,10 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = self.res.click(href=re.compile("course01/$"))
         form = self.res.forms[3]
         self.res = form.submit()
-        self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain(no="Area51")
         self.res = self.res.click(href=re.compile("deadcourses$"))
         form = self.res.forms[1]
         self.res = form.submit()
-        self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain("Area51")
 
     def testCreateAcademy(self):

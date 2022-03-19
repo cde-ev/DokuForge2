@@ -35,9 +35,11 @@ für die Weiterentwicklung von DokuForge auf dein Feedback angewiesen.</p>
 <li><a href="#zahlen">Zahlen</a></li>
 <li><a href="#exponenten">Exponenten</a></li>
 <li><a href="#brueche">Brüche</a></li>
+<li><a href="#chemie">Chemische Formeln</a></li>
 <li><a href="#abkuerzungen">Abkürzungen</a></li>
 <li><a href="#eigennamen">Eigennamen</a></li>
 <li><a href="#cde_vokabular">CdE-Vokabular</a></li>
+<li><a href="#gendern">Gendern</a></li>
 <li><a href="#ednotes">Ednotes</a></li>
 <li><a href="#urls">URLs</a></li>
 <li><a href="#urls">Code</a></li>
@@ -156,7 +158,10 @@ werden in DokuForge mit drei Punkten und einem Leerzeichen davor
 gesetzt: <code>...</code></p>
 <h2><a name="anfuehrungszeichen"></a> Anführungszeichen</h2>
 <p>Anführungszeichen sollten als &quot; (Shift-2 auf der deutschen Tastatur)
-eingegeben werden. Wir machen daraus später »schöne« Anführungszeichen.</p>
+eingegeben werden. Wir machen daraus später »schöne« Anführungszeichen.
+Einfache Anführungszeichen für Zitate innerhalb wörtlicher Rede sowie
+Apostrophe wie in &quot;So geht's&quot; werden als ' (Shift-# auf der
+deutschen Tastatur) eingegeben.</p>
 <h2><a name="bindestrich"></a> Bindestrich</h2>
 <p>Der Bindestrich wird wie üblich verwendet. Gedankenstriche und
 Zahlenbereiche werden mit einem längeren Strich gesetzt. Wir verwenden
@@ -221,6 +226,18 @@ Dollarzeichen (d.h. als mathematische Formel).</p>
 
 <h2><a name="brueche"></a> Brüche</h2>
 <p>Bitte gebt Brüche in der Form <code>1/2</code> ein und nicht als <code>½</code>.</p>
+<h2><a name="chemie"></a> Chemische Formeln</h2>
+<p>Chemische Formeln und Reaktionen werden mit dem Paket
+<a href="http://mirrors.ctan.org/macros/latex/contrib/chemformula/chemformula_en.pdf">chemformula</a>
+gesetzt, zum Beispiel <code>$\ch{H3O+}$</code> oder die Gleichungen
+<code>$\ch{A + B -> C}$</code> und</p>
+<pre>
+\begin{equation*}
+  \ch{CO2 + H2O <=>[$k$] HCO3- + H+}.
+\end{equation*}
+</pre>
+<p>Es ist empfehlenswert, zusätzlich ein z. B. handschriftliches Bild des gewünschten
+Ergebnisses hochzuladen.</p>
 <h2><a name="abkuerzungen"></a> Abkürzungen</h2>
 <p>Abkürzungen sind manchmal etwas problematisch. Daher gibt es eine
 Liste erlaubter Abkürzungen. Alles andere, was man versucht sein
@@ -251,15 +268,24 @@ sehr schön umformulieren.</p>
 <h2><a name="cde_vokabular"></a> CdE-Vokabular</h2>
 <p>Einige Schreibweisen gewisser CdE-Begriffe:</p>
 <ul>
-<li>CdE</li>
-<li>CdEler</li>
-<li>PfingstAkademie</li>
-<li>SommerAkademie</li>
-<li>WinterAkademie</li>
-<li>(der) exPuls</li>
-<li>CdElokal</li>
-<li>KüA, KüAs</li>
+<li>DokuForge / Ednote / "So geht's" / der exPuls</li>
+<li>der CdE (Genitiv: des CdE)</li>
+<li>ein CdEler, viele CdEler</li>
+<li>CdElokal, CdElokal-Gruppen / CdE Bonn, CdE Ruhr, CdE Dresden etc. (nicht Ruhr-CdE etc.)</li>
+<li>WinterAkademie, PfingstAkademie, SommerAkademie</li>
+<li>am Bunten Abend</li>
+<li>KüA (Plural: KüAs)</li>
+<li>Orga-Team, Orga-Büro, Orga-Treffen etc.</li>
 </ul>
+
+<h2><a name="gendern"></a> Gendern</h2>
+<p>Wenn du gendern willst, empfehlen wir geschlechtsneutrale
+Formulierungen (z.B. Dokuschreibende) zu verwenden, wenn
+möglich. Ansonsten empfehlen wir die Schreibweise mit Doppelpunkt
+(z.B. Schüler:innen). Diese Variante schließt das gesamte
+Genderspektrum ein und ist sowohl im Allgemeinen als auch von
+Screenreadern gut lesbar.</p>
+
 <h2><a name="ednotes"></a> Ednotes</h2>
 <p>Falls du uns (denen, die die Doku endgültig setzen) etwas mitteilen
 oder Besonderheiten wie Tabellen oder Gedichte nutzen willst (siehe

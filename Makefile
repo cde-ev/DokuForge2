@@ -1,7 +1,7 @@
 ifneq ($(shell which python3),)
 PYTHON3 ?= python3
 else
-PYTHON3 ?= python2
+PYTHON3 ?= python
 endif
 
 all: doc setup
@@ -35,8 +35,8 @@ test-exporter: test-exported-strings
 	done
 
 .coverage:$(wildcard dokuforge/*.py) test.py
-	${PYTHON3} -m coverage -x test.py
+	${PYTHON3} -m coverage run --include=dokuforge/*.py,test.py ./test.py
 coverage: .coverage
-	${PYTHON3} -m coverage -r -m -i "dokuforge/*.py"
+	${PYTHON3} -m coverage report -m test.py dokuforge/*.py
 
 .PHONY: all doc clean setup test check

@@ -8,14 +8,20 @@
 {%- endmacro -%}
 
 {%- macro navbar(entries) -%}
-Navigation: <a href="{{ buildurl("index")|e }}">DokuForge</a>
-{%- for (point, args, title) in entries -%}
-{%- if url == '' -%}
-{# comment to protect space #} &gt; {{ title|e}}
-{%- else -%}
-{# comment to protect space #} &gt; <a href="{{ buildurl(point, args)|e }}">{{ title|e }}</a>
-{%- endif -%}
-{%- endfor -%}
+    Navigation:&nbsp;
+    {%- if entries -%}
+        <a href="{{ buildurl("index")|e }}">Übersicht</a>
+    {%- else -%}
+        <span>Übersicht</span>
+    {%- endif -%}
+    {%- for (point, args, title) in entries -%}
+        &nbsp;
+        {%- if loop.last -%}
+            &gt; <span>{{ title|e}}</span>
+        {%- else -%}
+            &gt; <a href="{{ buildurl(point, args)|e }}">{{ title|e }}</a>
+        {%- endif -%}
+    {%- endfor -%}
 {%- endmacro -%}
 
 {%- macro threeway(ok, default, success, errormessage, errorexplanation) -%}

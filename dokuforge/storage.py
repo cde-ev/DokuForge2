@@ -155,29 +155,31 @@ class Storage(object):
     def lock(self):
         return LockDir(self.fullpath(prefix=b"#lock."))
 
-    def store(self, content, user=None, message="store called", havelock=None):
+    def store(self, content, user=None, message=b"store called", havelock=None):
         """
         Store the given contents; rcs file is create if it does not
         exist already.
 
         @type content: bytes or raw filelike 
         @param content: the content of the file
-        @type message: str
+        @type message: bytes
+        @type user: None or bytes
         """
         assert not isinstance(content, unicode)
+        assert isinstance(message, bytes)
         if isinstance(content, bytes):
             content = io.BytesIO(content)
         logger.debug("storing %r" % self.fullpath())
 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
-            subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
+            subprocess.check_call([b'co', b'-f', b'-q', b'-l', self.fullpath()],
                                   env=RCSENV)
             with open(self.fullpath(), "wb") as objfile:
                 shutil.copyfileobj(content, objfile)
-            args = ["ci", "-q", "-f", "-m%s" % message]
+            args = [b'ci', b'-q', b'-f', b'-m%s' % message]
             if user is not None:
-                args.append("-w%s" % user)
+                args.append(b'-w%s' % user)
             args.append(self.fullpath())
             subprocess.check_call(args, env=RCSENV)
 
@@ -290,7 +292,7 @@ class Storage(object):
             logger.debug("storing conflict %r current=%r vs edited=%r" %
                          (self.fullpath(), currentversion, version))
             try:
-                subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
+                subprocess.check_call([b"co", b"-f", b"-q", b"-l%s" % version,
                                        self.fullpath()], env=RCSENV)
             except CalledProcessError:
                 raise RcsUserInputError(u"specified rcs version does not exist",
@@ -305,7 +307,7 @@ class Storage(object):
             subprocess.check_call(args, env=RCSENV)
             # 2.) merge in head
             os.chmod(self.fullpath(), 0o600)
-            subprocess.call(["rcsmerge", "-q", "-r%s" % version,
+            subprocess.call([b"rcsmerge", b"-q", b"-r%s" % version,
                              self.fullpath()]) # Note: non-zero exit status is
                                                # OK!
             with open(self.fullpath(), "rb") as objfile:

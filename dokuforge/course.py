@@ -564,6 +564,10 @@ class Course(StorageDir):
         assert isinstance(label, unicode)
         assert isinstance(comment, unicode)
         assert isinstance(filename, unicode)
+        assert isinstance(user, unicode)
+
+        # store requires user to be bytes, so encode
+        user = user.encode("utf-8")
 
         filename = filename.encode("utf8")
         common.validateBlobLabel(label)
