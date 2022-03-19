@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import collections
 import functools
@@ -30,9 +31,9 @@ except NameError:
 ##
 ## 4. If you're also interested in the micotypography for the TeX
 ##    export, the story is as follows. A microtype feature is a
-##    function str -> [str] taking a textual unit and returning
+##    function str -> [Either str str] taking a textual unit and returning
 ##    a list of textual units after the feature is applied, splitting
-##    the original unit where approprate. A microtype is given
+##    the original unit where appropriate. A microtype is given
 ##    by a list of features and has the semantics of sucessively
 ##    applying these features (in the sense of the list monad), and
 ##    finally concatenating the obtained tokens. In other words, the
@@ -108,6 +109,12 @@ class Estimate(collections.namedtuple("Estimate",
 
     __rmul__ = __mul__
 
+# class for strings that shall not be modified further
+class TerminalString(object):
+    def __init__(self, s):
+        self.theString = s
+    def getString(self):
+        return self.theString
 
 def intersperse(iterable, delimiter):
     it = iter(iterable)
@@ -126,96 +133,480 @@ class Escaper:
     def __call__(self, word):
         return intersperse(word.split(self.sequence), self.escaped)
 
+class Escapers:
+    def __init__(self, sequences, escaped):
+        self.pattern = re.compile('|'.join(sequences))
+        self.escaped = escaped
+
+    def __call__(self, word):
+        return intersperse(self.pattern.split(word), self.escaped)
+
 def acronym(word):
     """
     All-capital words should be displayed in smaller font.
-    But don't mangle things like 'T-Shirt' or 'E-Mail'.
+    But don't mangle things like 'T-Shirt' or 'E-Mail' while
+    still allowing for compound nouns such as 'DNA-Sequenz'.
+    A plural 's' as in 'EKGs' is allowed.
+    In Dimensions, such as 2D or 3D, only the D should be
+    displayed in a smaller font.
     """
-    if len(word) > 1 and word.isalpha() and word.isupper():
-        word = u'\\acronym{%s}' % word
+    concat_left = u''
+
+    if re.compile(r'^(\d)D$').match(word):  # nD needs special treatment
+        concat_left = re.sub(r'(\d)D', u'\\1\\\\@\\\\acronym{D}', word)
+        word = ''
+
+    pattern = r'(\w+)' # only alphanumeric characters or underscore
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            m = m.groups()
+            concat_left += left
+            # check if matched part consists of two or more uppercase
+            # letters, possibly followed by a plural 's'
+            if (len(matched.rstrip(u's')) > 1 and
+                    matched.rstrip(u's').isupper()):
+                yield concat_left
+                yield TerminalString(u'\\@\\acronym{%s}' % matched)
+                concat_left = u''
+            else:
+                concat_left += matched
+        # the unicode flag modifies the pattern \w (alphanumeric characters)
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word, flags=re.UNICODE)
+    concat_left += word
+    yield concat_left
+
+def formatDashes(word):
+    """
+    Replace " - " by " -- " and annotate dashes with "\\@"
+    """
+    # match context in order to avoid touching number ranges or signs
+    pattern = r'(^|[^@ -])( ?-+ ?)($|[^0-9- ])'
+    m = True
+    while m:
+        if m != True:
+            left, before, dash, after, word =  m.groups()
+            dash = dash.replace(u' - ', u' -- ')
+            if len(dash.strip(u' ')) > 1:
+                yield (left + before)
+                yield TerminalString(dash.replace(u'--', u'\\@--'))
+            else:
+                yield (left + before + dash)
+            word = after + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    # annotate ranges such as 1a--3b with \@
+    word = re.sub(r'([^@0-9- ] ?)(--+ ?[0-9])', r'\1\\@\2', word)
     yield word
 
-def  standardAbbreviations(word):
+def percentSpacing(word):
     """
-    Do spacing for standard abbreviations.
+    Do spacing for the percent sign.
     """
+    pattern = r'(\d+ ?)%'
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            yield (left + matched.rstrip())
+            if matched.endswith(u' '):
+                yield TerminalString(u'\\@\\,\\%')
+            else:
+                yield TerminalString(u'\\,\\%')
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
+def formatDate(word):
+    """
+    Do spacing for dates that consist of day, month and year.
+    """
+    date_pattern = r'%s%s' % (2 * r'(\d{1,2}\.) ?', r'(\d{2,4})')
+    m = True
+    while m:
+        if m != True:
+            left, day, month, year, word =  m.groups()
+            yield left
+            yield TerminalString(u'\\@%s\\,%s\\,%s' % (day, month, year))
+        m = re.match(r'(.*?)' + date_pattern + r'(.*)', word)
+    yield word
+
+def formatYearsBCAD(word):
+    """
+    Do spacing for years "n. Chr." or "v. Chr."
+    """
+    year_pattern = r'(\d+) ?([nv]\.)(Chr\.)'
+    m = True
+    while m:
+        if m != True:
+            left, year, beforeAfter, christ, word =  m.groups()
+            yield left
+            yield TerminalString(u'%s\\,%s\\,%s' % (year, beforeAfter, christ))
+        m = re.match(r'(.*?)' + year_pattern + r'(.*)', word)
+    yield word
+
+def pageReferences(word):
+    """
+    Do spacing for page references.
+    """
+    abbr = r'S\.|Abs\.|Art\.'
+    full = r'Seite|Satz|Absatz|Artikel'
+    pattern = r'((?:%s|%s) ?)((?:\d+)? ?)((?:f+\.? )?)' % (abbr, full)
+    m = True
+    while m:
+        if m != True:
+            left, ref, number, ff, word =  m.groups()
+            yield left
+            if ref.rstrip(u' ').endswith(u'.'):
+                # abbreviation
+                ref = u'\\@' + ref
+                if number:
+                    ref = ref.rstrip(u' ') + u'\\,'
+                    if ff:
+                        number = number.rstrip(u' ')
+                        ff = u'\\,%s. ' % ff.rstrip(u' .')
+            else:
+                # unabbreviated reference
+                if len(number) > 0:
+                    ref = ref.rstrip(u' ') + u'~'
+            if ff:
+                yield TerminalString(ref + number + ff)
+            else:
+                # allow to match subsequent number ranges
+                yield TerminalString(ref)
+                word = number + word
+        m = re.match(r'(^|.*?\s)' + pattern + r'(.*)', word)
+    yield word
+
+def lawReferences(word):
+    """
+    Do spacing for law references.
+    """
+    pattern = u'(§+ ?)((?:\\d+)? ?)((?:f+\\.? )?)' # unicode for §
+    m = True
+    while m:
+        if m != True:
+            left, par, number, ff, word =  m.groups()
+            yield left
+            if number:
+                par = par.rstrip(u' ') + u'\\,'
+                if ff:
+                    number = number.rstrip(u' ')
+                    ff = u'\\,%s. ' % ff.rstrip(u' .')
+            else:
+                par = u'\\@' + par
+            if ff:
+                yield TerminalString(par + number + ff)
+            else:
+                yield TerminalString(par)
+                # this allows to match subsequent number ranges
+                word = number + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
+def numberSpacing(word):
+    """
+    Do spacing for number ranges and between numbers and words.
+    """
+    # annotate "[number]."
+    word = re.sub(r'(^|[^@0-9])(\d+\.\D)', r'\1\\@\2', word)
+    # format number ranges
+    pattern = r'(\d)( ?-{1,2} ?)(\d)'
+    m = True
+    while m:
+        if m != True:
+            left, num1, matched, num2, word =  m.groups()
+            # also accept 6-9 and do not annotate 6--9
+            if matched == u'-' or matched != u'--':
+                matched = u'\\@--'
+            if matched.strip(u' ') == u'--':
+                yield (left + num1)
+                yield TerminalString(matched)
+                word = num2 + word
+            else:
+                yield (left + num1 + matched + num2)
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
+def unspaceAbbreviations(word):
+    """
+    Remove single spaces within known abbreviations.
+    """
+    word = re.sub(u'(^| )d\. h\.', u'\\1d.h.', word)
+    word = re.sub(u'(^| )n\. Chr\.', u'\\1n.Chr.', word)
+    word = re.sub(u'(^| )o\. Ä\.', u'\\1o.Ä.', word)
+    word = re.sub(u'(^| )o\. ä\.', u'\\1o.ä.', word)
+    word = re.sub(u'(^| )s\. o\.', u'\\1s.o.', word)
+    word = re.sub(u'(^| )s\. u\.', u'\\1s.u.', word)
+    word = re.sub(u'(^| )u\. a\.', u'\\1u.a.', word)
+    word = re.sub(u'(^| )v\. Chr\.', u'\\1v.Chr.', word)
+    word = re.sub(u'(^| )z\. B\.', u'\\1z.B.', word)
+    yield word
+
+def spaceMultipartStandardAbbreviations(word):
     abb = {
-    # FIXME we want '~\dots{}' in nearly every case
-        u'...': u'\\dots{}',
-        u'bzw.': u'bzw.',
-        u'ca.': u'ca.',
-        u'd.h.': u'd.\\,h.',
-        u'etc.': u'etc.',
-        u'f.': u'f.',
-        u'ff.': u'ff.',
-        u'n.Chr.': u'n.\\,Chr.',
-        u'o.Ä.': u'o.\\,Ä.',
-        u's.o.': u's.\\,o.',
-        u'sog.': u'sog.',
-        u's.u.': u's.\\,u.',
-        u'u.a.': u'u.\\,a.',
-        u'v.Chr.': u'v.\\,Chr.',
-        u'vgl.': u'vgl.',
-        u'z.B.': u'z.\\,B.'}
+        u'd.h.'   : u'd.\\,h.',
+        u'n.Chr.' : u'n.\\,Chr.',
+        u'o.Ä.'   : u'o.\\,Ä.',
+        u'o.ä.'   : u'o.\\,ä.',
+        u's.o.'   : u's.\\,o.',
+        u's.u.'   : u's.\\,u.',
+        u'u.a.'   : u'u.\\,a.',
+        u'v.Chr.' : u'v.\\,Chr.',
+        u'z.B.'   : u'z.\\,B.'}
 
     yield abb.get(word, word)
 
-splitEllipsis = Escaper(u"...", u"...")
-# Replace the ellipsis symbol ... by \dots
+class UnitSpacing:
+    def __init__(self):
+        unit_prefixes = [
+                # SI prefixes
+                u'Y', u'Z', u'E', u'P', u'T', u'G', u'M', u'k', u'h',
+                u'da', u'd', u'c', u'm', u'µ', u'μ', u'n', u'p', u'f',
+                u'a', u'z', u'y'
+                ]
+
+        units = [
+                # SI units
+                u'm', u'g', u's', u'A', u'K', u'mol', u'cd',
+                # derived SI units
+                u'rad', u'sr', u'Hz', u'N', u'Pa', u'J', u'W', u'C', u'V',
+                u'F', u'Ω', u'S', u'Wb', u'T', u'H', u'lm', u'lx', u'Bq',
+                u'Gy', u'Sv', u'kat', u't',
+                # temperatures
+                u'°C', u'°F', u'°R', u'°Ré',
+                # more units
+                u'l', u'eV', u'€',
+                ]
+
+        unprefixed_units = [
+                # cgs units
+                u'Gal', u'dyn', u'Ba', u'erg', u'St', u'P', u'kayser',
+                u'Q', u'I', u'U', u'E', u'p', u'B', u'H', u'µ', u'μ',
+                u'Θ', u'Φm', u'R', u'ρ', u'C', u'L', u'P',
+                # more units
+                u'eV'
+                ]
+
+        unit_prefixes = '|'.join(unit_prefixes)
+        units = '|'.join(units)
+        unprefixed_units = '|'.join(unprefixed_units)
+        re_units = '(?:%s)?(?:%s)' % (unit_prefixes, units)
+        re_unprefixed_units = '(?:%s)' % (unprefixed_units)
+        # unit is followed by (full stop|slash|star|whitespace|end of line)
+        after = '(?:[./*]|\s|$)'
+        self.units_re = re.compile(r'(.*?)(\d+) ?((?:%s|%s)%s)(.*)'
+                % (re_units, re_unprefixed_units, after))
+
+    def __call__(self, word):
+        m = True
+        while m:
+            if m != True:
+                left, number, unit, word =  m.groups()
+                yield (left + number)
+                if unit.strip().endswith(u'V') and len(unit.strip()) > 1:
+                    # annotation for 'mV', 'μV' etc.
+                    unit = u'\\@' + unit
+                yield TerminalString(u'\\,' + unit)
+            m = self.units_re.match(word)
+        yield word
+
+unitSpacing = UnitSpacing()
 
 def naturalNumbers(word):
     """
     Special Spacing for numbers.
     """
-    # FIXME negative numbers only work because '-' currently is a separator
-    # FIXME we want some special spacing around numbers:
-    #       - a number followed by a dot wants a thin space: '21.\,regiment'
-    #       - a number followed by a unit wants a thin space: 'weight 67\,kg'
-    #       - a number followed by a percent sign wants a thin space: '51\,\%'
-    if not re.match('^[0-9]+$', word):
+    if not re.match(u'^-?\d+$', word):
         yield word
     else:
-        value = int(word)
-        if value < 10000:
+        if word.startswith(u'-'):
+            sign = u'\\@$-$'
+            word = word[1:]
+        else:
+            sign = u''
+        if len(word) < 5:
             # no special typesetting for 4 digits only
-            yield u"%d" % value
+            yield u"%s%s" % (sign, word)
         else:
             result = u''
-            while value >= 1000:
-                threedigits = value % 1000
-                result = u'\\,%03d%s' % (threedigits, result)
-                value = value // 1000
-            yield u'%d%s' % (value, result)
-
-def openQuotationMark(word):
-    if len(word) > 1 and word.startswith(u'"'):
-        yield u'"`'
-        word = word[1:]
-    yield word
-
-def closeQuotationMark(word):
-    if len(word) > 1 and word.endswith(u'"'):
-        yield word[:-1]
-        yield u'"\''
-    else:
-        yield word
+            while len(word) >= 4:
+                threedigits = word[-3:]
+                result = u'\\,%s%s' % (threedigits, result)
+                word = word[:-3]
+            yield TerminalString(u'%s%s%s' % (sign, word, result))
 
 def fullStop(word):
     if len(word) > 1 and word.endswith(u'.'):
         yield word[:-1]
-        yield u'.'
+        yield TerminalString(u'.')
     else:
         yield word
 
-percent = Escaper(u"%", u"\\%")
+openQuotationString = u'"`'
+closeQuotationString = u'"\''
+unicodeQuotationMarks = u'„“”»«'
 
-ampersand = Escaper(u"&", u"\\&")
+def openQuotationMark(word):
+    """
+    Opening quotation marks. Unicode quotes are annotated with \@.
+    """
+    if len(word) > 1:
+        if word.startswith(u'"'):
+            yield TerminalString(openQuotationString)
+            word = word[1:]
+        elif word[0] in list(unicodeQuotationMarks):
+            yield TerminalString(u'\\@'+ openQuotationString)
+            word = word[1:]
+    yield word
 
-hashmark = Escaper(u"#", u"\\#")
+def closeQuotationMark(word):
+    """
+    Closing quotation marks. Unicode quotes are annotated with \@.
+    """
+    if len(word) > 1 and word.endswith(u'"'):
+        yield word[:-1]
+        yield TerminalString(closeQuotationString)
+    elif len(word) > 1 and word[-1] in list(unicodeQuotationMarks):
+        yield word[:-1]
+        yield TerminalString(u'\\@'+ closeQuotationString)
+    else:
+        yield word
 
-caret = Escaper(u"^", u"\\caret{}")
+def lonelyOpenQuotationMark(word):
+    """
+    Opening quotation mark before character groups, e.g. ' "$x$'.
+    """
+    pattern = r'(^| )[%s]$' % (u'"' + unicodeQuotationMarks)
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            yield (left + matched)
+            yield TerminalString(u'\\@' + openQuotationString)
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
 
-quote = Escaper(u"'", u"'")
+def lonelyCloseQuotationMark(word):
+    """
+    Closing quotation mark after character groups, e.g. '$x$" '.
+    """
+    # word = re.sub(u'^" ', u"\\@\"' ", word)
+    pattern = r'^[%s]( |$)' % (u'"' + unicodeQuotationMarks)
+    m = True
+    while m:
+        if m != True:
+            left, matched, word =  m.groups()
+            yield left
+            yield TerminalString(u'\\@' + closeQuotationString)
+            word = matched + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
+
+def explode(word):
+    """
+    Split word into single characters.
+    """
+    for char in word:
+        yield char
+
+class ReplaceSuspiciousCharacter:
+    """
+    Replace a list of characters and annotate with \@\@. This is intended
+    for characters that should have been addressed earlier so that the
+    replacement done here is a wild guess, pointed out by double-\@.
+    """
+    def __init__(self, badSigns, replacement):
+        self.badSigns = badSigns
+        self.replacement = replacement
+
+    def __call__(self, word):
+        if word in self.badSigns:
+           yield TerminalString(u'\\@\\@' + self.replacement)
+        else:
+           yield word
+
+class PunctuationQuotationMark:
+    """
+    Opening and closing quotation marks followed or preceded by
+    punctuation characters.
+    """
+    def __init__(self, punctuation):
+        self.punctuation = punctuation
+
+    def __call__(self, word):
+        quotes = [u'"'] + list(unicodeQuotationMarks)
+        if (   len(word) == 2 ) and ( word[0] in self.punctuation ) and ( word[1] in quotes ):
+            yield word[:1]
+            if word[1] == u'"':
+                yield TerminalString(closeQuotationString)
+            else:
+                yield TerminalString("\\@" + closeQuotationString)
+        elif ( len(word) == 2 ) and ( word[0] in quotes ) and ( word[1] in self.punctuation ):
+            if word[0] == u'"':
+                yield TerminalString(openQuotationString)
+            else:
+                yield TerminalString("\\@" + openQuotationString)
+            yield word[1:]
+        else:
+            yield word
+
+percent = Escaper(u'%', TerminalString(u'\\%'))
+
+ampersand = Escaper(u'&', TerminalString(u'\\@\\&'))
+
+ampersand_math = Escaper(u'&', TerminalString(u'\\@\\forbidden\\&'))
+
+hashmark = Escaper(u'#', TerminalString(u'\\@\\#'))
+
+quote = Escaper(u"'", TerminalString(u"\\@'"))
+
+leftCurlyBracket = Escaper(u'{', TerminalString(u'\\@\\{'))
+
+rightCurlyBracket = Escaper(u'}', TerminalString(u'\\@\\}'))
+
+caret = Escaper(u'^', TerminalString(u'\\@\\caret{}'))
+
+spacedEllipsis = Escaper(u' ...', TerminalString(u'~\\@\\dots{}'))
+
+bracketEllipsis = Escaper(u'[...]', TerminalString(u'[\\@\\ZitatEllipse]'))
+
+ellipsis = Escaper(u'...', TerminalString(u'\\@\\dots{}'))
+
+tilde = Escaper(u'~', TerminalString(u'\\@~'))
+
+spacedUTF8ellipsis = Escaper(u' …', TerminalString(u'~\\@\\dots{}'))
+
+utf8ellipsis = Escaper(u'…', TerminalString(u'\\@\\dots{}'))
+
+utf8endash = Escaper(u'–', TerminalString(u'\\@--'))
+
+utf8emdash = Escaper(u'—', TerminalString(u'\\@---'))
+
+utf8SingleQuotes = Escapers((u'‚', u'‘', u'’', u'‹', u'›'),
+                            TerminalString(u'\\@\''))
+
+nonStandardSpace = Escapers((u' ', u' ', u' ', u' ', u' ', u' ', u' ', u' ',
+                              u' ', u' ', u' ', u' ', u'​', u' ', u' ', u'﻿'),
+                            TerminalString(u'\\@ '))
+
+def formatCode(word):
+    """
+    Set lstinline for code within pipes
+    """
+    pattern = r'(\|[^ |]+\|)(.|$)'
+    m = True
+    while m:
+        if m != True:
+            left, matched, after, word =  m.groups()
+            if after in [u'', u' ', u'\t', u'\n', u'(', u')',
+                    u':', u';', u',', u'"', u'?', u'!']:
+                yield left
+                yield TerminalString(u'\\@\\lstinline%s' % matched)
+            else:
+                yield (left + matched)
+            word = after + word
+        m = re.match(r'(.*?)' + pattern + r'(.*)', word)
+    yield word
 
 class EscapeCommands:
     """
@@ -223,11 +614,37 @@ class EscapeCommands:
     a list of known good commands.
     """
     escapechar = u"\\"
-    allowed = set(u"\\" + symbol for symbol in [
-    # produced by our own microtypography or otherwise essential
-    u' ', u',', u'%', u'dots', u'\\', u'"', u'acronym', u'&',
-    u'#', u'caret',
-    # other allowed commands; FIXME: complete and put to a separate file
+    command_re = re.compile("(%s(?:[a-zA-Z]+|.|$))" % re.escape(escapechar))
+
+    def forbid(self, word):
+        return u'\\@\\forbidden' + word
+
+    def __init__(self, allowed = set(u"\\" + symbol for symbol in [
+                                  u' ', u',', u'%', u'dots', u'ldots',
+                                  u'\\', u'"', u'acronym', u'&', u'#',
+                                  u'caret', u'{', u'}', u'@', u'kern'])):
+        """
+        Initialize with the set of allowed commands. The default value
+        represents those commands that are produced by the exporter itself.
+        """
+        self.allowed = allowed
+
+    def __call__(self, word):
+        for part in self.command_re.split(word):
+            if part.startswith(self.escapechar):
+                if part in self.allowed:
+                    yield part
+                elif part == self.escapechar:
+                    # Oh, a backslash at end of input;
+                    # maybe we broke into words incorrectly,
+                    # so just return something safe.
+                    yield TerminalString(u'\\@\\backslash')
+                else:
+                    yield self.forbid(part)
+            else:
+                yield part
+
+allowedMathSymbolCommands = [
     ## list of useful math commands mostly taken
     ## from 'A Guide To LaTeX' by Kopka
     ## greek letters
@@ -242,8 +659,8 @@ class EscapeCommands:
     u'frac', u'sqrt', u'sum', u'int', u'ldots', u'cdots',
     u'vdots', u'ddots', u'oint', u'prod', u'coprod'
     ## math symbols
-    u'pm', u'cap', u'circ', u'bigcirc' u'mp', u'cup', u'bullet',
-    u'Box' u'times', u'uplus', u'diamond', u'Diamond', u'div',
+    u'pm', u'cap', u'circ', u'bigcirc', u'mp', u'cup', u'bullet',
+    u'Box', u'times', u'uplus', u'diamond', u'Diamond', u'div',
     u'sqcap', u'bigtriangleup', u'cdot', u'sqcup',
     u'bigtriangledown', u'ast', u'vee', u'unlhd', u'triangleleft',
     u'star', u'wedge', u'unrhd', u'triangleright', u'dagger',
@@ -281,59 +698,60 @@ class EscapeCommands:
     u'bigcap', u'bigodot', u'bigcup', u'bigotimes', u'bigsqcup',
     u'bigoplus', u'bigvee', u'biguplus', u'bigwedge',
     ## function names
-    u'arccos', u'cosh', u'det', u'inf' u'limsup', u'Pr', u'tan',
+    u'arccos', u'cosh', u'det', u'inf', u'limsup', u'Pr', u'tan',
     u'arcsin', u'cot', u'dim', u'ker', u'ln', u'sec', u'tanh',
     u'arctan', u'coth', u'exp', u'lg', u'log', u'sin', u'arg',
     u'csc', u'gcd', u'lim', u'max', u'sinh', u'cos', u'deg',
     u'hom', u'liminf', u'min', u'sup',
     ## accents
     u'hat', u'breve', u'grave', u'bar', u'check', u'acute',
-    u'ti1de', u'vec', u'dot', u'ddot', u'mathring',
+    u'tilde', u'vec', u'dot', u'ddot', u'mathring',
     ## parens
     u'left', u'right', u'lfloor', u'rfloor', u'lceil', u'rceil',
     u'langle', u'rangle',
+    ## chemistry with chemformula
+    u'ch',
     ## misc
-    u'stackrel', u'binom', u'mathbb'
-    # FIXME think about including environments, these can come up in complex
-    # mathematical formulas, but they could also be abused (more in the "we
-    # don't want users to make typesetting decisions" style of misuse, than
-    # anything critical).
-    # ## environments
-    # u'begin', u'end',
-    ])
-
-    command_re = re.compile("(%s(?:[a-zA-Z]+|.))" % re.escape(escapechar))
-
-    def forbid(self, word):
-        return u'\\forbidden' + word
-
-    def __call__(self, word):
-        for part in self.command_re.split(word):
-            if part.startswith(self.escapechar):
-                if part in self.allowed:
-                    yield part
-                elif part == self.escapechar:
-                    # Oh, a backslash at end of input;
-                    # maybe we broke into words incorrectly,
-                    # so just return something safe.
-                    yield u'\\@\\textbackslash{}'
-                else:
-                    yield self.forbid(part)
-            else:
-                yield part
+    u'stackrel', u'binom', u'mathbb',
+  ]
 
 escapeCommands = EscapeCommands()
+escapeMathCommands = EscapeCommands(
+    allowed = set(u"\\" + symbol for symbol in [
+    # produced by our own microtypography or otherwise essential
+    u' ', u',', u'%', u'dots', u'\\', u'"', u'acronym', u'&',
+    u'#', u'caret', u'{', u'}', u'@',
+    ] + allowedMathSymbolCommands ))
 
-escapeEndEdnote = Escaper(u"\\end{ednote}", u"|end{ednote}")
-# Escpage the string \\end{ednote}, so that ednotes end
+escapeEndEdnote = Escaper(u"\\end{ednote}", u"\\@|end{ednote}")
+# Escape the string \\end{ednote}, so that ednotes end
 # where we expect them to end.
 
 class SplitSeparators:
-    def __init__(self, separators):
-        self.splitre = re.compile("([%s])" % re.escape(separators))
+    def __init__(self, separators, regex='([%s])'):
+        self.splitre = re.compile( regex % re.escape(separators))
 
     def __call__(self, word):
         return self.splitre.split(word)
+
+
+class SplitPunctuationClosingQuotes(SplitSeparators):
+    """
+    Split at separators (e.g., punctuation) before closing quotation marks
+    """
+    def __init__(self, punctuation):
+        SplitSeparators.__init__(self, punctuation,
+                regex='([%%s][%s])' % (u'"' + unicodeQuotationMarks))
+
+
+class SplitPunctuationOpeningQuotes(SplitSeparators):
+    """
+    Split at separators (e.g., "(") after opening quotation marks
+    """
+    def __init__(self, punctuation):
+        SplitSeparators.__init__(self, punctuation,
+                regex='([%s][%%s])' % (u'"' + unicodeQuotationMarks))
+
 
 def applyMicrotypefeatures(wordlist, featurelist):
     """
@@ -345,45 +763,84 @@ def applyMicrotypefeatures(wordlist, featurelist):
     for feature in featurelist:
         wordlistlist = []
         for word in wordlist:
-            assert isinstance(word, unicode)
-            wordlistlist.append(feature(word))
+            if isinstance(word, TerminalString):
+                wordlistlist.append([word])
+            else:
+                assert isinstance(word, unicode)
+                wordlistlist.append(feature(word))
         wordlist = itertools.chain(*wordlistlist)
-    return ''.join(wordlist)
+    finallist = []
+    for word in wordlist:
+        if isinstance(word, TerminalString):
+            finallist.append(word.getString())
+        else:
+            finallist.append(word)
+    return ''.join(finallist)
 
 def defaultMicrotype(text):
     """
     @type text: unicode
     """
     assert isinstance(text, unicode)
-    # FIXME '-' should not be a separator so we are able to detect dashes '--'
-    #       however this will break NaturalNumbers for negative inputs
-    separators = ' \t,;()-\n' # no point, might be in abbreviations
-    features = [SplitSeparators(separators),
-                splitEllipsis, percent, ampersand, caret, hashmark, quote,
-                standardAbbreviations, fullStop, openQuotationMark,
-                closeQuotationMark, acronym, naturalNumbers, escapeCommands]
+    separators = ' \t,;:()!?\n-' # no point, might be in abbreviations
+    features = [SplitSeparators("\n"), formatCode,
+                ## no splitting at all before the previous features
+                SplitPunctuationClosingQuotes(',;:)!?'),
+                SplitPunctuationOpeningQuotes('('),
+                PunctuationQuotationMark(',;:()!?)'),
+                SplitSeparators(separators[1:-1]), # separators except ' -'
+                unspaceAbbreviations, unitSpacing,
+                percentSpacing, formatDate, formatYearsBCAD, pageReferences,
+                # keep order in the following line
+                lawReferences, numberSpacing, formatDashes,
+                # ellipses with and without spacing before splitting at spaces
+                bracketEllipsis, spacedEllipsis, ellipsis,
+                spacedUTF8ellipsis, utf8ellipsis,
+                lonelyOpenQuotationMark, lonelyCloseQuotationMark,
+                ## no splitting at ' ' before the previous features
+                SplitSeparators(separators[0]), # separator ' ' only
+                percent, ampersand, hashmark, quote, leftCurlyBracket,
+                rightCurlyBracket, caret, tilde,
+                spaceMultipartStandardAbbreviations,
+                utf8endash, utf8emdash,
+                utf8SingleQuotes,
+                nonStandardSpace,
+                # fullStop after ellipsis and spaceMultipartStandardAbbreviations
+                fullStop, naturalNumbers,
+                ## no splitting at '-' before numbers
+                SplitSeparators(separators[-1]), # separator '-' only
+                openQuotationMark, closeQuotationMark,
+                acronym, # after quotation marks are handled
+                escapeCommands, # escapeCommands last before explode
+                explode, # prepare final character replacements
+                ReplaceSuspiciousCharacter(unicodeQuotationMarks, '"`') ]
     return applyMicrotypefeatures([text], features)
 
-def mathMicrotype(text):
-    # FIXME we want to substitute '...' -> '\dots{}' in math mode too
-    features = [percent, hashmark, naturalNumbers, escapeCommands]
+def mathMicrotype(text, isAligningEnvironment=False):
+    features = [percent, hashmark, spacedEllipsis, ellipsis, tilde,
+                naturalNumbers, escapeMathCommands]
+    if not isAligningEnvironment:
+        features.append(ampersand_math)
     return applyMicrotypefeatures([text], features)
 
 def ednoteMicrotype(text):
     return applyMicrotypefeatures([text], [escapeEndEdnote])
 
 def isemptyline(line):
-    return re.match('^[ \t]*$', line)
+    return re.match('^\s*$', line)
 
 def wrap(text, subsequent_indent=''):
     """
     Wraps text to width 70.
     """
-    # triple @ to label linebreaks after long lines before wrapping
-    text = re.sub("([^\n]{160})\n", "\\1\\@\\@\\@\n", text)
-    return textwrap.fill(text, subsequent_indent=subsequent_indent,
-            drop_whitespace = True, replace_whitespace = True,
-            break_long_words = False, break_on_hyphens = False)
+    # triple \@ to label linebreaks where we suspect the author forgot a double line break to indicate a new paragraph
+    text = re.sub(r'([^\n]{160})\n', r'\1\\@\\@\\@\n', text)
+    text = re.sub(r'\n([^\n]{160})', r'\\@\\@\\@\n\1', text)
+    text = re.sub(r'\\@\\@\\@\\@\\@\\@', r'\\@\\@\\@', text)
+    result = textwrap.fill(text, width=70, subsequent_indent=subsequent_indent,
+                           drop_whitespace = True, replace_whitespace = True,
+                           break_long_words = False, break_on_hyphens = False)
+    return result
 
 class PTree:
     """
@@ -400,6 +857,13 @@ class PTree:
         return a tex-representation of the parsed object.
         """
         raise NotImplementedError
+
+    def toTexStringsAndTerminalStrings(self):
+        """
+        return a list of tex representations of the parsed objects,
+        distingushing strings and TerminalStrings that should not be touched
+        """
+        return [self.toTex()]
 
     def toHtml(self):
         """
@@ -435,6 +899,12 @@ class PSequence(PTree):
         result = ''
         for part in self.parts:
             result = result + part.toTex()
+        return result
+
+    def toTexStringsAndTerminalStrings(self):
+        result = []
+        for part in self.parts:
+            result = result + part.toTexStringsAndTerminalStrings()
         return result
 
     def toHtml(self):
@@ -485,6 +955,47 @@ class PLeaf(PTree):
 
     def toEstimate(self):
         return Estimate.fromText(self.text)
+
+class PUrl(PTree):
+    """
+    A uniform resource locator.
+    """
+    def __init__(self, text):
+        self.text = PLeaf(text)
+
+    def debug(self):
+        return ('url', self.text.text)
+
+    def toTex(self):
+        result = self.text.text
+        result = self.texEscapeWithinUrl(result)
+        result = self.formatAndSplitTrailingChars(u'\\@\\url{%s}', result)
+        return result
+
+    def toHtml(self):
+        result = self.text.toHtml()
+        result = self.formatAndSplitTrailingChars(u'<a>%s</a>', result)
+        return result
+
+    def toDF(self):
+        return self.text.text
+
+    def toEstimate(self):
+        return self.text.toEstimate()
+
+    def texEscapeWithinUrl(self, word):
+        """
+        % -> \%
+        """
+        return word.replace(u'%', u'\\%')
+
+    def formatAndSplitTrailingChars(self, fmtstr, word):
+        if word and len(word) > 0 and word[-1] in '.,;:)]?!':
+            # Separate trailing punctuation mark or closing bracket.
+            word = (fmtstr % word[:-1]) + word[-1]
+        else:
+            word = fmtstr % word
+        return word
 
 class PEmph(PTree):
     """
@@ -540,8 +1051,39 @@ class PDisplayMath(PTree):
     def debug(self):
         return ('displaymath', self.text.text)
 
+    def _stringIndexList(self):
+        allowedEnvs = [u'align', u'equation']
+        allowedEnvironments = allowedEnvs + [u'%s*' % i for i in allowedEnvs]
+        startStrings = [u'\\begin{%s}' % i for i in allowedEnvironments]
+        endStrings = [u'\\end{%s}' % i for i in allowedEnvironments]
+        middleStartIndices = [len(s) for s in startStrings]
+        middleEndIndices = [-len(s) for s in endStrings]
+        isAligningEnvironment = [(u'align' in s) for s in allowedEnvironments]
+        return zip(startStrings, endStrings, middleStartIndices, middleEndIndices, isAligningEnvironment)
+
     def toTex(self):
-        return '\\[%1s\\]' % mathMicrotype(self.text.text)
+        def prepare():
+            for startString, endString, middleStartIndex, middleEndIndex, isAligningEnvironment in self._stringIndexList():
+                if (self.text.text.lstrip().startswith(startString) and
+                        self.text.text.rstrip().endswith(endString)):
+                    aligncontent = self.text.text.strip()[middleStartIndex:middleEndIndex].strip()
+                    result = ('\n%s\n%1s\n%s\n'
+                              % (startString, mathMicrotype(aligncontent,
+                                                            isAligningEnvironment=isAligningEnvironment),
+                                 endString))
+                    return result
+
+            # if none of the allowed environments is found, use equation* as default
+            result = ('\n\\begin{equation*}\n%1s\n\\end{equation*}\n'
+                      % mathMicrotype(self.text.text))
+            return result
+
+        preparedTex = prepare()
+        preparedTex = preparedTex.replace(u'\n\n', u'\n')
+        return preparedTex
+
+    def toTexStringsAndTerminalStrings(self):
+        return [TerminalString(self.toTex())]
 
     def toHtml(self):
         return "<div class=\"displaymath\">$$%1s$$</div>" % self.text.toHtml()
@@ -597,7 +1139,18 @@ class PParagraph(PTree):
         return self.it.isEmpty()
 
     def toTex(self):
-        return u'\n%s\n' % wrap(self.it.toTex())
+        result = ''
+        towrap = ''
+        for part in self.it.toTexStringsAndTerminalStrings():
+            if isinstance(part, TerminalString):
+                result += wrap(towrap)
+                towrap = ''
+                result += part.getString()
+            else:
+                towrap += part
+        result += wrap(towrap)
+        result = u'\n%s\n' % result
+        return result
 
     def toHtml(self):
         return '\n<p>\n'  + self.it.toHtml() + '\n</p>\n'
@@ -609,32 +1162,34 @@ class PParagraph(PTree):
         return self.it.toEstimate().fullline()
 
 class PHeading(PTree):
-    def __init__(self, title, level):
-        self.title = PLeaf(title)
+    def __init__(self, subtree, level):
+        self.subtree = subtree
         self.level = level
 
     def debug(self):
-        return ('Heading', self.level, self.getTitle())
+        return ('Heading', self.level, self.subtree.debug())
 
     def toTex(self):
-        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.title.toTex())
+        return u'\n\\%ssection{%s}\n' % (u"sub" * self.level, self.subtree.toTex())
 
     def toHtml(self):
         n = self.level + 1
-        return u'\n<h%d>%s</h%d>\n' % (n, self.title.toHtml(), n)
+        return u'\n<h%d>%s</h%d>\n' % (n, self.subtree.toHtml(), n)
 
     def toDF(self):
         n = self.level + 1
-        return u'\n\n%s%s%s' % (u'[' * n, self.title.toDF(), u']' * n)
+        return u'\n\n%s%s%s' % (u'[' * n, self.subtree.toDF(), u']' * n)
 
     def getLevel(self):
         return self.level
 
     def getTitle(self):
-        return self.title.text
+        return self.subtree.text
 
     def toEstimate(self):
-        return Estimate.fromTitle(self.getTitle())
+        if isinstance(self.subtree, PSequence):
+            return Estimate.fromTitle(self.subtree.toDF())
+        return Estimate.fromTitle(self.subtree.text)
 
 class PAuthor(PTree):
     def __init__(self, author):
@@ -694,7 +1249,7 @@ class PItemize(PTree):
     def toTex(self):
         itemtype = u'enumerate' if self.isEnumerate() else u'itemize'
         body = u''.join(item.toTex() for item in self.items)
-        return u'\n\\begin{%s}%s\n\\end{%s}\n' % (itemtype, body, itemtype)
+        return u'\n\\begin{%s}[joinedup,packed]%s\n\\end{%s}\n' % (itemtype, body, itemtype)
 
     def toHtml(self):
         itemtype =  'ul'
@@ -801,6 +1356,37 @@ class Simplegroup(Chargroup):
     def __init__(self, initial=None):
         Chargroup.__init__(self, initial=initial)
 
+class Urlgroup(Chargroup):
+    """
+    The group for uniform resource locators starting with 'http://',
+    'https://' or 'www.'.
+    """
+    def __init__(self, initial=None):
+        Chargroup.__init__(self, initial=initial)
+
+    @classmethod
+    def startshere(self, char, lookahead=None):
+        if not lookahead:
+            return False
+        begin = char + lookahead
+        return (begin.startswith(u'http://') or
+                begin.startswith(u'https://') or
+                begin.startswith(u'www.'))
+
+    def rejectcontinuation(self, char):
+        if char.isalnum():
+            return False
+        # All non alphanumeric characters allowed in urls.
+        unreserved = u'-_.~'
+        reserved = u'!*\'();:@&=+$,/?%#[]'
+        return not char in (unreserved + reserved)
+
+    def enforcecontinuation(self, char):
+        return not self.rejectcontinuation(char)
+
+    def parse(self):
+        return PUrl(self.text)
+
 class Emphgroup(Chargroup):
     """
     The group for _emphasized text_.
@@ -843,7 +1429,7 @@ class Mathgroup(Chargroup):
 
     @classmethod
     def startshere(self, char, lookahead=None):
-        return char == u'$' and lookahead != u'$'
+        return char == u'$' and ( not lookahead or lookahead[0] != u'$' )
 
     def append(self, chars):
         for c in chars:
@@ -887,7 +1473,7 @@ class DisplayMathGroup(Chargroup):
 
     @classmethod
     def startshere(self, char, lookahead=None):
-        return char == u'$' and lookahead == u'$'
+        return char == u'$' and ( lookahead and lookahead[0] == u'$' )
 
     def append(self, chars):
         for c in chars:
@@ -936,7 +1522,8 @@ def groupchars(text, supportedgroups):
     for i in range(len(text)):
         c = text[i]
         if i + 1 < len(text):
-            lookahead = text[i+1]
+            # Look ahead up to 7 characters to match 'https://'.
+            lookahead = text[i+1:i+8]
         else:
             lookahead = None
 
@@ -960,17 +1547,21 @@ def groupchars(text, supportedgroups):
     return groups
 
 
-def defaultInnerParse(lines):
+def defaultInnerParse(lines, features=(Simplegroup, Urlgroup, Emphgroup, Mathgroup, DisplayMathGroup)):
     """
     @type lines: [unicode]
     """
-    features = [Simplegroup, Emphgroup, Mathgroup, DisplayMathGroup]
     text = u'\n'.join(lines)
     groups = groupchars(text, features)
     if len(groups) == 1:
         return groups[0].parse()
     else:
         return PSequence([g.parse() for g in groups])
+
+
+def headingParse(line):
+    return defaultInnerParse([line], features=(Simplegroup, Emphgroup))
+
 
 class Linegroup:
     """
@@ -1172,7 +1763,7 @@ class Heading(Linegroup):
         return title
 
     def parse(self):
-        return PHeading(self.getTitle(), 0)
+        return PHeading(headingParse(self.getTitle()), 0)
 
 class Subheading(Heading):
     """
@@ -1186,7 +1777,7 @@ class Subheading(Heading):
         return line.startswith(u'[[') and not line.startswith(u'[[[')
 
     def parse(self):
-        return PHeading(self.getTitle(), 1)
+        return PHeading(headingParse(self.getTitle()), 1)
 
 class Author(Linegroup):
     """
@@ -1254,14 +1845,14 @@ class EnumerateItem(Linegroup):
 
     @classmethod
     def startshere(self, line, after=None):
-        return re.match('^[0-9]+\.[ \t]', line)
+        return re.match('^\d+\.\s', line)
 
     def parse(self):
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines), number="1")
         firstline = self.lines[0]
         number = "1"
-        m = re.match('^([0-9]+)\.[ \t]+(.*)$', firstline)
+        m = re.match('^(\d+)\.\s+(.*)$', firstline)
         if m is not None:
             number, firstline = m.group(1,2)
         withcleanedfirstline = [firstline]
@@ -1383,9 +1974,24 @@ def dfTitleParser(text):
 
 captionfeatures =  [Paragraph, Item, EnumerateItem, Description, Ednote]
 
+
+class PSequenceWithCaptionPostprocessing(PSequence):
+    def __init__(self, parts):
+        PSequence.__init__(self, parts)
+
+    def postprocess(self, text):
+        text = text.strip()
+        text = text.replace(u'\n\n', u'\\@\\@\\@\n')
+        return text
+
+    def toTex(self):
+        texToBePostprocessed = PSequence.toTex(self)
+        return self.postprocess(texToBePostprocessed)
+
+
 def dfCaptionParser(text):
-    groups = grouplines(text.splitlines(), dffeatures)
+    groups = grouplines(text.splitlines(), captionfeatures)
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
-    return PSequence(ptrees)
+    return PSequenceWithCaptionPostprocessing(ptrees)
