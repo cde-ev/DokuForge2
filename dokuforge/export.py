@@ -13,27 +13,6 @@ from dokuforge.common  import TarWriter
 
 from tarfile import TarFile
 
-'''
-# currently not needed
-class PseudoTarWriter:
-    def __init__(self, directory):
-        self.directory = directory
-
-    def addChunk(self, filename, content, lastchanged):
-        # Drop leading component. It is contained both in self.directory and in
-        # filename.
-        filename = filename.split('/', 1)[1]
-        with open(os.path.join(self.directory, filename), "w") as output:
-            output.write(content)
-
-def process_course(directory):
-    print("Processing %s..." % directory)
-    tw = PseudoTarWriter(directory)
-    c = Course(directory)
-    for _ in c.texExportIterator(tw):
-        pass
-'''
-
 def process(academiesdir,staticexportdir,academyname):
     academy = Academy ( os.path.join(academiesdir,academyname), [] )
 
