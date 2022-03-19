@@ -25,7 +25,7 @@
 {%- endif -%}
 <div class="academyoperations">
 {%- if user.mayExport(academy)%}
-<a href="{{ buildurl("export")|e }}">Testexport</a>
+<a href="{{ buildurl("export")|e }}">Export</a>
 <a href="{{ buildurl("rawacademy")|e }}">df2-Rohdaten</a>
 {%- endif %}
 {%- if user.allowedMeta(academy) %}
