@@ -194,10 +194,10 @@ class Course(StorageDir):
                     else (k.decode("ascii"), v.decode("utf8"))
                     for k, v in info.items())
 
-    def listdeadpages(self):
+    def _getnumandlinkedpages(self):
         """
-        @returns: a list of the pages not currently linked in the index
-        @rtype: [int]
+        @returns: number of pages and a list of all pages currently linked in the index
+        @rtype: [int,[int]]
         """
         indexstore = self.getstorage(b"Index")
         nextpage = self.getstorage(b"nextpage")
@@ -205,7 +205,23 @@ class Course(StorageDir):
             with nextpage.lock as gotlocknextpage:
                 np = self.nextpage(havelock = gotlocknextpage)
                 linkedpages = self.listpages(havelock = gotlockindex)
-                return [x for x in range(np) if x not in linkedpages]
+                return np, linkedpages
+
+    def listdeadpages(self):
+        """
+        @returns: a list of the pages not currently linked in the index
+        @rtype: [int]
+        """
+        np, linkedpages = self._getnumandlinkedpages()
+        return [x for x in range(np) if x not in linkedpages]
+
+    def listallpages(self):
+        """
+        @returns: a list of all pages
+        @rtype: [int]
+        """
+        np, _ = self._getnumandlinkedpages()
+        return [x for x in range(np)]
 
     def outlinedeadpages(self):
         """
@@ -222,10 +238,10 @@ class Course(StorageDir):
             outlines.append(outline)
         return outlines
 
-    def listdeadblobs(self):
+    def _getnumandavailableblobs(self):
         """
-        @returns: a list of the blobs not currently linked to the index
-        @rtype: [int]
+        @returns: number of blobs and a list of the blobs not currently linked to the index
+        @rtype: [int,[int]]
         """
         indexstore = self.getstorage(b"Index")
         nextblob = self.getstorage(b"nextblob")
@@ -238,8 +254,23 @@ class Course(StorageDir):
                 availableblobs.extend([int(x) for x in entries[1:]])
             with nextblob.lock as gotlocknextblob:
                 nextblobindex = self.nextblob(havelock = gotlocknextblob)
-                return [n for n in range(nextblobindex) if n not in availableblobs]
+                return nextblobindex, availableblobs
 
+    def listdeadblobs(self):
+        """
+        @returns: a list of the blobs not currently linked to the index
+        @rtype: [int]
+        """
+        nextblobindex, availableblobs = self._getnumandavailableblobs()
+        return [n for n in range(nextblobindex) if n not in availableblobs]
+
+    def listallblobs(self):
+        """
+        @returns: a list of all blobs
+        @rtype: [int]
+        """
+        nextblobindex, _ = self._getnumandavailableblobs()
+        return [n for n in range(nextblobindex)]
 
     def showpage(self, number):
         """
@@ -623,8 +654,13 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
+        df2_input = u"title\n%s\n" % self.gettitle()
         tex = u"\\course{%02d}{%s}" % (self.number,
                                        dfTitleParser(self.gettitle()).toTex().strip())
+
+        for p in self.listallpages():
+            df2_input += u"page%s\n%s\n" % (p, self.showpage(p))
+
         for p in self.listpages():
             tex += u"\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
@@ -658,6 +694,20 @@ class Course(StorageDir):
                                          self._mangleBlobName(blob['filename']).encode('utf8'),
                                          blob['data'],
                                          blobdate)
+        blob_filenames = u""
+        blob_comments = u""
+        for b in self.listallblobs():
+            blob = self.viewblob(b)
+            blobbase = u"blob%d" % b
+            blob_filenames += blobbase + u".filename\n"
+            blob_filenames += blob['filename'] + u"\n"
+            blob_comments += blobbase + u".comment\n"
+            blob_comments += blob['comment'] + u"\n"
+        df2_input += blob_filenames + blob_comments
+
+        yield tarwriter.addChunk(self.name + b"/input.df2",
+                                 df2_input.encode("utf8"),
+                                 self.lastchange()['date'])
 
         yield tarwriter.addChunk(self.name + b"/chap.tex",
                                  tex.encode("utf8"),

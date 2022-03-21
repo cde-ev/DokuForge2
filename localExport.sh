@@ -61,38 +61,5 @@ rm dokuforge/versioninfo.py
 # unpack export
 tar -C $EXPORTDIR -xvf $EXPORTEDACAFILENAME
 
-cd $DFACADIR
-rm *,v
-for d in *
-do
-    echo $d
-    cd $d
-    for i in *,v
-    do
-        echo $i
-        co $i
-        rm -f $i
-    done
-    shopt -s nullglob
-    for i in title page* blob*.filename blob*.comment
-    do
-        echo $i >> input.df2
-        cat $i >> input.df2
-        echo >> input.df2
-        rm -f $i
-    done
-    cd ..
-done
-cd $CURRENTDIR
-
-for d in $DFACADIR/*
-do
-    course=$EXPORTEDACADIR/`basename $d`
-    if [ ! -d $course ]; then
-        mkdir $course
-    fi
-    cp $d/input.df2 $course/
-done
-
 # clean up files created during exporting
 rm -rf $DFACADIR $EXPORTEDACAFILENAME $EXPORTSTATICCLEANDIR
