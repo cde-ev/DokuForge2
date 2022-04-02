@@ -23,6 +23,11 @@ steps:
   # finally, perform the tests
   - make check
 
+trigger:
+  event:
+    exclude:
+    - pull_request
+
 ---
 
 kind: pipeline
@@ -43,3 +48,8 @@ steps:
   # perform the tests
   - make check
   - make coverage
+
+trigger:
+  event:
+    exclude:
+    - pull_request
