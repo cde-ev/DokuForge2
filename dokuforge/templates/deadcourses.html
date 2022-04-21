@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block subheading %}
-{{ academy.title|e }}
+    Gelöschte Kurse
 {% endblock %}
 {% block location %}
-{{ navbar([("academy", {}, academy.title)]) }}
+{{ navbar([("academy", {}, academy.title),
+           ("deadcourses", {}, "Attic")]) }}
 {% endblock %}
 {% block content %}
 {% if academy.deadcourses %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block subheading %}
-{{ academy.title|e }}
+    {{ course.title|e }}
 {% endblock %}
 {% block location %}
 {{ navbar([("academy", {}, academy.title),
@@ -51,9 +51,11 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
 <div class="courseoperations">
 {%- if user.mayExport(academy) %}
 <a href="{{ buildurl("raw")|e }}">df2-Rohdaten</a>
+    {%- if user.allowedMeta(academy) or user.allowedWrite(academy, course) %} |{% endif %}
 {%- endif -%}
 {%- if user.allowedMeta(academy) %}
 <a href="{{ buildurl("coursetitle")|e }}">Titel bearbeiten</a>
+    {%- if user.allowedWrite(academy, course) %} |{% endif %}
 {%- endif -%}
 {%- if user.allowedWrite(academy, course) %}
 <a href="{{ buildurl("showdeadpages")|e }}">gel&ouml;schte Teile wiederherstellen</a>

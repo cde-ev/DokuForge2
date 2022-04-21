@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block subheading %}
-Gruppenverwaltung
+    Gruppenverwaltung
 {% endblock %}
 {% block location%}
 {{ navbar([("groups", {}, "Gruppenverwaltung")]) }}
@@ -17,5 +17,5 @@ Gruppenverwaltung
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ buildurl("groups")|e }}">Abbrechen</a>
+<a href="{{ buildurl("index")|e }}">Abbrechen</a>
 {% endblock %}

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block subheading %}
-Übersicht
+    Übersicht
 {% endblock %}
 {% block location %}
-{{ navbar([("groupindex", dict(group=group), allgroups[group]|e)]) }}
+    {{ navbar() }}
 {% endblock %}
 {% block content %}
 <ul>
