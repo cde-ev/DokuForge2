@@ -16,7 +16,7 @@ import datetime
 import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
-from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
+from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser, Estimate
 from dokuforge.common import TarWriter
 from dokuforge.common import UTC
 from dokuforge.course import Course
@@ -806,6 +806,30 @@ class AcademyTest(DfTestCase):
         self.academy.getCourse(u'new01').undelete()
         self.assertCourses([b'legacy', b'new01', b'new02'])
         self.assertDeadCourses([])
+
+class EstimatorTests(DfTestCase):
+    def test_estimates(self):
+        lipsum = "Lorem ipsum dolor sit amet. "
+
+        estimate = Estimate.fromText(10*lipsum)
+        self.assertAlmostEqual(estimate.pages,       0.0933333333)
+        self.assertAlmostEqual(estimate.ednotepages, 0.0)
+        self.assertAlmostEqual(estimate.blobpages,   0.0)
+
+        estimate = Estimate.fromTitle(4*lipsum)
+        self.assertAlmostEqual(estimate.pages,       0.1066666666)
+        self.assertAlmostEqual(estimate.ednotepages, 0.0)
+        self.assertAlmostEqual(estimate.blobpages,   0.0)
+
+        estimate = Estimate.fromEdnote("{"+10*lipsum+"}")
+        self.assertAlmostEqual(estimate.pages,       0.0)
+        self.assertAlmostEqual(estimate.ednotepages, 0.094)
+        self.assertAlmostEqual(estimate.blobpages,   0.0)
+
+        estimate = Estimate.fromBlobs((None, None))
+        self.assertAlmostEqual(estimate.pages,       0.0)
+        self.assertAlmostEqual(estimate.ednotepages, 0.0)
+        self.assertAlmostEqual(estimate.blobpages,   0.6666666666)
 
 class DokuforgeMockTests(DfTestCase):
     def verify_idempotency(self, inp):
