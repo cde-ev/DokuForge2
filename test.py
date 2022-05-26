@@ -812,18 +812,18 @@ class EstimatorTests(DfTestCase):
         lipsum = "Lorem ipsum dolor sit amet. "
 
         estimate = Estimate.fromText(10*lipsum)
-        self.assertAlmostEqual(estimate.pages,       0.0933333333)
+        self.assertAlmostEqual(estimate.pages,       0.056)
         self.assertAlmostEqual(estimate.ednotepages, 0.0)
         self.assertAlmostEqual(estimate.blobpages,   0.0)
 
         estimate = Estimate.fromTitle(4*lipsum)
-        self.assertAlmostEqual(estimate.pages,       0.1066666666)
+        self.assertAlmostEqual(estimate.pages,       0.0648)
         self.assertAlmostEqual(estimate.ednotepages, 0.0)
         self.assertAlmostEqual(estimate.blobpages,   0.0)
 
         estimate = Estimate.fromEdnote("{"+10*lipsum+"}")
         self.assertAlmostEqual(estimate.pages,       0.0)
-        self.assertAlmostEqual(estimate.ednotepages, 0.094)
+        self.assertAlmostEqual(estimate.ednotepages, 0.0564)
         self.assertAlmostEqual(estimate.blobpages,   0.0)
 
         estimate = Estimate.fromBlobs((None, None))
