@@ -47,10 +47,9 @@ class Estimate(collections.namedtuple("Estimate",
     @type weightedchars: float
     @type blobs: int
     """
-    # The following constants must be float in Py2.X to avoid int division.
-    charsperpage = 3000.0
-    charsperline = 80.0
-    blobsperpage = 3.0
+    charsperpage = 5000
+    charsperline = 54
+    blobsperpage = 3
 
     @classmethod
     def fromText(cls, s):
