@@ -241,8 +241,6 @@ class Application:
                  endpoint="styleguide"),
             rule("/style/<identifier:topic>", methods=("GET", "HEAD"),
                  endpoint="styleguidetopic"),
-            rule("/groups/<identifier:group>", methods=("GET", "HEAD"),
-                 endpoint="groupindex"),
 
             # academy specific pages
             rule("/docs/<identifier:academy>/", methods=("GET", "HEAD"),
@@ -631,14 +629,6 @@ class Application:
     def do_index(self, rs):
         """
         @type rs: RequestState
-        """
-        self.check_login(rs)
-        return self.render_index(rs)
-
-    def do_groupindex(self, rs, group=None):
-        """
-        @type rs: RequestState
-        @type group: None or unicode
         """
         self.check_login(rs)
         return self.render_index(rs)
