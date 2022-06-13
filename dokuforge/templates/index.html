@@ -6,28 +6,14 @@
     {{ navbar() }}
 {% endblock %}
 
-{% block content %}
-    {% if groups|length > 1 %}
-        Alle Gruppen:
-        <ul style="margin-top: 0">
-            {%- for onegroup in groups.keys()|sort -%}
-                {% if onegroup == group %}
-                    <li>{{ groups[onegroup]|e }}</li>
-                {%- elif user.allowedList(onegroup) -%}
-                    <li>
-                        <a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ groups[onegroup]|e }}</a>
-                    </li>
-                {%- endif -%}
-            {%- endfor -%}
-        </ul>
-        <hr>
-    {% endif %}
-    {{ groups[group]|e }}:
-    <ul style="margin-top: 0">
-        {%- for academy in academies -%}
+{% macro list_academies(group) %}
+    <ul style="margin-top: 0; margin-bottom: 0">
+        {%- for academy in academies[group] -%}
             {%- if user.allowedRead(academy) %}
                 <li>
-                    <a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a>
+                    <a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">
+                        {{ academy.title|e }}
+                    </a>
                 </li>
             {%- else -%}
                 <li>{{ academy.title|e }}</li>
@@ -36,6 +22,19 @@
             <li><em>Keine Akademien gefunden.</em></li>
         {%- endfor -%}
     </ul>
+{% endmacro %}
+
+{% block content %}
+    {% if groups|length > 1 %}
+        {%- for group, title in groups.items()|sort -%}
+            <details {% if group == user.defaultGroup() %}open=""{% endif %}>
+                <summary>{{ title }}</summary>
+                {{ list_academies(group) }}
+            </details>
+        {%- endfor -%}
+    {% else %}
+        {{ list_academies(groups|first) }}
+    {% endif %}
 {% if user.mayCreate() %}
 <a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
 {% endif%}

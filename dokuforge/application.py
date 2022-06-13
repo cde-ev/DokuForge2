@@ -633,7 +633,7 @@ class Application:
         @type rs: RequestState
         """
         self.check_login(rs)
-        return self.render_index(rs, None)
+        return self.render_index(rs)
 
     def do_groupindex(self, rs, group=None):
         """
@@ -641,7 +641,7 @@ class Application:
         @type group: None or unicode
         """
         self.check_login(rs)
-        return self.render_index(rs, group)
+        return self.render_index(rs)
 
     def do_academy(self, rs, academy = None):
         """
@@ -1446,20 +1446,21 @@ class Application:
         return self.render("edit.html", rs, params)
 
 
-    def render_index(self, rs, group = None):
+    def render_index(self, rs):
         """
         @type rs: RequestState
-        @type group: None or unicode
         """
-        if group is None:
-            group = rs.user.defaultGroup()
-        academies = [academy.view() for academy in self.listAcademies()
-                     if group in academy.view()["groups"]]
-        groups = self.listGroups()
+        groups = {group: title for group, title in self.listGroups().items()
+                  if rs.user.allowedList(group) or group == rs.user.defaultGroup()}
+        all_academies = self.listAcademies()
+        academies = {
+            group: [academy.view() for academy in all_academies
+                    if group in academy.view()["groups"]]
+            for group in groups
+        }
         params = dict(
             academies=academies,
-            groups=groups,
-            group=group)
+            groups=groups)
         return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):
