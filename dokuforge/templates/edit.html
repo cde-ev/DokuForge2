@@ -22,7 +22,7 @@
 
   Teil #{{ page|string }}
   <div id="saveedittext">
-	<textarea name="content" style="font-family: monospace" rows="20">{{ content|e }}</textarea>
+	<textarea name="content" class="dokuedit">{{ content|e }}</textarea>
   </div>
   <div id="saveeditinput">
 	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 

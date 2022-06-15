@@ -66,6 +66,12 @@ textarea {
     text-align: center;
 }
 
+.dokuedit {
+    font-family: monospace;
+    font-size: 12px;
+    height: 64vh;
+}
+
 .rareCommands {
   display: inline-block;
   float: right;
