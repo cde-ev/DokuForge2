@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block subheading %}
-{{ academy.title|e }}
+    Teil #{{ page|e }}
 {% endblock %}
 {% block location %}
 {{ navbar([("academy", {}, academy.title),
@@ -122,7 +122,7 @@ Zugeordnete Bilder:
 {%- endif -%}
 
 {%- if user.allowedWrite(academy, course) %}
-<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a>
+<a href="{{ buildurl("addblob")|e }}">neues Bild hinzuf&uuml;gen</a> |
 <a href="{{ buildurl("showdeadblobs")|e }}">gel&ouml;schte Bilder hier wieder einf&uuml;gen</a>
 {%- endif -%}
 

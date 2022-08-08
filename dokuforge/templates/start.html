@@ -1,10 +1,9 @@
 {% extends "base.html" %}
+
 {% block subheading %}
-Startseite
+    Login
 {% endblock %}
-{% block location %}
-{{ navbar() }}
-{% endblock %}
+
 {% block content %}
 <form action="{{ buildurl("login")|e }}" method="post" id="login">
   <p>Nutzername: <input name="username" type="text"></p>
