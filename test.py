@@ -908,7 +908,7 @@ class LocalExportScriptTest(unittest.TestCase):
             shutil.rmtree("testData/dokuforge-export-static_test")
             shutil.rmtree(self.testExportDir)
 
-        def _verifyDokforgeStaticFilesExist():
+        def _verifyPseudoDokuforgeStaticFilesExist():
             fileName = os.path.join(self.testExportDir, "someFile.txt")
             self.assertTrue(os.path.isfile(fileName))
             with open(fileName, 'r') as someFile:
@@ -932,7 +932,7 @@ class LocalExportScriptTest(unittest.TestCase):
                 self.assertTrue(currentGitRevision in warningContents)
 
         _runLocalExport()
-        _verifyDokforgeStaticFilesExist()
+        _verifyPseudoDokuforgeStaticFilesExist()
         _verifyInputDf2FileContents()
         _verifyWarningContainsGitHash()
         _cleanUp()
