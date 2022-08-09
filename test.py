@@ -900,9 +900,9 @@ class LocalExportScriptTest(unittest.TestCase):
             self.assertFalse(os.path.isdir(self.testExportDir))
             with open(os.devnull, 'w') as devnull:
                 subprocess.call("cd testData && tar xf dokuforge-export-static_test.tar.gz",
-                                shell=True, stdout=devnull, stderr=devnull)
+                                shell=True)  # , stdout=devnull, stderr=devnull)
                 subprocess.call("./localExport.sh testData/txa2011-1.tar.gz testData/dokuforge-export-static_test/",
-                                shell=True, stdout=devnull, stderr=devnull)
+                                shell=True)  # , stdout=devnull, stderr=devnull)
 
         def _cleanUp():
             shutil.rmtree("testData/dokuforge-export-static_test")
