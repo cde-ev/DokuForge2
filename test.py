@@ -909,6 +909,8 @@ class LocalExportScriptTest(unittest.TestCase):
             shutil.rmtree(self.testExportDir)
 
         def _verifyPseudoDokuforgeStaticFilesExist():
+            # This is not part of the standard dokuforge-export-static,
+            # but a different file expected in the dummy data used here.
             fileName = os.path.join(self.testExportDir, "someFile.txt")
             self.assertTrue(os.path.isfile(fileName))
             with open(fileName, 'r') as someFile:
