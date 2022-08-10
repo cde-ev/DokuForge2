@@ -17,9 +17,9 @@ steps:
   - apt-get install -y python3-werkzeug > /dev/null
   - apt-get install -y python3-jinja2 > /dev/null
   - apt-get install -y python3-webtest > /dev/null
-  - apt-get install -y python-epydoc > /dev/null
+  - apt-get install -y python-epydoc
   # wsgitools is only available via pip
-  - apt-get install -y python3-pip > /dev/null
+  - apt-get install -y python3-pip
   # TODO the only version of wsgitools which is available on pip is 0.3.1
   - python3 -m pip install --no-cache-dir wsgitools
   # finally, perform the tests
