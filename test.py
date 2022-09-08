@@ -354,11 +354,12 @@ class DokuforgeSmallWebTests(DokuforgeWebTests):
 $$\\sqrt{2}$$
 [[subsection]]
 - bullet1
-- bullet2
+- bullet2 https://www.someurl.org
 chars like < > & " to be escaped and an { ednote \\end{ednote} }
 """
         self.res = form.submit(name="saveshow")
-        self.res.mustcontain("$\\sqrt{2}$", "ednote \\end{ednote}")
+        expected_linked_url = '<a href="https://www.someurl.org" rel="noopener">https://www.someurl.org</a>'
+        self.res.mustcontain("$\\sqrt{2}$", "ednote \\end{ednote}", expected_linked_url)
         self.is_loggedin()
 
     def testMovePage(self):
