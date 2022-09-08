@@ -25,6 +25,7 @@
 {% endmacro %}
 
 {% block content %}
+    <div>
     {% if groups|length > 1 %}
         {%- for group, title in groups.items()|sort -%}
             <details {% if group == user.defaultGroup() %}open=""{% endif %}>
@@ -35,7 +36,8 @@
     {% else %}
         {{ list_academies(groups|first) }}
     {% endif %}
+    </div>
 {% if user.mayCreate() %}
-<a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
+    <p><a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a></p>
 {% endif%}
 {% endblock %}
