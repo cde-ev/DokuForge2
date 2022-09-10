@@ -19,8 +19,16 @@ clean:
 
 check: test
 
+# entire test suite
 test: test.py
 	${PYTHON3} test.py
+
+# only test exporting of text (microtypography, titles etc.)
+test-exported-strings:
+	${PYTHON3} test.py DokuforgeParserUnitTests DokuforgeMicrotypeUnitTests DokuforgeTitleParserTests DokuforgeCaptionParserTests
+
+test-exporter: test-exported-strings
+	${PYTHON3} test.py DokuforgeExporterTests LocalExportScriptTest
 
 .coverage:$(wildcard dokuforge/*.py) test.py
 	${PYTHON3} -m coverage run --include=dokuforge/*.py,test.py ./test.py
