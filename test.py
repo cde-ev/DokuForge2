@@ -12,11 +12,13 @@ import unittest
 from wsgiref.validate import validator
 import webtest
 import datetime
+import tarfile
+import subprocess
 
 import createexample
 from dokuforge import buildapp
 from dokuforge.paths import PathConfig
-from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser
+from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser, Estimate, allowedMathSymbolCommands
 from dokuforge.common import TarWriter
 from dokuforge.common import UTC
 from dokuforge.course import Course
@@ -29,6 +31,12 @@ try:
 except AttributeError:
     def Upload(filename):
         return (filename,)
+
+try:
+    unicode
+except NameError:
+    unicode = str
+
 
 teststrings = [
     (u"simple string", u"simple string"),
@@ -227,7 +235,7 @@ permissions = df_meta True,akademie_meta_aca123 False
 
 class DokuforgeWebTests(DfTestCase):
     url = "http://www.dokuforge.de"
-    size = None
+    size = None  # will be set in derived classes
 
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
@@ -258,6 +266,8 @@ class DokuforgeWebTests(DfTestCase):
         self.res.mustcontain("/logout")
 
 class DokuforgeBigWebTests(DokuforgeWebTests):
+    """Tests requiring a big dokuforge example instance"""
+
     size = 100
 
     def testCourseLessPrivileged(self):
@@ -269,6 +279,9 @@ class DokuforgeBigWebTests(DokuforgeWebTests):
         self.is_loggedin()
 
 class DokuforgeSmallWebTests(DokuforgeWebTests):
+    """Tests of dokuforge functionality (excluding exporting) for which a
+    small instance is sufficient"""
+
     size = 1
 
     def testLogin(self):
@@ -297,7 +310,7 @@ class DokuforgeSmallWebTests(DokuforgeWebTests):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.is_loggedin()
-        self.res.mustcontain("Testexport")
+        self.res.mustcontain("Export")
 
     def testCourse(self):
         self.do_login()
@@ -710,11 +723,30 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain(u"Kürzel nicht wohlgeformt!")
         self.is_loggedin()
 
-    def testAcademyExport(self):
+    def testPartDeletion(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(description="Testexport")
-        self.assertIsTarGz(self.res.body)
+        self.res.mustcontain("Area51")
+        self.res = self.res.click(href=re.compile("/.*createcourse$"))
+        form = self.res.forms[1]
+        form["name"] = "bug"
+        form["title"] = "bug"
+        self.res = form.submit()
+        self.res.mustcontain("Area51", "bug")
+        self.res = self.res.click(href=re.compile("/bug/$"))
+        self.res = self.res.forms[1].submit() # create new part
+        self.res = self.res.click(href=re.compile("/bug/0/$"), index=0)
+        self.res = self.res.forms[1].submit() # delete only part
+
+class DokuforgeExporterTests(DokuforgeWebTests):
+    """Check whether exporting data from within dokuforge works.
+
+    This requires a small dokuforge example instance, hence inherits from
+    DokuforgeWebTests.
+    Microtypography (exporting of strings) is tested in ExporterTestCases.
+    """
+
+    size = 1
 
     def testRawCourseExport(self):
         self.do_login()
@@ -732,20 +764,181 @@ permissions = df_superadmin True,df_admin True
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.res.body.startswith(b"head"))
 
-    def testPartDeletion(self):
+    def testAcademyExport(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res.mustcontain("Area51")
-        self.res = self.res.click(href=re.compile("/.*createcourse$"))
-        form = self.res.forms[1]
-        form["name"] = "bug"
-        form["title"] = "bug"
-        self.res = form.submit()
-        self.res.mustcontain("Area51", "bug")
-        self.res = self.res.click(href=re.compile("/bug/$"))
-        self.res = self.res.forms[1].submit() # create new part
-        self.res = self.res.click(href=re.compile("/bug/0/$"), index=0)
-        self.res = self.res.forms[1].submit() # delete only part
+        self.res = self.res.click(description="Export")
+        self.assertIsTarGz(self.res.body)
+
+    def _getExportAsTar(self):
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(description="Export")
+        tarFile = tarfile.open(mode='r', fileobj=io.BytesIO(self.res.body))
+        return tarFile
+
+    def testExpectedFilesExist(self):
+        self.do_login()
+        tarFile = self._getExportAsTar()
+        expectedMembers = ['texexport_xa2011-1/WARNING',
+                           'texexport_xa2011-1/course01/chap.tex',
+                           'texexport_xa2011-1/course02/chap.tex',
+                           'texexport_xa2011-1/contents.tex']
+        memberNames = tarFile.getnames()
+        for filename in expectedMembers:
+            self.assertTrue(filename in memberNames)
+
+    def testExpectedInfrastructureFileContents(self):
+        self.do_login()
+        tarFile = self._getExportAsTar()
+        warningText = tarFile.extractfile("texexport_xa2011-1/WARNING").read().decode()
+        self.assertGreater(len(warningText), 50)
+        contentsText = tarFile.extractfile("texexport_xa2011-1/contents.tex").read().decode()
+        self.assertTrue(r"\input{course01/chap}" in contentsText)
+        self.assertTrue(r"\input{course02/chap}" in contentsText)
+
+    def testAddDifferentImageBlobs(self):
+        imageFilenamesUnchanged = ['fig_platzhalter.jpg',
+                                   'fig_platzhalter.png',
+                                   'Fuzzi-Hut-Logo.eps',
+                                   'Fuzzi-Hut-Logo2.EPS',
+                                   'Fuzzi-Hut-Logo.pdf',
+                                   'Fuzzi-Hut-Logo.Komisch-pdf',
+                                   'Fuzzi-Hut-Logo.svg',
+                                   'Fuzzi-Hut-Logo2.SVG']
+
+        # note that fig_platzhalter2.jpg will not become duplicate in export
+        # as it gets prefixed by blob_#
+        imageFilenamesToBeChanged = {'fig_platzhalter.jpeg'  : 'fig_platzhalter.jpg'  ,
+                                     'fig_platzhalter2.JPEG' : 'fig_platzhalter2.jpg' ,
+                                     'fig_platzhalter2.JPG'  : 'fig_platzhalter2.jpg' ,
+                                     'fig_platzhalter2.PNG'  : 'fig_platzhalter2.png' ,
+                                     'Fuzzi-Hut-Logo2.PDF'   : 'Fuzzi-Hut-Logo2.pdf'   }
+
+        imageFilenames = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.keys())
+
+        def _addImagesToCourse01():
+            os.chdir('testData')
+            counter = 0  # to achieve distinct labels
+            for imageFilename in imageFilenames:
+                self.res = self.res.click(description="X-Akademie")
+                self.res = self.res.click(href=re.compile("course01/$"))
+                self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+                self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+                form = self.res.forms[1]
+                form["comment"] = "Kommentar"
+                form["label"] = "blob" + str(counter)
+                self.res = form.submit()
+                form = self.res.forms[1]
+                form["content"] = Upload(imageFilename)
+                self.res = form.submit()
+                counter = counter + 1
+            os.chdir('..')
+
+        def _checkExportedFilenames(tarFile):
+            expectedFilenamesInExport = imageFilenamesUnchanged + list(imageFilenamesToBeChanged.values())
+            memberNames = tarFile.getnames()
+
+            filenamesInExport = []
+            for m in memberNames:
+                filenamesInExport.append(m.split('/')[-1])
+
+            # check if all expected file names are present
+            # note that they are prefixed by blob_#_ when exporting
+            for expectedFilename in expectedFilenamesInExport:
+                found = False
+                for f in filenamesInExport:
+                    if f.endswith(expectedFilename):
+                        found = True
+                self.assertTrue(found)
+
+        def _checkFilenamesInComment(exportedCourseTexWithImages):
+            filenamesExpectedInComment = imageFilenamesToBeChanged.keys()
+            for filename in filenamesExpectedInComment:
+                expectedLine = "%% Original-Dateiname: %s" % (filename,)
+                self.assertTrue(expectedLine in exportedCourseTexWithImages)
+
+        def _checkFilenamesInIncludegraphics(exportedCourseTexWithImages):
+            filenamesExpectedInIncludegraphics = imageFilenamesToBeChanged.values()
+            for filename in filenamesExpectedInIncludegraphics:
+                expectedLineRegex = r"\\includegraphics\[height=12\\baselineskip\]\{course01/blob_\d+_%s\}" \
+                                    % (filename,)
+                self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+
+        def _checkFilenamesExpectedNotIncluded(exportedCourseTexWithImages):
+            filenamesExpectedNotIncluded = {i for i in imageFilenamesUnchanged
+                                            if (not i.endswith('.jpg') and
+                                                not i.endswith('.png') and
+                                                not i.endswith('.pdf'))}
+            for filename in filenamesExpectedNotIncluded:
+                expectedLineRegex = r"%%\\includegraphics\[height=12\\baselineskip\]\{course01/blob_\d+_%s\}" \
+                                    % (filename,)
+                self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+                expectedLineRegex = r"(Binaerdatei \\verb\|%s\| nicht als Bild eingebunden)" \
+                                    % (filename,)
+                self.assertNotEqual(re.findall(expectedLineRegex, exportedCourseTexWithImages), [])
+
+        self.do_login()
+        _addImagesToCourse01()
+        tarFile = self._getExportAsTar()
+        _checkExportedFilenames(tarFile)
+
+        exportedCourseTexWithImages = tarFile.extractfile("texexport_xa2011-1/course01/chap.tex").read().decode()
+        _checkFilenamesInComment(exportedCourseTexWithImages)
+        _checkFilenamesInIncludegraphics(exportedCourseTexWithImages)
+        _checkFilenamesExpectedNotIncluded(exportedCourseTexWithImages)
+
+
+class LocalExportScriptTest(unittest.TestCase):
+    """Check whether the script to create a (LaTeX) export from a raw export
+    works. This calls the exporter externally and does not require a dokuforge
+    example instance."""
+
+    testExportDir = "testData/texexport_txa2011-1"
+
+    def testLocalExportScript(self):
+        def _runLocalExport():
+            self.assertFalse(os.path.isdir(self.testExportDir))
+            with open(os.devnull, 'w') as devnull:
+                subprocess.call("cd testData && tar xf dokuforge-export-static_test.tar.gz",
+                                shell=True, stdout=devnull, stderr=devnull)
+                subprocess.call("./localExport.sh testData/txa2011-1.tar.gz testData/dokuforge-export-static_test/",
+                                shell=True, stdout=devnull, stderr=devnull)
+
+        def _cleanUp():
+            shutil.rmtree("testData/dokuforge-export-static_test")
+            shutil.rmtree(self.testExportDir)
+
+        def _verifyPseudoDokuforgeStaticFilesExist():
+            # This is not part of the standard dokuforge-export-static,
+            # but a different file expected in the dummy data used here.
+            fileName = os.path.join(self.testExportDir, "someFile.txt")
+            self.assertTrue(os.path.isfile(fileName))
+            with open(fileName, 'r') as someFile:
+                someFileContents = someFile.read()
+                self.assertTrue("Just some file ..." in someFileContents)
+
+        def _verifyInputDf2FileContents():
+            for fileName in (os.path.join(self.testExportDir, "course01/input.df2"),
+                             os.path.join(self.testExportDir, "course02/input.df2")):
+                self.assertTrue(os.path.isfile(fileName))
+                with open(fileName, 'r') as df2InputFile:
+                    df2InputContents = df2InputFile.read()
+                    self.assertTrue("title" in df2InputContents)
+                    self.assertTrue("page0" in df2InputContents)
+                    self.assertTrue("page1" in df2InputContents)
+
+        def _verifyWarningContainsGitHash():
+            with open(os.path.join(self.testExportDir, "WARNING"), 'r') as warningFile:
+                warningContents = warningFile.read()
+                currentGitRevision = subprocess.check_output("git rev-parse HEAD", shell=True).strip().decode()
+                self.assertTrue(currentGitRevision in warningContents)
+
+        _runLocalExport()
+        _verifyPseudoDokuforgeStaticFilesExist()
+        _verifyInputDf2FileContents()
+        _verifyWarningContainsGitHash()
+        _cleanUp()
+
 
 class CourseTests(DfTestCase):
     def setUp(self):
@@ -807,6 +1000,30 @@ class AcademyTest(DfTestCase):
         self.assertCourses([b'legacy', b'new01', b'new02'])
         self.assertDeadCourses([])
 
+class EstimatorTests(DfTestCase):
+    def test_estimates(self):
+        lipsum = "Lorem ipsum dolor sit amet. "
+
+        estimate = Estimate.fromText(10*lipsum)
+        self.assertAlmostEqual(estimate.pages,       0.056)
+        self.assertAlmostEqual(estimate.ednotepages, 0.0)
+        self.assertAlmostEqual(estimate.blobpages,   0.0)
+
+        estimate = Estimate.fromTitle(4*lipsum)
+        self.assertAlmostEqual(estimate.pages,       0.0648)
+        self.assertAlmostEqual(estimate.ednotepages, 0.0)
+        self.assertAlmostEqual(estimate.blobpages,   0.0)
+
+        estimate = Estimate.fromEdnote("{"+10*lipsum+"}")
+        self.assertAlmostEqual(estimate.pages,       0.0)
+        self.assertAlmostEqual(estimate.ednotepages, 0.0564)
+        self.assertAlmostEqual(estimate.blobpages,   0.0)
+
+        estimate = Estimate.fromBlobs((None, None))
+        self.assertAlmostEqual(estimate.pages,       0.0)
+        self.assertAlmostEqual(estimate.ednotepages, 0.0)
+        self.assertAlmostEqual(estimate.blobpages,   0.6666666666)
+
 class DokuforgeMockTests(DfTestCase):
     def verify_idempotency(self, inp):
         inp2 = dfLineGroupParser(inp).toDF()
@@ -831,68 +1048,416 @@ class DokuforgeMockTests(DfTestCase):
         out = dfLineGroupParser(u"[ok]\n(bad < author >)").toHtml().strip()
         self.assertEqual(out, u"<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
 
-class DokuforgeMicrotypeUnitTests(DfTestCase):
-    def verifyExportsTo(self, df, tex):
-        obtained = dfLineGroupParser(df).toTex().strip()
-        self.assertEqual(obtained, tex)
+class ExporterTestStrings:
+    """Input and expected output for testing exporter"""
 
-    def testItemize(self):
-        self.verifyExportsTo(u'- Text',
-                             u'\\begin{itemize}\n\\item Text\n\\end{itemize}')
-        self.verifyExportsTo(u'-Text', u'-Text')
+    itemizeAndCo = [[u'- Text',
+                     u'\\begin{itemize}[joinedup,packed]\n\\item Text\n\\end{itemize}'],
+                    [u'-Text',
+                     u'-Text'],
+                    [u'- item\n\n-nonitem',
+                     u'\\begin{itemize}[joinedup,packed]\n\\item item\n\end{itemize}\n\n-nonitem'],
+                    [u'1. item',
+                     u'\\begin{enumerate}[joinedup,packed]\n% 1\n\\item item\n\end{enumerate}'] ]
 
+    quotes = [ [u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
+                u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
+               [u'"Am Anfang" des Texts',
+                u'"`Am Anfang"\' des Texts'],
+               [u'in der Mitte "vor Kommata", im Text',
+                u'in der Mitte "`vor Kommata"\', im Text'],
+               [u'und "am Ende".',
+                u'und "`am Ende"\'.'],
+               [u'"Vor und"\n"nach" Zeilenumbrüchen.',
+                u'"`Vor und"\' "`nach"\' Zeilenumbrüchen.'],
+               [u'Markus\' single quote',
+                u'Markus\\@\' single quote'],
+               [u'"Wow"-Effekt',
+                u'"`Wow"\'-Effekt'],
+               [u'Was laesst Menschen "aufbluehen"?',
+                u'Was laesst Menschen "`aufbluehen"\'?'],
+               [u'ei "(Ei" ei ("Ei" ei',
+                u'ei "`(Ei"\' ei ("`Ei"\' ei'],
+               [u'"Schoki"! "Cola"; "Wasser", "Nudeln": "Suppe")',
+                u'"`Schoki"\'! "`Cola"\'; "`Wasser"\', "`Nudeln"\': "`Suppe"\')'],
+               [u'"Yo!" "Whaaat?" "Boom." "Cola;" "Nudeln:" "Suppe)"',
+                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\' "`Cola;"\' "`Nudeln:"\' "`Suppe)"\''],
+               [u'"Wasser,"',
+                u'"`Wasser,"\''],
+               [u'So "sollte es" sein. Und "$so$ ist $es$" hier.',
+                u'So "`sollte es"\' sein. Und \\@"`$so$ ist $es$\\@"\' hier.'],
+               [u'Bitte "ACRONYME" berücksichtigen.',
+                u'Bitte "`\\@\\acronym{ACRONYME}"\' berücksichtigen.'],
+               [u'"Altern der DNA"',
+                u'"`Altern der \\@\\acronym{DNA}"\''] ]
 
-    def testQuotes(self):
-        self.verifyExportsTo(u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
-                             u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.')
-        self.verifyExportsTo(u'"Am Anfang" ...',
-                             u'"`Am Anfang"\' \\dots{}')
-        self.verifyExportsTo(u'... "vor Kommata", ...',
-                             u'\\dots{} "`vor Kommata"\', \\dots{}')
-        self.verifyExportsTo(u'... und "am Ende".',
-                             u'\\dots{} und "`am Ende"\'.')
-        self.verifyExportsTo(u'"Vor und"\n"nach" Zeilenumbrüchen.',
-                             u'"`Vor und"\' "`nach"\' Zeilenumbrüchen.')
+    abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                      u'Von 3760\,v.\\,Chr. bis 2012\,n.\\,Chr. und weiter'],
+                     [u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.',
+                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.'],
+                     [u'aber u.a. auch o.ä. wie o.Ä.',
+                      u'aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.'],
+                     [u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
+                      u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
+                     # similar to above, but with spaces in input
+                     [u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
+                      u'Von 3760\,v.\\,Chr. bis 2012\,n.\\,Chr. und weiter'],
+                     [u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
+                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
+                     [u'd. h., der Exporter bzw. oder ca. oder so.',
+                      u'd.\\,h., der Exporter bzw. oder ca. oder so.'],
+                     [u'Aber u. a. auch o. ä. wie o. Ä.',
+                      u'Aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.']]
 
-    def testAbbrev(self):
-        self.verifyExportsTo(u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                             u'Von 3760 v.\\,Chr. bis 2012 n.\\,Chr. und weiter')
-        self.verifyExportsTo(u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h., er...',
-                             u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h., er\\dots{}')
+    acronym = [ [u'Bitte ACRONYME wie EKGs anders setzen.',
+                 u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
+                [u'Unterscheide T-shirt und DNA-Sequenz.',
+                 u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.'],
+                [u'Wenn 1D nicht reicht, nutze 2D oder 6D.',
+                 u'Wenn 1\\@\\acronym{D} nicht reicht, nutze 2\\@\\acronym{D} oder\n6\\@\\acronym{D}.'],
+                [u'Wahlergebnis fuer die SPD: 9% (NRW).',
+                 u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
+                [u'FDP? CDU! CSU. ÖVP.',
+                 u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.'],
+                [u'Das ZNS.',
+                 u'Das \\@\\acronym{ZNS}.'] ]
 
-    def testAcronym(self):
-        self.verifyExportsTo(u'Bitte ACRONYME anders setzen.',
-                             u'Bitte \\acronym{ACRONYME} anders setzen.')
-        self.verifyExportsTo(u'Unterscheide T-shirt und DNA-Sequenz.',
-                             u'Unterscheide T-shirt und \\acronym{DNA}-Sequenz.')
+    escaping = [ [u'Forbid \\mathbb and \\dangerous outside math.',
+                  u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
+                 [u'Do not allow $a \\dangerous{b}$ commands!',
+                  u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!'],
+                 [u'\\\\ok, $\\\\ok$',
+                  u'\\\\ok, $\\\\ok$'],
+                 [u'$\\\\\\bad$',
+                  u'$\\\\\\@\\forbidden\\bad$'],
+                 [u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
+                  u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$'],
+                 [u'$\\circ$ $\\cap\\inf$ $\\times$',
+                  u'$\\circ$ $\\cap\\inf$ $\\times$' ],
+                 [u'$a &= b$',
+                  u'$a \\@\\forbidden\\&= b$'],
+                 [u'$$a &= b$$',
+                  u'\\begin{equation*}\na \\@\\forbidden\\&= b\n\\end{equation*}'],
+                 [u'Trailing \\',
+                  u'Trailing \\@\\backslash'],
+                 [u'$Trailing \\$',
+                  u'$Trailing \\@\\backslash$'],
+                 [u'f# ist eine Note',
+                  u'f\\@\\# ist eine Note'],
+                 [u'$a^b$ ist gut, aber a^b ist schlecht',
+                  u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht'],
+                 [u'Heinemann&Co. ist vielleicht eine Firma',
+                  u'Heinemann\\@\\&Co. ist vielleicht eine Firma'],
+                 [u'10% sind ein Zehntel und mehr als 5 %.',
+                  u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.'],
+                 [u'Geschweifte Klammern { muessen } escaped werden.',
+                  u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'],
+                 [u'Tilde~ist unklar. $Auch~hier$.',
+                  u'Tilde\\@~ist unklar. $Auch\\@~hier$.'] ]
 
-    def testEscaping(self):
-        self.verifyExportsTo(u'Do not allow \\dangerous commands!',
-                             u'Do not allow \\forbidden\\dangerous commands!')
-        self.verifyExportsTo(u'\\\\ok',
-                             u'\\\\ok')
-        self.verifyExportsTo(u'\\\\\\bad',
-                             u'\\\\\\forbidden\\bad')
-        self.verifyExportsTo(u'10% sind ein Zehntel',
-                             u'10\\% sind ein Zehntel')
-        self.verifyExportsTo(u'f# ist eine Note',
-                             u'f\# ist eine Note')
-        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
-                             u'$a^b$ ist gut, aber a\\caret{}b ist schlecht')
-        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
-                             u'Heinemann\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             u'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+    mathSymbols = [ [u'$\\'+i+u'$', u'$\\'+i+u'$'] for i in allowedMathSymbolCommands ]
 
-    def testTrails(self):
-        self.verifyExportsTo(u'trailing space ',
-                             u'trailing space')
-        self.verifyExportsTo(u'trailing backslash \\',
-                             u'trailing backslash \\@\\textbackslash{}')
+    mathEnvironments = [ [u'b $$\\circ \\cap \\inf \\times$$ e',
+                          u'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
+                         [u'b $$\n\\circ \\cap \\inf \\times\n$$ e',
+                          u'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
+                         [u'b $$\n\\begin{equation}a + b = c\\end{equation}\n$$ e',
+                          u'b\n\\begin{equation}\na + b = c\n\\end{equation}\n e'],
+                         [u'b $$\n\\begin{equation*}a + b = c \\end{equation*}\n$$ e',
+                          u'b\n\\begin{equation*}\na + b = c\n\\end{equation*}\n e'],
+                         [u'b $$\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n$$ e',
+                          u'b\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n e'],
+                         [u'b $$\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n$$ e',
+                          u'b\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n e'],
+                         [u'b $$\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}\n$$ e',
+                          u'b\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align}\n e'],
+                         [u'a $$\n\\begin{equation} b &= c \\end{equation}\n$$ d',
+                          u'a\n\\begin{equation}\nb \\@\\forbidden\\&= c\n\\end{equation}\n d'],
+                         [u'b $$\n\\begin{equation}a + b &= c\\end{equation}\n$$ e',
+                          u'b\n\\begin{equation}\na + b \\@\\forbidden\\&= c\n\\end{equation}\n e'],
+                         [u'b $$\n\\begin{align}a + b \evilmath = c\\end{align}\n$$ e',
+                          u'b\n\\begin{align}\na + b \\@\\forbidden\\evilmath = c\n\\end{align}\n e'],
+                         [u'Bla $$\n\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}\n$$ Blub',
+                          u'Bla\n\\begin{align}\na + b &= c\\\\\na - b &= d\n\\end{align}\n Blub'],
+                         [u'Matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$.',
+                          u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'],
+                         [u'Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.',
+                          u'Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.'] ]
 
-    def testEdnoteEscape(self):
-        self.verifyExportsTo(
-u"""
+    evilUTF8 = [ [u'Bla … blub bloink.',
+                  u'Bla~\\@\\dots{} blub bloink.'],
+                 [u'Bla – blub — bloink.',
+                  u'Bla \\@-- blub \\@--- bloink.'],
+                 [u'Bla „deutsch“ “american” ”unusual“.',
+                  u'Bla \\@"`deutsch\\@"\' \\@"`american\\@"\' \\@"`unusual\\@"\'.'],
+                 [u'Bla «französisch» oder « französisch ».',
+                  u'Bla \\@"`französisch\\@"\' oder \\@\\@"` französisch \\@\\@"`.'],
+                 [u'Bla „(deutsch,“ “(american,” ”(unusual,“.',
+                  u'Bla \\@"`(deutsch,\\@"\' \\@"`(american,\\@"\' \\@"`(unusual,\\@"\'.'],
+                 [u'„$einsam$ $lonely$” $quote$“ here.',
+                  u'\\@"`$einsam$ $lonely$\\@"\' $quote$\\@"\' here.'],
+                 [u'Bla »blub« bloink.',
+                  u'Bla \\@"`blub\\@"\' bloink.'],
+                 [u'\'Bla\' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
+                  u'\\@\'Bla\\@\' \\@\'blub\\@\' \\@\'bloink\\@\' \\@\'blub\\@\' \\@\'bloink\\@\'.'],
+                 [u'„‚Nested quotes‘”.',
+                  u'\\@\\@"`\\@\'Nested quotes\\@\'\\@\\@"`.'] ]
+
+    nonstandardSpace = [ [u'x x',    # standard ASCII space
+                          u'x x' ],
+                         [u'x x',    # non-breaking space U+00A0
+                          u'x\@ x' ],
+                         [u'x x',    # en quad U+2000
+                          u'x\@ x' ],
+                         [u'x x',    # em quad U+2001
+                          u'x\@ x' ],
+                         [u'x x',    # en space U+2002
+                          u'x\@ x' ],
+                         [u'x x',    # em space U+2003
+                          u'x\@ x' ],
+                         [u'x x',    # 1/3 em space U+2004
+                          u'x\@ x' ],
+                         [u'x x',    # 1/4 em space U+2005
+                          u'x\@ x' ],
+                         [u'x x',    # 1/6 em space U+2006
+                          u'x\@ x' ],
+                         [u'x x',    # figure space U+2007
+                          u'x\@ x' ],
+                         [u'x x',    # punctuation space U+2008
+                          u'x\@ x' ],
+                         [u'x x',    # thin space U+2009
+                          u'x\@ x' ],
+                         [u'x x',    # hair space U+200A
+                          u'x\@ x' ],
+                         [u'x​x',    # zero width space U+200B
+                          u'x\@ x' ],
+                         [u'x x',    # narrow no-break space U+202F
+                          u'x\@ x' ],
+                         [u'x x',    # medium mathematical space (4/18 em) U+205F
+                          u'x\@ x' ],
+                         [u'x﻿x',    # zero-width non-breaking space U+FEFF
+                          u'x\@ x' ] ]
+
+    pageReferences = [ [u'Auf S. 4 Abs. 3 in Art. 7 steht',
+                        u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
+                       [u'Auf Seite 4 Absatz 3 in Artikel 7 steht',
+                        u'Auf Seite~4 Absatz~3 in Artikel~7 steht'],
+                       [u'Auf S.4-6 steht',
+                        u'Auf \\@S.\\,4\\@--6 steht'],
+                       [u'Auf S.4--6 steht',
+                        u'Auf \\@S.\\,4--6 steht'],
+                       [u'Auf S. 4f steht',
+                        u'Auf \\@S.\\,4\\,f. steht'],
+                       [u'S. 4 ff. besagt',
+                        u'\\@S.\\,4\\,ff. besagt'],
+                       [u'Es fehlen Angaben zu S. Abs. Art.',
+                        u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.'] ]
+
+    spacing = [ [u'A number range 6--9 is nice.',
+                 u'A number range 6--9 is nice.'],
+                [u'6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
+                 u'6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.'],
+                [u'Now we do - with all due respect --, an intersperse.',
+                 u'Now we do \\@-- with all due respect \\@--, an intersperse.'],
+                [u'Followed by an afterthougt -- here it comes.',
+                 u'Followed by an afterthougt \\@-- here it comes.'],
+                [u'Followed by an afterthougt---here it comes.',
+                 u'Followed by an afterthougt\\@---here it comes.'],
+                [u'Here come some dots ...',
+                 u'Here come some dots~\\@\\dots{}'],
+                [u'Here come some dots...',
+                 u'Here come some dots\\@\\dots{}'],
+                [u'Dots in math $a_1,...,a_n$ should work without spacing.',
+                 u'Dots in math $a_1,\\@\\dots{},a_n$ should work without spacing.'],
+                [u'And dots ... in … the middle.',
+                 u'And dots~\\@\\dots{} in~\\@\\dots{} the middle.'],
+                [u'And dots...in the middle.',
+                 u'And dots\\@\\dots{}in the middle.'],
+                [u'And dots [...] for missing text.',
+                 u'And dots [\\@\\ZitatEllipse] for missing text.'] ]
+
+    lawReference = [ [u'In §§1ff. HGB steht',
+                      u'In §§\\,1\\,ff. \\@\\acronym{HGB} steht'],
+                     [u'In § 1 f. HGB steht',
+                      u'In §\\,1\\,f. \\@\\acronym{HGB} steht'],
+                     [u'In § 1 Abs. 1 HGB steht',
+                      u'In §\\,1 \\@Abs.\\,1 \\@\\acronym{HGB} steht'],
+                     [u'In § 1 Absatz 1 Satz 2 HGB steht',
+                      u'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht'],
+                     [u'In §§ 10-15 HGB steht',
+                      u'In §§\\,10\\@--15 \\@\\acronym{HGB} steht'],
+                     [u'Ein verlorener § und noch ein §',
+                      u'Ein verlorener \\@§ und noch ein \\@§'] ]
+
+    numbers = [ [u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
+                 u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
+                [u'We are in the 21. regiment and again in the 21.regiment.',
+                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'],
+                [u'bis zu 30 000 Einwohner',
+                 u'bis zu 30 000 Einwohner'],
+                [u'Kennwort 0000 ist unsicher, 00000 auch, 0000000 nicht weniger',
+                 u'Kennwort 0000 ist unsicher, 00\,000 auch, 0\,000\,000 nicht weniger'],
+                [u'some 5,000 races',
+                 u'some 5,000 races'],
+                [u'pi ist 3,14159',
+                 u'pi ist 3,14\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
+                [u'bla 2004-2006 blub',
+                 u'bla 2004\@--2006 blub']
+              ]
+
+    dates = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
+               u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
+
+    units = [ [u'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
+               u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13\\@--14\\,\\@TeV, 5\\,°C.'],
+              [u'Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
+               u'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.'],
+              [u'Units: 21 kg, 4 MW, 1 mV , 13--14 TeV, 5 °C.',
+               u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV , 13--14\\,\\@TeV, 5\\,°C.'],
+              [u'Decimal number with unit: 25,4 mm.',
+               u'Decimal number with unit: 25,4\\,mm.'],
+              [u'Percentages like 5 % should be handled as nicely as 5%.',
+               u'Percentages like 5\\@\\,\\% should be handled as nicely as 5\\,\\%.'],
+              [u'90° is a right angle.',
+               u'90° is a right angle.'] ]
+
+    code = [ [u'|increase(i)| increases |i|, by one.',
+              u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
+
+    urls = [ [u'http://www.google.de',
+              u'\\@\\url{http://www.google.de}'],
+             [u'(siehe http://www.google.de)',
+              u'(siehe \\@\\url{http://www.google.de})'],
+             [u'http://www.google.de bla',
+              u'\\@\\url{http://www.google.de} bla'],
+             [u'http://www.google.de www.bla.de',
+              u'\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
+             [u'http://www.google.de\nwww.bla.de',
+              u'\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
+             [u'https://duckduckgo.com/?q=find&ia=web',
+              u'\\@\\url{https://duckduckgo.com/?q=find&ia=web}'],
+             [u'https://www.bla.com. Sowie http://www.blub.org?',
+              u'\\@\\url{https://www.bla.com}. Sowie \\@\\url{http://www.blub.org}?'],
+             [u'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
+              u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsserArkade1.jpg}'],
+             [u'https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg',
+              u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
+             [u'auf www.bla.com lesen',
+              u'auf \\@\\url{www.bla.com} lesen'],
+             [u'siehe www.bla.com.',
+              u'siehe \\@\\url{www.bla.com}.'],
+             [u'Das www.ist_keine_hervorhebung.de!',
+              u'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
+             [u'http://www.bla.com/foo}\\evilCommand',
+              u'\\@\\url{http://www.bla.com/foo}\\@\}\\@\\forbidden\\evilCommand']
+             ]
+
+    sectionsAndAuthors = [ [u'[foo]\n(bar)',
+                            u'\\section{foo}\n\\authors{bar}'],
+                           [u'[[foo]]\n\n(bar)',
+                            u'\\subsection{foo}\n\n(bar)'] ]
+
+    sectionsWithEmph = [ [u'[Ola Gjeilo: _Northern Lights_]',
+                          u'\\section{Ola Gjeilo: \\emph{Northern Lights}}'],
+                         [u'[_Mein BAMF_ -- aus dem Kabarett]',
+                          u'\\section{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
+                         [u'[Max Reger: _Es waren zwei Königskinder_ hier]',
+                          u'\\section{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
+                         [u'[[Ola Gjeilo: _Northern Lights_]]',
+                          u'\\subsection{Ola Gjeilo: \\emph{Northern Lights}}'],
+                         [u'[[_Mein BAMF_ -- aus dem Kabarett]]',
+                          u'\\subsection{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
+                         [u'[[Max Reger: _Es waren zwei Königskinder_ hier]]',
+                          u'\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
+                         [u'[1. Buch Mose]',
+                          u'\\section{\\@1. Buch Mose}'] ]
+
+    numericalScope = [ [u'10\xb3 Meter sind ein km',
+                        u'10\xb3 Meter sind ein km'] ]
+
+    codeAndLengthyParagraph = [ [u'Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet\nlirem ipsum dolor sit amet lorem ipsum dolor sit amet\nlurem ipsum dolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so weiter.',
+                                 u'Larem ipsum dolor sit amet \\@\\lstinline|rhoncus| lerem ipsum dolor sit\namet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum\ndolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so\nweiter.'] ]
+
+    lengthyParagraph = [ [u"""Zwei lange Absätze, aber durch Leerzeile getrennt. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+
+Da brauchen wir keinen Hinweis. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.""",
+                          u"""Zwei lange Absätze, aber durch Leerzeile getrennt. Franz jagt im
+komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
+jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
+fume.
+
+Da brauchen wir keinen Hinweis. Franz jagt im komplett verwahrlosten
+Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog.
+Portez ce vieux whisky au juge blond qui fume."""],
+
+                         [u"""Drei kurze Zeilen, jeweils ohne Leerzeilen dazwischen.
+Falsches Üben von Xylophonmusik quält jeden größeren Zwerg.
+Da brauchen wir auch keinen Hinweis.""",
+                          u"""Drei kurze Zeilen, jeweils ohne Leerzeilen dazwischen. Falsches Üben
+von Xylophonmusik quält jeden größeren Zwerg. Da brauchen wir auch
+keinen Hinweis."""],
+
+                         [u"""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.""",
+                          u"""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im
+komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
+jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
+fume.\@\@\@ Das sieht verdächtig aus. Franz jagt im komplett
+verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
+the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
+Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi
+quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez
+ce vieux whisky au juge blond qui fume."""],
+
+                         [u"""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
+                          u"""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen.
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick
+brown fox jumps over the lazy dog. Portez ce vieux whisky au juge
+blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett
+verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
+the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
+
+                         [u"""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen dazwischen.
+Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
+                          u"""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen
+dazwischen.\@\@\@ Franz jagt im komplett verwahrlosten Taxi quer durch
+Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux
+whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im
+komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
+jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
+fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
+
+                         [u"""Erst eine kurze Zeile, dann eine lange mit Mathematik.
+$z$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume $x$ Das sieht verdächtig aus $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
+                          u"""Erst eine kurze Zeile, dann eine lange mit Mathematik.\@\@\@ $z$ Franz
+jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick
+brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge
+blond qui fume $x$ Das sieht verdächtig aus $x$ Franz jagt im komplett
+verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps
+over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume
+$x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
+
+                         [u"""Kurze und lange Zeilen mit Leerzeilen dazwischen.
+
+Bla blub. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. Bla blub. The quick brown fox jumps over the lazy dog. Bla blub. Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. Bla blub. The quick brown fox jumps over the lazy dog. Bla blub. Portez ce vieux whisky au juge blond qui fume.
+
+Das sieht unverdächtig aus.""",
+                          u"""Kurze und lange Zeilen mit Leerzeilen dazwischen.
+
+Bla blub. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.
+Bla blub. The quick brown fox jumps over the lazy dog. Bla blub.
+Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett
+verwahrlosten Taxi quer durch Bayern. Bla blub. The quick brown fox
+jumps over the lazy dog. Bla blub. Portez ce vieux whisky au juge
+blond qui fume.
+
+Das sieht unverdächtig aus."""],
+]
+
+    ednoteEscape = [ [u"""before
 
 {{
 
@@ -904,75 +1469,98 @@ Bobby Tables...
 
 }}
 
-""",
-u"""\\begin{ednote}
+after""",
+u"""before
+
+\\begin{ednote}
 
 Bobby Tables...
 
-|end{ednote}
+\\@|end{ednote}
 
 \\herebedragons
 
-\\end{ednote}""")
+\\end{ednote}
 
-    def testStructures(self):
-        self.verifyExportsTo(u'[foo]\n(bar)',
-                             u'\\section{foo}\n\\authors{bar}')
-        self.verifyExportsTo(u'[[foo]]\n\n(bar)',
-                             u'\\subsection{foo}\n\n(bar)')
-        self.verifyExportsTo(u'- item\n\n-nonitem',
-                             u'\\begin{itemize}\n\\item item\n\end{itemize}\n\n-nonitem')
-        self.verifyExportsTo(u'1. item',
-                             u'\\begin{enumerate}\n% 1\n\\item item\n\end{enumerate}')
-    def testNumeralScope(self):
-        self.verifyExportsTo(u'10\xb3 Meter sind ein km',
-                             u'10\xb3 Meter sind ein km')
+after""" ] ]
+
+    multilineCaptions = [ [u'Dies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.',
+                           u'Dies ist eine Bildunterschrift.\\@\\@\\@\nSie soll zwei Absätze haben.' ] ]
+
+class ExporterTestCases:
+    """
+    Which tests should be run for the separate parsers?
+    """
+    testsEverywhere = [ ExporterTestStrings.quotes,
+                        ExporterTestStrings.abbreviation,
+                        ExporterTestStrings.acronym,
+                        ExporterTestStrings.escaping,
+                        ExporterTestStrings.mathSymbols,
+                        ExporterTestStrings.mathEnvironments,
+                        ExporterTestStrings.evilUTF8,
+                        ExporterTestStrings.nonstandardSpace,
+                        ExporterTestStrings.pageReferences,
+                        ExporterTestStrings.spacing,
+                        ExporterTestStrings.lawReference,
+                        ExporterTestStrings.numbers,
+                        ExporterTestStrings.dates,
+                        ExporterTestStrings.units,
+                        ExporterTestStrings.urls,
+                        ExporterTestStrings.numericalScope ]
+
+    # Text vs. Titles
+    testsInText = testsEverywhere + \
+                  [ ExporterTestStrings.itemizeAndCo,
+                    ExporterTestStrings.code,
+                    ExporterTestStrings.ednoteEscape,
+                    ExporterTestStrings.codeAndLengthyParagraph ]
+
+    lineGroupTests = testsInText + \
+                     [ ExporterTestStrings.sectionsAndAuthors,
+                       ExporterTestStrings.sectionsWithEmph,
+                       ExporterTestStrings.lengthyParagraph ]
+
+    titleTests = testsEverywhere
+
+    captionTests = [[[i, j.replace(u'\n\n', u'\\@\\@\\@\n')] for i, j in k] for k in testsInText] + \
+                   [ ExporterTestStrings.multilineCaptions ]
+
+class DokuforgeParserUnitTests(DfTestCase):
+    def verifyReturnTypes(self, text):
+        pseq = dfLineGroupParser(text)
+        assert isinstance(pseq.debug(), tuple)
+        assert isinstance(pseq.toTex(), unicode)
+        assert isinstance(pseq.toHtml(), unicode)
+        assert isinstance(pseq.toDF(), unicode)
+        assert isinstance(pseq.toEstimate(), Estimate)
+
+    def testLineGroupParser(self):
+        [ [self.verifyReturnTypes(s[0]) for s in t] for t in ExporterTestCases.lineGroupTests ]
+
+class DokuforgeMicrotypeUnitTests(DfTestCase):
+    def verifyExportsTo(self, df, tex):
+        obtained = dfLineGroupParser(df).toTex().strip()
+        self.assertEqual(obtained, tex)
+
+    def testLineGroupParser(self):
+        [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in ExporterTestCases.lineGroupTests ]
+
 
 class DokuforgeTitleParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
         obtained = dfTitleParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    def testEscaping(self):
-        self.verifyExportsTo(u'Do not allow \\dangerous commands!',
-                             u'Do not allow \\forbidden\\dangerous commands!')
-        self.verifyExportsTo(u'\\\\ok',
-                             u'\\\\ok')
-        self.verifyExportsTo(u'\\\\\\bad',
-                             u'\\\\\\forbidden\\bad')
-        self.verifyExportsTo(u'10% sind ein Zehntel',
-                             u'10\\% sind ein Zehntel')
-        self.verifyExportsTo(u'f# ist eine Note',
-                             u'f\# ist eine Note')
-        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
-                             u'$a^b$ ist gut, aber a\\caret{}b ist schlecht')
-        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
-                             u'Heinemann\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             u'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+    def testTitleParser(self):
+        [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in ExporterTestCases.titleTests ]
 
 class DokuforgeCaptionParserTests(DfTestCase):
     def verifyExportsTo(self, df, tex):
-        obtained = dfTitleParser(df).toTex().strip()
+        obtained = dfCaptionParser(df).toTex().strip()
         self.assertEqual(obtained, tex)
 
-    def testEscaping(self):
-        self.verifyExportsTo(u'Do not allow \\dangerous commands!',
-                             u'Do not allow \\forbidden\\dangerous commands!')
-        self.verifyExportsTo(u'\\\\ok',
-                             u'\\\\ok')
-        self.verifyExportsTo(u'\\\\\\bad',
-                             u'\\\\\\forbidden\\bad')
-        self.verifyExportsTo(u'10% sind ein Zehntel',
-                             u'10\\% sind ein Zehntel')
-        self.verifyExportsTo(u'f# ist eine Note',
-                             u'f\# ist eine Note')
-        self.verifyExportsTo(u'$a^b$ ist gut, aber a^b ist schlecht',
-                             u'$a^b$ ist gut, aber a\\caret{}b ist schlecht')
-        self.verifyExportsTo(u'Heinemann&Co. ist vielleicht eine Firma',
-                             u'Heinemann\&Co. ist vielleicht eine Firma')
-        self.verifyExportsTo(u'Escaping in math: $\\evilmath$, but $\\mathbb C$',
-                             u'Escaping in math: $\\forbidden\\evilmath$, but $\\mathbb C$')
+    def testCaptionParser(self):
+        [ [self.verifyExportsTo(s[0],s[1]) for s in t] for t in ExporterTestCases.captionTests ]
 
 if __name__ == '__main__':
     unittest.main()
