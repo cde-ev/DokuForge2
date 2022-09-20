@@ -241,8 +241,6 @@ class Application:
                  endpoint="styleguide"),
             rule("/style/<identifier:topic>", methods=("GET", "HEAD"),
                  endpoint="styleguidetopic"),
-            rule("/groups/<identifier:group>", methods=("GET", "HEAD"),
-                 endpoint="groupindex"),
 
             # academy specific pages
             rule("/docs/<identifier:academy>/", methods=("GET", "HEAD"),
@@ -633,15 +631,7 @@ class Application:
         @type rs: RequestState
         """
         self.check_login(rs)
-        return self.render_index(rs, None)
-
-    def do_groupindex(self, rs, group=None):
-        """
-        @type rs: RequestState
-        @type group: None or unicode
-        """
-        self.check_login(rs)
-        return self.render_index(rs, group)
+        return self.render_index(rs)
 
     def do_academy(self, rs, academy = None):
         """
@@ -1446,17 +1436,21 @@ class Application:
         return self.render("edit.html", rs, params)
 
 
-    def render_index(self, rs, group = None):
+    def render_index(self, rs):
         """
         @type rs: RequestState
-        @type group: None or unicode
         """
-        if group is None:
-            group = rs.user.defaultGroup()
+        groups = {group: title for group, title in self.listGroups().items()
+                  if rs.user.allowedList(group) or group == rs.user.defaultGroup()}
+        all_academies = self.listAcademies()
+        academies = {
+            group: [academy.view() for academy in all_academies
+                    if group in academy.view()["groups"]]
+            for group in groups
+        }
         params = dict(
-            academies=[academy.view() for academy in self.listAcademies()],
-            allgroups=self.listGroups(),
-            group=group)
+            academies=academies,
+            groups=groups)
         return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):

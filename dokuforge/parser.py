@@ -973,7 +973,7 @@ class PUrl(PTree):
 
     def toHtml(self):
         result = self.text.toHtml()
-        result = self.formatAndSplitTrailingChars(u'<a>%s</a>', result)
+        # Linking is done in Template
         return result
 
     def toDF(self):

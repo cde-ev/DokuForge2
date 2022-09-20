@@ -62,7 +62,7 @@
     {{ page_navigation(page, course) }}
     <div class="dokucontent">
         {# content does not need to be escaped, since this is done by the parser #}
-        {{ content }}
+        {{ content|safe|urlize }}
     </div>
     {{ page_navigation(page, course) }}
 
