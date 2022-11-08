@@ -362,6 +362,19 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res.mustcontain("$\\sqrt{2}$", "ednote \\end{ednote}", expected_linked_url)
         self.is_loggedin()
 
+    def testTitleWithEmph(self):
+        self.do_login()
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(description="Editieren", index=1)
+        form = self.res.forms[1]
+        form["content"] = "[ _A_ ]"  # single line
+        self.res = form.submit(name="saveshow")
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(href=re.compile("course01/$"))
+        self.is_loggedin()
+
     def testMovePage(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
