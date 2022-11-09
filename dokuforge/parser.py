@@ -1183,7 +1183,7 @@ class PHeading(PTree):
         return self.level
 
     def getTitle(self):
-        return self.subtree.text
+        return self.subtree.toDF()
 
     def toEstimate(self):
         if isinstance(self.subtree, PSequence):
