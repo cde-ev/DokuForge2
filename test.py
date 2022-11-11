@@ -39,10 +39,10 @@ except NameError:
 
 
 teststrings = [
-    (u"simple string", u"simple string"),
-    (u"some chars <>/& here", u"some chars &lt;&gt;/&amp; here"),
-    (u"exotic äöüß 囲碁 chars", u"exotic äöüß 囲碁 chars"),
-    (u"some ' " + u'" quotes', u"some &#39; &#34; quotes")
+    ("simple string", "simple string"),
+    ("some chars <>/& here", "some chars &lt;&gt;/&amp; here"),
+    ("exotic äöüß 囲碁 chars", "exotic äöüß 囲碁 chars"),
+    ("some ' " + '" quotes', "some &#39; &#34; quotes")
     ]
 
 
@@ -86,14 +86,14 @@ class TarWriterTests(DfTestCase):
 
 class UserDBTests(DfTestCase):
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
+        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge").encode("ascii")
         self.storage = CachingStorage(self.tmpdir, b"db")
         self.userdb = UserDB(self.storage)
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course42'))
         os.makedirs(os.path.join(self.tmpdir, b'aca123/course4711'))
         self.academy = Academy(os.path.join(self.tmpdir, b'aca123'),
-                               lambda : [u'abc', u'cde'])
-        self.academy.setgroups([u'cde'])
+                               lambda : ['abc', 'cde'])
+        self.academy.setgroups(['cde'])
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
@@ -115,10 +115,10 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_view_aca123 True,kurs_read_aca123_course42 True
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertTrue(user.allowedRead(self.academy))
-        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
-        self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse('course42')))
+        self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse('course4711')))
 
     def testReadRecursive(self):
         self.writeUserDbFile(b"""
@@ -127,11 +127,11 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_read_aca123 True
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertTrue(user.allowedRead(self.academy))
         self.assertTrue(user.allowedRead(self.academy, recursive=True))
-        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
-        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse('course42')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse('course4711')))
 
     def testReadNonRecursive(self):
         self.writeUserDbFile(b"""
@@ -140,7 +140,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_view_aca123 True
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertFalse(user.allowedRead(self.academy, recursive=True))
 
     def testReadRevoke(self):
@@ -150,10 +150,10 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_read_aca123 True,kurs_read_aca123_course42 False
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertTrue(user.allowedRead(self.academy))
-        self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
-        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
+        self.assertFalse(user.allowedRead(self.academy, self.academy.getCourse('course42')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse('course4711')))
 
     def testWriteSimple(self):
         self.writeUserDbFile(b"""
@@ -162,10 +162,10 @@ status = cde_dokubeauftragter
 password = abc
 permissions = kurs_write_aca123_course42 True
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertFalse(user.allowedWrite(self.academy))
-        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
-        self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
+        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse('course42')))
+        self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse('course4711')))
 
     def testWriteRevoke(self):
         self.writeUserDbFile(b"""
@@ -174,10 +174,10 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_write_aca123 True,kurs_write_aca123_course42 False
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertTrue(user.allowedWrite(self.academy))
-        self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
-        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
+        self.assertFalse(user.allowedWrite(self.academy, self.academy.getCourse('course42')))
+        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse('course4711')))
 
     def testAdminNonrevokable(self):
         self.writeUserDbFile(b"""
@@ -186,12 +186,12 @@ status = cde_dokubeauftragter
 password = abc
 permissions = df_superadmin True,kurs_read_aca123_course42 False,kurs_write_aca123_course4711 False
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertTrue(user.allowedRead(self.academy))
-        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course42')))
-        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse(u'course4711')))
-        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course42')))
-        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse(u'course4711')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse('course42')))
+        self.assertTrue(user.allowedRead(self.academy, self.academy.getCourse('course4711')))
+        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse('course42')))
+        self.assertTrue(user.allowedWrite(self.academy, self.academy.getCourse('course4711')))
 
     def testMetaSimple(self):
         self.writeUserDbFile(b"""
@@ -200,7 +200,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = akademie_meta_aca123 True
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
     def testMetaGroup(self):
@@ -210,7 +210,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = gruppe_meta_cde True
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
     def testMetaRevoke(self):
@@ -220,7 +220,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = gruppe_meta_cde True,akademie_meta_aca123 False
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertFalse(user.allowedMeta(self.academy))
 
     def testGlobalNonRevoke(self):
@@ -230,7 +230,7 @@ status = cde_dokubeauftragter
 password = abc
 permissions = df_meta True,akademie_meta_aca123 False
 """)
-        user = self.getUser(u"userfoo")
+        user = self.getUser("userfoo")
         self.assertTrue(user.allowedMeta(self.academy))
 
 class DokuforgeWebTests(DfTestCase):
@@ -238,7 +238,7 @@ class DokuforgeWebTests(DfTestCase):
     size = None  # will be set in derived classes
 
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
+        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge").encode("ascii")
         self.pathconfig = PathConfig()
         self.pathconfig.rootdir = self.tmpdir
         createexample.main(size=self.size, pc=self.pathconfig)
@@ -560,22 +560,22 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("Bedienung von DokuForge")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/abbildungen$")
-        self.res.mustcontain(u"Abbildungen")
+        self.res.mustcontain("Abbildungen")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/mathe$")
         self.res.mustcontain("Mathematik-Umgebung")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/gedichte$")
-        self.res.mustcontain(u"Gedichte")
+        self.res.mustcontain("Gedichte")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/literatur$")
-        self.res.mustcontain(u"Literatur")
+        self.res.mustcontain("Literatur")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/tabellen$")
-        self.res.mustcontain(u"Tabellen")
+        self.res.mustcontain("Tabellen")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/konflikte$")
-        self.res.mustcontain(u"Konflikte")
+        self.res.mustcontain("Konflikte")
         self.res = self.res.click(description="Login")
         self.do_login()
         self.res = self.res.click(href="/style/$", index=0)
@@ -584,22 +584,22 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("Bedienung von DokuForge")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/abbildungen$")
-        self.res.mustcontain(u"Abbildungen")
+        self.res.mustcontain("Abbildungen")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/mathe$")
         self.res.mustcontain("Mathematik-Umgebung")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/gedichte$")
-        self.res.mustcontain(u"Gedichte")
+        self.res.mustcontain("Gedichte")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/literatur$")
-        self.res.mustcontain(u"Literatur")
+        self.res.mustcontain("Literatur")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/tabellen$")
-        self.res.mustcontain(u"Tabellen")
+        self.res.mustcontain("Tabellen")
         self.res = self.res.click(href="/style/$", index=0)
         self.res = self.res.click(href="/style/konflikte$")
-        self.res.mustcontain(u"Konflikte")
+        self.res.mustcontain("Konflikte")
         self.is_loggedin()
 
     def testAddBlob(self):
@@ -734,7 +734,7 @@ permissions = df_superadmin True,df_admin True
         form["label"] = ""
         self.res = form.submit()
         form = self.res.forms[1]
-        self.res.mustcontain(u"Kürzel nicht wohlgeformt!")
+        self.res.mustcontain("Kürzel nicht wohlgeformt!")
         self.is_loggedin()
 
     def testPartDeletion(self):
@@ -956,7 +956,7 @@ class LocalExportScriptTest(unittest.TestCase):
 
 class CourseTests(DfTestCase):
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix=u"dokuforge").encode("ascii")
+        self.tmpdir = tempfile.mkdtemp(prefix="dokuforge").encode("ascii")
         self.course = Course(os.path.join(self.tmpdir, b'example'))
 
     def tearDown(self):
@@ -976,11 +976,11 @@ class CourseTests(DfTestCase):
 
 class AcademyTest(DfTestCase):
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix=u'dokuforge').encode("ascii")
+        self.tmpdir = tempfile.mkdtemp(prefix='dokuforge').encode("ascii")
         os.makedirs(os.path.join(self.tmpdir, b'example/legacy'))
         self.academy = Academy(os.path.join(self.tmpdir, b'example'), [])
-        self.academy.createCourse(u'new01', u'erster neuer Kurs')
-        self.academy.createCourse(u'new02', u'zweiter neuer Kurs')
+        self.academy.createCourse('new01', 'erster neuer Kurs')
+        self.academy.createCourse('new02', 'zweiter neuer Kurs')
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, True)
@@ -998,19 +998,19 @@ class AcademyTest(DfTestCase):
         self.assertDeadCourses([])
 
     def testDeleteCourse(self):
-        self.academy.getCourse(u'new01').delete()
+        self.academy.getCourse('new01').delete()
         self.assertCourses([b'legacy', b'new02'])
         self.assertDeadCourses([b'new01'])
 
     def testDeleteLegacyCourse(self):
-        self.academy.getCourse(u'legacy').delete()
+        self.academy.getCourse('legacy').delete()
         self.assertCourses([b'new01', b'new02'])
         self.assertDeadCourses([b'legacy'])
 
     def testCourseDeleteUndelete(self):
-        self.academy.getCourse(u'new01').delete()
+        self.academy.getCourse('new01').delete()
         self.assertDeadCourses([b'new01'])
-        self.academy.getCourse(u'new01').undelete()
+        self.academy.getCourse('new01').undelete()
         self.assertCourses([b'legacy', b'new01', b'new02'])
         self.assertDeadCourses([])
 
@@ -1047,355 +1047,355 @@ class DokuforgeMockTests(DfTestCase):
     def testParserIdempotency(self, rounds=100, minlength=10, maxlength=99):
         for _ in range(rounds):
             for l in range(minlength, maxlength):
-                inp = u"".join(random.choice(u"aA \n*[()]1.$<>&\"{}_\\-")
+                inp = "".join(random.choice("aA \n*[()]1.$<>&\"{}_\\-")
                               for _ in range(l))
                 self.verify_idempotency(inp)
 
     def testParserIdempotency1(self):
-        self.verify_idempotency(u'_a\n[[[\n\n"')
+        self.verify_idempotency('_a\n[[[\n\n"')
 
     def testHeadingHtmlEscape(self):
-        out = dfLineGroupParser(u"[bad < html chars >]").toHtml().strip()
-        self.assertEqual(out, u"<h1>bad &lt; html chars &gt;</h1>")
+        out = dfLineGroupParser("[bad < html chars >]").toHtml().strip()
+        self.assertEqual(out, "<h1>bad &lt; html chars &gt;</h1>")
 
     def testAuthorHtmlEscape(self):
-        out = dfLineGroupParser(u"[ok]\n(bad < author >)").toHtml().strip()
-        self.assertEqual(out, u"<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
+        out = dfLineGroupParser("[ok]\n(bad < author >)").toHtml().strip()
+        self.assertEqual(out, "<h1>ok</h1>\n<i>bad &lt; author &gt;</i>")
 
 class ExporterTestStrings:
     """Input and expected output for testing exporter"""
 
-    itemizeAndCo = [[u'- Text',
-                     u'\\begin{itemize}[joinedup,packed]\n\\item Text\n\\end{itemize}'],
-                    [u'-Text',
-                     u'-Text'],
-                    [u'- item\n\n-nonitem',
-                     u'\\begin{itemize}[joinedup,packed]\n\\item item\n\end{itemize}\n\n-nonitem'],
-                    [u'1. item',
-                     u'\\begin{enumerate}[joinedup,packed]\n% 1\n\\item item\n\end{enumerate}'] ]
+    itemizeAndCo = [['- Text',
+                     '\\begin{itemize}[joinedup,packed]\n\\item Text\n\\end{itemize}'],
+                    ['-Text',
+                     '-Text'],
+                    ['- item\n\n-nonitem',
+                     '\\begin{itemize}[joinedup,packed]\n\\item item\n\end{itemize}\n\n-nonitem'],
+                    ['1. item',
+                     '\\begin{enumerate}[joinedup,packed]\n% 1\n\\item item\n\end{enumerate}'] ]
 
-    quotes = [ [u'Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
-                u'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
-               [u'"Am Anfang" des Texts',
-                u'"`Am Anfang"\' des Texts'],
-               [u'in der Mitte "vor Kommata", im Text',
-                u'in der Mitte "`vor Kommata"\', im Text'],
-               [u'und "am Ende".',
-                u'und "`am Ende"\'.'],
-               [u'"Vor und"\n"nach" Zeilenumbrüchen.',
-                u'"`Vor und"\' "`nach"\' Zeilenumbrüchen.'],
-               [u'Markus\' single quote',
-                u'Markus\\@\' single quote'],
-               [u'"Wow"-Effekt',
-                u'"`Wow"\'-Effekt'],
-               [u'Was laesst Menschen "aufbluehen"?',
-                u'Was laesst Menschen "`aufbluehen"\'?'],
-               [u'ei "(Ei" ei ("Ei" ei',
-                u'ei "`(Ei"\' ei ("`Ei"\' ei'],
-               [u'"Schoki"! "Cola"; "Wasser", "Nudeln": "Suppe")',
-                u'"`Schoki"\'! "`Cola"\'; "`Wasser"\', "`Nudeln"\': "`Suppe"\')'],
-               [u'"Yo!" "Whaaat?" "Boom." "Cola;" "Nudeln:" "Suppe)"',
-                u'"`Yo!"\' "`Whaaat?"\' "`Boom."\' "`Cola;"\' "`Nudeln:"\' "`Suppe)"\''],
-               [u'"Wasser,"',
-                u'"`Wasser,"\''],
-               [u'So "sollte es" sein. Und "$so$ ist $es$" hier.',
-                u'So "`sollte es"\' sein. Und \\@"`$so$ ist $es$\\@"\' hier.'],
-               [u'Bitte "ACRONYME" berücksichtigen.',
-                u'Bitte "`\\@\\acronym{ACRONYME}"\' berücksichtigen.'],
-               [u'"Altern der DNA"',
-                u'"`Altern der \\@\\acronym{DNA}"\''] ]
+    quotes = [ ['Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
+                'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
+               ['"Am Anfang" des Texts',
+                '"`Am Anfang"\' des Texts'],
+               ['in der Mitte "vor Kommata", im Text',
+                'in der Mitte "`vor Kommata"\', im Text'],
+               ['und "am Ende".',
+                'und "`am Ende"\'.'],
+               ['"Vor und"\n"nach" Zeilenumbrüchen.',
+                '"`Vor und"\' "`nach"\' Zeilenumbrüchen.'],
+               ['Markus\' single quote',
+                'Markus\\@\' single quote'],
+               ['"Wow"-Effekt',
+                '"`Wow"\'-Effekt'],
+               ['Was laesst Menschen "aufbluehen"?',
+                'Was laesst Menschen "`aufbluehen"\'?'],
+               ['ei "(Ei" ei ("Ei" ei',
+                'ei "`(Ei"\' ei ("`Ei"\' ei'],
+               ['"Schoki"! "Cola"; "Wasser", "Nudeln": "Suppe")',
+                '"`Schoki"\'! "`Cola"\'; "`Wasser"\', "`Nudeln"\': "`Suppe"\')'],
+               ['"Yo!" "Whaaat?" "Boom." "Cola;" "Nudeln:" "Suppe)"',
+                '"`Yo!"\' "`Whaaat?"\' "`Boom."\' "`Cola;"\' "`Nudeln:"\' "`Suppe)"\''],
+               ['"Wasser,"',
+                '"`Wasser,"\''],
+               ['So "sollte es" sein. Und "$so$ ist $es$" hier.',
+                'So "`sollte es"\' sein. Und \\@"`$so$ ist $es$\\@"\' hier.'],
+               ['Bitte "ACRONYME" berücksichtigen.',
+                'Bitte "`\\@\\acronym{ACRONYME}"\' berücksichtigen.'],
+               ['"Altern der DNA"',
+                '"`Altern der \\@\\acronym{DNA}"\''] ]
 
-    abbreviation = [ [u'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                      u'Von 3760\,v.\\,Chr. bis 2012\,n.\\,Chr. und weiter'],
-                     [u'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.',
-                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.'],
-                     [u'aber u.a. auch o.ä. wie o.Ä.',
-                      u'aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.'],
-                     [u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
-                      u'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
+    abbreviation = [ ['Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                      'Von 3760\,v.\\,Chr. bis 2012\,n.\\,Chr. und weiter'],
+                     ['Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.',
+                      'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.'],
+                     ['aber u.a. auch o.ä. wie o.Ä.',
+                      'aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.'],
+                     ['Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
+                      'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
                      # similar to above, but with spaces in input
-                     [u'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
-                      u'Von 3760\,v.\\,Chr. bis 2012\,n.\\,Chr. und weiter'],
-                     [u'Es ist z. B. so, s. o., s. u., etc., dass wir,',
-                      u'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
-                     [u'd. h., der Exporter bzw. oder ca. oder so.',
-                      u'd.\\,h., der Exporter bzw. oder ca. oder so.'],
-                     [u'Aber u. a. auch o. ä. wie o. Ä.',
-                      u'Aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.']]
+                     ['Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
+                      'Von 3760\,v.\\,Chr. bis 2012\,n.\\,Chr. und weiter'],
+                     ['Es ist z. B. so, s. o., s. u., etc., dass wir,',
+                      'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
+                     ['d. h., der Exporter bzw. oder ca. oder so.',
+                      'd.\\,h., der Exporter bzw. oder ca. oder so.'],
+                     ['Aber u. a. auch o. ä. wie o. Ä.',
+                      'Aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.']]
 
-    acronym = [ [u'Bitte ACRONYME wie EKGs anders setzen.',
-                 u'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
-                [u'Unterscheide T-shirt und DNA-Sequenz.',
-                 u'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.'],
-                [u'Wenn 1D nicht reicht, nutze 2D oder 6D.',
-                 u'Wenn 1\\@\\acronym{D} nicht reicht, nutze 2\\@\\acronym{D} oder\n6\\@\\acronym{D}.'],
-                [u'Wahlergebnis fuer die SPD: 9% (NRW).',
-                 u'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
-                [u'FDP? CDU! CSU. ÖVP.',
-                 u'\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.'],
-                [u'Das ZNS.',
-                 u'Das \\@\\acronym{ZNS}.'] ]
+    acronym = [ ['Bitte ACRONYME wie EKGs anders setzen.',
+                 'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
+                ['Unterscheide T-shirt und DNA-Sequenz.',
+                 'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.'],
+                ['Wenn 1D nicht reicht, nutze 2D oder 6D.',
+                 'Wenn 1\\@\\acronym{D} nicht reicht, nutze 2\\@\\acronym{D} oder\n6\\@\\acronym{D}.'],
+                ['Wahlergebnis fuer die SPD: 9% (NRW).',
+                 'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
+                ['FDP? CDU! CSU. ÖVP.',
+                 '\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.'],
+                ['Das ZNS.',
+                 'Das \\@\\acronym{ZNS}.'] ]
 
-    escaping = [ [u'Forbid \\mathbb and \\dangerous outside math.',
-                  u'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
-                 [u'Do not allow $a \\dangerous{b}$ commands!',
-                  u'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!'],
-                 [u'\\\\ok, $\\\\ok$',
-                  u'\\\\ok, $\\\\ok$'],
-                 [u'$\\\\\\bad$',
-                  u'$\\\\\\@\\forbidden\\bad$'],
-                 [u'Escaping in math like $\\evilmath$, but not $\\mathbb C$',
-                  u'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$'],
-                 [u'$\\circ$ $\\cap\\inf$ $\\times$',
-                  u'$\\circ$ $\\cap\\inf$ $\\times$' ],
-                 [u'$a &= b$',
-                  u'$a \\@\\forbidden\\&= b$'],
-                 [u'$$a &= b$$',
-                  u'\\begin{equation*}\na \\@\\forbidden\\&= b\n\\end{equation*}'],
-                 [u'Trailing \\',
-                  u'Trailing \\@\\backslash'],
-                 [u'$Trailing \\$',
-                  u'$Trailing \\@\\backslash$'],
-                 [u'f# ist eine Note',
-                  u'f\\@\\# ist eine Note'],
-                 [u'$a^b$ ist gut, aber a^b ist schlecht',
-                  u'$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht'],
-                 [u'Heinemann&Co. ist vielleicht eine Firma',
-                  u'Heinemann\\@\\&Co. ist vielleicht eine Firma'],
-                 [u'10% sind ein Zehntel und mehr als 5 %.',
-                  u'10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.'],
-                 [u'Geschweifte Klammern { muessen } escaped werden.',
-                  u'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'],
-                 [u'Tilde~ist unklar. $Auch~hier$.',
-                  u'Tilde\\@~ist unklar. $Auch\\@~hier$.'] ]
+    escaping = [ ['Forbid \\mathbb and \\dangerous outside math.',
+                  'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
+                 ['Do not allow $a \\dangerous{b}$ commands!',
+                  'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!'],
+                 ['\\\\ok, $\\\\ok$',
+                  '\\\\ok, $\\\\ok$'],
+                 ['$\\\\\\bad$',
+                  '$\\\\\\@\\forbidden\\bad$'],
+                 ['Escaping in math like $\\evilmath$, but not $\\mathbb C$',
+                  'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$'],
+                 ['$\\circ$ $\\cap\\inf$ $\\times$',
+                  '$\\circ$ $\\cap\\inf$ $\\times$' ],
+                 ['$a &= b$',
+                  '$a \\@\\forbidden\\&= b$'],
+                 ['$$a &= b$$',
+                  '\\begin{equation*}\na \\@\\forbidden\\&= b\n\\end{equation*}'],
+                 ['Trailing \\',
+                  'Trailing \\@\\backslash'],
+                 ['$Trailing \\$',
+                  '$Trailing \\@\\backslash$'],
+                 ['f# ist eine Note',
+                  'f\\@\\# ist eine Note'],
+                 ['$a^b$ ist gut, aber a^b ist schlecht',
+                  '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht'],
+                 ['Heinemann&Co. ist vielleicht eine Firma',
+                  'Heinemann\\@\\&Co. ist vielleicht eine Firma'],
+                 ['10% sind ein Zehntel und mehr als 5 %.',
+                  '10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.'],
+                 ['Geschweifte Klammern { muessen } escaped werden.',
+                  'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'],
+                 ['Tilde~ist unklar. $Auch~hier$.',
+                  'Tilde\\@~ist unklar. $Auch\\@~hier$.'] ]
 
-    mathSymbols = [ [u'$\\'+i+u'$', u'$\\'+i+u'$'] for i in allowedMathSymbolCommands ]
+    mathSymbols = [ ['$\\'+i+'$', '$\\'+i+'$'] for i in allowedMathSymbolCommands ]
 
-    mathEnvironments = [ [u'b $$\\circ \\cap \\inf \\times$$ e',
-                          u'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
-                         [u'b $$\n\\circ \\cap \\inf \\times\n$$ e',
-                          u'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
-                         [u'b $$\n\\begin{equation}a + b = c\\end{equation}\n$$ e',
-                          u'b\n\\begin{equation}\na + b = c\n\\end{equation}\n e'],
-                         [u'b $$\n\\begin{equation*}a + b = c \\end{equation*}\n$$ e',
-                          u'b\n\\begin{equation*}\na + b = c\n\\end{equation*}\n e'],
-                         [u'b $$\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n$$ e',
-                          u'b\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n e'],
-                         [u'b $$\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n$$ e',
-                          u'b\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n e'],
-                         [u'b $$\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}\n$$ e',
-                          u'b\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align}\n e'],
-                         [u'a $$\n\\begin{equation} b &= c \\end{equation}\n$$ d',
-                          u'a\n\\begin{equation}\nb \\@\\forbidden\\&= c\n\\end{equation}\n d'],
-                         [u'b $$\n\\begin{equation}a + b &= c\\end{equation}\n$$ e',
-                          u'b\n\\begin{equation}\na + b \\@\\forbidden\\&= c\n\\end{equation}\n e'],
-                         [u'b $$\n\\begin{align}a + b \evilmath = c\\end{align}\n$$ e',
-                          u'b\n\\begin{align}\na + b \\@\\forbidden\\evilmath = c\n\\end{align}\n e'],
-                         [u'Bla $$\n\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}\n$$ Blub',
-                          u'Bla\n\\begin{align}\na + b &= c\\\\\na - b &= d\n\\end{align}\n Blub'],
-                         [u'Matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$.',
-                          u'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'],
-                         [u'Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.',
-                          u'Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.'] ]
+    mathEnvironments = [ ['b $$\\circ \\cap \\inf \\times$$ e',
+                          'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
+                         ['b $$\n\\circ \\cap \\inf \\times\n$$ e',
+                          'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
+                         ['b $$\n\\begin{equation}a + b = c\\end{equation}\n$$ e',
+                          'b\n\\begin{equation}\na + b = c\n\\end{equation}\n e'],
+                         ['b $$\n\\begin{equation*}a + b = c \\end{equation*}\n$$ e',
+                          'b\n\\begin{equation*}\na + b = c\n\\end{equation*}\n e'],
+                         ['b $$\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n$$ e',
+                          'b\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n e'],
+                         ['b $$\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n$$ e',
+                          'b\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n e'],
+                         ['b $$\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}\n$$ e',
+                          'b\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align}\n e'],
+                         ['a $$\n\\begin{equation} b &= c \\end{equation}\n$$ d',
+                          'a\n\\begin{equation}\nb \\@\\forbidden\\&= c\n\\end{equation}\n d'],
+                         ['b $$\n\\begin{equation}a + b &= c\\end{equation}\n$$ e',
+                          'b\n\\begin{equation}\na + b \\@\\forbidden\\&= c\n\\end{equation}\n e'],
+                         ['b $$\n\\begin{align}a + b \evilmath = c\\end{align}\n$$ e',
+                          'b\n\\begin{align}\na + b \\@\\forbidden\\evilmath = c\n\\end{align}\n e'],
+                         ['Bla $$\n\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}\n$$ Blub',
+                          'Bla\n\\begin{align}\na + b &= c\\\\\na - b &= d\n\\end{align}\n Blub'],
+                         ['Matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$.',
+                          'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'],
+                         ['Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.',
+                          'Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.'] ]
 
-    evilUTF8 = [ [u'Bla … blub bloink.',
-                  u'Bla~\\@\\dots{} blub bloink.'],
-                 [u'Bla – blub — bloink.',
-                  u'Bla \\@-- blub \\@--- bloink.'],
-                 [u'Bla „deutsch“ “american” ”unusual“.',
-                  u'Bla \\@"`deutsch\\@"\' \\@"`american\\@"\' \\@"`unusual\\@"\'.'],
-                 [u'Bla «französisch» oder « französisch ».',
-                  u'Bla \\@"`französisch\\@"\' oder \\@\\@"` französisch \\@\\@"`.'],
-                 [u'Bla „(deutsch,“ “(american,” ”(unusual,“.',
-                  u'Bla \\@"`(deutsch,\\@"\' \\@"`(american,\\@"\' \\@"`(unusual,\\@"\'.'],
-                 [u'„$einsam$ $lonely$” $quote$“ here.',
-                  u'\\@"`$einsam$ $lonely$\\@"\' $quote$\\@"\' here.'],
-                 [u'Bla »blub« bloink.',
-                  u'Bla \\@"`blub\\@"\' bloink.'],
-                 [u'\'Bla\' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
-                  u'\\@\'Bla\\@\' \\@\'blub\\@\' \\@\'bloink\\@\' \\@\'blub\\@\' \\@\'bloink\\@\'.'],
-                 [u'„‚Nested quotes‘”.',
-                  u'\\@\\@"`\\@\'Nested quotes\\@\'\\@\\@"`.'] ]
+    evilUTF8 = [ ['Bla … blub bloink.',
+                  'Bla~\\@\\dots{} blub bloink.'],
+                 ['Bla – blub — bloink.',
+                  'Bla \\@-- blub \\@--- bloink.'],
+                 ['Bla „deutsch“ “american” ”unusual“.',
+                  'Bla \\@"`deutsch\\@"\' \\@"`american\\@"\' \\@"`unusual\\@"\'.'],
+                 ['Bla «französisch» oder « französisch ».',
+                  'Bla \\@"`französisch\\@"\' oder \\@\\@"` französisch \\@\\@"`.'],
+                 ['Bla „(deutsch,“ “(american,” ”(unusual,“.',
+                  'Bla \\@"`(deutsch,\\@"\' \\@"`(american,\\@"\' \\@"`(unusual,\\@"\'.'],
+                 ['„$einsam$ $lonely$” $quote$“ here.',
+                  '\\@"`$einsam$ $lonely$\\@"\' $quote$\\@"\' here.'],
+                 ['Bla »blub« bloink.',
+                  'Bla \\@"`blub\\@"\' bloink.'],
+                 ['\'Bla\' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
+                  '\\@\'Bla\\@\' \\@\'blub\\@\' \\@\'bloink\\@\' \\@\'blub\\@\' \\@\'bloink\\@\'.'],
+                 ['„‚Nested quotes‘”.',
+                  '\\@\\@"`\\@\'Nested quotes\\@\'\\@\\@"`.'] ]
 
-    nonstandardSpace = [ [u'x x',    # standard ASCII space
-                          u'x x' ],
-                         [u'x x',    # non-breaking space U+00A0
-                          u'x\@ x' ],
-                         [u'x x',    # en quad U+2000
-                          u'x\@ x' ],
-                         [u'x x',    # em quad U+2001
-                          u'x\@ x' ],
-                         [u'x x',    # en space U+2002
-                          u'x\@ x' ],
-                         [u'x x',    # em space U+2003
-                          u'x\@ x' ],
-                         [u'x x',    # 1/3 em space U+2004
-                          u'x\@ x' ],
-                         [u'x x',    # 1/4 em space U+2005
-                          u'x\@ x' ],
-                         [u'x x',    # 1/6 em space U+2006
-                          u'x\@ x' ],
-                         [u'x x',    # figure space U+2007
-                          u'x\@ x' ],
-                         [u'x x',    # punctuation space U+2008
-                          u'x\@ x' ],
-                         [u'x x',    # thin space U+2009
-                          u'x\@ x' ],
-                         [u'x x',    # hair space U+200A
-                          u'x\@ x' ],
-                         [u'x​x',    # zero width space U+200B
-                          u'x\@ x' ],
-                         [u'x x',    # narrow no-break space U+202F
-                          u'x\@ x' ],
-                         [u'x x',    # medium mathematical space (4/18 em) U+205F
-                          u'x\@ x' ],
-                         [u'x﻿x',    # zero-width non-breaking space U+FEFF
-                          u'x\@ x' ] ]
+    nonstandardSpace = [ ['x x',    # standard ASCII space
+                          'x x' ],
+                         ['x x',    # non-breaking space U+00A0
+                          'x\@ x' ],
+                         ['x x',    # en quad U+2000
+                          'x\@ x' ],
+                         ['x x',    # em quad U+2001
+                          'x\@ x' ],
+                         ['x x',    # en space U+2002
+                          'x\@ x' ],
+                         ['x x',    # em space U+2003
+                          'x\@ x' ],
+                         ['x x',    # 1/3 em space U+2004
+                          'x\@ x' ],
+                         ['x x',    # 1/4 em space U+2005
+                          'x\@ x' ],
+                         ['x x',    # 1/6 em space U+2006
+                          'x\@ x' ],
+                         ['x x',    # figure space U+2007
+                          'x\@ x' ],
+                         ['x x',    # punctuation space U+2008
+                          'x\@ x' ],
+                         ['x x',    # thin space U+2009
+                          'x\@ x' ],
+                         ['x x',    # hair space U+200A
+                          'x\@ x' ],
+                         ['x​x',    # zero width space U+200B
+                          'x\@ x' ],
+                         ['x x',    # narrow no-break space U+202F
+                          'x\@ x' ],
+                         ['x x',    # medium mathematical space (4/18 em) U+205F
+                          'x\@ x' ],
+                         ['x﻿x',    # zero-width non-breaking space U+FEFF
+                          'x\@ x' ] ]
 
-    pageReferences = [ [u'Auf S. 4 Abs. 3 in Art. 7 steht',
-                        u'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
-                       [u'Auf Seite 4 Absatz 3 in Artikel 7 steht',
-                        u'Auf Seite~4 Absatz~3 in Artikel~7 steht'],
-                       [u'Auf S.4-6 steht',
-                        u'Auf \\@S.\\,4\\@--6 steht'],
-                       [u'Auf S.4--6 steht',
-                        u'Auf \\@S.\\,4--6 steht'],
-                       [u'Auf S. 4f steht',
-                        u'Auf \\@S.\\,4\\,f. steht'],
-                       [u'S. 4 ff. besagt',
-                        u'\\@S.\\,4\\,ff. besagt'],
-                       [u'Es fehlen Angaben zu S. Abs. Art.',
-                        u'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.'] ]
+    pageReferences = [ ['Auf S. 4 Abs. 3 in Art. 7 steht',
+                        'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
+                       ['Auf Seite 4 Absatz 3 in Artikel 7 steht',
+                        'Auf Seite~4 Absatz~3 in Artikel~7 steht'],
+                       ['Auf S.4-6 steht',
+                        'Auf \\@S.\\,4\\@--6 steht'],
+                       ['Auf S.4--6 steht',
+                        'Auf \\@S.\\,4--6 steht'],
+                       ['Auf S. 4f steht',
+                        'Auf \\@S.\\,4\\,f. steht'],
+                       ['S. 4 ff. besagt',
+                        '\\@S.\\,4\\,ff. besagt'],
+                       ['Es fehlen Angaben zu S. Abs. Art.',
+                        'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.'] ]
 
-    spacing = [ [u'A number range 6--9 is nice.',
-                 u'A number range 6--9 is nice.'],
-                [u'6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
-                 u'6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.'],
-                [u'Now we do - with all due respect --, an intersperse.',
-                 u'Now we do \\@-- with all due respect \\@--, an intersperse.'],
-                [u'Followed by an afterthougt -- here it comes.',
-                 u'Followed by an afterthougt \\@-- here it comes.'],
-                [u'Followed by an afterthougt---here it comes.',
-                 u'Followed by an afterthougt\\@---here it comes.'],
-                [u'Here come some dots ...',
-                 u'Here come some dots~\\@\\dots{}'],
-                [u'Here come some dots...',
-                 u'Here come some dots\\@\\dots{}'],
-                [u'Dots in math $a_1,...,a_n$ should work without spacing.',
-                 u'Dots in math $a_1,\\@\\dots{},a_n$ should work without spacing.'],
-                [u'And dots ... in … the middle.',
-                 u'And dots~\\@\\dots{} in~\\@\\dots{} the middle.'],
-                [u'And dots...in the middle.',
-                 u'And dots\\@\\dots{}in the middle.'],
-                [u'And dots [...] for missing text.',
-                 u'And dots [\\@\\ZitatEllipse] for missing text.'] ]
+    spacing = [ ['A number range 6--9 is nice.',
+                 'A number range 6--9 is nice.'],
+                ['6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
+                 '6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.'],
+                ['Now we do - with all due respect --, an intersperse.',
+                 'Now we do \\@-- with all due respect \\@--, an intersperse.'],
+                ['Followed by an afterthougt -- here it comes.',
+                 'Followed by an afterthougt \\@-- here it comes.'],
+                ['Followed by an afterthougt---here it comes.',
+                 'Followed by an afterthougt\\@---here it comes.'],
+                ['Here come some dots ...',
+                 'Here come some dots~\\@\\dots{}'],
+                ['Here come some dots...',
+                 'Here come some dots\\@\\dots{}'],
+                ['Dots in math $a_1,...,a_n$ should work without spacing.',
+                 'Dots in math $a_1,\\@\\dots{},a_n$ should work without spacing.'],
+                ['And dots ... in … the middle.',
+                 'And dots~\\@\\dots{} in~\\@\\dots{} the middle.'],
+                ['And dots...in the middle.',
+                 'And dots\\@\\dots{}in the middle.'],
+                ['And dots [...] for missing text.',
+                 'And dots [\\@\\ZitatEllipse] for missing text.'] ]
 
-    lawReference = [ [u'In §§1ff. HGB steht',
-                      u'In §§\\,1\\,ff. \\@\\acronym{HGB} steht'],
-                     [u'In § 1 f. HGB steht',
-                      u'In §\\,1\\,f. \\@\\acronym{HGB} steht'],
-                     [u'In § 1 Abs. 1 HGB steht',
-                      u'In §\\,1 \\@Abs.\\,1 \\@\\acronym{HGB} steht'],
-                     [u'In § 1 Absatz 1 Satz 2 HGB steht',
-                      u'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht'],
-                     [u'In §§ 10-15 HGB steht',
-                      u'In §§\\,10\\@--15 \\@\\acronym{HGB} steht'],
-                     [u'Ein verlorener § und noch ein §',
-                      u'Ein verlorener \\@§ und noch ein \\@§'] ]
+    lawReference = [ ['In §§1ff. HGB steht',
+                      'In §§\\,1\\,ff. \\@\\acronym{HGB} steht'],
+                     ['In § 1 f. HGB steht',
+                      'In §\\,1\\,f. \\@\\acronym{HGB} steht'],
+                     ['In § 1 Abs. 1 HGB steht',
+                      'In §\\,1 \\@Abs.\\,1 \\@\\acronym{HGB} steht'],
+                     ['In § 1 Absatz 1 Satz 2 HGB steht',
+                      'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht'],
+                     ['In §§ 10-15 HGB steht',
+                      'In §§\\,10\\@--15 \\@\\acronym{HGB} steht'],
+                     ['Ein verlorener § und noch ein §',
+                      'Ein verlorener \\@§ und noch ein \\@§'] ]
 
-    numbers = [ [u'We have 10000, 2000 and 3000000 and -40000 and -5000.',
-                 u'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
-                [u'We are in the 21. regiment and again in the 21.regiment.',
-                 u'We are in the \\@21. regiment and again in the \\@21.regiment.'],
-                [u'bis zu 30 000 Einwohner',
-                 u'bis zu 30 000 Einwohner'],
-                [u'Kennwort 0000 ist unsicher, 00000 auch, 0000000 nicht weniger',
-                 u'Kennwort 0000 ist unsicher, 00\,000 auch, 0\,000\,000 nicht weniger'],
-                [u'some 5,000 races',
-                 u'some 5,000 races'],
-                [u'pi ist 3,14159',
-                 u'pi ist 3,14\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
-                [u'bla 2004-2006 blub',
-                 u'bla 2004\@--2006 blub']
+    numbers = [ ['We have 10000, 2000 and 3000000 and -40000 and -5000.',
+                 'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
+                ['We are in the 21. regiment and again in the 21.regiment.',
+                 'We are in the \\@21. regiment and again in the \\@21.regiment.'],
+                ['bis zu 30 000 Einwohner',
+                 'bis zu 30 000 Einwohner'],
+                ['Kennwort 0000 ist unsicher, 00000 auch, 0000000 nicht weniger',
+                 'Kennwort 0000 ist unsicher, 00\,000 auch, 0\,000\,000 nicht weniger'],
+                ['some 5,000 races',
+                 'some 5,000 races'],
+                ['pi ist 3,14159',
+                 'pi ist 3,14\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
+                ['bla 2004-2006 blub',
+                 'bla 2004\@--2006 blub']
               ]
 
-    dates = [ [u'The date is 19.5.2012 or 19. 10. 95 for good.',
-               u'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
+    dates = [ ['The date is 19.5.2012 or 19. 10. 95 for good.',
+               'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
 
-    units = [ [u'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
-               u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13\\@--14\\,\\@TeV, 5\\,°C.'],
-              [u'Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
-               u'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.'],
-              [u'Units: 21 kg, 4 MW, 1 mV , 13--14 TeV, 5 °C.',
-               u'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV , 13--14\\,\\@TeV, 5\\,°C.'],
-              [u'Decimal number with unit: 25,4 mm.',
-               u'Decimal number with unit: 25,4\\,mm.'],
-              [u'Percentages like 5 % should be handled as nicely as 5%.',
-               u'Percentages like 5\\@\\,\\% should be handled as nicely as 5\\,\\%.'],
-              [u'90° is a right angle.',
-               u'90° is a right angle.'] ]
+    units = [ ['Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
+               'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13\\@--14\\,\\@TeV, 5\\,°C.'],
+              ['Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
+               'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.'],
+              ['Units: 21 kg, 4 MW, 1 mV , 13--14 TeV, 5 °C.',
+               'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV , 13--14\\,\\@TeV, 5\\,°C.'],
+              ['Decimal number with unit: 25,4 mm.',
+               'Decimal number with unit: 25,4\\,mm.'],
+              ['Percentages like 5 % should be handled as nicely as 5%.',
+               'Percentages like 5\\@\\,\\% should be handled as nicely as 5\\,\\%.'],
+              ['90° is a right angle.',
+               '90° is a right angle.'] ]
 
-    code = [ [u'|increase(i)| increases |i|, by one.',
-              u'\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
+    code = [ ['|increase(i)| increases |i|, by one.',
+              '\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
 
-    urls = [ [u'http://www.google.de',
-              u'\\@\\url{http://www.google.de}'],
-             [u'(siehe http://www.google.de)',
-              u'(siehe \\@\\url{http://www.google.de})'],
-             [u'http://www.google.de bla',
-              u'\\@\\url{http://www.google.de} bla'],
-             [u'http://www.google.de www.bla.de',
-              u'\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
-             [u'http://www.google.de\nwww.bla.de',
-              u'\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
-             [u'https://duckduckgo.com/?q=find&ia=web',
-              u'\\@\\url{https://duckduckgo.com/?q=find&ia=web}'],
-             [u'https://www.bla.com. Sowie http://www.blub.org?',
-              u'\\@\\url{https://www.bla.com}. Sowie \\@\\url{http://www.blub.org}?'],
-             [u'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
-              u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsserArkade1.jpg}'],
-             [u'https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg',
-              u'\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
-             [u'auf www.bla.com lesen',
-              u'auf \\@\\url{www.bla.com} lesen'],
-             [u'siehe www.bla.com.',
-              u'siehe \\@\\url{www.bla.com}.'],
-             [u'Das www.ist_keine_hervorhebung.de!',
-              u'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
-             [u'http://www.bla.com/foo}\\evilCommand',
-              u'\\@\\url{http://www.bla.com/foo}\\@\}\\@\\forbidden\\evilCommand']
+    urls = [ ['http://www.google.de',
+              '\\@\\url{http://www.google.de}'],
+             ['(siehe http://www.google.de)',
+              '(siehe \\@\\url{http://www.google.de})'],
+             ['http://www.google.de bla',
+              '\\@\\url{http://www.google.de} bla'],
+             ['http://www.google.de www.bla.de',
+              '\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
+             ['http://www.google.de\nwww.bla.de',
+              '\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
+             ['https://duckduckgo.com/?q=find&ia=web',
+              '\\@\\url{https://duckduckgo.com/?q=find&ia=web}'],
+             ['https://www.bla.com. Sowie http://www.blub.org?',
+              '\\@\\url{https://www.bla.com}. Sowie \\@\\url{http://www.blub.org}?'],
+             ['https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
+              '\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsserArkade1.jpg}'],
+             ['https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg',
+              '\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
+             ['auf www.bla.com lesen',
+              'auf \\@\\url{www.bla.com} lesen'],
+             ['siehe www.bla.com.',
+              'siehe \\@\\url{www.bla.com}.'],
+             ['Das www.ist_keine_hervorhebung.de!',
+              'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
+             ['http://www.bla.com/foo}\\evilCommand',
+              '\\@\\url{http://www.bla.com/foo}\\@\}\\@\\forbidden\\evilCommand']
              ]
 
-    sectionsAndAuthors = [ [u'[foo]\n(bar)',
-                            u'\\section{foo}\n\\authors{bar}'],
-                           [u'[[foo]]\n\n(bar)',
-                            u'\\subsection{foo}\n\n(bar)'] ]
+    sectionsAndAuthors = [ ['[foo]\n(bar)',
+                            '\\section{foo}\n\\authors{bar}'],
+                           ['[[foo]]\n\n(bar)',
+                            '\\subsection{foo}\n\n(bar)'] ]
 
-    sectionsWithEmph = [ [u'[Ola Gjeilo: _Northern Lights_]',
-                          u'\\section{Ola Gjeilo: \\emph{Northern Lights}}'],
-                         [u'[_Mein BAMF_ -- aus dem Kabarett]',
-                          u'\\section{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
-                         [u'[Max Reger: _Es waren zwei Königskinder_ hier]',
-                          u'\\section{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
-                         [u'[[Ola Gjeilo: _Northern Lights_]]',
-                          u'\\subsection{Ola Gjeilo: \\emph{Northern Lights}}'],
-                         [u'[[_Mein BAMF_ -- aus dem Kabarett]]',
-                          u'\\subsection{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
-                         [u'[[Max Reger: _Es waren zwei Königskinder_ hier]]',
-                          u'\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
-                         [u'[1. Buch Mose]',
-                          u'\\section{\\@1. Buch Mose}'] ]
+    sectionsWithEmph = [ ['[Ola Gjeilo: _Northern Lights_]',
+                          '\\section{Ola Gjeilo: \\emph{Northern Lights}}'],
+                         ['[_Mein BAMF_ -- aus dem Kabarett]',
+                          '\\section{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
+                         ['[Max Reger: _Es waren zwei Königskinder_ hier]',
+                          '\\section{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
+                         ['[[Ola Gjeilo: _Northern Lights_]]',
+                          '\\subsection{Ola Gjeilo: \\emph{Northern Lights}}'],
+                         ['[[_Mein BAMF_ -- aus dem Kabarett]]',
+                          '\\subsection{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
+                         ['[[Max Reger: _Es waren zwei Königskinder_ hier]]',
+                          '\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
+                         ['[1. Buch Mose]',
+                          '\\section{\\@1. Buch Mose}'] ]
 
-    numericalScope = [ [u'10\xb3 Meter sind ein km',
-                        u'10\xb3 Meter sind ein km'] ]
+    numericalScope = [ ['10\xb3 Meter sind ein km',
+                        '10\xb3 Meter sind ein km'] ]
 
-    codeAndLengthyParagraph = [ [u'Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet\nlirem ipsum dolor sit amet lorem ipsum dolor sit amet\nlurem ipsum dolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so weiter.',
-                                 u'Larem ipsum dolor sit amet \\@\\lstinline|rhoncus| lerem ipsum dolor sit\namet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum\ndolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so\nweiter.'] ]
+    codeAndLengthyParagraph = [ ['Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet\nlirem ipsum dolor sit amet lorem ipsum dolor sit amet\nlurem ipsum dolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so weiter.',
+                                 'Larem ipsum dolor sit amet \\@\\lstinline|rhoncus| lerem ipsum dolor sit\namet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum\ndolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so\nweiter.'] ]
 
-    lengthyParagraph = [ [u"""Zwei lange Absätze, aber durch Leerzeile getrennt. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+    lengthyParagraph = [ ["""Zwei lange Absätze, aber durch Leerzeile getrennt. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
 
 Da brauchen wir keinen Hinweis. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.""",
-                          u"""Zwei lange Absätze, aber durch Leerzeile getrennt. Franz jagt im
+                          """Zwei lange Absätze, aber durch Leerzeile getrennt. Franz jagt im
 komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
 jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
 fume.
@@ -1404,17 +1404,17 @@ Da brauchen wir keinen Hinweis. Franz jagt im komplett verwahrlosten
 Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog.
 Portez ce vieux whisky au juge blond qui fume."""],
 
-                         [u"""Drei kurze Zeilen, jeweils ohne Leerzeilen dazwischen.
+                         ["""Drei kurze Zeilen, jeweils ohne Leerzeilen dazwischen.
 Falsches Üben von Xylophonmusik quält jeden größeren Zwerg.
 Da brauchen wir auch keinen Hinweis.""",
-                          u"""Drei kurze Zeilen, jeweils ohne Leerzeilen dazwischen. Falsches Üben
+                          """Drei kurze Zeilen, jeweils ohne Leerzeilen dazwischen. Falsches Üben
 von Xylophonmusik quält jeden größeren Zwerg. Da brauchen wir auch
 keinen Hinweis."""],
 
-                         [u"""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+                         ["""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
 Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
 Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.""",
-                          u"""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im
+                          """Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im
 komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
 jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
 fume.\@\@\@ Das sieht verdächtig aus. Franz jagt im komplett
@@ -1424,9 +1424,9 @@ Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi
 quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez
 ce vieux whisky au juge blond qui fume."""],
 
-                         [u"""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+                         ["""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
-                          u"""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen.
+                          """Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen.
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick
 brown fox jumps over the lazy dog. Portez ce vieux whisky au juge
 blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett
@@ -1434,9 +1434,9 @@ verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
 the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
 
-                         [u"""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen dazwischen.
+                         ["""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen dazwischen.
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
-                          u"""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen
+                          """Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen
 dazwischen.\@\@\@ Franz jagt im komplett verwahrlosten Taxi quer durch
 Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux
 whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im
@@ -1444,9 +1444,9 @@ komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
 jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
 fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
 
-                         [u"""Erst eine kurze Zeile, dann eine lange mit Mathematik.
+                         ["""Erst eine kurze Zeile, dann eine lange mit Mathematik.
 $z$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume $x$ Das sieht verdächtig aus $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
-                          u"""Erst eine kurze Zeile, dann eine lange mit Mathematik.\@\@\@ $z$ Franz
+                          """Erst eine kurze Zeile, dann eine lange mit Mathematik.\@\@\@ $z$ Franz
 jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick
 brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge
 blond qui fume $x$ Das sieht verdächtig aus $x$ Franz jagt im komplett
@@ -1454,12 +1454,12 @@ verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps
 over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume
 $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
 
-                         [u"""Kurze und lange Zeilen mit Leerzeilen dazwischen.
+                         ["""Kurze und lange Zeilen mit Leerzeilen dazwischen.
 
 Bla blub. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. Bla blub. The quick brown fox jumps over the lazy dog. Bla blub. Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. Bla blub. The quick brown fox jumps over the lazy dog. Bla blub. Portez ce vieux whisky au juge blond qui fume.
 
 Das sieht unverdächtig aus.""",
-                          u"""Kurze und lange Zeilen mit Leerzeilen dazwischen.
+                          """Kurze und lange Zeilen mit Leerzeilen dazwischen.
 
 Bla blub. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.
 Bla blub. The quick brown fox jumps over the lazy dog. Bla blub.
@@ -1471,7 +1471,7 @@ blond qui fume.
 Das sieht unverdächtig aus."""],
 ]
 
-    ednoteEscape = [ [u"""before
+    ednoteEscape = [ ["""before
 
 {{
 
@@ -1484,7 +1484,7 @@ Bobby Tables...
 }}
 
 after""",
-u"""before
+"""before
 
 \\begin{ednote}
 
@@ -1498,8 +1498,8 @@ Bobby Tables...
 
 after""" ] ]
 
-    multilineCaptions = [ [u'Dies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.',
-                           u'Dies ist eine Bildunterschrift.\\@\\@\\@\nSie soll zwei Absätze haben.' ] ]
+    multilineCaptions = [ ['Dies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.',
+                           'Dies ist eine Bildunterschrift.\\@\\@\\@\nSie soll zwei Absätze haben.' ] ]
 
 class ExporterTestCases:
     """
@@ -1536,7 +1536,7 @@ class ExporterTestCases:
 
     titleTests = testsEverywhere
 
-    captionTests = [[[i, j.replace(u'\n\n', u'\\@\\@\\@\n')] for i, j in k] for k in testsInText] + \
+    captionTests = [[[i, j.replace('\n\n', '\\@\\@\\@\n')] for i, j in k] for k in testsInText] + \
                    [ ExporterTestStrings.multilineCaptions ]
 
 class DokuforgeParserUnitTests(DfTestCase):
