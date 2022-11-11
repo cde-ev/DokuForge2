@@ -274,7 +274,7 @@ class DokuforgeBigWebTests(DokuforgeWebTests):
         self.do_login(username="arthur", password="mypass")
         self.res = self.res.click(description="Beste Akademie ever")
         self.res.mustcontain("Helenistische Heldenideale")
-        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res = self.res.click(href="course01/$")
         self.res.mustcontain("Example Section")
         self.is_loggedin()
 
@@ -315,23 +315,23 @@ class DokuforgeSmallWebTests(DokuforgeWebTests):
     def testCourse(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res = self.res.click(href="course01/$")
         self.is_loggedin()
         self.res.mustcontain("df2-Rohdaten")
 
     def testPage(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
         self.is_loggedin()
         self.res.mustcontain("neues Bild hinzuf")
 
     def testEdit(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
         for (inputstr, outputstr) in teststrings:
             self.res = self.res.click(description="Editieren", index=0)
             form = self.res.forms[1]
@@ -343,8 +343,8 @@ class DokuforgeSmallWebTests(DokuforgeWebTests):
     def testMarkup(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
         self.res = self.res.click(description="Editieren", index=1)
         form = self.res.forms[1]
         form["content"] = \
@@ -365,20 +365,20 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testTitleWithEmph(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
         self.res = self.res.click(description="Editieren", index=1)
         form = self.res.forms[1]
         form["content"] = "[ _A_ ]"  # single line
         self.res = form.submit(name="saveshow")
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res = self.res.click(href="course01/$")
         self.is_loggedin()
 
     def testMovePage(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res = self.res.click(href="course01/$")
         form = self.res.forms[1]
         self.res = form.submit()
         self.is_loggedin()
@@ -386,7 +386,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testCreatePage(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res = self.res.click(href="course01/$")
         form = self.res.forms[2]
         self.res = form.submit()
         self.is_loggedin()
@@ -395,8 +395,8 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testCourseTitle(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("/.*title$"))
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="/.*title$")
         for (inputstr, outputstr) in teststrings:
             form = self.res.forms[1]
             form["content"] = inputstr
@@ -407,8 +407,8 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testDeletePage(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
         form = self.res.forms[1]
         self.res = form.submit()
         self.res.mustcontain(no="Teil&nbsp;#0")
@@ -417,11 +417,11 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testRestorePage(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
         form = self.res.forms[1]
         self.res = form.submit()
-        self.res = self.res.click(href=re.compile("course01/.*deadpages$"))
+        self.res = self.res.click(href="course01/.*deadpages$")
         form = self.res.forms[1]
         self.res = form.submit()
         self.res.mustcontain("Teil&nbsp;#0")
@@ -430,7 +430,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testAcademyTitle(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("/.*title$"))
+        self.res = self.res.click(href="/.*title$")
         for (inputstr, outputstr) in teststrings:
             form = self.res.forms[1]
             form["content"] = inputstr
@@ -455,13 +455,13 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
     def testCreateCourse(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("/.*createcourse$"))
+        self.res = self.res.click(href="/.*createcourse$")
         form = self.res.forms[1]
         form["name"] = "course03"
         form["title"] = "Testkurs"
         self.res = form.submit()
         self.res.mustcontain("Area51", "Testkurs")
-        self.res = self.res.click(href=re.compile("/.*createcourse$"))
+        self.res = self.res.click(href="/.*createcourse$")
         form = self.res.forms[1]
         form["name"] = "foo_bar"
         form["title"] = "next Testkurs"
@@ -473,25 +473,25 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain("Area51")
-        self.res = self.res.click(href=re.compile("course01/$"))
+        self.res = self.res.click(href="course01/$")
         form = self.res.forms[3]
         self.res = form.submit()
         self.res.mustcontain(no="Area51")
-        self.res = self.res.click(href=re.compile("deadcourses$"))
+        self.res = self.res.click(href="deadcourses$")
         form = self.res.forms[1]
         self.res = form.submit()
         self.res.mustcontain("Area51")
 
     def testCreateAcademy(self):
         self.do_login()
-        self.res = self.res.click(href=re.compile("/createacademy$"))
+        self.res = self.res.click(href="/createacademy$")
         form = self.res.forms[1]
         form["name"] = "newacademy-2001"
         form["title"] = "Testakademie"
         form["groups"] = ["cde"]
         self.res = form.submit()
         self.res.mustcontain("Testakademie", "X-Akademie")
-        self.res = self.res.click(href=re.compile("/createacademy$"))
+        self.res = self.res.click(href="/createacademy$")
         form = self.res.forms[1]
         form["name"] = "foo_bar"
         form["title"] = "next Testakademie"
@@ -508,7 +508,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
 
     def testGroups(self):
         self.do_login()
-        self.res = self.res.click(href=re.compile("/groups/$"))
+        self.res = self.res.click(href="/groups/$")
         form = self.res.forms[1]
         form["content"] = """[cde]
 title = CdE-Akademien
@@ -531,7 +531,7 @@ title = Wie der Name sagt
 
     def testAdmin(self):
         self.do_login()
-        self.res = self.res.click(href=re.compile("/admin/$"))
+        self.res = self.res.click(href="/admin/$")
         form = self.res.forms[1]
         form["content"] = """[bob]
 name = bob
@@ -554,60 +554,60 @@ permissions = df_superadmin True,df_admin True
 
     def testStyleguide(self):
         self.res = self.app.get("/")
-        self.res = self.res.click(href=re.compile("/style/$"))
+        self.res = self.res.click(href="/style/$")
         self.res.mustcontain("Hier erfährst du, was bei der Eingabe der Texte in DokuForge")
-        self.res = self.res.click(href=re.compile("/style/grundlagen$"))
+        self.res = self.res.click(href="/style/grundlagen$")
         self.res.mustcontain("Bedienung von DokuForge")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/abbildungen$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/abbildungen$")
         self.res.mustcontain(u"Abbildungen")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/mathe$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/mathe$")
         self.res.mustcontain("Mathematik-Umgebung")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/gedichte$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/gedichte$")
         self.res.mustcontain(u"Gedichte")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/literatur$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/literatur$")
         self.res.mustcontain(u"Literatur")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/tabellen$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/tabellen$")
         self.res.mustcontain(u"Tabellen")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/konflikte$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/konflikte$")
         self.res.mustcontain(u"Konflikte")
         self.res = self.res.click(description="Login")
         self.do_login()
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
+        self.res = self.res.click(href="/style/$", index=0)
         self.res.mustcontain("Hier erfährst du, was bei der Eingabe der Texte in DokuForge")
-        self.res = self.res.click(href=re.compile("/style/grundlagen$"))
+        self.res = self.res.click(href="/style/grundlagen$")
         self.res.mustcontain("Bedienung von DokuForge")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/abbildungen$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/abbildungen$")
         self.res.mustcontain(u"Abbildungen")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/mathe$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/mathe$")
         self.res.mustcontain("Mathematik-Umgebung")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/gedichte$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/gedichte$")
         self.res.mustcontain(u"Gedichte")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/literatur$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/literatur$")
         self.res.mustcontain(u"Literatur")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/tabellen$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/tabellen$")
         self.res.mustcontain(u"Tabellen")
-        self.res = self.res.click(href=re.compile("/style/$"), index=0)
-        self.res = self.res.click(href=re.compile("/style/konflikte$"))
+        self.res = self.res.click(href="/style/$", index=0)
+        self.res = self.res.click(href="/style/konflikte$")
         self.res.mustcontain(u"Konflikte")
         self.is_loggedin()
 
     def testAddBlob(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
+        self.res = self.res.click(href="course01/0/.*addblob$")
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -621,9 +621,9 @@ permissions = df_superadmin True,df_admin True
     def testShowBlob(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
+        self.res = self.res.click(href="course01/0/.*addblob$")
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -631,7 +631,7 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
         self.res = form.submit()
-        self.res = self.res.click(href=re.compile("course01/0/0/$"))
+        self.res = self.res.click(href="course01/0/0/$")
         self.res.mustcontain("Bildunterschrift/Kommentar: Shiny blob",
                              "K&uuml;rzel: blob")
         self.is_loggedin()
@@ -639,9 +639,9 @@ permissions = df_superadmin True,df_admin True
     def testMD5Blob(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
+        self.res = self.res.click(href="course01/0/.*addblob$")
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -649,17 +649,17 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
         self.res = form.submit()
-        self.res = self.res.click(href=re.compile("course01/0/0/$"))
-        self.res = self.res.click(href=re.compile("course01/0/0/.*md5$"))
+        self.res = self.res.click(href="course01/0/0/$")
+        self.res = self.res.click(href="course01/0/0/.*md5$")
         self.res.mustcontain("MD5 Summe des Bildes ist")
         self.is_loggedin()
 
     def testEditBlob(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
+        self.res = self.res.click(href="course01/0/.*addblob$")
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -667,8 +667,8 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
         self.res = form.submit()
-        self.res = self.res.click(href=re.compile("course01/0/0/$"))
-        self.res = self.res.click(href=re.compile("course01/0/0/.*edit$"))
+        self.res = self.res.click(href="course01/0/0/$")
+        self.res = self.res.click(href="course01/0/0/.*edit$")
         form = self.res.forms[1]
         form["comment"] = "Real Shiny blob"
         form["label"] = "blub"
@@ -682,9 +682,9 @@ permissions = df_superadmin True,df_admin True
     def testDeleteBlob(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
+        self.res = self.res.click(href="course01/0/.*addblob$")
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -702,9 +702,9 @@ permissions = df_superadmin True,df_admin True
     def testRestoreBlob(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
+        self.res = self.res.click(href="course01/0/.*addblob$")
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = "blob"
@@ -716,7 +716,7 @@ permissions = df_superadmin True,df_admin True
         self.res = form.submit()
         self.res.mustcontain("Keine Bilder zu diesem Teil gefunden.",
                              no="#[0] (README-rlog.txt)")
-        self.res = self.res.click(href=re.compile("course01/0/.*deadblobs$"))
+        self.res = self.res.click(href="course01/0/.*deadblobs$")
         self.res.mustcontain("#[0] (README-rlog.txt)")
         form = self.res.forms[1]
         self.res = form.submit()
@@ -726,9 +726,9 @@ permissions = df_superadmin True,df_admin True
     def testAddBlobEmptyLabel(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-        self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
+        self.res = self.res.click(href="course01/0/.*addblob$")
         form = self.res.forms[1]
         form["comment"] = "Shiny blob"
         form["label"] = ""
@@ -741,15 +741,15 @@ permissions = df_superadmin True,df_admin True
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain("Area51")
-        self.res = self.res.click(href=re.compile("/.*createcourse$"))
+        self.res = self.res.click(href="/.*createcourse$")
         form = self.res.forms[1]
         form["name"] = "bug"
         form["title"] = "bug"
         self.res = form.submit()
         self.res.mustcontain("Area51", "bug")
-        self.res = self.res.click(href=re.compile("/bug/$"))
+        self.res = self.res.click(href="/bug/$")
         self.res = self.res.forms[1].submit() # create new part
-        self.res = self.res.click(href=re.compile("/bug/0/$"), index=0)
+        self.res = self.res.click(href="/bug/0/$", index=0)
         self.res = self.res.forms[1].submit() # delete only part
 
 class DokuforgeExporterTests(DokuforgeWebTests):
@@ -765,15 +765,15 @@ class DokuforgeExporterTests(DokuforgeWebTests):
     def testRawCourseExport(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course02/$"))
+        self.res = self.res.click(href="course02/$")
         self.res = self.res.click(description="df2-Rohdaten")
         self.assertIsTarGz(self.res.body)
 
     def testRawPageExport(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href=re.compile("course01/$"))
-        self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
         self.res = self.res.click(description="rcs", index=0)
         # FIXME: find a better check for a rcs file
         self.assertTrue(self.res.body.startswith(b"head"))
@@ -835,9 +835,9 @@ class DokuforgeExporterTests(DokuforgeWebTests):
             counter = 0  # to achieve distinct labels
             for imageFilename in imageFilenames:
                 self.res = self.res.click(description="X-Akademie")
-                self.res = self.res.click(href=re.compile("course01/$"))
-                self.res = self.res.click(href=re.compile("course01/0/$"), index=0)
-                self.res = self.res.click(href=re.compile("course01/0/.*addblob$"))
+                self.res = self.res.click(href="course01/$")
+                self.res = self.res.click(href="course01/0/$", index=0)
+                self.res = self.res.click(href="course01/0/.*addblob$")
                 form = self.res.forms[1]
                 form["comment"] = "Kommentar"
                 form["label"] = "blob" + str(counter)
