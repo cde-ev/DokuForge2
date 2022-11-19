@@ -10,8 +10,3 @@
 == not so important ==
 * view content of whole course on one page (df1 feature)
   this becomes more interesting when read-only links are sent to participants
-* list of all blobs (so the Fuzzi can review for bad quality/missing raw data)
-  an export seems to be more useful to quickly review many blobs
-* redirect POST-request such that reloading (F5) is possible
-  both Firefox and Chromium warn the user before resending a post request
-  when resending anyway, only a trivial conflict is created to be saved again
