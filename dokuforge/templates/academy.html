@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block subheading %}
-{{ academy.title|e }}
+    {{ academy.title|e }}
 {% endblock %}
 {% block location %}
 {{ navbar([("academy", {}, academy.title)]) }}
@@ -12,6 +12,7 @@
 	    {%- if user.allowedRead(academy, course) %}
 	    <div class="courseitem">
 	      <a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a><br>
+          {{ course.name.decode("ascii")|e }};
 	      Letzte Änderung am {{ course.timestamp.strftime("%Y/%m/%d %H:%M:%S %Z") | e }}
 	    </div>
 	    {%- else -%}
@@ -24,13 +25,14 @@
 {%- endif -%}
 <div class="academyoperations">
 {%- if user.mayExport(academy)%}
-<a href="{{ buildurl("export")|e }}">Exportieren</a>
+<a href="{{ buildurl("export")|e }}">Export</a>
 <a href="{{ buildurl("rawacademy")|e }}">df2-Rohdaten</a>
+    {%- if user.allowedMeta(academy) %} |{%- endif %}
 {%- endif %}
 {%- if user.allowedMeta(academy) %}
-<a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a>
-<a href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a>
-<a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a>
+<a href="{{ buildurl("academytitle")|e }}">Titel bearbeiten</a> |
+<a href="{{ buildurl("academygroups")|e }}">Gruppen bearbeiten</a> |
+<a href="{{ buildurl("createcoursequiz")|e }}">Kurs hinzuf&uuml;gen</a> |
 <a href="{{ buildurl("deadcourses")|e }}">gel&ouml;schte Kurse wiederherstellen</a>
 {%- endif -%}
 </div>

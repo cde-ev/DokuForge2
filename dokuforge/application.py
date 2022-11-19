@@ -16,6 +16,7 @@ import operator
 import os
 import random
 import sqlite3
+import sys
 import time
 import urllib
 try:
@@ -461,7 +462,7 @@ class Application:
         """
         try:
             config = ConfigParser()
-            config.readfp(io.StringIO(self.groupstore.content().decode("utf8")))
+            config.read_file(io.StringIO(self.groupstore.content().decode("utf8")))
         except configparser.ParsingError as err:
             return {}
         ret = {}
@@ -1051,8 +1052,11 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(c)
+        filename = b"%s_%s.tar.gz" % (aca.name, c.name)
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s_%s.tar.gz" % (aca.name, c.name)
+                "attachment; filename=" + filename
         return rs.response
 
     def do_rawacademy(self, rs, academy=None):
@@ -1074,8 +1078,11 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(aca)
+        filename = b"%s.tar.gz" % aca.name
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % (aca.name,)
+                "attachment; filename=" + filename
         return rs.response
 
     def do_export(self, rs, academy=None):
@@ -1100,8 +1107,10 @@ class Application:
             yield tarwriter.close()
         rs.response.response = export_iterator(aca, self.staticexportdir,
                                                prefix)
+        filename_prefix = \
+            prefix.decode("ascii") if sys.version_info >= (3,) else prefix
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % prefix
+                "attachment; filename=%s.tar.gz" % filename_prefix
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
