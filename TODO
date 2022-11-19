@@ -1,51 +1,17 @@
 == soon and important ==
-* add documentation
-* /docs/$aca/$course/32746238764273846 creates rcs files
-  * you can even edit these pages
-  * you can relink them
-  * they pop up when "creating a new page"
-  * similar problem for blobs
-
-== later and important ==
-* bibliography: serialize as json
 * rcs is much stricter about usernames as df2 creating error potential
+  --> merge branch by stefan to give web access to admin rcs history
+  --> enforce the three following conditions for changes:
+        * must be python parseable
+        * all names must consist of [a-z0-9-]
+        * at minimum one superadmin must remain
+      otherwise save the changes in a branch and inform the user
 
 == not so important ==
-* nicer design
-* upgraded navigation (back-buttons, all sort of cross-links, action links at the top _and_ at the bottom)
-* show some stuff only if relevant (list of blobs, links to deleted stuff, ...)
-* make buttons look like other links or vice versa
-* add functionality to insert parts before/after the current part, when viewing a certain part
-* link directly to headings (with anchors) and not only to the page in general on the page listing for a course
-* add links to edit/delete pages directly from the course page listing
-* add some more context information for easing the navigation for the user
-* nicer admin interface
-* tweaked print.css
-* webaccess to rcs history
-* per course trail export (to view the current length)
-* interactive page swapping
-* create manual for setting up a local dokuforge server
-* sensible file types for downloads
-* "wrong password" needs html rendering
-* extremely long course titles break layout
-* preview and edit (df1 feature)
 * view content of whole course on one page (df1 feature)
+  this becomes more interesting when read-only links are sent to participants
 * list of all blobs (so the Fuzzi can review for bad quality/missing raw data)
-* exporter: fix usage of \@
-* exporter: fix 'komma~-- ' and ' --~brackets~-- ' and '3--7'
-* exporter: fix utf8-handling
-* exporter: fix spacing after numerations ('21.\,Jahrhundert')
-* exporter: fix spacing before units ('200\,m' and '30\,kV')
-* exporter: fix spacing around special characters (e.g. %)
-* exporter: fix spacing around \dots ('it was~\dots{}')
-* exporter: mangle course and academy titles as well as captions (currently they are simply copy pasted, but we want to e.g. replace '...' by '\dots')
-* exporter: in $x_1,...,x_n$ the dots are not replaced by \dots{}
-* exporter/parse: aggregate spaces, just as LaTeX does for a more readable export
-* exporter: use templates (string.Template)
-* add course number attribute (so each course knows which number it has for export)
-* evaluate estimator performance (how acurate is the estimate, does it need tuning?)
-* check and fix bugs reported via meta academy
-* fix groups support
-* update style guide -- add more information about conflicts and a short resolution howto
-* improve utf8 handling -- differentiate good and bad characters in web- and tex-output
+  an export seems to be more useful to quickly review many blobs
 * redirect POST-request such that reloading (F5) is possible
+  both Firefox and Chromium warn the user before resending a post request
+  when resending anyway, only a trivial conflict is created to be saved again
