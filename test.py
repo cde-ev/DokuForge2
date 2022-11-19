@@ -1501,6 +1501,10 @@ after""" ] ]
     multilineCaptions = [ ['Dies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.',
                            'Dies ist eine Bildunterschrift.\\@\\@\\@\nSie soll zwei Absätze haben.' ] ]
 
+    paragraphsWithoutPunctuation = [ ['Kein Satzzeichen am Ende',
+                                      'Kein Satzzeichen am Ende\\@' ] ] + \
+                                   [ [i, i] for i in ( 'Mit Satzzeichen' + j for j in ('.', '!', '?') ) ]
+
 class ExporterTestCases:
     """
     Which tests should be run for the separate parsers?
@@ -1527,7 +1531,8 @@ class ExporterTestCases:
                   [ ExporterTestStrings.itemizeAndCo,
                     ExporterTestStrings.code,
                     ExporterTestStrings.ednoteEscape,
-                    ExporterTestStrings.codeAndLengthyParagraph ]
+                    ExporterTestStrings.codeAndLengthyParagraph,
+                    ExporterTestStrings.paragraphsWithoutPunctuation ]
 
     lineGroupTests = testsInText + \
                      [ ExporterTestStrings.sectionsAndAuthors,
