@@ -1,44 +1,45 @@
 #!/usr/bin/env python
 """
-Usage: python -m dokuforge.export academy_or_course_directory
+Usage: python -m dokuforge.export df2_academy_directory dokuforge-export-static_directory academy_name
 """
 
 import os.path
 import sys
 
-from dokuforge.course import Course
-from dokuforge.parser import dfLineGroupParser
+from dokuforge.course  import Course
+from dokuforge.parser  import dfLineGroupParser
+from dokuforge.academy import Academy
+from dokuforge.common  import TarWriter
 
-class PseudoTarWriter:
-    def __init__(self, directory):
-        self.directory = directory
+from tarfile import TarFile
 
-    def addChunk(self, filename, content, lastchanged):
-        # Drop leading component. It is contained both in self.directory and in
-        # filename.
-        filename = filename.split('/', 1)[1]
-        with open(os.path.join(self.directory, filename), "w") as output:
-            output.write(content)
+def process(academiesdir,staticexportdir,academyname):
+    academy = Academy ( os.path.join(academiesdir,academyname), [] )
 
-def process_course(directory):
-    print("Processing %s..." % directory)
-    tw = PseudoTarWriter(directory)
-    c = Course(directory)
-    for _ in c.texExportIterator(tw):
-        pass
+    # duplicate code from application.py
+    prefixdir = b"texexport_" + academyname
 
-def process(directory):
-    if os.path.exists(os.path.join(directory, "Index,v")):
-        process_course(directory)
-    else:
-        for elem in os.listdir(directory):
-            entry = os.path.join(directory, elem)
-            if os.path.isdir(entry):
-                process(entry)
+    def export_iterator(aca, staticexpdir, prefix):
+        tarwriter = TarWriter(gzip=False)
+        tarwriter.pushd(prefix)
+        for chunk in aca.texExportIterator(tarwriter,
+                                           static=staticexpdir):
+            yield chunk
+        tarwriter.popd()
+        yield tarwriter.close()
+
+    tarGenerator = export_iterator(academy,staticexportdir,prefixdir)
+
+    outputfile = open ( prefixdir.decode("utf8")+'.tar', 'wb' )
+
+    for chunk in tarGenerator:
+        outputfile.write(chunk)
 
 def main():
-    basedir = sys.argv[1]
-    process(basedir)
+    academiesdir    = sys.argv[1].encode("utf8")
+    staticexportdir = sys.argv[2].encode("utf8")
+    academyname     = sys.argv[3].encode("utf8")
+    process(academiesdir,staticexportdir,academyname)
 
 if __name__ == "__main__":
     main()
