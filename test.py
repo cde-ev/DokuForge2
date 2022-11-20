@@ -1382,9 +1382,10 @@ class ExporterTestStrings:
                          ['[[_Mein BAMF_ -- aus dem Kabarett]]',
                           '\\subsection{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
                          ['[[Max Reger: _Es waren zwei Königskinder_ hier]]',
-                          '\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
-                         ['[1. Buch Mose]',
-                          '\\section{\\@1. Buch Mose}'] ]
+                          '\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}']]
+
+    sectionsWithOrdinals = [ ['[1. Buch Mose]',
+                              '\\section{\\@1. Buch Mose}'] ]
 
     numericalScope = [ ['10\xb3 Meter sind ein km',
                         '10\xb3 Meter sind ein km'] ]
@@ -1532,6 +1533,7 @@ class ExporterTestCases:
     lineGroupTests = testsInText + \
                      [ ExporterTestStrings.sectionsAndAuthors,
                        ExporterTestStrings.sectionsWithEmph,
+                       ExporterTestStrings.sectionsWithOrdinals,
                        ExporterTestStrings.lengthyParagraph ]
 
     titleTests = testsEverywhere
