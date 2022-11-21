@@ -1217,40 +1217,26 @@ class ExporterTestStrings:
                  ['„‚Nested quotes‘”.',
                   '\\@\\@"`\\@\'Nested quotes\\@\'\\@\\@"`.'] ]
 
+    _unicodeNonstandardSpaces = ( ' ',    # non-breaking space U+00A0
+                                  ' ',    # en quad U+2000
+                                  ' ',    # em quad U+2001
+                                  ' ',    # en space U+2002
+                                  ' ',    # em space U+2003
+                                  ' ',    # 1/3 em space U+2004
+                                  ' ',    # 1/4 em space U+2005
+                                  ' ',    # 1/6 em space U+2006
+                                  ' ',    # figure space U+2007
+                                  ' ',    # punctuation space U+2008
+                                  ' ',    # thin space U+2009
+                                  ' ',    # hair space U+200A
+                                  '​',    # zero width space U+200B
+                                  ' ',    # narrow no-break space U+202F
+                                  ' ',    # medium mathematical space (4/18 em) U+205F
+                                  '﻿',    # zero-width non-breaking space U+FEFF
+                                 )
     nonstandardSpace = [ ['x x',    # standard ASCII space
-                          'x x' ],
-                         ['x x',    # non-breaking space U+00A0
-                          'x\@ x' ],
-                         ['x x',    # en quad U+2000
-                          'x\@ x' ],
-                         ['x x',    # em quad U+2001
-                          'x\@ x' ],
-                         ['x x',    # en space U+2002
-                          'x\@ x' ],
-                         ['x x',    # em space U+2003
-                          'x\@ x' ],
-                         ['x x',    # 1/3 em space U+2004
-                          'x\@ x' ],
-                         ['x x',    # 1/4 em space U+2005
-                          'x\@ x' ],
-                         ['x x',    # 1/6 em space U+2006
-                          'x\@ x' ],
-                         ['x x',    # figure space U+2007
-                          'x\@ x' ],
-                         ['x x',    # punctuation space U+2008
-                          'x\@ x' ],
-                         ['x x',    # thin space U+2009
-                          'x\@ x' ],
-                         ['x x',    # hair space U+200A
-                          'x\@ x' ],
-                         ['x​x',    # zero width space U+200B
-                          'x\@ x' ],
-                         ['x x',    # narrow no-break space U+202F
-                          'x\@ x' ],
-                         ['x x',    # medium mathematical space (4/18 em) U+205F
-                          'x\@ x' ],
-                         ['x﻿x',    # zero-width non-breaking space U+FEFF
-                          'x\@ x' ] ]
+                          'x x' ] ] + \
+                       [ [ f'x{i}x', 'x\@ x'] for i in _unicodeNonstandardSpaces ]
 
     pageReferences = [ ['Auf S. 4 Abs. 3 in Art. 7 steht',
                         'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
@@ -1382,9 +1368,10 @@ class ExporterTestStrings:
                          ['[[_Mein BAMF_ -- aus dem Kabarett]]',
                           '\\subsection{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
                          ['[[Max Reger: _Es waren zwei Königskinder_ hier]]',
-                          '\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
-                         ['[1. Buch Mose]',
-                          '\\section{\\@1. Buch Mose}'] ]
+                          '\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}']]
+
+    sectionsWithOrdinals = [ ['[1. Buch Mose]',
+                              '\\section{\\@1. Buch Mose}'] ]
 
     numericalScope = [ ['10\xb3 Meter sind ein km',
                         '10\xb3 Meter sind ein km'] ]
@@ -1532,6 +1519,7 @@ class ExporterTestCases:
     lineGroupTests = testsInText + \
                      [ ExporterTestStrings.sectionsAndAuthors,
                        ExporterTestStrings.sectionsWithEmph,
+                       ExporterTestStrings.sectionsWithOrdinals,
                        ExporterTestStrings.lengthyParagraph ]
 
     titleTests = testsEverywhere
