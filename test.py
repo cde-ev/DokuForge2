@@ -530,26 +530,47 @@ title = Wie der Name sagt
         self.is_loggedin()
 
     def testAdmin(self):
+        def testValidInput():
+            form = self.res.forms[1]
+            form["content"] = """[bob]
+name = bob
+status = ueberadmin
+password = secret
+permissions = df_superadmin True,df_admin True
+"""
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
+
+        def testInvalidSyntax():
+            form = self.res.forms[1]
+            form["content"] = """[bob
+name = bob
+status = ueberadmin
+password = secret
+permissions = df_superadmin True,df_admin True
+"""
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+
+        def testComplicatedPassword():
+            form = self.res.forms[1]
+            form["content"] = """[bob]
+name = bob
+status = ueberadmin
+password = a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m
+permissions = df_superadmin True,df_admin True
+"""
+            self.res = form.submit(name="saveedit")
+            # TODO check the password actually works as intended
+            self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
+
         self.do_login()
         self.res = self.res.click(href="/admin/$")
-        form = self.res.forms[1]
-        form["content"] = """[bob]
-name = bob
-status = ueberadmin
-password = secret
-permissions = df_superadmin True,df_admin True
-"""
-        self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
-        form = self.res.forms[1]
-        form["content"] = """[bob
-name = bob
-status = ueberadmin
-password = secret
-permissions = df_superadmin True,df_admin True
-"""
-        self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+
+        testValidInput()
+        testInvalidSyntax()
+        testComplicatedPassword()
+
         self.is_loggedin()
 
     def testStyleguide(self):
