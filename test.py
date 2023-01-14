@@ -572,12 +572,31 @@ permissions = df_superadmin True,df_admin True
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
 
+        def testMissingFields():
+            form = self.res.forms[1]
+            form_contents = ["[bob]", "name = bob", "status = ueberadmin", "password = secret", "permissions = df_superadmin True,df_admin True"]
+            for incomplete_indices in ((0, 1, 3, 4), (0, 1, 2, 4)):
+                form["content"] = "\n".join([form_contents[i] for i in incomplete_indices])
+                self.res = form.submit(name="saveedit")
+                self.res.mustcontain("Es fehlt eine Angabe!")
+
+        def testMalformedPermissions():
+            form = self.res.forms[1]
+            some_form_contents = ["[bob]", "name = bob", "status = ueberadmin", "password = secret"]
+            for malformed_permission in ("df superadmin True", "df_admin"):
+                form["content"] = "\n".join(some_form_contents) + '\npermissions = ' + malformed_permission
+                self.res = form.submit(name="saveedit")
+                self.res.mustcontain("Das Recht")
+                self.res.mustcontain("ist nicht wohlgeformt.")
+
         self.do_login()
         self.res = self.res.click(href="/admin/$")
 
         testValidInput()
         testInvalidSyntax()
         testPasswordSyntaxError()
+        testMissingFields()
+        testMalformedPermissions()
 
         self.is_loggedin()
 
