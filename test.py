@@ -530,14 +530,16 @@ title = Wie der Name sagt
         self.is_loggedin()
 
     def testAdmin(self):
-        def testValidInput():
-            form = self.res.forms[1]
-            form["content"] = """[bob]
+        def _getFormContentsWithPassword(password: str) -> str:
+            return """[bob]
 name = bob
 status = ueberadmin
-password = secret
-permissions = df_superadmin True,df_admin True
-"""
+password = """ + password + """
+permissions = df_superadmin True,df_admin True"""
+
+        def testValidInput():
+            form = self.res.forms[1]
+            form["content"] = _getFormContentsWithPassword("secret")
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
 
@@ -554,21 +556,11 @@ permissions = df_superadmin True,df_admin True
 
         def testPasswordSyntaxError():
             form = self.res.forms[1]
-            form["content"] = """[bob]
-name = bob
-status = ueberadmin
-password = a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m
-permissions = df_superadmin True,df_admin True
-"""
+            form["content"] = _getFormContentsWithPassword("""a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m""")
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Syntaxfehler!")
 
-            form["content"] = """[bob]
-name = bob
-status = ueberadmin
-password = secret
-permissions = df_superadmin True,df_admin True
-"""
+            form["content"] = _getFormContentsWithPassword("secret")
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
 
