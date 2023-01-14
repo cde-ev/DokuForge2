@@ -529,17 +529,18 @@ title = Wie der Name sagt
         self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
         self.is_loggedin()
 
-    def testAdmin(self):
-        def _getFormContentsWithPassword(password: str) -> str:
-            return """[bob]
+    @staticmethod
+    def _getFormContentsWithPassword(password: str) -> str:
+        return """[bob]
 name = bob
 status = ueberadmin
 password = """ + password + """
 permissions = df_superadmin True,df_admin True"""
 
+    def testAdmin(self):
         def testValidInput():
             form = self.res.forms[1]
-            form["content"] = _getFormContentsWithPassword("secret")
+            form["content"] = self._getFormContentsWithPassword("new_secret")
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
 
@@ -556,11 +557,11 @@ permissions = df_superadmin True,df_admin True
 
         def testPasswordSyntaxError():
             form = self.res.forms[1]
-            form["content"] = _getFormContentsWithPassword("""a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m""")
+            form["content"] = self._getFormContentsWithPassword("""a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m""")
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Syntaxfehler!")
 
-            form["content"] = _getFormContentsWithPassword("secret")
+            form["content"] = self._getFormContentsWithPassword("secret")
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
 
@@ -581,15 +582,6 @@ permissions = df_superadmin True,df_admin True
                 self.res.mustcontain("Das Recht")
                 self.res.mustcontain("ist nicht wohlgeformt.")
 
-        def testComplicatedPassword():
-            form = self.res.forms[1]
-            complicated_password = """a^b!c"d§e$f&g/h(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m"""
-            form["content"] = _getFormContentsWithPassword(complicated_password)
-            self.res = form.submit(name="saveedit")
-            self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
-            # TODO test that we can successfully log in with this password
-            # (needs possibility to log out here)
-
         self.do_login()
         self.res = self.res.click(href="/admin/$")
 
@@ -598,9 +590,23 @@ permissions = df_superadmin True,df_admin True
         testPasswordSyntaxError()
         testMissingFields()
         testMalformedPermissions()
-        testComplicatedPassword()
 
         self.is_loggedin()
+
+    def testAdminComplicatedPassword(self):
+        # implemented as a separate test case to avoid interference with other admin test cases due to logging out and in
+        self.do_login()
+        self.res = self.res.click(href="/admin/$")
+        form = self.res.forms[1]
+        complicated_password = "abc"  # """a^b!c"d§e$f&g/h(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m"""
+        form["content"] = self._getFormContentsWithPassword(complicated_password)
+        self.res = form.submit(name="saveedit")
+        self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
+        self.res = self.res.forms[0].submit("submit")  # cannot use do_logout because we have multiple forms
+        self.res.mustcontain(no="/logout")  # verify that we are logged out
+        self.do_login(username="bob", password=complicated_password)
+        self.is_loggedin()
+
 
     def testStyleguide(self):
         self.res = self.app.get("/")
