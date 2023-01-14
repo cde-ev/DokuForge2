@@ -552,7 +552,7 @@ permissions = df_superadmin True,df_admin True
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
 
-        def testComplicatedPassword():
+        def testPasswordSyntaxError():
             form = self.res.forms[1]
             form["content"] = """[bob]
 name = bob
@@ -561,7 +561,15 @@ password = a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}g�
 permissions = df_superadmin True,df_admin True
 """
             self.res = form.submit(name="saveedit")
-            # TODO check the password actually works as intended
+            self.res.mustcontain("Syntaxfehler!")
+
+            form["content"] = """[bob]
+name = bob
+status = ueberadmin
+password = secret
+permissions = df_superadmin True,df_admin True
+"""
+            self.res = form.submit(name="saveedit")
             self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
 
         self.do_login()
@@ -569,7 +577,7 @@ permissions = df_superadmin True,df_admin True
 
         testValidInput()
         testInvalidSyntax()
-        testComplicatedPassword()
+        testPasswordSyntaxError()
 
         self.is_loggedin()
 

@@ -246,6 +246,9 @@ def validateUserConfig(config):
     except configparser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+    except configparser.InterpolationSyntaxError as err:
+        raise CheckError("Syntaxfehler!",
+                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
 def validateGroupConfig(config):
     """
