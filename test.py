@@ -598,7 +598,7 @@ permissions = df_superadmin True,df_admin True
         self.do_login()
         self.res = self.res.click(href="/admin/$")
         form = self.res.forms[1]
-        complicated_password = "abc"  # """a^b!c"d§e$f&g/h(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m"""
+        complicated_password = """a^b!c"d§e$f&g/h(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m"""
         form["content"] = self._getFormContentsWithPassword(complicated_password)
         self.res = form.submit(name="saveedit")
         self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
