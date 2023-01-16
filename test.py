@@ -533,7 +533,7 @@ title = Wie der Name sagt
     def _getFormContentsWithPassword(password: str) -> str:
         return """[bob]
 name = bob
-status = ueberadmin
+status = überadmin
 password = """ + password + """
 permissions = df_superadmin True,df_admin True"""
 
@@ -554,16 +554,6 @@ permissions = df_superadmin True,df_admin True
 """
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
-
-        def testPasswordSyntaxError():
-            form = self.res.forms[1]
-            form["content"] = self._getFormContentsWithPassword("""a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m""")
-            self.res = form.submit(name="saveedit")
-            self.res.mustcontain("Syntaxfehler!")
-
-            form["content"] = self._getFormContentsWithPassword("secret")
-            self.res = form.submit(name="saveedit")
-            self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
 
         def testMissingFields():
             form = self.res.forms[1]
@@ -587,7 +577,6 @@ permissions = df_superadmin True,df_admin True
 
         testValidInput()
         testInvalidSyntax()
-        testPasswordSyntaxError()
         testMissingFields()
         testMalformedPermissions()
 
@@ -598,15 +587,14 @@ permissions = df_superadmin True,df_admin True
         self.do_login()
         self.res = self.res.click(href="/admin/$")
         form = self.res.forms[1]
-        complicated_password = """a^b!c"d§e$f&g/h(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m"""
+        complicated_password = """a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m"""
         form["content"] = self._getFormContentsWithPassword(complicated_password)
         self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
-        self.res = self.res.forms[0].submit("submit")  # cannot use do_logout because we have multiple forms
-        self.res.mustcontain(no="/logout")  # verify that we are logged out
-        self.do_login(username="bob", password=complicated_password)
+        self.res.mustcontain("Ungültige Zeichen enthalten!")
+        self.res = self.res.forms[0].submit("submit")     # cannot use do_logout because we have multiple forms
+        self.res.mustcontain(no="/logout")                # verify that we are logged out
+        self.do_login(username="bob", password="secret")  # verify that we can still log in with the previous password
         self.is_loggedin()
-
 
     def testStyleguide(self):
         self.res = self.app.get("/")

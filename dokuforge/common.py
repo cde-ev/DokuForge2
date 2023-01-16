@@ -226,7 +226,17 @@ def validateUserConfig(config):
 
     @type config: unicode
     """
-    assert isinstance(config, unicode)
+
+    def assertConsistsOfValidCharacters(config: unicode) -> None:
+        assert isinstance(config, unicode)
+        allowedCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöüß0123456789,=-_[].!$ \t\n'
+        if not set(config).issubset(set(allowedCharacters)):
+            illegalCharacters = ''.join(set(config).difference(set(allowedCharacters)))
+            raise CheckError(u"Ungültige Zeichen enthalten! Es sind nur A-ZÄÖÜa-zäöüß0-9,=-_[] Tab und Newline erlaubt.",
+                             u"Bitte entferne die folgenden Zeichen: %s" % illegalCharacters)
+
+    assertConsistsOfValidCharacters(config)
+
     parser = ConfigParser()
     try:
         parser.read_file(io.StringIO(config))
@@ -246,9 +256,6 @@ def validateUserConfig(config):
     except configparser.NoOptionError as err:
         raise CheckError(u"Es fehlt eine Angabe!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
-    except configparser.InterpolationSyntaxError as err:
-        raise CheckError("Syntaxfehler!",
-                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
 def validateGroupConfig(config):
     """
