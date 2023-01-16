@@ -518,6 +518,7 @@ title = Wie der Name sagt
 """
         self.res = form.submit(name="saveedit")
         self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
+
         form = self.res.forms[1]
         form["content"] = """[cde]
 title = CdE-Akademien
@@ -527,6 +528,17 @@ title = Wie der Name sagt
 """
         self.res = form.submit(name="saveedit")
         self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+
+        form = self.res.forms[1]
+        form["content"] = """[cde]
+title = CdE-Akademien
+
+[spam]
+title = a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m
+"""
+        self.res = form.submit(name="saveedit")
+        self.res.mustcontain("Ungültige Zeichen enthalten!")
+
         self.is_loggedin()
 
     @staticmethod
