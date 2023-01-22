@@ -511,30 +511,48 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.is_loggedin()
 
     def testGroups(self):
-        self.do_login()
-        self.res = self.res.click(href="/groups/$")
-        form = self.res.forms[1]
-        form["content"] = """[cde]
+        valid_groups_input = """[cde]
 title = CdE-Akademien
 
 [spam]
 title = Wie der Name sagt
 """
-        self.res = form.submit(name="saveedit")
-        self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
-        form = self.res.forms[1]
-        form["content"] = """[cde]
+        invalid_groups_input = """[cde]
 title = CdE-Akademien
 
 [spam
 title = Wie der Name sagt
 """
-        self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
-        self.is_loggedin()
-        self.res = self.res.click(description="rcs", index=0)
-        self.assertLooksLikeRcs(self.res.body)
 
+        def testValidInput():
+            form = self.res.forms[1]
+            form["content"] = valid_groups_input
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
+
+        def testInvalidInput():
+            form = self.res.forms[1]
+            form["content"] = invalid_groups_input
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+
+        def testCancelEdit():
+            form = self.res.forms[1]
+            form["content"] = invalid_groups_input
+            self.res = self.res.click(description="Zurücksetzen", index=0)
+            self.res.mustcontain(valid_groups_input)
+
+        def testRcsAvailability():
+            self.res = self.res.click(description="rcs", index=0)
+            self.assertLooksLikeRcs(self.res.body)
+
+        self.do_login()
+        self.res = self.res.click(href="/groups/$")
+        testValidInput()
+        testInvalidInput()
+        testCancelEdit()
+        self.is_loggedin()
+        testRcsAvailability()
 
     def testAdmin(self):
         self.do_login()
@@ -788,7 +806,7 @@ class DokuforgeExporterTests(DokuforgeWebTests):
         self.res = self.res.click(href="course01/$")
         self.res = self.res.click(href="course01/0/$", index=0)
         self.res = self.res.click(description="rcs", index=0)
-        self.assertLooksLikeRCS(self.res.body)
+        self.assertLooksLikeRcs(self.res.body)
 
     def testAcademyExport(self):
         self.do_login()
