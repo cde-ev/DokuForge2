@@ -65,6 +65,10 @@ class DfTestCase(unittest.TestCase):
         f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
         self.assertIsTar(f.read())
 
+    def assertLooksLikeRcs(self, octets):
+        # FIXME: find a better check for whether something looks like an rcs file
+        self.assertTrue(octets.startswith(b"head"))
+
 class TarWriterTests(DfTestCase):
     def testUncompressed(self):
         timeStampNow = datetime.datetime.utcnow()
@@ -552,6 +556,12 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
         self.is_loggedin()
 
+    def testAdminRcs(self):
+        self.do_login()
+        self.res = self.res.click(href="/admin/$")
+        self.res = self.res.click(description="rcs", index=0)
+        self.assertLooksLikeRcs(self.res.body)
+
     def testStyleguide(self):
         self.res = self.app.get("/")
         self.res = self.res.click(href="/style/$")
@@ -775,8 +785,7 @@ class DokuforgeExporterTests(DokuforgeWebTests):
         self.res = self.res.click(href="course01/$")
         self.res = self.res.click(href="course01/0/$", index=0)
         self.res = self.res.click(description="rcs", index=0)
-        # FIXME: find a better check for a rcs file
-        self.assertTrue(self.res.body.startswith(b"head"))
+        self.assertLooksLikeRCS(self.res.body)
 
     def testAcademyExport(self):
         self.do_login()
