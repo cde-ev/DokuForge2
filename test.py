@@ -521,7 +521,7 @@ title = CdE-Akademien
 title = Wie der Name sagt
 """
         self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
+        self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
         form = self.res.forms[1]
         form["content"] = """[cde]
 title = CdE-Akademien
@@ -532,6 +532,9 @@ title = Wie der Name sagt
         self.res = form.submit(name="saveedit")
         self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
         self.is_loggedin()
+        self.res = self.res.click(description="rcs", index=0)
+        self.assertLooksLikeRcs(self.res.body)
+
 
     def testAdmin(self):
         self.do_login()

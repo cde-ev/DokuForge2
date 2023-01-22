@@ -238,6 +238,7 @@ class Application:
             rule("/groups/", methods=("GET", "HEAD"), endpoint="groups"),
             rule("/groups/!save", methods=("POST",),
                  endpoint="groupssave"),
+            rule("/groups/!rcs", methods=("GET", "HEAD"), endpoint="groupsrcs"),
             rule("/style/", methods=("GET", "HEAD"),
                  endpoint="styleguide"),
             rule("/style/<identifier:topic>", methods=("GET", "HEAD"),
@@ -1411,6 +1412,15 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.groupstore, "groups.html",
                                 checkhook = common.validateGroupConfig)
+
+    def do_groupsrcs(self, rs):
+        """
+        @type rs: RequestState
+        """
+        self.check_login(rs)
+        if not rs.user.isSuperAdmin():
+            return werkzeug.exceptions.Forbidden()
+        return self.do_rcsview(rs,self.groupstore,"groupdb")
 
     ### here come the renderer
 
