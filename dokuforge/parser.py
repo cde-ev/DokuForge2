@@ -973,7 +973,7 @@ class PUrl(PTree):
 
     def toHtml(self):
         result = self.text.toHtml()
-        result = self.formatAndSplitTrailingChars(u'<a>%s</a>', result)
+        # Linking is done in Template
         return result
 
     def toDF(self):
@@ -1183,12 +1183,10 @@ class PHeading(PTree):
         return self.level
 
     def getTitle(self):
-        return self.subtree.text
+        return self.subtree.toDF()
 
     def toEstimate(self):
-        if isinstance(self.subtree, PSequence):
-            return Estimate.fromTitle(self.subtree.toDF())
-        return Estimate.fromTitle(self.subtree.text)
+        return Estimate.fromTitle(self.subtree.toDF())
 
 class PAuthor(PTree):
     def __init__(self, author):

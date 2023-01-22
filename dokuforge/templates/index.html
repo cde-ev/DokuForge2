@@ -5,30 +5,39 @@
 {% block location %}
     {{ navbar() }}
 {% endblock %}
+
+{% macro list_academies(group) %}
+    <ul style="margin-top: 0; margin-bottom: 0">
+        {%- for academy in academies[group] -%}
+            {%- if user.allowedRead(academy) %}
+                <li>
+                    <a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">
+                        {{ academy.title|e }}
+                    </a>
+                </li>
+            {%- else -%}
+                <li>{{ academy.title|e }}</li>
+            {%- endif -%}
+        {%- else -%}
+            <li><em>Keine Akademien gefunden.</em></li>
+        {%- endfor -%}
+    </ul>
+{% endmacro %}
+
 {% block content %}
-<ul>
-{%- for academy in academies -%}
-  {%- if group in academy.groups -%}
-    {%- if user.allowedRead(academy) %}
-    <li><a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">{{ academy.title|e }}</a>
-</li>
-    {%- else -%}
-    <li>{{ academy.title|e }}</li>
-    {%- endif -%}
-  {%- endif -%}
-{%- else -%}
-<li><em>Keine Akademien gefunden.</em></li>
-{%- endfor -%}
-</ul>
-<hr>
-<ul>
-{%- for onegroup in allgroups.keys()|sort -%}
-{%- if user.allowedList(onegroup) -%}
-    <li><a href="{{ buildurl("groupindex", {'group': onegroup})|e }}">{{ allgroups[onegroup]|e }}</a></li>
-{%- endif -%}
-{%- endfor -%}
-</ul>
+    <div>
+    {% if groups|length > 1 %}
+        {%- for group, title in groups.items()|sort -%}
+            <details {% if group == user.defaultGroup() %}open=""{% endif %}>
+                <summary>{{ title }}</summary>
+                {{ list_academies(group) }}
+            </details>
+        {%- endfor -%}
+    {% else %}
+        {{ list_academies(groups|first) }}
+    {% endif %}
+    </div>
 {% if user.mayCreate() %}
-<a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a>
+    <p><a href="{{ buildurl("createacademy")|e }}">Neue Akademie anlegen</a></p>
 {% endif%}
 {% endblock %}
