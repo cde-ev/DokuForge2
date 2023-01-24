@@ -564,6 +564,13 @@ password = """ + password + """
 permissions = df_superadmin True,df_admin True"""
 
     def testAdmin(self):
+        invalid_syntax_input = """[bob
+name = bob
+status = ueberadmin
+password = secret
+permissions = df_superadmin True,df_admin True
+"""
+
         def testValidInput():
             form = self.res.forms[1]
             form["content"] = self._getFormContentsWithPassword("new_secret")
@@ -572,14 +579,15 @@ permissions = df_superadmin True,df_admin True"""
 
         def testInvalidSyntax():
             form = self.res.forms[1]
-            form["content"] = """[bob
-name = bob
-status = ueberadmin
-password = secret
-permissions = df_superadmin True,df_admin True
-"""
+            form["content"] = invalid_syntax_input
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+
+        def testCancelEdit():
+            form = self.res.forms[1]
+            form["content"] = invalid_syntax_input
+            self.res = self.res.click(description="Zurücksetzen", index=0)
+            self.res.mustcontain(self._getFormContentsWithPassword("new_secret"))
 
         def testMissingFields():
             form = self.res.forms[1]
@@ -603,6 +611,7 @@ permissions = df_superadmin True,df_admin True
 
         testValidInput()
         testInvalidSyntax()
+        testCancelEdit()
         testMissingFields()
         testMalformedPermissions()
 
