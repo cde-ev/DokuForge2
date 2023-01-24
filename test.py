@@ -517,6 +517,7 @@ title = CdE-Akademien
 [spam]
 title = Wie der Name sagt
 """
+
         invalid_groups_input = """[cde]
 title = CdE-Akademien
 
@@ -554,27 +555,71 @@ title = Wie der Name sagt
         self.is_loggedin()
         testRcsAvailability()
 
+    @staticmethod
+    def _getFormContentsWithPassword(password: str) -> str:
+        return """[bob]
+name = bob
+status = überadmin
+password = """ + password + """
+permissions = df_superadmin True,df_admin True"""
+
     def testAdmin(self):
+        def testValidInput():
+            form = self.res.forms[1]
+            form["content"] = self._getFormContentsWithPassword("new_secret")
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
+
+        def testInvalidSyntax():
+            form = self.res.forms[1]
+            form["content"] = """[bob
+name = bob
+status = ueberadmin
+password = secret
+permissions = df_superadmin True,df_admin True
+"""
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+
+        def testMissingFields():
+            form = self.res.forms[1]
+            form_contents = ["[bob]", "name = bob", "status = ueberadmin", "password = secret", "permissions = df_superadmin True,df_admin True"]
+            for incomplete_indices in ((0, 1, 3, 4), (0, 1, 2, 4)):
+                form["content"] = "\n".join([form_contents[i] for i in incomplete_indices])
+                self.res = form.submit(name="saveedit")
+                self.res.mustcontain("Es fehlt eine Angabe!")
+
+        def testMalformedPermissions():
+            form = self.res.forms[1]
+            some_form_contents = ["[bob]", "name = bob", "status = ueberadmin", "password = secret"]
+            for malformed_permission in ("df superadmin True", "df_admin"):
+                form["content"] = "\n".join(some_form_contents) + '\npermissions = ' + malformed_permission
+                self.res = form.submit(name="saveedit")
+                self.res.mustcontain("Das Recht")
+                self.res.mustcontain("ist nicht wohlgeformt.")
+
+        self.do_login()
+        self.res = self.res.click(href="/admin/$")
+
+        testValidInput()
+        testInvalidSyntax()
+        testMissingFields()
+        testMalformedPermissions()
+
+        self.is_loggedin()
+
+    def testAdminComplicatedPassword(self):
+        # implemented as a separate test case to avoid interference with other admin test cases due to logging out and in
         self.do_login()
         self.res = self.res.click(href="/admin/$")
         form = self.res.forms[1]
-        form["content"] = """[bob]
-name = bob
-status = ueberadmin
-password = secret
-permissions = df_superadmin True,df_admin True
-"""
+        complicated_password = """a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m"""
+        form["content"] = self._getFormContentsWithPassword(complicated_password)
         self.res = form.submit(name="saveedit")
-        self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
-        form = self.res.forms[1]
-        form["content"] = """[bob
-name = bob
-status = ueberadmin
-password = secret
-permissions = df_superadmin True,df_admin True
-"""
-        self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+        self.res.mustcontain("Ungültige Zeichen enthalten!")
+        self.res = self.res.forms[0].submit("submit")     # cannot use do_logout because we have multiple forms
+        self.res.mustcontain(no="/logout")                # verify that we are logged out
+        self.do_login(username="bob", password="secret")  # verify that we can still log in with the previous password
         self.is_loggedin()
 
     def testAdminRcs(self):

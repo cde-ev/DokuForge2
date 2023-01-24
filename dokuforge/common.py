@@ -219,6 +219,14 @@ def validateExistence(path, name):
 def sanitizeBlobFilename(name):
     return u"einedatei.dat"
 
+def _assertConsistsOfValidCharacters(config: unicode) -> None:
+    assert isinstance(config, unicode)
+    allowedCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöüß0123456789,=-_[].!$ \t\n'
+    if not set(config).issubset(set(allowedCharacters)):
+        illegalCharacters = ''.join(set(config).difference(set(allowedCharacters)))
+        raise CheckError(u"Ungültige Zeichen enthalten! Es sind nur A-ZÄÖÜa-zäöüß0-9,=-_[].!$ Leerzeichen, Tab und Newline erlaubt.",
+                         u"Bitte entferne die folgenden Zeichen: %s" % illegalCharacters)
+
 def validateUserConfig(config):
     """
     Try parsing the supplied config with ConfigParser. If this fails
@@ -226,13 +234,15 @@ def validateUserConfig(config):
 
     @type config: unicode
     """
-    assert isinstance(config, unicode)
+    _assertConsistsOfValidCharacters(config)
+
     parser = ConfigParser()
     try:
         parser.read_file(io.StringIO(config))
     except configparser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+
     try:
         for name in parser.sections():
             for perm in parser.get(name, u'permissions').split(u','):
@@ -254,13 +264,15 @@ def validateGroupConfig(config):
 
     @type config: unicode
     """
-    assert isinstance(config, unicode)
+    _assertConsistsOfValidCharacters(config)
+
     parser = ConfigParser()
     try:
         parser.read_file(io.StringIO(config))
     except configparser.Error as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+
     try:
         for name in parser.sections():
             parser.get(name, u'title')
