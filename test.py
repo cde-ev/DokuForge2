@@ -510,6 +510,12 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res.mustcontain("Nichtexistente Gruppe gefunden!")
         self.is_loggedin()
 
+    @staticmethod
+    def _normalizeToTextareaLineEndings(form_contents: str) -> str:
+        # when editing in the browser, textareas encode line endings as \r\n, mimic this in the tests
+        normalized_to_newline = form_contents.replace('\r\n', '\n').replace('\n\r', '\n').replace('\r', '\n')
+        return normalized_to_newline.replace('\n', '\r\n')
+
     def testGroups(self):
         valid_groups_input = """[cde]
 title = CdE-Akademien
@@ -537,6 +543,18 @@ title = Wie der Name sagt
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
 
+        def testInvalidCharacters():
+            form = self.res.forms[1]
+            form["content"] = self._normalizeToTextareaLineEndings("""[cde]
+title = CdE-Akademien
+
+[spam]
+title = a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m
+""")
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("Ungültige Zeichen enthalten!")
+
+
         def testCancelEdit():
             form = self.res.forms[1]
             form["content"] = invalid_groups_input
@@ -551,6 +569,7 @@ title = Wie der Name sagt
         self.res = self.res.click(href="/groups/$")
         testValidInput()
         testInvalidInput()
+        testInvalidCharacters()
         testCancelEdit()
         self.is_loggedin()
         testRcsAvailability()
@@ -593,7 +612,7 @@ permissions = df_superadmin True,df_admin True
             form = self.res.forms[1]
             form_contents = ["[bob]", "name = bob", "status = ueberadmin", "password = secret", "permissions = df_superadmin True,df_admin True"]
             for incomplete_indices in ((0, 1, 3, 4), (0, 1, 2, 4)):
-                form["content"] = "\n".join([form_contents[i] for i in incomplete_indices])
+                form["content"] = self._normalizeToTextareaLineEndings("\n".join([form_contents[i] for i in incomplete_indices]))
                 self.res = form.submit(name="saveedit")
                 self.res.mustcontain("Es fehlt eine Angabe!")
 
@@ -601,7 +620,7 @@ permissions = df_superadmin True,df_admin True
             form = self.res.forms[1]
             some_form_contents = ["[bob]", "name = bob", "status = ueberadmin", "password = secret"]
             for malformed_permission in ("df superadmin True", "df_admin"):
-                form["content"] = "\n".join(some_form_contents) + '\npermissions = ' + malformed_permission
+                form["content"] = self._normalizeToTextareaLineEndings("\n".join(some_form_contents) + '\npermissions = ' + malformed_permission)
                 self.res = form.submit(name="saveedit")
                 self.res.mustcontain("Das Recht")
                 self.res.mustcontain("ist nicht wohlgeformt.")
@@ -618,18 +637,26 @@ permissions = df_superadmin True,df_admin True
         self.is_loggedin()
 
     def testAdminComplicatedPassword(self):
+        def _trySettingComplicatedPassword():
+            self.res = self.res.click(href="/admin/$")
+            form = self.res.forms[1]
+            complicated_password = """a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m"""
+            form["content"] = self._normalizeToTextareaLineEndings(self._getFormContentsWithPassword(complicated_password))
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("Ungültige Zeichen enthalten!")
+
         # implemented as a separate test case to avoid interference with other admin test cases due to logging out and in
         self.do_login()
-        self.res = self.res.click(href="/admin/$")
-        form = self.res.forms[1]
-        complicated_password = """a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m"""
-        form["content"] = self._getFormContentsWithPassword(complicated_password)
-        self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Ungültige Zeichen enthalten!")
+        _trySettingComplicatedPassword()
         self.res = self.res.forms[0].submit("submit")     # cannot use do_logout because we have multiple forms
         self.res.mustcontain(no="/logout")                # verify that we are logged out
         self.do_login(username="bob", password="secret")  # verify that we can still log in with the previous password
         self.is_loggedin()
+        _trySettingComplicatedPassword()
+        form = self.res.forms[1]
+        form["content"] =self._normalizeToTextareaLineEndings(self._getFormContentsWithPassword("secret"))
+        self.res = form.submit(name="saveedit")           # verify that we can save after removing illegal characters
+        self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
 
     def testAdminRcs(self):
         self.do_login()
