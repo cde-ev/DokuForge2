@@ -533,13 +533,13 @@ title = Wie der Name sagt
 
         def testValidInput():
             form = self.res.forms[1]
-            form["content"] = valid_groups_input
+            form["content"] = self._normalizeToTextareaLineEndings(valid_groups_input)
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
 
         def testInvalidInput():
             form = self.res.forms[1]
-            form["content"] = invalid_groups_input
+            form["content"] = self._normalizeToTextareaLineEndings(invalid_groups_input)
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
 
@@ -557,7 +557,7 @@ title = a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh�
 
         def testCancelEdit():
             form = self.res.forms[1]
-            form["content"] = invalid_groups_input
+            form["content"] = self._normalizeToTextareaLineEndings(invalid_groups_input)
             self.res = self.res.click(description="Zurücksetzen", index=0)
             self.res.mustcontain(valid_groups_input)
 
@@ -598,13 +598,13 @@ permissions = df_superadmin True,df_admin True
 
         def testInvalidSyntax():
             form = self.res.forms[1]
-            form["content"] = invalid_syntax_input
+            form["content"] = self._normalizeToTextareaLineEndings(invalid_syntax_input)
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
 
         def testCancelEdit():
             form = self.res.forms[1]
-            form["content"] = invalid_syntax_input
+            form["content"] = self._normalizeToTextareaLineEndings(invalid_syntax_input)
             self.res = self.res.click(description="Zurücksetzen", index=0)
             self.res.mustcontain(self._getFormContentsWithPassword("new_secret"))
 
