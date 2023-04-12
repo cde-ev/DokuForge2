@@ -221,7 +221,7 @@ def sanitizeBlobFilename(name):
 
 def _assertConsistsOfValidCharacters(config: unicode) -> None:
     assert isinstance(config, unicode)
-    allowedCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöüß0123456789,=-_[].!$ \t\n'
+    allowedCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöüß0123456789,=-_[].!$ \n\r\t'
     if not set(config).issubset(set(allowedCharacters)):
         illegalCharacters = ''.join(set(config).difference(set(allowedCharacters)))
         raise CheckError(u"Ungültige Zeichen enthalten! Es sind nur A-ZÄÖÜa-zäöüß0-9,=-_[].!$ Leerzeichen, Tab und Newline erlaubt.",
