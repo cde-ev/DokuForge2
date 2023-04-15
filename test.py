@@ -889,6 +889,12 @@ class DokuforgeExporterTests(DokuforgeWebTests):
         self.res = self.res.click(description="rcs", index=0)
         self.assertLooksLikeRcs(self.res.body)
 
+    def testRawAcademyExport(self):
+        self.do_login()
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(description="df2-Rohdaten")
+        self.assertIsTarGz(self.res.body)
+
     def testAcademyExport(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
