@@ -766,6 +766,23 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("MD5 Summe des Bildes ist")
         self.is_loggedin()
 
+    def testDownloadBlob(self):
+        self.do_login()
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(href="course01/$")
+        self.res = self.res.click(href="course01/0/$", index=0)
+        self.res = self.res.click(href="course01/0/.*addblob$")
+        form = self.res.forms[1]
+        form["comment"] = "Shiny blob"
+        form["label"] = "blob"
+        self.res = form.submit()
+        form = self.res.forms[1]
+        form["content"] = Upload("README-rlog.txt")
+        self.res = form.submit()
+        self.res = self.res.click(href="course01/0/0/$")
+        self.res = self.res.click(href="course01/0/0/.*download$")
+        self.res.mustcontain("======")
+
     def testEditBlob(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
