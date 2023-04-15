@@ -714,7 +714,7 @@ permissions = df_superadmin True,df_admin True
         self.res.mustcontain("Konflikte")
         self.is_loggedin()
 
-    def testAddBlob(self):
+    def _uploadExampleBlob(self):
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href="course01/$")
@@ -727,6 +727,9 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["content"] = Upload("README-rlog.txt")
         self.res = form.submit()
+
+    def testAddBlob(self):
+        self._uploadExampleBlob()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         self.is_loggedin()
 
