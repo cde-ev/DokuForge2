@@ -654,6 +654,8 @@ permissions = df_superadmin True,df_admin True
         self.is_loggedin()
         _trySettingComplicatedPassword()
         form = self.res.forms[1]
+        print("self.res:\n", self.res)
+        print("form:\n", form)
         form["content"] =self._normalizeToTextareaLineEndings(self._getFormContentsWithPassword("secret"))
         self.res = form.submit(name="saveedit")           # verify that we can save after removing illegal characters
         self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
