@@ -7,15 +7,23 @@
 {% endblock %}
 {% block content %}
 
-{{ threeway(ok,
-            'Bitte Text eingeben und mit "Speichern" beenden.',
-            "Aenderungen erfolgreich gespeichert.",
-            error.message, error.explanation) }}
-<form action="{{ buildurl("groupssave")|e }}" method="post" id="save">
-	<textarea name="content">{{ content|e }}</textarea>
-	<input type="hidden" name="revisionstartedwith" value="{{ version|e }}"> 
-	<input type="hidden" name="contentreceived" value="true">
-	<input type="submit" name="saveedit" value="Speichern und Editieren">
+<form action="{{ buildurl("groupssave")|e }}" method="post" id="saveedit">
+   {% if ok is none %}
+   Bitte Text eingeben und mit "Speichern" beenden.
+   {% elif ok %}
+   &Auml;nderungen erfolgreich gespeichert.
+   {% else %}
+   <span class=important> {{ error.message, error.explanation }} </span>
+   {% endif %}
+   <div id="saveedittext">
+      <textarea name="content">{{ content|e }}</textarea>
+   </div>
+   <div id="saveeditinput">
+      <input type="hidden" name="revisionstartedwith" value="{{ version|e }}">
+      <input type="hidden" name="contentreceived" value="true">
+      <input type="submit" name="saveedit" value="Speichern">
+      <a href="{{ buildurl("groups")|e }}">Zur&uuml;cksetzen</a>
+      <a href="{{ buildurl("groupsrcs")|e }}">rcs</a>
+   </div>
 </form>
-<a href="{{ buildurl("index")|e }}">Abbrechen</a>
 {% endblock %}

@@ -65,6 +65,10 @@ class DfTestCase(unittest.TestCase):
         f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
         self.assertIsTar(f.read())
 
+    def assertLooksLikeRcs(self, octets):
+        # FIXME: find a better check for whether something looks like an rcs file
+        self.assertTrue(octets.startswith(b"head"))
+
 class TarWriterTests(DfTestCase):
     def testUncompressed(self):
         timeStampNow = datetime.datetime.utcnow()
@@ -513,39 +517,62 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         return normalized_to_newline.replace('\n', '\r\n')
 
     def testGroups(self):
-        self.do_login()
-        self.res = self.res.click(href="/groups/$")
-        form = self.res.forms[1]
-        form["content"] = self._normalizeToTextareaLineEndings("""[cde]
+        valid_groups_input = """[cde]
 title = CdE-Akademien
 
 [spam]
 title = Wie der Name sagt
-""")
-        self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
+"""
 
-        form = self.res.forms[1]
-        form["content"] = self._normalizeToTextareaLineEndings("""[cde]
+        invalid_groups_input = """[cde]
 title = CdE-Akademien
 
 [spam
 title = Wie der Name sagt
-""")
-        self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+"""
 
-        form = self.res.forms[1]
-        form["content"] = self._normalizeToTextareaLineEndings("""[cde]
+        def testValidInput():
+            form = self.res.forms[1]
+            form["content"] = self._normalizeToTextareaLineEndings(valid_groups_input)
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
+
+        def testInvalidInput():
+            form = self.res.forms[1]
+            form["content"] = self._normalizeToTextareaLineEndings(invalid_groups_input)
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+
+        def testInvalidCharacters():
+            form = self.res.forms[1]
+            form["content"] = self._normalizeToTextareaLineEndings("""[cde]
 title = CdE-Akademien
 
 [spam]
 title = a^b!c"d§e$f%g&h/i(j)k=l?m´n+o*p~q#r's<t>u|v,w;x.y:z-a_b°c{d[e]f}gµh²i•j𐂂k l${bla:blub}m
 """)
-        self.res = form.submit(name="saveedit")
-        self.res.mustcontain("Ungültige Zeichen enthalten!")
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("Ungültige Zeichen enthalten!")
 
+
+        def testCancelEdit():
+            form = self.res.forms[1]
+            form["content"] = self._normalizeToTextareaLineEndings(invalid_groups_input)
+            self.res = self.res.click(description="Zurücksetzen", index=0)
+            self.res.mustcontain(valid_groups_input)
+
+        def testRcsAvailability():
+            self.res = self.res.click(description="rcs", index=0)
+            self.assertLooksLikeRcs(self.res.body)
+
+        self.do_login()
+        self.res = self.res.click(href="/groups/$")
+        testValidInput()
+        testInvalidInput()
+        testInvalidCharacters()
+        testCancelEdit()
         self.is_loggedin()
+        testRcsAvailability()
 
     @staticmethod
     def _getFormContentsWithPassword(password: str) -> str:
@@ -556,22 +583,30 @@ password = """ + password + """
 permissions = df_superadmin True,df_admin True"""
 
     def testAdmin(self):
-        def testValidInput():
-            form = self.res.forms[1]
-            form["content"] = self._normalizeToTextareaLineEndings(self._getFormContentsWithPassword("new_secret"))
-            self.res = form.submit(name="saveedit")
-            self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
-
-        def testInvalidSyntax():
-            form = self.res.forms[1]
-            form["content"] = self._normalizeToTextareaLineEndings("""[bob
+        invalid_syntax_input = """[bob
 name = bob
 status = ueberadmin
 password = secret
 permissions = df_superadmin True,df_admin True
-""")
+"""
+
+        def testValidInput():
+            form = self.res.forms[1]
+            form["content"] = self._getFormContentsWithPassword("new_secret")
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
+
+        def testInvalidSyntax():
+            form = self.res.forms[1]
+            form["content"] = self._normalizeToTextareaLineEndings(invalid_syntax_input)
             self.res = form.submit(name="saveedit")
             self.res.mustcontain("Es ist ein allgemeiner Parser-Fehler aufgetreten!")
+
+        def testCancelEdit():
+            form = self.res.forms[1]
+            form["content"] = self._normalizeToTextareaLineEndings(invalid_syntax_input)
+            self.res = self.res.click(description="Zurücksetzen", index=0)
+            self.res.mustcontain(self._getFormContentsWithPassword("new_secret"))
 
         def testMissingFields():
             form = self.res.forms[1]
@@ -595,6 +630,7 @@ permissions = df_superadmin True,df_admin True
 
         testValidInput()
         testInvalidSyntax()
+        testCancelEdit()
         testMissingFields()
         testMalformedPermissions()
 
@@ -620,7 +656,13 @@ permissions = df_superadmin True,df_admin True
         form = self.res.forms[1]
         form["content"] =self._normalizeToTextareaLineEndings(self._getFormContentsWithPassword("secret"))
         self.res = form.submit(name="saveedit")           # verify that we can save after removing illegal characters
-        self.res.mustcontain("Aenderungen erfolgreich gespeichert.")
+        self.res.mustcontain("&Auml;nderungen erfolgreich gespeichert.")
+
+    def testAdminRcs(self):
+        self.do_login()
+        self.res = self.res.click(href="/admin/$")
+        self.res = self.res.click(description="rcs", index=0)
+        self.assertLooksLikeRcs(self.res.body)
 
     def testStyleguide(self):
         self.res = self.app.get("/")
@@ -845,8 +887,13 @@ class DokuforgeExporterTests(DokuforgeWebTests):
         self.res = self.res.click(href="course01/$")
         self.res = self.res.click(href="course01/0/$", index=0)
         self.res = self.res.click(description="rcs", index=0)
-        # FIXME: find a better check for a rcs file
-        self.assertTrue(self.res.body.startswith(b"head"))
+        self.assertLooksLikeRcs(self.res.body)
+
+    def testRawAcademyExport(self):
+        self.do_login()
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(description="df2-Rohdaten")
+        self.assertIsTarGz(self.res.body)
 
     def testAcademyExport(self):
         self.do_login()

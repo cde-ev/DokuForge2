@@ -230,6 +230,7 @@ class Application:
             rule("/docs/", methods=("GET", "HEAD"), endpoint="index"),
             rule("/admin/", methods=("GET", "HEAD"), endpoint="admin"),
             rule("/admin/!save", methods=("POST",), endpoint="adminsave"),
+            rule("/admin/!rcs", methods=("GET", "HEAD"), endpoint="adminrcs"),
             rule("/createacademy", methods=("GET", "HEAD"),
                  endpoint="createacademyquiz"),
             rule("/createacademy", methods=("POST",),
@@ -237,6 +238,7 @@ class Application:
             rule("/groups/", methods=("GET", "HEAD"), endpoint="groups"),
             rule("/groups/!save", methods=("POST",),
                  endpoint="groupssave"),
+            rule("/groups/!rcs", methods=("GET", "HEAD"), endpoint="groupsrcs"),
             rule("/style/", methods=("GET", "HEAD"),
                  endpoint="styleguide"),
             rule("/style/<identifier:topic>", methods=("GET", "HEAD"),
@@ -547,6 +549,21 @@ class Application:
             savehook()
         return self.render_file(rs, template, version, content, ok=True,
                                 extraparams=extraparams)
+
+    def do_rcsview(self, rs, filestore, filename):
+        """
+        Function to generally return the rcs-file of a storage container.
+
+        @type rs: RequestState
+        @type filestore: Storage
+        @type filename: string
+        """
+        content = filestore.asrcs()
+        rs.response.content_type = "application/octet-stream"
+        rs.response.data = content
+        rs.response.headers['Content-Disposition'] = \
+                "attachement; filename=%s,v" %(filename)
+        return rs.response
 
     def do_property(self, rs, getter, template, extraparams=dict()):
         """
@@ -1368,6 +1385,15 @@ class Application:
                                 checkhook = common.validateUserConfig,
                                 savehook = self.userdb.load)
 
+    def do_adminrcs(self, rs):
+        """
+        @type rs: RequestState
+        """
+        self.check_login(rs)
+        if not rs.user.isAdmin():
+            return werkzeug.exceptions.Forbidden()
+        return self.do_rcsview(rs,self.userdb.storage,"userdb")
+
     def do_groups(self, rs):
         """
         @type rs: RequestState
@@ -1386,6 +1412,15 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.groupstore, "groups.html",
                                 checkhook = common.validateGroupConfig)
+
+    def do_groupsrcs(self, rs):
+        """
+        @type rs: RequestState
+        """
+        self.check_login(rs)
+        if not rs.user.isSuperAdmin():
+            return werkzeug.exceptions.Forbidden()
+        return self.do_rcsview(rs,self.groupstore,"groupdb")
 
     ### here come the renderer
 
