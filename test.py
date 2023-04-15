@@ -734,71 +734,27 @@ permissions = df_superadmin True,df_admin True
         self.is_loggedin()
 
     def testShowBlob(self):
-        self.do_login()
-        self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href="course01/$")
-        self.res = self.res.click(href="course01/0/$", index=0)
-        self.res = self.res.click(href="course01/0/.*addblob$")
-        form = self.res.forms[1]
-        form["comment"] = "Shiny blob"
-        form["label"] = "blob"
-        self.res = form.submit()
-        form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit()
+        self._uploadExampleBlob()
         self.res = self.res.click(href="course01/0/0/$")
         self.res.mustcontain("Bildunterschrift/Kommentar: Shiny blob",
                              "K&uuml;rzel: blob")
         self.is_loggedin()
 
     def testMD5Blob(self):
-        self.do_login()
-        self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href="course01/$")
-        self.res = self.res.click(href="course01/0/$", index=0)
-        self.res = self.res.click(href="course01/0/.*addblob$")
-        form = self.res.forms[1]
-        form["comment"] = "Shiny blob"
-        form["label"] = "blob"
-        self.res = form.submit()
-        form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit()
+        self._uploadExampleBlob()
         self.res = self.res.click(href="course01/0/0/$")
         self.res = self.res.click(href="course01/0/0/.*md5$")
         self.res.mustcontain("MD5 Summe des Bildes ist")
         self.is_loggedin()
 
     def testDownloadBlob(self):
-        self.do_login()
-        self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href="course01/$")
-        self.res = self.res.click(href="course01/0/$", index=0)
-        self.res = self.res.click(href="course01/0/.*addblob$")
-        form = self.res.forms[1]
-        form["comment"] = "Shiny blob"
-        form["label"] = "blob"
-        self.res = form.submit()
-        form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit()
+        self._uploadExampleBlob()
         self.res = self.res.click(href="course01/0/0/$")
         self.res = self.res.click(href="course01/0/0/.*download$")
         self.res.mustcontain("======")
 
     def testEditBlob(self):
-        self.do_login()
-        self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href="course01/$")
-        self.res = self.res.click(href="course01/0/$", index=0)
-        self.res = self.res.click(href="course01/0/.*addblob$")
-        form = self.res.forms[1]
-        form["comment"] = "Shiny blob"
-        form["label"] = "blob"
-        self.res = form.submit()
-        form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit()
+        self._uploadExampleBlob()
         self.res = self.res.click(href="course01/0/0/$")
         self.res = self.res.click(href="course01/0/0/.*edit$")
         form = self.res.forms[1]
@@ -812,18 +768,7 @@ permissions = df_superadmin True,df_admin True
         self.is_loggedin()
 
     def testDeleteBlob(self):
-        self.do_login()
-        self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href="course01/$")
-        self.res = self.res.click(href="course01/0/$", index=0)
-        self.res = self.res.click(href="course01/0/.*addblob$")
-        form = self.res.forms[1]
-        form["comment"] = "Shiny blob"
-        form["label"] = "blob"
-        self.res = form.submit()
-        form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit()
+        self._uploadExampleBlob()
         self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
         form = self.res.forms[3]
         self.res = form.submit()
@@ -832,18 +777,7 @@ permissions = df_superadmin True,df_admin True
         self.is_loggedin()
 
     def testRestoreBlob(self):
-        self.do_login()
-        self.res = self.res.click(description="X-Akademie")
-        self.res = self.res.click(href="course01/$")
-        self.res = self.res.click(href="course01/0/$", index=0)
-        self.res = self.res.click(href="course01/0/.*addblob$")
-        form = self.res.forms[1]
-        form["comment"] = "Shiny blob"
-        form["label"] = "blob"
-        self.res = form.submit()
-        form = self.res.forms[1]
-        form["content"] = Upload("README-rlog.txt")
-        self.res = form.submit()
+        self._uploadExampleBlob()
         form = self.res.forms[3]
         self.res = form.submit()
         self.res.mustcontain("Keine Bilder zu diesem Teil gefunden.",
