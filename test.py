@@ -1438,9 +1438,6 @@ class ExporterTestStrings:
               ['90° is a right angle.',
                '90° is a right angle.'] ]
 
-    code = [ ['|increase(i)| increases |i|, by one.',
-              '\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
-
     urls = [ ['http://www.google.de',
               '\\@\\url{http://www.google.de}'],
              ['(siehe http://www.google.de)',
@@ -1604,6 +1601,19 @@ after""" ] ]
 
     multilineCaptions = [ ['Dies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.',
                            'Dies ist eine Bildunterschrift.\\@\\@\\@\nSie soll zwei Absätze haben.' ] ]
+
+    code_ = [ ['|increase(i)| increases |i|, by one.',
+               '\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
+
+    # re-use test cases above to check that |code| is not subject to microtypography
+    alsoToBeTestedAsCode = itemizeAndCo + quotes + abbreviation + acronym + escaping + \
+                           mathSymbols + mathEnvironments + evilUTF8 + nonstandardSpace + \
+                           pageReferences + spacing + lawReference + \
+                           numbers + dates + units + urls + \
+                           sectionsAndAuthors + sectionsWithEmph + sectionsWithOrdinals + numericalScope
+
+    code = code_ + [ ['foo |' + i[0] + '| bar', 'foo \\@\\lstinline|' + i[0] + '| bar'] for i in alsoToBeTestedAsCode ]
+
 
 class ExporterTestCases:
     """
