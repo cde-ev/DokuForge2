@@ -1603,7 +1603,9 @@ after""" ] ]
                            'Dies ist eine Bildunterschrift.\\@\\@\\@\nSie soll zwei Absätze haben.' ] ]
 
     code_ = [ ['|increase(i)| increases |i|, by one.',
-               '\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
+               '\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'],
+              ['eine |Class Klasse| im Text',
+               'eine \\@\\lstinline|Class Klasse| im Text'] ]
 
     # re-use test cases above to check that |code| is not subject to microtypography
     alsoToBeTestedAsCode = itemizeAndCo + quotes + abbreviation + acronym + escaping + \
