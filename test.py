@@ -1183,13 +1183,13 @@ class ExporterTestStrings:
     """Input and expected output for testing exporter"""
 
     itemizeAndCo = [['- Text',
-                     '\\begin{itemize}[joinedup,packed]\n\\item Text\n\\end{itemize}'],
+                     '\\begin{itemize}[flushleft,joinedup,packed]\n\\item Text\n\\end{itemize}'],
                     ['-Text',
                      '-Text'],
                     ['- item\n\n-nonitem',
-                     '\\begin{itemize}[joinedup,packed]\n\\item item\n\end{itemize}\n\n-nonitem'],
+                     '\\begin{itemize}[flushleft,joinedup,packed]\n\\item item\n\end{itemize}\n\n-nonitem'],
                     ['1. item',
-                     '\\begin{enumerate}[joinedup,packed]\n% 1\n\\item item\n\end{enumerate}'] ]
+                     '\\begin{enumerate}[flushleft,joinedup,packed]\n% 1\n\\item item\n\end{enumerate}'] ]
 
     quotes = [ ['Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                 'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
