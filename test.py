@@ -32,6 +32,8 @@ except AttributeError:
     def Upload(filename):
         return (filename,)
 
+unittest.util._MAX_LENGTH=32768
+
 try:
     unicode
 except NameError:
