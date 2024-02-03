@@ -1607,7 +1607,19 @@ after""" ] ]
     _code = [['|increase(i)| increases |i|, by one.',
                '\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'],
              ['eine |Class Klasse| im Text',
-               'eine \\@\\lstinline|Class Klasse| im Text']]
+               'eine \\@\\lstinline|Class Klasse| im Text'],
+             ['Argumenten: |execve("bin/sh", ["bin/sh"], [])|; dies',
+              'Argumenten: \\@\\lstinline|execve("bin/sh", ["bin/sh"], [])|; dies'],
+             ['über |void doAdminStuff(char *name)| die',
+              'über \\@\\lstinline|void doAdminStuff(char *name)| die'],
+             ['für |mov eax, <constant>| und |0x0b = 11|, little',
+              'für \\@\\lstinline|mov eax, <constant>| und \\@\\lstinline|0x0b = 11|,\nlittle'],
+             ['eine |getShell|-Funktion, die',
+              'eine \\@\\lstinline|getShell|-Funktion, die'],
+             # the following does not work yet
+             # ['Befehl |./challenge AAAAAA|.',
+             #  'Befehl \\@\\lstinline|./challenge AAAAAA|.'],
+             ]
 
     # re-use test cases above to check that |code| is not subject to microtypography
     _alsoToBeTestedAsCode = itemizeAndCo + quotes + abbreviation + acronym + escaping + \
