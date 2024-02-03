@@ -1619,7 +1619,8 @@ after""" ] ]
              # the following does not work yet
              # ['Befehl |./challenge AAAAAA|.',
              #  'Befehl \\@\\lstinline|./challenge AAAAAA|.'],
-             ]
+             ['bla |some code | \\evilCommand |',
+              'bla \\@\\lstinline|some code | \\@\\forbidden\\evilCommand |']]
 
     # re-use test cases above to check that |code| is not subject to microtypography
     _alsoToBeTestedAsCode = itemizeAndCo + quotes + abbreviation + acronym + escaping + \
