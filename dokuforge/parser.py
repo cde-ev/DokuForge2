@@ -598,7 +598,7 @@ def formatCode(word):
         if m != True:
             left, matched, after, word =  m.groups()
             if after in [u'', u' ', u'\t', u'\n', u'(', u')',
-                    u':', u';', u',', u'"', u'?', u'!']:
+                         u':', u';', u',', u'"', u'?', u'!', '-']:
                 yield left
                 yield TerminalString(u'\\@\\lstinline%s' % matched)
             else:
