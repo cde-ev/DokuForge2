@@ -1207,6 +1207,20 @@ class ExporterTestStrings:
                 ['Das ZNS.',
                  'Das \\@\\acronym{ZNS}.'] ]
 
+    emph = [ ['wir heben _etwas_ hervor',
+              'wir heben \\emph{etwas} hervor'],
+             ['wir heben _noch etwas_ hervor',
+              'wir heben \\emph{noch etwas} hervor'],
+             ['wir heben _noch z.B. dies_ hervor',
+              'wir heben \\emph{noch z.\\,B. dies} hervor'],
+             ['wir heben _noch ETWAS mehr_ hervor',
+              'wir heben \\emph{noch \\@\\acronym{ETWAS} mehr} hervor'],
+             ['wir _vergessen zu schließen.',
+              'wir \\emph{vergessen zu schließen.}'],
+             ['wir _\\machenUnfug_ hier',
+              'wir \\emph{\\@\\forbidden\\machenUnfug} hier'],
+            ]
+
     escaping = [ ['Forbid \\mathbb and \\dangerous outside math.',
                   'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
                  ['Do not allow $a \\dangerous{b}$ commands!',
@@ -1566,6 +1580,7 @@ class ExporterTestCases:
     testsEverywhere = [ ExporterTestStrings.quotes,
                         ExporterTestStrings.abbreviation,
                         ExporterTestStrings.acronym,
+                        ExporterTestStrings.emph,
                         ExporterTestStrings.escaping,
                         ExporterTestStrings.mathSymbols,
                         ExporterTestStrings.mathEnvironments,
