@@ -592,7 +592,7 @@ def formatCode(word):
     """
     Set lstinline for code within pipes
     """
-    pattern = r'(\|[^ |]+\|)(.|$)'
+    pattern = r'(\|[^|]+\|)(.|$)'
     m = True
     while m:
         if m != True:
