@@ -1,10 +1,10 @@
 kind: pipeline
 type: docker
-name: ubuntu-20.04
+name: ubuntu-22.04
 
 steps:
 - name: test
-  image: ubuntu:20.04
+  image: ubuntu:22.04
   commands:
   - apt-get update > /dev/null
   # install non-python packages
