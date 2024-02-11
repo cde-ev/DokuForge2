@@ -1,42 +1,5 @@
 kind: pipeline
 type: docker
-name: ubuntu-22.04
-
-steps:
-- name: test
-  image: ubuntu:22.04
-  commands:
-  - apt-get update > /dev/null
-  - apt-get install -y apt-utils > /dev/null
-  # install non-python packages
-  - apt-get install -y rcs > /dev/null
-  - apt-get install -y subversion > /dev/null
-  - apt-get install -y git > /dev/null
-  - apt-get install -y libjs-mathjax > /dev/null
-  # install python3 and the necessary python packages
-  - apt-get install -y python3 > /dev/null
-  - apt-get install -y python3-werkzeug
-  # install tzdata without waiting for input, needed by python3-jinja2
-  - DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata > /dev/null
-  - apt-get install -y python3-jinja2
-  - apt-get install -y python3-webtest
-  # wsgitools is only available via pip
-  - apt-get install -y python3-pip > /dev/null
-  # TODO the only version of wsgitools which is available on pip is 0.3.1
-  - python3 -m pip install --no-cache-dir wsgitools
-  - python3 -m pip install --no-cache-dir epydoc
-  # finally, perform the tests
-  - make check
-
-trigger:
-  event:
-    exclude:
-    - pull_request
-
----
-
-kind: pipeline
-type: docker
 name: python-3.8
 
 steps:
