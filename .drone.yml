@@ -23,8 +23,8 @@ steps:
   # wsgitools is only available via pip
   - apt-get install -y pipx
   # TODO the only version of wsgitools which is available on pip is 0.3.1
-  - python3 -m pipx install --no-cache-dir wsgitools
-  - python3 -m pipx install --no-cache-dir epydoc
+  - pipx install wsgitools
+  - pipx install epydoc
   # finally, perform the tests
   - make check
 
