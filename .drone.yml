@@ -7,9 +7,9 @@ steps:
   image: python:latest
   commands:
   # install non-python dependencies
-  - apt-get update
-  - apt-get install -y rcs
-  - apt-get install -y libjs-mathjax
+  - apt-get update > /dev/null
+  - apt-get install -y rcs > /dev/null
+  - apt-get install -y libjs-mathjax > /dev/null
   # install python packages
   - pip install --no-cache-dir -r requirements.txt
   - pip install --no-cache-dir coverage
