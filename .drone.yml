@@ -16,7 +16,7 @@ steps:
   # install python3 and the necessary python packages
   - apt-get install -y python3 > /dev/null
   - apt-get install -y python3-werkzeug > /dev/null
-  # install tzdata without waiting for input, needed by python3-webtest
+  # install tzdata without waiting for input, needed by python3-jinja2
   - DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata > /dev/null
   - apt-get install -y python3-jinja2  > /dev/null
   - apt-get install -y python3-webtest > /dev/null
