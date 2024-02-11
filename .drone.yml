@@ -19,11 +19,11 @@ steps:
   # install tzdata without waiting for input, needed by python3-webtest
   - DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
   - apt-get install -y python3-webtest
-  - apt-get install -y python-epydoc > /dev/null
   # wsgitools is only available via pip
   - apt-get install -y python3-pip > /dev/null
   # TODO the only version of wsgitools which is available on pip is 0.3.1
   - python3 -m pip install --no-cache-dir wsgitools
+  - python3 -m pip install --no-cache-dir epydoc
   # finally, perform the tests
   - make check
 
