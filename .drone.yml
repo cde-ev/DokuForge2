@@ -7,6 +7,7 @@ steps:
   image: ubuntu:22.04
   commands:
   - apt-get update > /dev/null
+  - apt-get install -y apt-utils > /dev/null
   # install non-python packages
   - apt-get install -y rcs > /dev/null
   - apt-get install -y subversion > /dev/null
