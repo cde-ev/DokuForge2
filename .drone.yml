@@ -1,10 +1,10 @@
 kind: pipeline
 type: docker
-name: python-3.10
+name: python-3.11
 
 steps:
 - name: test
-  image: python:3.10
+  image: python:3.11
   commands:
   # install non-python dependencies
   - apt-get update
