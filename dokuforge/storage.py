@@ -34,7 +34,7 @@ def rlogv(filename):
     logger.debug("rlogv: looking up revision for %r" % filename)
     with open(filename, "rb") as f:
         firstline = f.readline()
-    m = re.match(u'^\\s*head\\s*([0-9.]+)\\s*;', firstline.decode("ascii"))
+    m = re.match('^\\s*head\\s*([0-9.]+)\\s*;', firstline.decode("ascii"))
     if m:
         return m.groups()[0].encode("ascii")
     else:
@@ -54,11 +54,11 @@ def rloghead(filename):
     """
     assert isinstance(filename, bytes)
     logger.debug("rloghead: looking up head revision info for %r" % filename)
-    
+
     # Amzingly enough, the "official" way to obtain revision information
     # is to parse the output of rlog. This statement is obtained from
     # Thien-Thi Nguyen <ttn@gnuvola.org> (maintainer of GNU RCS) in an private
-    # email on Oct 16, 2011 that also promised that such a script will never 
+    # email on Oct 16, 2011 that also promised that such a script will never
     # be broken by any future releases.
     answer = {}
 
@@ -160,7 +160,7 @@ class Storage(object):
         Store the given contents; rcs file is create if it does not
         exist already.
 
-        @type content: bytes or raw filelike 
+        @type content: bytes or raw filelike
         @param content: the content of the file
         @type message: bytes
         @type user: None or bytes
@@ -295,8 +295,8 @@ class Storage(object):
                 subprocess.check_call([b"co", b"-f", b"-q", b"-l%s" % version,
                                        self.fullpath()], env=RCSENV)
             except CalledProcessError:
-                raise RcsUserInputError(u"specified rcs version does not exist",
-                                        u"can only happen in hand-crafted requests")
+                raise RcsUserInputError("specified rcs version does not exist",
+                                        "can only happen in hand-crafted requests")
             with open(self.fullpath(), "wb") as objfile:
                 objfile.write(newcontent)
             args = ["ci", "-f", "-q", "-u"]

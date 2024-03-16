@@ -47,7 +47,7 @@ def strtobool(s):
     @type s: unicode
     @rtype: bool
     """
-    return s in (u"True", u"true", u"t")
+    return s in ("True", "true", "t")
 
 class CheckError(Exception):
     def __init__(self, msg, exp):
@@ -98,12 +98,12 @@ def validateGroups(groups, allgroups):
     """
     assert all(isinstance(g, unicode) for g in groups)
     if len(groups) == 0:
-        raise CheckError(u"Keine Gruppen gefunden!",
-                         u"Jede Akademie muss mindestens einer Gruppe angehören. Bitte korrigieren und erneut versuchen.")
+        raise CheckError("Keine Gruppen gefunden!",
+                         "Jede Akademie muss mindestens einer Gruppe angehören. Bitte korrigieren und erneut versuchen.")
     for g in groups:
         if g not in allgroups:
-            raise CheckError(u"Nichtexistente Gruppe gefunden!",
-                             u"Bitte korrigieren und erneut versuchen.")
+            raise CheckError("Nichtexistente Gruppe gefunden!",
+                             "Bitte korrigieren und erneut versuchen.")
 
 def validateTitle(title):
     """
@@ -115,12 +115,12 @@ def validateTitle(title):
     @raises CheckError:
     """
     assert isinstance(title, unicode)
-    if title == u"":
-        raise CheckError(u"Leerer Titel!",
-                         u"Der Titel darf nicht leer sein.")
-    if re.match(u'^[ \t]*$', title) is not None:
-        raise CheckError(u"Leerer Titel!",
-                         u"Der Titel darf nicht nur aus Leerzeichen bestehen.")
+    if title == "":
+        raise CheckError("Leerer Titel!",
+                         "Der Titel darf nicht leer sein.")
+    if re.match('^[ \t]*$', title) is not None:
+        raise CheckError("Leerer Titel!",
+                         "Der Titel darf nicht nur aus Leerzeichen bestehen.")
 
 def validateBlobLabel(label):
     """
@@ -132,9 +132,9 @@ def validateBlobLabel(label):
     @raises CheckError:
     """
     assert isinstance(label, unicode)
-    if re.match(u'^[a-z0-9]{1,200}$', label) is None:
-        raise CheckError(u"Kürzel nicht wohlgeformt!",
-                         u"Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten, nicht leer sein und nicht mehr als 200 Zeichen enthalten.")
+    if re.match('^[a-z0-9]{1,200}$', label) is None:
+        raise CheckError("Kürzel nicht wohlgeformt!",
+                         "Das Kürzel darf lediglich Kleinbuchstaben [a-z] und Ziffern [0-9] enthalten, nicht leer sein und nicht mehr als 200 Zeichen enthalten.")
 
 def validateBlobComment(comment):
     """
@@ -146,9 +146,9 @@ def validateBlobComment(comment):
     @raises CheckError:
     """
     assert isinstance(comment, unicode)
-    if comment == u"":
-        raise CheckError(u"Keine Bildunterschrift gefunden!",
-                         u"Bitte eine Bildunterschrift eingeben und erneut versuchen.")
+    if comment == "":
+        raise CheckError("Keine Bildunterschrift gefunden!",
+                         "Bitte eine Bildunterschrift eingeben und erneut versuchen.")
 
 class InvalidBlobFilename(CheckError):
     pass
@@ -164,8 +164,8 @@ def validateBlobFilename(filename):
     """
     assert isinstance(filename, bytes)
     if re.match(b'^[a-zA-Z0-9][-a-zA-Z0-9_.]{1,200}[a-zA-Z0-9]$', filename) is None:
-        raise InvalidBlobFilename(u"Dateiname nicht wohlgeformt!",
-                                  u"Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen. Der Dateinahme darf nicht mehr als 200 Zeichen enthalten.")
+        raise InvalidBlobFilename("Dateiname nicht wohlgeformt!",
+                                  "Bitte alle Sonderzeichen aus dem Dateinamen entfernen und erneut versuchen. Der Dateinahme darf nicht mehr als 200 Zeichen enthalten.")
 
 def validateInternalName(name):
     """
@@ -178,9 +178,9 @@ def validateInternalName(name):
     @raises CheckError:
     """
     assert isinstance(name, unicode)
-    if re.match(u'^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
-        raise CheckError(u"Interner Name nicht wohlgeformt!",
-                         u"Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten, muss mit einem Buchstaben beginnen und darf nicht mehr als 200 Zeichen enthalten.")
+    if re.match('^[a-zA-Z][-a-zA-Z0-9]{0,199}$', name) is None:
+        raise CheckError("Interner Name nicht wohlgeformt!",
+                         "Der Name darf lediglich Klein-, Großbuchstaben, Ziffern sowie Bindestriche enthalten, muss mit einem Buchstaben beginnen und darf nicht mehr als 200 Zeichen enthalten.")
 
 def validateNonExistence(path, name):
     """
@@ -197,8 +197,8 @@ def validateNonExistence(path, name):
     assert isinstance(path, bytes)
     if os.path.exists(os.path.join(path, name)) or \
            os.path.exists(os.path.join(path, name + b",v")):
-        raise CheckError(u"Interner Name bereits vergeben!",
-                         u"Wähle einen anderen Namen.")
+        raise CheckError("Interner Name bereits vergeben!",
+                         "Wähle einen anderen Namen.")
 
 def validateExistence(path, name):
     """
@@ -213,19 +213,19 @@ def validateExistence(path, name):
     assert isinstance(name, bytes)
     assert isinstance(path, bytes)
     if not os.path.exists(os.path.join(path, name)):
-        raise CheckError(u"Interner Name existiert nicht!",
-                         u"Bitte den Namen korrigieren.")
+        raise CheckError("Interner Name existiert nicht!",
+                         "Bitte den Namen korrigieren.")
 
 def sanitizeBlobFilename(name):
-    return u"einedatei.dat"
+    return "einedatei.dat"
 
 def _assertConsistsOfValidCharacters(config: unicode) -> None:
     assert isinstance(config, unicode)
     allowedCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöüß0123456789,=-_[].!$ \n\r\t'
     if not set(config).issubset(set(allowedCharacters)):
         illegalCharacters = ''.join(set(config).difference(set(allowedCharacters)))
-        raise CheckError(u"Ungültige Zeichen enthalten! Es sind nur A-ZÄÖÜa-zäöüß0-9,=-_[].!$ Leerzeichen, Tab und Newline erlaubt.",
-                         u"Bitte entferne die folgenden Zeichen: %s" % illegalCharacters)
+        raise CheckError("Ungültige Zeichen enthalten! Es sind nur A-ZÄÖÜa-zäöüß0-9,=-_[].!$ Leerzeichen, Tab und Newline erlaubt.",
+                         "Bitte entferne die folgenden Zeichen: %s" % illegalCharacters)
 
 def validateUserConfig(config):
     """
@@ -240,22 +240,22 @@ def validateUserConfig(config):
     try:
         parser.read_file(io.StringIO(config))
     except configparser.ParsingError as err:
-        raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+        raise CheckError("Es ist ein allgemeiner Parser-Fehler aufgetreten!",
+                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
     try:
         for name in parser.sections():
-            for perm in parser.get(name, u'permissions').split(u','):
-                if len(perm.strip().split(u' ')) != 2:
+            for perm in parser.get(name, 'permissions').split(','):
+                if len(perm.strip().split(' ')) != 2:
                     raise CheckError(
-                        u"Fehler in Permissions.",
-                        u"Das Recht '%s' für '%s' ist nicht wohlgeformt." %
+                        "Fehler in Permissions.",
+                        "Das Recht '%s' für '%s' ist nicht wohlgeformt." %
                         (perm, name))
-            parser.get(name, u'status')
-            parser.get(name, u'password')
+            parser.get(name, 'status')
+            parser.get(name, 'password')
     except configparser.NoOptionError as err:
-        raise CheckError(u"Es fehlt eine Angabe!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+        raise CheckError("Es fehlt eine Angabe!",
+                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
 def validateGroupConfig(config):
     """
@@ -270,15 +270,15 @@ def validateGroupConfig(config):
     try:
         parser.read_file(io.StringIO(config))
     except configparser.Error as err:
-        raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+        raise CheckError("Es ist ein allgemeiner Parser-Fehler aufgetreten!",
+                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
     try:
         for name in parser.sections():
-            parser.get(name, u'title')
+            parser.get(name, 'title')
     except configparser.NoOptionError as err:
-        raise CheckError(u"Es fehlt eine Angabe!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+        raise CheckError("Es fehlt eine Angabe!",
+                         "Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
 class RcsUserInputError(CheckError):
     pass
@@ -294,10 +294,10 @@ def validateRcsRevision(versionnumber):
     # Decoding with this encoding will not fail. Non-ascii bytes will be
     # rejected by the regex.
     versionnumber = versionnumber.decode("iso8859-1")
-    if re.match(u'^[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}(\\.[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}){0,5}$',
+    if re.match('^[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}(\\.[1-9][0-9]{0,10}\\.[1-9][0-9]{0,10}){0,5}$',
                 versionnumber) is None:
-        raise RcsUserInputError(u"rcs version number syntactically malformed",
-                                u"can only happen in hand-crafted requests")
+        raise RcsUserInputError("rcs version number syntactically malformed",
+                                "can only happen in hand-crafted requests")
 
 class TarWriter:
     def __init__(self, gzip=False):
@@ -432,5 +432,5 @@ def findlastchange(changes):
     @rtype: {str:object}
     @returns: returns the dictionary with the latest date
     """
-    return max(changes + [{'author': u'unkown', 'revision' : u'?',
+    return max(changes + [{'author': 'unkown', 'revision' : '?',
                            'date' : epoch}], key=lambda x: x["date"])

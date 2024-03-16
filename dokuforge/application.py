@@ -42,7 +42,7 @@ from dokuforge.parser import dfLineGroupParser, Estimate
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
-    commitid = u"unknown"
+    commitid = "unknown"
 
 sysrand = random.SystemRandom()
 
@@ -55,7 +55,7 @@ def gensid(bits=64):
     @rtype: unicode
     @returns: a random string
     """
-    return u"%x" % sysrand.getrandbits(bits)
+    return "%x" % sysrand.getrandbits(bits)
 
 class SessionHandler:
     """Associate users with session ids in a DBAPI2 database. The database
@@ -466,7 +466,7 @@ class Application:
             return {}
         ret = {}
         for group in config.sections():
-            ret[group] = config.get(group, u'title')
+            ret[group] = config.get(group, 'title')
         return ret
 
     @Request.application
@@ -541,8 +541,8 @@ class Application:
         version = version.decode("utf8")
         content = content.decode("utf8")
         if not ok:
-            error = CheckError(u"Es ist ein Konflikt mit einer anderen Änderung aufgetreten!",
-                               u"Bitte löse den Konflikt auf und speichere danach erneut.")
+            error = CheckError("Es ist ein Konflikt mit einer anderen Änderung aufgetreten!",
+                               "Bitte löse den Konflikt auf und speichere danach erneut.")
             return self.render_file(rs, template, version, content, ok=False,
                                     error = error, extraparams=extraparams)
         if not savehook is None:
@@ -761,7 +761,7 @@ class Application:
         """
         @type rs: RequestState
         """
-        return self.do_styleguidetopic(rs, u"index")
+        return self.do_styleguidetopic(rs, "index")
 
     def do_styleguidetopic(self, rs, topic=None):
         """

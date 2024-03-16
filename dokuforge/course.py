@@ -22,7 +22,7 @@ class Outline:
         """
         self.number = number
         self.content = []
-        self.lastchange = {'author': u'unkown', 'revision' : u'?', 'date' : common.epoch}
+        self.lastchange = {'author': 'unkown', 'revision' : '?', 'date' : common.epoch}
         self.estimate = Estimate.fromNothing()
     def addheading(self, title):
         """
@@ -75,9 +75,9 @@ class Outline:
         """
         @rtype: unicode
         """
-        return u"%s/%s (%s)" % (self.lastchange['revision'],
-                                self.lastchange['author'],
-                                self.lastchange['date'].strftime("%Y/%m/%d %H:%M:%S %Z"))
+        return "%s/%s (%s)" % (self.lastchange['revision'],
+                               self.lastchange['author'],
+                               self.lastchange['date'].strftime("%Y/%m/%d %H:%M:%S %Z"))
 
 class Course(StorageDir):
     """
@@ -188,7 +188,7 @@ class Course(StorageDir):
         @type page: int
         @rtype: {unicode: unicode or datetime}
         """
-        page = (u"page%d" % page).encode("ascii")
+        page = ("page%d" % page).encode("ascii")
         info = self.getstorage(page).commitstatus()
         return dict((k.decode("ascii"), v) if k == b"date"
                     else (k.decode("ascii"), v.decode("utf8"))
@@ -280,7 +280,7 @@ class Course(StorageDir):
         @param number: the internal number of that page
         @rtype: unicode
         """
-        page = (u"page%d" % number).encode("ascii")
+        page = ("page%d" % number).encode("ascii")
         return self.getcontent(page).decode("utf8")
 
     def getrcs(self, page):
@@ -293,7 +293,7 @@ class Course(StorageDir):
             return ""
         if page >= self.nextpage():
             return ""
-        page = (u"page%d" % page).encode("ascii")
+        page = ("page%d" % page).encode("ascii")
         return self.getstorage(page).asrcs()
 
     def newpage(self, user=None):
@@ -310,12 +310,12 @@ class Course(StorageDir):
         with index.lock as gotlockindex:
             with nextpagestore.lock as gotlocknextpage:
                 newnumber = self.nextpage(havelock = gotlocknextpage)
-                nextpagestore.store((u"%d" % (newnumber+1)).encode("ascii"),
+                nextpagestore.store(("%d" % (newnumber+1)).encode("ascii"),
                                     havelock = gotlocknextpage, user = user)
                 indexcontents = index.content(havelock = gotlockindex)
                 if indexcontents == b"\n":
                     indexcontents = b""
-                indexcontents += (u"%s\n" % newnumber).encode("ascii")
+                indexcontents += ("%s\n" % newnumber).encode("ascii")
                 index.store(indexcontents, havelock = gotlockindex, user = user)
                 return newnumber
 
@@ -414,7 +414,7 @@ class Course(StorageDir):
                     if page in [int(x.split()[0]) for x in lines]:
                         pass # page already present
                     else:
-                        lines.append((u"%d" % page).encode("ascii"))
+                        lines.append(("%d" % page).encode("ascii"))
                         newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex,
                                          user = user)
@@ -446,7 +446,7 @@ class Course(StorageDir):
                         if number in [int(x) for x in lineparts[1:]]:
                             pass # want a set-like semantics
                         else:
-                            lines[i] += (u" %d" % number).encode("ascii")
+                            lines[i] += (" %d" % number).encode("ascii")
             newindex = b"".join(map(b"%s\n".__mod__, lines))
             indexstore.store(newindex, havelock = gotlockindex, user = user)
 
@@ -460,7 +460,7 @@ class Course(StorageDir):
         @returns: a pair of an opaque version string and the contents of this page
         @rtype: (unicode, unicode)
         """
-        page = self.getstorage((u"page%d" % number).encode("ascii"))
+        page = self.getstorage(("page%d" % number).encode("ascii"))
         version, content = page.startedit()
         return (version.decode("utf8"), content.decode("utf8"))
 
@@ -488,7 +488,7 @@ class Course(StorageDir):
         if user is not None:
             assert isinstance(user, unicode)
             user = user.encode("utf8")
-        page = self.getstorage((u"page%d" % number).encode("ascii"))
+        page = self.getstorage(("page%d" % number).encode("ascii"))
         ok, version, mergedcontent = page.endedit(version.encode("utf8"),
                                                   newcontent.encode("utf8"),
                                                   user = user)
@@ -519,7 +519,7 @@ class Course(StorageDir):
         common.validateBlobLabel(label)
         common.validateBlobComment(comment)
         # Note: Some browsers may be unable to set the filename.
-        filename = (data.filename or u"").encode("utf8")
+        filename = (data.filename or "").encode("utf8")
         common.validateBlobFilename(filename)
 
         if user is not None:
@@ -531,18 +531,18 @@ class Course(StorageDir):
         with indexstore.lock as gotlockindex:
             with nextblobstore.lock as gotlocknextblob:
                 newnumber = self.nextblob(havelock = gotlocknextblob)
-                nextblobstore.store((u"%d" % (newnumber+1)).encode("ascii"),
+                nextblobstore.store(("%d" % (newnumber+1)).encode("ascii"),
                                     havelock = gotlocknextblob)
                 index = indexstore.content()
                 lines = index.splitlines()
                 for i in range(len(lines)):
                     entries = lines[i].split()
                     if entries and int(entries[0]) == number:
-                        lines[i] += (u" %d" % newnumber).encode("ascii")
+                        lines[i] += (" %d" % newnumber).encode("ascii")
                         newindex = b"".join(map(b"%s\n".__mod__, lines))
                         indexstore.store(newindex, havelock = gotlockindex)
 
-        blobbase = (u"blob%d" % newnumber).encode("ascii")
+        blobbase = ("blob%d" % newnumber).encode("ascii")
         blob = self.getstorage(blobbase)
         bloblabel = self.getstorage(blobbase + b".label")
         blobcomment = self.getstorage(blobbase + b".comment")
@@ -579,7 +579,7 @@ class Course(StorageDir):
                   comment(unicode), filename(unicode) and number(int)
         """
         ldu = liftdecodeutf8
-        blobbase = (u"blob%d" % number).encode("ascii")
+        blobbase = ("blob%d" % number).encode("ascii")
         return LazyView(dict(
             data = self.getstorage(blobbase).content,
             label = ldu(self.getstorage(blobbase + b".label").content),
@@ -605,7 +605,7 @@ class Course(StorageDir):
         common.validateBlobComment(comment)
         common.validateBlobFilename(filename)
 
-        blobbase = (u"blob%d" % number).encode("ascii")
+        blobbase = ("blob%d" % number).encode("ascii")
         bloblabel = self.getstorage(blobbase + b".label")
         blobcomment = self.getstorage(blobbase + b".comment")
         blobname = self.getstorage(blobbase + b".filename")
@@ -617,7 +617,7 @@ class Course(StorageDir):
         return common.findlastchange([self.getcommit(p) for p in self.listpages()])
 
     def timestamp(self):
-        return max([self.getstorage((u"page%d" % p).encode("ascii")).timestamp()
+        return max([self.getstorage(("page%d" % p).encode("ascii")).timestamp()
                     for p in self.listpages()] + [common.epoch])
 
     def view(self, extrafunctions=dict()):
@@ -654,55 +654,55 @@ class Course(StorageDir):
         """
         yield the contents of the course as tex-export.
         """
-        df2_input = u"title\n%s\n" % self.gettitle()
-        tex = u"\\course{%02d}{%s}" % (self.number,
+        df2_input = "title\n%s\n" % self.gettitle()
+        tex = "\\course{%02d}{%s}" % (self.number,
                                        dfTitleParser(self.gettitle()).toTex().strip())
 
         for p in self.listallpages():
-            df2_input += u"page%s\n%s\n" % (p, self.showpage(p))
+            df2_input += "page%s\n%s\n" % (p, self.showpage(p))
 
         for p in self.listpages():
-            tex += u"\n\n%%%%%% Part %d\n" % p
+            tex += "\n\n%%%%%% Part %d\n" % p
             page = self.showpage(p)
             tex += dfLineGroupParser(page).toTex()
             for b in self.listblobs(p):
                 blob = self.viewblob(b)
-                blobbase = (u"blob%d" % b).encode("ascii")
+                blobbase = ("blob%d" % b).encode("ascii")
                 blobdate = self.getstorage(blobbase).commitstatus()[b'date']
-                tex += u"\n\n%% blob %d\n" % b
-                tex += u"\\begin{figure}\n\\centering\n"
+                tex += "\n\n%% blob %d\n" % b
+                tex += "\\begin{figure}\n\\centering\n"
                 fileName = self._mangleBlobName(blob['filename'])
                 includegraphics = \
-                    (u"\\includegraphics" +
-                     u"[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
+                    ("\\includegraphics" +
+                     "[height=12\\baselineskip]{%s/blob_%d_%s}\n") % \
                     (self.name.decode('ascii'), b, fileName)
                 if fileName != blob['filename']:
-                    tex += (u"%% Original-Dateiname: %s\n" % blob['filename'])
+                    tex += ("%% Original-Dateiname: %s\n" % blob['filename'])
                 if fileName.lower().endswith((".png", ".jpg", ".pdf")):
                     tex += includegraphics
                 else:
-                    tex += (u"%%%s(Binaerdatei \\verb|%s|" +
-                            u" nicht als Bild eingebunden)\n") % \
+                    tex += ("%%%s(Binaerdatei \\verb|%s|" +
+                            " nicht als Bild eingebunden)\n") % \
                            (includegraphics, fileName)
-                tex += u"\\caption{%s}\n" % dfCaptionParser(
+                tex += "\\caption{%s}\n" % dfCaptionParser(
                     blob['comment']).toTex().strip()
-                tex += u"\\label{fig_%s_%d_%s}\n" % (
+                tex += "\\label{fig_%s_%d_%s}\n" % (
                     self.name.decode('ascii'), b, blob['label'])
-                tex += u"\\end{figure}\n"
+                tex += "\\end{figure}\n"
                 yield tarwriter.addChunk(self.name +
-                                         (u"/blob_%d_" % b).encode("ascii") +
+                                         ("/blob_%d_" % b).encode("ascii") +
                                          self._mangleBlobName(blob['filename']).encode('utf8'),
                                          blob['data'],
                                          blobdate)
-        blob_filenames = u""
-        blob_comments = u""
+        blob_filenames = ""
+        blob_comments = ""
         for b in self.listallblobs():
             blob = self.viewblob(b)
-            blobbase = u"blob%d" % b
-            blob_filenames += blobbase + u".filename\n"
-            blob_filenames += blob['filename'] + u"\n"
-            blob_comments += blobbase + u".comment\n"
-            blob_comments += blob['comment'] + u"\n"
+            blobbase = "blob%d" % b
+            blob_filenames += blobbase + ".filename\n"
+            blob_filenames += blob['filename'] + "\n"
+            blob_comments += blobbase + ".comment\n"
+            blob_comments += blob['comment'] + "\n"
         df2_input += blob_filenames + blob_comments
 
         yield tarwriter.addChunk(self.name + b"/input.df2",

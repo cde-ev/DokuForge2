@@ -23,7 +23,7 @@ mathjaxuri = %(staticservepath)s/mathjax/
 """.decode(config_encoding)
 
 class PathConfig(object):
-    section = u"path"
+    section = "path"
     def __init__(self,config=None):
         if config is None:
             self.cp = ConfigParser()
@@ -39,27 +39,27 @@ class PathConfig(object):
 
     @property
     def rootdir(self):
-        return self.cp.get(self.section, u"rootdir").encode(config_encoding)
+        return self.cp.get(self.section, "rootdir").encode(config_encoding)
 
     @rootdir.setter
     def rootdir(self, value):
-        return self.cp.set(self.section, u"rootdir",
+        return self.cp.set(self.section, "rootdir",
                            value.decode(config_encoding))
 
     @property
     def dfdir(self):
         """path to directory storing all the documentation projects.
         Each directory within this directory represents one academy."""
-        return self.cp.get(self.section, u"dfdir").encode(config_encoding)
+        return self.cp.get(self.section, "dfdir").encode(config_encoding)
 
     @property
     def admindir(self):
         """path to directory containing configuration files"""
-        return self.cp.get(self.section, u"admindir").encode(config_encoding)
+        return self.cp.get(self.section, "admindir").encode(config_encoding)
 
     @property
     def staticexportdir(self):
-        return self.cp.get(self.section, u"staticexportdir").encode(
+        return self.cp.get(self.section, "staticexportdir").encode(
                 config_encoding)
 
     @property
@@ -67,21 +67,21 @@ class PathConfig(object):
         """path to a sqlite3 database dedicated to storing session
         cookies. Unless a forking server is used ":memory:" is fine.
         Unlike most other properties, this is a unicode properties."""
-        return self.cp.get(self.section, u"sessiondbpath")
+        return self.cp.get(self.section, "sessiondbpath")
 
     @sessiondbpath.setter
     def sessiondbpath(self, value):
-        self.cp.set(self.section, u"sessiondbpath", value)
+        self.cp.set(self.section, "sessiondbpath", value)
 
     @property
     def staticservepath(self):
         """Unicode property!"""
-        return self.cp.get(self.section, u"staticservepath")
+        return self.cp.get(self.section, "staticservepath")
 
     @property
     def mathjaxuri(self):
         """Unicode property!"""
-        return self.cp.get(self.section, u"mathjaxuri")
+        return self.cp.get(self.section, "mathjaxuri")
 
     @property
     def userdb(self):

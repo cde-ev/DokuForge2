@@ -38,10 +38,10 @@ class ExceptionsToSyslog:
 
 def parsesize(s):
     f = 1
-    if s.lower().endswith(u'k'):
+    if s.lower().endswith('k'):
         s = s[:-1]
         f = 1024
-    elif s.lower().endswith(u'm'):
+    elif s.lower().endswith('m'):
         s = s[:-1]
         f = 1024*1024
     return int(float(s) * f)
@@ -50,11 +50,11 @@ def main(configfile):
     config = ConfigParser()
     with io.open(configfile, encoding=config_encoding) as openconfig:
         config.readfp(openconfig)
-    port = int(config.get(u'scgi', u'port'))
-    limitas = parsesize(config.get(u'scgi', u'limitas'))
-    limitdata = parsesize(config.get(u'scgi', u'limitdata'))
-    maxworkers = int(config.get(u'scgi', u'maxworkers'))
-    limitnprocoffset = int(config.get(u'scgi', u'limitnprocoffset'))
+    port = int(config.get('scgi', 'port'))
+    limitas = parsesize(config.get('scgi', 'limitas'))
+    limitdata = parsesize(config.get('scgi', 'limitdata'))
+    maxworkers = int(config.get('scgi', 'maxworkers'))
+    limitnprocoffset = int(config.get('scgi', 'limitnprocoffset'))
     # one rcs process per worker + one spawner from wsgitools
     limitnproc = 2 * maxworkers + 1 + limitnprocoffset
     resource.setrlimit(resource.RLIMIT_AS, (limitas, limitas))

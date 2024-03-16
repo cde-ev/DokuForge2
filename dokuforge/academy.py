@@ -12,7 +12,7 @@ from dokuforge.common import CheckError
 try:
     from dokuforge.versioninfo import commitid
 except ImportError:
-    commitid = u"unknown"
+    commitid = "unknown"
 
 try:
     unicode
@@ -124,7 +124,7 @@ class Academy(StorageDir):
             groups = groups.split()
         assert all(isinstance(group, unicode) for group in groups)
         common.validateGroups(groups, self.listAllGroups())
-        content = u" ".join(groups)
+        content = " ".join(groups)
         self.getstorage(b"groups").store(content.encode("utf8"))
 
     def createCourse(self, name, title):
@@ -173,7 +173,7 @@ class Academy(StorageDir):
         timeStampNow = datetime.datetime.utcnow()
         timeStampNow.replace(tzinfo=common.utc)
         yield tarwriter.addChunk(b"WARNING",
-(u"""The precise semantics of the exporter is still
+("""The precise semantics of the exporter is still
 subject to discussion and may change in future versions.
 If you think you might need to reproduce an export with the
 same exporter semantics, keep the following version string
@@ -184,9 +184,9 @@ for your reference
         if static is not None:
             for chunk in tarwriter.addDirChunk(b"", static, excludes=[b".svn"]):
                 yield chunk
-        contents = u""
+        contents = ""
         for course in self.listCourses():
-            contents += u"\\input{%s/chap}\n" % course.name.decode("ascii")
+            contents += "\\input{%s/chap}\n" % course.name.decode("ascii")
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
         yield tarwriter.addChunk(b"contents.tex",
