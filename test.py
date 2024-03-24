@@ -59,7 +59,7 @@ class DfTestCase(unittest.TestCase):
         # a tar archive is a sequence of complete blocks
         self.assertTrue(len(octets) % blocksize == 0)
         # there is at least the terminating 0-block
-        self.assertTrue(b"\0\0\0\0\0\0\0\0\0\0" in octets)
+        self.assertIn(b"\0\0\0\0\0\0\0\0\0\0", octets)
 
     def assertIsTarGz(self, octets):
         f = gzip.GzipFile('dummyfilename', 'rb', 9, io.BytesIO(octets))
@@ -870,7 +870,7 @@ class DokuforgeExporterTests(DokuforgeWebTests):
                            'texexport_xa2011-1/contents.tex']
         memberNames = tarFile.getnames()
         for filename in expectedMembers:
-            self.assertTrue(filename in memberNames)
+            self.assertIn(filename, memberNames)
 
     def testExpectedInfrastructureFileContents(self):
         self.do_login()
@@ -878,8 +878,8 @@ class DokuforgeExporterTests(DokuforgeWebTests):
         warningText = tarFile.extractfile("texexport_xa2011-1/WARNING").read().decode()
         self.assertGreater(len(warningText), 50)
         contentsText = tarFile.extractfile("texexport_xa2011-1/contents.tex").read().decode()
-        self.assertTrue(r"\input{course01/chap}" in contentsText)
-        self.assertTrue(r"\input{course02/chap}" in contentsText)
+        self.assertIn(r"\input{course01/chap}", contentsText)
+        self.assertIn(r"\input{course02/chap}", contentsText)
 
     def testAddDifferentImageBlobs(self):
         imageFilenamesUnchanged = ['fig_platzhalter.jpg',
@@ -940,7 +940,7 @@ class DokuforgeExporterTests(DokuforgeWebTests):
             filenamesExpectedInComment = imageFilenamesToBeChanged.keys()
             for filename in filenamesExpectedInComment:
                 expectedLine = "%% Original-Dateiname: %s" % (filename,)
-                self.assertTrue(expectedLine in exportedCourseTexWithImages)
+                self.assertIn(expectedLine, exportedCourseTexWithImages)
 
         def _checkFilenamesInIncludegraphics(exportedCourseTexWithImages):
             filenamesExpectedInIncludegraphics = imageFilenamesToBeChanged.values()
@@ -1000,7 +1000,7 @@ class LocalExportScriptTest(unittest.TestCase):
             self.assertTrue(os.path.isfile(fileName))
             with open(fileName, 'r') as someFile:
                 someFileContents = someFile.read()
-                self.assertTrue("Just some file ..." in someFileContents)
+                self.assertIn("Just some file ...", someFileContents)
 
         def _verifyInputDf2FileContents():
             for fileName in (os.path.join(self.testExportDir, "course01/input.df2"),
@@ -1008,15 +1008,15 @@ class LocalExportScriptTest(unittest.TestCase):
                 self.assertTrue(os.path.isfile(fileName))
                 with open(fileName, 'r') as df2InputFile:
                     df2InputContents = df2InputFile.read()
-                    self.assertTrue("title" in df2InputContents)
-                    self.assertTrue("page0" in df2InputContents)
-                    self.assertTrue("page1" in df2InputContents)
+                    self.assertIn("title", df2InputContents)
+                    self.assertIn("page0", df2InputContents)
+                    self.assertIn("page1", df2InputContents)
 
         def _verifyWarningContainsGitHash():
             with open(os.path.join(self.testExportDir, "WARNING"), 'r') as warningFile:
                 warningContents = warningFile.read()
                 currentGitRevision = subprocess.check_output("git rev-parse HEAD", shell=True).strip().decode()
-                self.assertTrue(currentGitRevision in warningContents)
+                self.assertIn(currentGitRevision, warningContents)
 
         _runLocalExport()
         _verifyPseudoDokuforgeStaticFilesExist()
