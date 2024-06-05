@@ -241,10 +241,10 @@ def validateUserConfig(config):
         parser.read_file(io.StringIO(config))
     except configparser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+                         u"Der Fehler lautete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
     except configparser.DuplicateSectionError as err:
         raise CheckError(u"Doppelter Nutzername!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+                         u"Der Fehler lautete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
 
     try:
         for name in parser.sections():
