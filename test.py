@@ -590,6 +590,18 @@ password = secret
 permissions = df_superadmin True,df_admin True
 """
 
+        duplicate_user_input = """[bob]
+name = bob
+status = überadmin
+password = secret
+permissions = df_superadmin True,df_admin True
+
+[bob]
+name = otherbob
+status = überadmin
+password = geheim
+permissions = df_superadmin True,df_admin True"""
+
         def testValidInput():
             form = self.res.forms[1]
             form["content"] = self._getFormContentsWithPassword("new_secret")
@@ -625,6 +637,12 @@ permissions = df_superadmin True,df_admin True
                 self.res.mustcontain("Das Recht")
                 self.res.mustcontain("ist nicht wohlgeformt.")
 
+        def testDuplicateUserWarning():
+            form = self.res.forms[1]
+            form["content"] = self._normalizeToTextareaLineEndings(duplicate_user_input)
+            self.res = form.submit(name="saveedit")
+            self.res.mustcontain("Doppelter Nutzername")
+
         self.do_login()
         self.res = self.res.click(href="/admin/$")
 
@@ -633,6 +651,7 @@ permissions = df_superadmin True,df_admin True
         testCancelEdit()
         testMissingFields()
         testMalformedPermissions()
+        testDuplicateUserWarning()
 
         self.is_loggedin()
 
@@ -1207,6 +1226,20 @@ class ExporterTestStrings:
                 ['Das ZNS.',
                  'Das \\@\\acronym{ZNS}.'] ]
 
+    emph = [ ['wir heben _etwas_ hervor',
+              'wir heben \\emph{etwas} hervor'],
+             ['wir heben _noch etwas_ hervor',
+              'wir heben \\emph{noch etwas} hervor'],
+             ['wir heben _noch z.B. dies_ hervor',
+              'wir heben \\emph{noch z.\\,B. dies} hervor'],
+             ['wir heben _noch ETWAS mehr_ hervor',
+              'wir heben \\emph{noch \\@\\acronym{ETWAS} mehr} hervor'],
+             ['wir _vergessen zu schließen.',
+              'wir \\emph{vergessen zu schließen.}'],
+             ['wir _\\machenUnfug_ hier',
+              'wir \\emph{\\@\\forbidden\\machenUnfug} hier'],
+            ]
+
     escaping = [ ['Forbid \\mathbb and \\dangerous outside math.',
                   'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
                  ['Do not allow $a \\dangerous{b}$ commands!',
@@ -1566,6 +1599,7 @@ class ExporterTestCases:
     testsEverywhere = [ ExporterTestStrings.quotes,
                         ExporterTestStrings.abbreviation,
                         ExporterTestStrings.acronym,
+                        ExporterTestStrings.emph,
                         ExporterTestStrings.escaping,
                         ExporterTestStrings.mathSymbols,
                         ExporterTestStrings.mathEnvironments,
