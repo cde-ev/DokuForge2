@@ -1160,9 +1160,9 @@ class ExporterTestStrings:
                     ['-Text',
                      '-Text'],
                     ['- item\n\n-nonitem',
-                     '\\begin{itemize}[flushleft,joinedup,packed]\n\\item item\n\end{itemize}\n\n-nonitem'],
+                     '\\begin{itemize}[flushleft,joinedup,packed]\n\\item item\n\\end{itemize}\n\n-nonitem'],
                     ['1. item',
-                     '\\begin{enumerate}[flushleft,joinedup,packed]\n% 1\n\\item item\n\end{enumerate}'] ]
+                     '\\begin{enumerate}[flushleft,joinedup,packed]\n% 1\n\\item item\n\\end{enumerate}'] ]
 
     quotes = [ ['Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                 'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
@@ -1196,7 +1196,7 @@ class ExporterTestStrings:
                 '"`Altern der \\@\\acronym{DNA}"\''] ]
 
     abbreviation = [ ['Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                      'Von 3760\,v.\\,Chr. bis 2012\,n.\\,Chr. und weiter'],
+                      'Von 3760\\,v.\\,Chr. bis 2012\\,n.\\,Chr. und weiter'],
                      ['Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.',
                       'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.'],
                      ['aber u.a. auch o.ä. wie o.Ä.',
@@ -1205,7 +1205,7 @@ class ExporterTestStrings:
                       'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
                      # similar to above, but with spaces in input
                      ['Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
-                      'Von 3760\,v.\\,Chr. bis 2012\,n.\\,Chr. und weiter'],
+                      'Von 3760\\,v.\\,Chr. bis 2012\\,n.\\,Chr. und weiter'],
                      ['Es ist z. B. so, s. o., s. u., etc., dass wir,',
                       'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
                      ['d. h., der Exporter bzw. oder ca. oder so.',
@@ -1293,7 +1293,7 @@ class ExporterTestStrings:
                           'a\n\\begin{equation}\nb \\@\\forbidden\\&= c\n\\end{equation}\n d'],
                          ['b $$\n\\begin{equation}a + b &= c\\end{equation}\n$$ e',
                           'b\n\\begin{equation}\na + b \\@\\forbidden\\&= c\n\\end{equation}\n e'],
-                         ['b $$\n\\begin{align}a + b \evilmath = c\\end{align}\n$$ e',
+                         ['b $$\n\\begin{align}a + b \\evilmath = c\\end{align}\n$$ e',
                           'b\n\\begin{align}\na + b \\@\\forbidden\\evilmath = c\n\\end{align}\n e'],
                          ['Bla $$\n\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}\n$$ Blub',
                           'Bla\n\\begin{align}\na + b &= c\\\\\na - b &= d\n\\end{align}\n Blub'],
@@ -1340,7 +1340,7 @@ class ExporterTestStrings:
                                  )
     nonstandardSpace = [ ['x x',    # standard ASCII space
                           'x x' ] ] + \
-                       [ [ f'x{i}x', 'x\@ x'] for i in _unicodeNonstandardSpaces ]
+                       [ [ f'x{i}x', 'x\\@ x'] for i in _unicodeNonstandardSpaces ]
 
     pageReferences = [ ['Auf S. 4 Abs. 3 in Art. 7 steht',
                         'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
@@ -1400,13 +1400,13 @@ class ExporterTestStrings:
                 ['bis zu 30 000 Einwohner',
                  'bis zu 30 000 Einwohner'],
                 ['Kennwort 0000 ist unsicher, 00000 auch, 0000000 nicht weniger',
-                 'Kennwort 0000 ist unsicher, 00\,000 auch, 0\,000\,000 nicht weniger'],
+                 'Kennwort 0000 ist unsicher, 00\\,000 auch, 0\\,000\\,000 nicht weniger'],
                 ['some 5,000 races',
                  'some 5,000 races'],
                 ['pi ist 3,14159',
-                 'pi ist 3,14\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
+                 'pi ist 3,14\\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
                 ['bla 2004-2006 blub',
-                 'bla 2004\@--2006 blub']
+                 'bla 2004\\@--2006 blub']
               ]
 
     dates = [ ['The date is 19.5.2012 or 19. 10. 95 for good.',
@@ -1443,7 +1443,7 @@ class ExporterTestStrings:
              ['https://www.bla.com. Sowie http://www.blub.org?',
               '\\@\\url{https://www.bla.com}. Sowie \\@\\url{http://www.blub.org}?'],
              ['https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
-              '\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsserArkade1.jpg}'],
+              '\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\\%C3\\%BCsserArkade1.jpg}'],
              ['https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg',
               '\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
              ['auf www.bla.com lesen',
@@ -1453,7 +1453,7 @@ class ExporterTestStrings:
              ['Das www.ist_keine_hervorhebung.de!',
               'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
              ['http://www.bla.com/foo}\\evilCommand',
-              '\\@\\url{http://www.bla.com/foo}\\@\}\\@\\forbidden\\evilCommand']
+              '\\@\\url{http://www.bla.com/foo}\\@\\}\\@\\forbidden\\evilCommand']
              ]
 
     sectionsAndAuthors = [ ['[foo]\n(bar)',
@@ -1508,9 +1508,9 @@ Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi quer durch
                           """Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im
 komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
 jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
-fume.\@\@\@ Das sieht verdächtig aus. Franz jagt im komplett
+fume.\\@\\@\\@ Das sieht verdächtig aus. Franz jagt im komplett
 verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
-the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
+the lazy dog. Portez ce vieux whisky au juge blond qui fume.\\@\\@\\@
 Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi
 quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez
 ce vieux whisky au juge blond qui fume."""],
@@ -1522,13 +1522,13 @@ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick
 brown fox jumps over the lazy dog. Portez ce vieux whisky au juge
 blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett
 verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
-the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
+the lazy dog. Portez ce vieux whisky au juge blond qui fume.\\@\\@\\@
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
 
                          ["""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen dazwischen.
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
                           """Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen
-dazwischen.\@\@\@ Franz jagt im komplett verwahrlosten Taxi quer durch
+dazwischen.\\@\\@\\@ Franz jagt im komplett verwahrlosten Taxi quer durch
 Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux
 whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im
 komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
@@ -1537,7 +1537,7 @@ fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
 
                          ["""Erst eine kurze Zeile, dann eine lange mit Mathematik.
 $z$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume $x$ Das sieht verdächtig aus $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
-                          """Erst eine kurze Zeile, dann eine lange mit Mathematik.\@\@\@ $z$ Franz
+                          """Erst eine kurze Zeile, dann eine lange mit Mathematik.\\@\\@\\@ $z$ Franz
 jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick
 brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge
 blond qui fume $x$ Das sieht verdächtig aus $x$ Franz jagt im komplett

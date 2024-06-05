@@ -330,15 +330,15 @@ def unspaceAbbreviations(word):
     """
     Remove single spaces within known abbreviations.
     """
-    word = re.sub(u'(^| )d\. h\.', u'\\1d.h.', word)
-    word = re.sub(u'(^| )n\. Chr\.', u'\\1n.Chr.', word)
-    word = re.sub(u'(^| )o\. Ä\.', u'\\1o.Ä.', word)
-    word = re.sub(u'(^| )o\. ä\.', u'\\1o.ä.', word)
-    word = re.sub(u'(^| )s\. o\.', u'\\1s.o.', word)
-    word = re.sub(u'(^| )s\. u\.', u'\\1s.u.', word)
-    word = re.sub(u'(^| )u\. a\.', u'\\1u.a.', word)
-    word = re.sub(u'(^| )v\. Chr\.', u'\\1v.Chr.', word)
-    word = re.sub(u'(^| )z\. B\.', u'\\1z.B.', word)
+    word = re.sub(u'(^| )d\\. h\\.', u'\\1d.h.', word)
+    word = re.sub(u'(^| )n\\. Chr\\.', u'\\1n.Chr.', word)
+    word = re.sub(u'(^| )o\\. Ä\\.', u'\\1o.Ä.', word)
+    word = re.sub(u'(^| )o\\. ä\\.', u'\\1o.ä.', word)
+    word = re.sub(u'(^| )s\\. o\\.', u'\\1s.o.', word)
+    word = re.sub(u'(^| )s\\. u\\.', u'\\1s.u.', word)
+    word = re.sub(u'(^| )u\\. a\\.', u'\\1u.a.', word)
+    word = re.sub(u'(^| )v\\. Chr\\.', u'\\1v.Chr.', word)
+    word = re.sub(u'(^| )z\\. B\\.', u'\\1z.B.', word)
     yield word
 
 def spaceMultipartStandardAbbreviations(word):
@@ -392,7 +392,7 @@ class UnitSpacing:
         re_units = '(?:%s)?(?:%s)' % (unit_prefixes, units)
         re_unprefixed_units = '(?:%s)' % (unprefixed_units)
         # unit is followed by (full stop|slash|star|whitespace|end of line)
-        after = '(?:[./*]|\s|$)'
+        after = '(?:[./*]|\\s|$)'
         self.units_re = re.compile(r'(.*?)(\d+) ?((?:%s|%s)%s)(.*)'
                 % (re_units, re_unprefixed_units, after))
 
@@ -415,7 +415,7 @@ def naturalNumbers(word):
     """
     Special Spacing for numbers.
     """
-    if not re.match(u'^-?\d+$', word):
+    if not re.match(u'^-?\\d+$', word):
         yield word
     else:
         if word.startswith(u'-'):
@@ -447,7 +447,7 @@ unicodeQuotationMarks = u'„“”»«'
 
 def openQuotationMark(word):
     """
-    Opening quotation marks. Unicode quotes are annotated with \@.
+    Opening quotation marks. Unicode quotes are annotated with \\@.
     """
     if len(word) > 1:
         if word.startswith(u'"'):
@@ -460,7 +460,7 @@ def openQuotationMark(word):
 
 def closeQuotationMark(word):
     """
-    Closing quotation marks. Unicode quotes are annotated with \@.
+    Closing quotation marks. Unicode quotes are annotated with \\@.
     """
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
@@ -510,9 +510,9 @@ def explode(word):
 
 class ReplaceSuspiciousCharacter:
     """
-    Replace a list of characters and annotate with \@\@. This is intended
+    Replace a list of characters and annotate with \\@\\@. This is intended
     for characters that should have been addressed earlier so that the
-    replacement done here is a wild guess, pointed out by double-\@.
+    replacement done here is a wild guess, pointed out by double-\\@.
     """
     def __init__(self, badSigns, replacement):
         self.badSigns = badSigns
@@ -826,7 +826,7 @@ def ednoteMicrotype(text):
     return applyMicrotypefeatures([text], [escapeEndEdnote])
 
 def isemptyline(line):
-    return re.match('^\s*$', line)
+    return re.match('^\\s*$', line)
 
 def wrap(text, subsequent_indent=''):
     """
@@ -984,7 +984,7 @@ class PUrl(PTree):
 
     def texEscapeWithinUrl(self, word):
         """
-        % -> \%
+        % -> \\%
         """
         return word.replace(u'%', u'\\%')
 
@@ -1842,14 +1842,14 @@ class EnumerateItem(Linegroup):
 
     @classmethod
     def startshere(self, line, after=None):
-        return re.match('^\d+\.\s', line)
+        return re.match('^\\d+\\.\\s', line)
 
     def parse(self):
         if len(self.lines) < 1:
             return PItem(defaultInnerParse(self.lines), number="1")
         firstline = self.lines[0]
         number = "1"
-        m = re.match('^(\d+)\.\s+(.*)$', firstline)
+        m = re.match('^(\\d+)\\.\\s+(.*)$', firstline)
         if m is not None:
             number, firstline = m.group(1,2)
         withcleanedfirstline = [firstline]
