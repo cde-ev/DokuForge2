@@ -177,8 +177,8 @@ def acronym(word):
     yield concat_left
 
 def formatDashes(word):
-    """
-    Replace " - " by " -- " and annotate dashes with "\\@"
+    r"""
+    Replace " - " by " -- " and annotate dashes with "\@"
     """
     # match context in order to avoid touching number ranges or signs
     pattern = r'(^|[^@ -])( ?-+ ?)($|[^0-9- ])'
@@ -459,8 +459,8 @@ def openQuotationMark(word):
     yield word
 
 def closeQuotationMark(word):
-    """
-    Closing quotation marks. Unicode quotes are annotated with \\@.
+    r"""
+    Closing quotation marks. Unicode quotes are annotated with \@.
     """
     if len(word) > 1 and word.endswith(u'"'):
         yield word[:-1]
@@ -509,10 +509,10 @@ def explode(word):
         yield char
 
 class ReplaceSuspiciousCharacter:
-    """
-    Replace a list of characters and annotate with \\@\\@. This is intended
+    r"""
+    Replace a list of characters and annotate with \@\@. This is intended
     for characters that should have been addressed earlier so that the
-    replacement done here is a wild guess, pointed out by double-\\@.
+    replacement done here is a wild guess, pointed out by double-\@.
     """
     def __init__(self, badSigns, replacement):
         self.badSigns = badSigns
@@ -983,8 +983,8 @@ class PUrl(PTree):
         return self.text.toEstimate()
 
     def texEscapeWithinUrl(self, word):
-        """
-        % -> \\%
+        r"""
+        % -> \%
         """
         return word.replace(u'%', u'\\%')
 
