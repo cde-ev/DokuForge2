@@ -446,8 +446,8 @@ closeQuotationString = u'"\''
 unicodeQuotationMarks = u'„“”»«'
 
 def openQuotationMark(word):
-    """
-    Opening quotation marks. Unicode quotes are annotated with \\@.
+    r"""
+    Opening quotation marks. Unicode quotes are annotated with \@.
     """
     if len(word) > 1:
         if word.startswith(u'"'):
