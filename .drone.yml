@@ -5,6 +5,8 @@ name: ubuntu-20.04
 steps:
 - name: test
   image: ubuntu:20.04
+  environment:
+  - DEBIAN_FRONTEND: noninteractive
   commands:
   - apt-get update > /dev/null
   - apt-get install -y apt-utils > /dev/null
