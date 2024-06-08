@@ -71,7 +71,7 @@ class DfTestCase(unittest.TestCase):
 
 class TarWriterTests(DfTestCase):
     def testUncompressed(self):
-        timeStampNow = datetime.datetime.utcnow()
+        timeStampNow = datetime.datetime.now(UTC())
         timeStampNow.replace(tzinfo=UTC())
         tarwriter = TarWriter()
         tar = b''
@@ -80,7 +80,7 @@ class TarWriterTests(DfTestCase):
         self.assertIsTar(tar)
 
     def testGzip(self):
-        timeStampNow = datetime.datetime.utcnow()
+        timeStampNow = datetime.datetime.now(UTC())
         timeStampNow.replace(tzinfo=UTC())
         tarwriter = TarWriter(gzip=True)
         tar = b''
