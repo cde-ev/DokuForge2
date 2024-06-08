@@ -1319,7 +1319,7 @@ class ExporterTestStrings:
                  [r''+'\''+r'Bla'+'\''+r' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
                   r'\@'+'\''+r'Bla\@'+'\''+r' \@'+'\''+r'blub\@'+'\''+r' \@'+'\''+r'bloink\@'+'\''+r' \@'+'\''+r'blub\@'+'\''+r' \@'+'\''+r'bloink\@'+'\''+r'.'],
                  [r'„‚Nested quotes‘”.',
-                  '\@\@"`\@'+'\''+r'Nested quotes\@'+'\''+r'\@\@"`.'] ]
+                  r'\@\@"`\@'+'\''+r'Nested quotes\@'+'\''+r'\@\@"`.'] ]
 
     _unicodeNonstandardSpaces = ( ' ',    # non-breaking space U+00A0
                                   ' ',    # en quad U+2000
