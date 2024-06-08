@@ -1527,7 +1527,7 @@ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
 
                          ["""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen dazwischen.
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
-                          """Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen
+                          r"""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen
 dazwischen.\@\@\@ Franz jagt im komplett verwahrlosten Taxi quer durch
 Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux
 whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im
