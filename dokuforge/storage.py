@@ -322,7 +322,7 @@ class Storage(object):
         """
         self.ensureexistence(havelock = havelock)
         ts = os.path.getmtime(self.fullpath(postfix=b",v"))
-        ts = datetime.datetime.utcfromtimestamp(ts)
+        ts = datetime.datetime.fromtimestamp(ts, tz=utc)
         return ts.replace(tzinfo=utc)
 
 class CachingStorage(Storage):
