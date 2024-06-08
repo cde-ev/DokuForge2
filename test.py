@@ -11,7 +11,7 @@ import tempfile
 import unittest
 from wsgiref.validate import validator
 import webtest
-import datetime
+from datetime import datetime, timezone
 import tarfile
 import subprocess
 
@@ -20,7 +20,6 @@ from dokuforge import buildapp
 from dokuforge.paths import PathConfig
 from dokuforge.parser import dfLineGroupParser, dfTitleParser, dfCaptionParser, Estimate, allowedMathSymbolCommands
 from dokuforge.common import TarWriter
-from dokuforge.common import UTC
 from dokuforge.course import Course
 from dokuforge.academy import Academy
 from dokuforge.user import UserDB
@@ -71,8 +70,8 @@ class DfTestCase(unittest.TestCase):
 
 class TarWriterTests(DfTestCase):
     def testUncompressed(self):
-        timeStampNow = datetime.datetime.now(UTC())
-        timeStampNow.replace(tzinfo=UTC())
+        timeStampNow = datetime.now(timezone.utc)
+        timeStampNow.replace(tzinfo=timezone.utc)
         tarwriter = TarWriter()
         tar = b''
         tar = tar + tarwriter.addChunk(b'myFile', b'contents', timeStampNow)
@@ -80,8 +79,8 @@ class TarWriterTests(DfTestCase):
         self.assertIsTar(tar)
 
     def testGzip(self):
-        timeStampNow = datetime.datetime.now(UTC())
-        timeStampNow.replace(tzinfo=UTC())
+        timeStampNow = datetime.now(timezone.utc)
+        timeStampNow.replace(tzinfo=timezone.utc)
         tarwriter = TarWriter(gzip=True)
         tar = b''
         tar = tar + tarwriter.addChunk(b'myFile', b'contents', timeStampNow)

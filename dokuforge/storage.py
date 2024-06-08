@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 import io
 import logging
 import os, errno
@@ -11,7 +11,7 @@ try:
 except NameError:
     unicode = str
 
-from dokuforge.common import check_output, utc, epoch
+from dokuforge.common import check_output, epoch
 from dokuforge.common import validateRcsRevision
 from dokuforge.common import RcsUserInputError
 
@@ -54,11 +54,11 @@ def rloghead(filename):
     """
     assert isinstance(filename, bytes)
     logger.debug("rloghead: looking up head revision info for %r" % filename)
-    
+
     # Amzingly enough, the "official" way to obtain revision information
     # is to parse the output of rlog. This statement is obtained from
     # Thien-Thi Nguyen <ttn@gnuvola.org> (maintainer of GNU RCS) in an private
-    # email on Oct 16, 2011 that also promised that such a script will never 
+    # email on Oct 16, 2011 that also promised that such a script will never
     # be broken by any future releases.
     answer = {}
 
@@ -78,9 +78,9 @@ def rloghead(filename):
         if len(keyvalue) > 1:
             answer[keyvalue[0].lstrip()]=keyvalue[1]
 
-    date = datetime.datetime.strptime(answer[b"date"].decode("ascii"),
-                                      "%Y/%m/%d %H:%M:%S")
-    answer[b"date"] = date.replace(tzinfo=utc)
+    date = datetime.strptime(answer[b"date"].decode("ascii"),
+                             "%Y/%m/%d %H:%M:%S")
+    answer[b"date"] = date.replace(tzinfo=timezone.utc)
     return answer
 
 class LockDir:
@@ -160,7 +160,7 @@ class Storage(object):
         Store the given contents; rcs file is create if it does not
         exist already.
 
-        @type content: bytes or raw filelike 
+        @type content: bytes or raw filelike
         @param content: the content of the file
         @type message: bytes
         @type user: None or bytes
@@ -322,8 +322,8 @@ class Storage(object):
         """
         self.ensureexistence(havelock = havelock)
         ts = os.path.getmtime(self.fullpath(postfix=b",v"))
-        ts = datetime.datetime.fromtimestamp(ts, tz=utc)
-        return ts.replace(tzinfo=utc)
+        ts = datetime.fromtimestamp(ts, tz=timezone.utc)
+        return ts.replace(tzinfo=timezone.utc)
 
 class CachingStorage(Storage):
     """
