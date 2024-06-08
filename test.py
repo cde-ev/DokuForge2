@@ -352,18 +352,18 @@ class DokuforgeSmallWebTests(DokuforgeWebTests):
         self.res = self.res.click(description="Editieren", index=1)
         form = self.res.forms[1]
         form["content"] = \
-"""[Section]
+r"""[Section]
 (Authors)
-*keyword*, $\\sqrt{2}$ and _emphasis_
-$$\\sqrt{2}$$
+*keyword*, $\sqrt{2}$ and _emphasis_
+$$\sqrt{2}$$
 [[subsection]]
 - bullet1
 - bullet2 https://www.someurl.org
-chars like < > & " to be escaped and an { ednote \\end{ednote} }
+chars like < > & " to be escaped and an { ednote \end{ednote} }
 """
         self.res = form.submit(name="saveshow")
         expected_linked_url = '<a href="https://www.someurl.org" rel="noopener">https://www.someurl.org</a>'
-        self.res.mustcontain("$\\sqrt{2}$", "ednote \\end{ednote}", expected_linked_url)
+        self.res.mustcontain(r"$\sqrt{2}$", r"ednote \end{ednote}", expected_linked_url)
         self.is_loggedin()
 
     def testTitleWithEmph(self):
@@ -1155,14 +1155,14 @@ class DokuforgeMockTests(DfTestCase):
 class ExporterTestStrings:
     """Input and expected output for testing exporter"""
 
-    itemizeAndCo = [['- Text',
-                     '\\begin{itemize}[flushleft,joinedup,packed]\n\\item Text\n\\end{itemize}'],
-                    ['-Text',
-                     '-Text'],
-                    ['- item\n\n-nonitem',
-                     '\\begin{itemize}[flushleft,joinedup,packed]\n\\item item\n\\end{itemize}\n\n-nonitem'],
-                    ['1. item',
-                     '\\begin{enumerate}[flushleft,joinedup,packed]\n% 1\n\\item item\n\\end{enumerate}'] ]
+    itemizeAndCo = [[r'- Text',
+                     r'\begin{itemize}[flushleft,joinedup,packed]' + '\n' + r'\item Text' + '\n' + r'\end{itemize}'],
+                    [r'-Text',
+                     r'-Text'],
+                    [r'- item' + '\n\n' + r'-nonitem',
+                     r'\begin{itemize}[flushleft,joinedup,packed]' + '\n' + r'\item item' + '\n' + r'\end{itemize}' + '\n\n' + r'-nonitem'],
+                    [r'1. item',
+                     r'\begin{enumerate}[flushleft,joinedup,packed]' + '\n' + r'% 1' + '\n' + r'\item item' + '\n' + r'\end{enumerate}'] ]
 
     quotes = [ ['Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                 'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
@@ -1195,131 +1195,131 @@ class ExporterTestStrings:
                ['"Altern der DNA"',
                 '"`Altern der \\@\\acronym{DNA}"\''] ]
 
-    abbreviation = [ ['Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
-                      'Von 3760\\,v.\\,Chr. bis 2012\\,n.\\,Chr. und weiter'],
-                     ['Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.',
-                      'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir, d.\\,h.'],
-                     ['aber u.a. auch o.ä. wie o.Ä.',
-                      'aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.'],
-                     ['Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
-                      'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
+    abbreviation = [ [r'Von 3760 v.Chr. bis 2012 n.Chr. und weiter',
+                      r'Von 3760\,v.\,Chr. bis 2012\,n.\,Chr. und weiter'],
+                     [r'Es ist z.B. so, s.o., s.u., etc., dass wir, d.h.',
+                      r'Es ist z.\,B. so, s.\,o., s.\,u., etc., dass wir, d.\,h.'],
+                     [r'aber u.a. auch o.ä. wie o.Ä.',
+                      r'aber u.\,a. auch o.\,ä. wie o.\,Ä.'],
+                     [r'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.',
+                      r'Keine erlaubet Abkuerzungen sind umgspr. und oBdA. im Exporter.'],
                      # similar to above, but with spaces in input
-                     ['Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
-                      'Von 3760\\,v.\\,Chr. bis 2012\\,n.\\,Chr. und weiter'],
-                     ['Es ist z. B. so, s. o., s. u., etc., dass wir,',
-                      'Es ist z.\\,B. so, s.\\,o., s.\\,u., etc., dass wir,'],
-                     ['d. h., der Exporter bzw. oder ca. oder so.',
-                      'd.\\,h., der Exporter bzw. oder ca. oder so.'],
-                     ['Aber u. a. auch o. ä. wie o. Ä.',
-                      'Aber u.\\,a. auch o.\\,ä. wie o.\\,Ä.']]
+                     [r'Von 3760 v. Chr. bis 2012 n. Chr. und weiter',
+                      r'Von 3760\,v.\,Chr. bis 2012\,n.\,Chr. und weiter'],
+                     [r'Es ist z. B. so, s. o., s. u., etc., dass wir,',
+                      r'Es ist z.\,B. so, s.\,o., s.\,u., etc., dass wir,'],
+                     [r'd. h., der Exporter bzw. oder ca. oder so.',
+                      r'd.\,h., der Exporter bzw. oder ca. oder so.'],
+                     [r'Aber u. a. auch o. ä. wie o. Ä.',
+                      r'Aber u.\,a. auch o.\,ä. wie o.\,Ä.']]
 
-    acronym = [ ['Bitte ACRONYME wie EKGs anders setzen.',
-                 'Bitte \\@\\acronym{ACRONYME} wie \\@\\acronym{EKGs} anders setzen.'],
-                ['Unterscheide T-shirt und DNA-Sequenz.',
-                 'Unterscheide T-shirt und \\@\\acronym{DNA}-Sequenz.'],
-                ['Wenn 1D nicht reicht, nutze 2D oder 6D.',
-                 'Wenn 1\\@\\acronym{D} nicht reicht, nutze 2\\@\\acronym{D} oder\n6\\@\\acronym{D}.'],
-                ['Wahlergebnis fuer die SPD: 9% (NRW).',
-                 'Wahlergebnis fuer die \\@\\acronym{SPD}: 9\\,\\% (\\@\\acronym{NRW}).'],
-                ['FDP? CDU! CSU. ÖVP.',
-                 '\\@\\acronym{FDP}? \\@\\acronym{CDU}! \\@\\acronym{CSU}. \\@\\acronym{ÖVP}.'],
-                ['Das ZNS.',
-                 'Das \\@\\acronym{ZNS}.'] ]
+    acronym = [ [r'Bitte ACRONYME wie EKGs anders setzen.',
+                 r'Bitte \@\acronym{ACRONYME} wie \@\acronym{EKGs} anders setzen.'],
+                [r'Unterscheide T-shirt und DNA-Sequenz.',
+                 r'Unterscheide T-shirt und \@\acronym{DNA}-Sequenz.'],
+                [r'Wenn 1D nicht reicht, nutze 2D oder 6D.',
+                 r'Wenn 1\@\acronym{D} nicht reicht, nutze 2\@\acronym{D} oder' + '\n' + r'6\@\acronym{D}.'],
+                [r'Wahlergebnis fuer die SPD: 9% (NRW).',
+                 r'Wahlergebnis fuer die \@\acronym{SPD}: 9\,\% (\@\acronym{NRW}).'],
+                [r'FDP? CDU! CSU. ÖVP.',
+                 r'\@\acronym{FDP}? \@\acronym{CDU}! \@\acronym{CSU}. \@\acronym{ÖVP}.'],
+                [r'Das ZNS.',
+                 r'Das \@\acronym{ZNS}.'] ]
 
-    emph = [ ['wir heben _etwas_ hervor',
-              'wir heben \\emph{etwas} hervor'],
-             ['wir heben _noch etwas_ hervor',
-              'wir heben \\emph{noch etwas} hervor'],
-             ['wir heben _noch z.B. dies_ hervor',
-              'wir heben \\emph{noch z.\\,B. dies} hervor'],
-             ['wir heben _noch ETWAS mehr_ hervor',
-              'wir heben \\emph{noch \\@\\acronym{ETWAS} mehr} hervor'],
-             ['wir _vergessen zu schließen.',
-              'wir \\emph{vergessen zu schließen.}'],
-             ['wir _\\machenUnfug_ hier',
-              'wir \\emph{\\@\\forbidden\\machenUnfug} hier'],
+    emph = [ [r'wir heben _etwas_ hervor',
+              r'wir heben \emph{etwas} hervor'],
+             [r'wir heben _noch etwas_ hervor',
+              r'wir heben \emph{noch etwas} hervor'],
+             [r'wir heben _noch z.B. dies_ hervor',
+              r'wir heben \emph{noch z.\,B. dies} hervor'],
+             [r'wir heben _noch ETWAS mehr_ hervor',
+              r'wir heben \emph{noch \@\acronym{ETWAS} mehr} hervor'],
+             [r'wir _vergessen zu schließen.',
+              r'wir \emph{vergessen zu schließen.}'],
+             [r'wir _\machenUnfug_ hier',
+              r'wir \emph{\@\forbidden\machenUnfug} hier'],
             ]
 
-    escaping = [ ['Forbid \\mathbb and \\dangerous outside math.',
-                  'Forbid \\@\\forbidden\\mathbb and \\@\\forbidden\\dangerous outside math.'],
-                 ['Do not allow $a \\dangerous{b}$ commands!',
-                  'Do not allow $a \\@\\forbidden\\dangerous{b}$ commands!'],
-                 ['\\\\ok, $\\\\ok$',
-                  '\\\\ok, $\\\\ok$'],
-                 ['$\\\\\\bad$',
-                  '$\\\\\\@\\forbidden\\bad$'],
-                 ['Escaping in math like $\\evilmath$, but not $\\mathbb C$',
-                  'Escaping in math like $\\@\\forbidden\\evilmath$, but not $\\mathbb C$'],
-                 ['$\\circ$ $\\cap\\inf$ $\\times$',
-                  '$\\circ$ $\\cap\\inf$ $\\times$' ],
-                 ['$a &= b$',
-                  '$a \\@\\forbidden\\&= b$'],
-                 ['$$a &= b$$',
-                  '\\begin{equation*}\na \\@\\forbidden\\&= b\n\\end{equation*}'],
+    escaping = [ [r'Forbid \mathbb and \dangerous outside math.',
+                  r'Forbid \@\forbidden\mathbb and \@\forbidden\dangerous outside math.'],
+                 [r'Do not allow $a \dangerous{b}$ commands!',
+                  r'Do not allow $a \@\forbidden\dangerous{b}$ commands!'],
+                 [r'\\ok, $\\ok$',
+                  r'\\ok, $\\ok$'],
+                 [r'$\\\bad$',
+                  r'$\\\@\forbidden\bad$'],
+                 [r'Escaping in math like $\evilmath$, but not $\mathbb C$',
+                  r'Escaping in math like $\@\forbidden\evilmath$, but not $\mathbb C$'],
+                 [r'$\circ$ $\cap\inf$ $\times$',
+                  r'$\circ$ $\cap\inf$ $\times$' ],
+                 [r'$a &= b$',
+                  r'$a \@\forbidden\&= b$'],
+                 [r'$$a &= b$$',
+                  r'\begin{equation*}' + '\n' + r'a \@\forbidden\&= b' + '\n' + r'\end{equation*}'],
                  ['Trailing \\',
-                  'Trailing \\@\\backslash'],
-                 ['$Trailing \\$',
-                  '$Trailing \\@\\backslash$'],
-                 ['f# ist eine Note',
-                  'f\\@\\# ist eine Note'],
-                 ['$a^b$ ist gut, aber a^b ist schlecht',
-                  '$a^b$ ist gut, aber a\\@\\caret{}b ist schlecht'],
-                 ['Heinemann&Co. ist vielleicht eine Firma',
-                  'Heinemann\\@\\&Co. ist vielleicht eine Firma'],
-                 ['10% sind ein Zehntel und mehr als 5 %.',
-                  '10\\,\\% sind ein Zehntel und mehr als 5\\@\\,\\%.'],
-                 ['Geschweifte Klammern { muessen } escaped werden.',
-                  'Geschweifte Klammern \\@\\{ muessen \\@\\} escaped werden.'],
-                 ['Tilde~ist unklar. $Auch~hier$.',
-                  'Tilde\\@~ist unklar. $Auch\\@~hier$.'] ]
+                  r'Trailing \@\backslash'],
+                 [r'$Trailing \$',
+                  r'$Trailing \@\backslash$'],
+                 [r'f# ist eine Note',
+                  r'f\@\# ist eine Note'],
+                 [r'$a^b$ ist gut, aber a^b ist schlecht',
+                  r'$a^b$ ist gut, aber a\@\caret{}b ist schlecht'],
+                 [r'Heinemann&Co. ist vielleicht eine Firma',
+                  r'Heinemann\@\&Co. ist vielleicht eine Firma'],
+                 [r'10% sind ein Zehntel und mehr als 5 %.',
+                  r'10\,\% sind ein Zehntel und mehr als 5\@\,\%.'],
+                 [r'Geschweifte Klammern { muessen } escaped werden.',
+                  r'Geschweifte Klammern \@\{ muessen \@\} escaped werden.'],
+                 [r'Tilde~ist unklar. $Auch~hier$.',
+                  r'Tilde\@~ist unklar. $Auch\@~hier$.'] ]
 
     mathSymbols = [ ['$\\'+i+'$', '$\\'+i+'$'] for i in allowedMathSymbolCommands ]
 
-    mathEnvironments = [ ['b $$\\circ \\cap \\inf \\times$$ e',
-                          'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
-                         ['b $$\n\\circ \\cap \\inf \\times\n$$ e',
-                          'b\n\\begin{equation*}\n\\circ \\cap \\inf \\times\n\\end{equation*}\n e'],
-                         ['b $$\n\\begin{equation}a + b = c\\end{equation}\n$$ e',
-                          'b\n\\begin{equation}\na + b = c\n\\end{equation}\n e'],
-                         ['b $$\n\\begin{equation*}a + b = c \\end{equation*}\n$$ e',
-                          'b\n\\begin{equation*}\na + b = c\n\\end{equation*}\n e'],
-                         ['b $$\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n$$ e',
-                          'b\n\\begin{align}\na + b &= c \\\\\na - b &= d\n\\end{align}\n e'],
-                         ['b $$\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n$$ e',
-                          'b\n\\begin{align*}\na + b &= c \\\\\na - b &= d\n\\end{align*}\n e'],
-                         ['b $$\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \\end{align}\n$$ e',
-                          'b\n\\begin{align}\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\\\\nabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d\n\\end{align}\n e'],
-                         ['a $$\n\\begin{equation} b &= c \\end{equation}\n$$ d',
-                          'a\n\\begin{equation}\nb \\@\\forbidden\\&= c\n\\end{equation}\n d'],
-                         ['b $$\n\\begin{equation}a + b &= c\\end{equation}\n$$ e',
-                          'b\n\\begin{equation}\na + b \\@\\forbidden\\&= c\n\\end{equation}\n e'],
-                         ['b $$\n\\begin{align}a + b \\evilmath = c\\end{align}\n$$ e',
-                          'b\n\\begin{align}\na + b \\@\\forbidden\\evilmath = c\n\\end{align}\n e'],
-                         ['Bla $$\n\\begin{align}\na + b &= c\\\\\na - b &= d \\end{align}\n$$ Blub',
-                          'Bla\n\\begin{align}\na + b &= c\\\\\na - b &= d\n\\end{align}\n Blub'],
-                         ['Matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$.',
-                          'Matrix $\\@\\forbidden\\begin{pmatrix} a \\@\\forbidden\\& b \\\\ c\n\\@\\forbidden\\& d \\@\\forbidden\\end{pmatrix}$.'],
-                         ['Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.',
-                          'Chemische Formel fuer $\\ch{H3O+}$ protoniertes Wasser.'] ]
+    mathEnvironments = [ [r'b $$\circ \cap \inf \times$$ e',
+                          r'b' + '\n' + r'\begin{equation*}' + '\n' + r'\circ \cap \inf \times' + '\n' + r'\end{equation*}' + '\n' + r' e'],
+                         [r'b $$' + '\n' + r'\circ \cap \inf \times' + '\n' + r'$$ e',
+                          r'b' + '\n' + r'\begin{equation*}' + '\n' + r'\circ \cap \inf \times' + '\n' + r'\end{equation*}' + '\n' + r' e'],
+                         [r'b $$' + '\n' + r'\begin{equation}a + b = c\end{equation}' + '\n' + r'$$ e',
+                          r'b' + '\n' + r'\begin{equation}' + '\n' + r'a + b = c' + '\n' + r'\end{equation}' + '\n' + r' e'],
+                         [r'b $$' + '\n' + r'\begin{equation*}a + b = c \end{equation*}' + '\n' + r'$$ e',
+                          r'b' + '\n' + r'\begin{equation*}' + '\n' + r'a + b = c' + '\n' + r'\end{equation*}' + '\n' + r' e'],
+                         [r'b $$' + '\n' + r'\begin{align}' + '\n' + r'a + b &= c \\' + '\n' + r'a - b &= d' + '\n' + r'\end{align}' + '\n' + r'$$ e',
+                          r'b' + '\n' + r'\begin{align}' + '\n' + r'a + b &= c \\' + '\n' + r'a - b &= d' + '\n' + r'\end{align}' + '\n' + r' e'],
+                         [r'b $$' + '\n' + r'\begin{align*}' + '\n' + r'a + b &= c \\' + '\n' + r'a - b &= d' + '\n' + r'\end{align*}' + '\n' + r'$$ e',
+                          r'b' + '\n' + r'\begin{align*}' + '\n' + r'a + b &= c \\' + '\n' + r'a - b &= d' + '\n' + r'\end{align*}' + '\n' + r' e'],
+                         [r'b $$' + '\n' + r'\begin{align}' + '\n' + r'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\' + '\n' + r'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d \end{align}' + '\n' + r'$$ e',
+                          r'b' + '\n' + r'\begin{align}' + '\n' + r'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= c\\' + '\n' + r'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz &= d' + '\n' + r'\end{align}' + '\n' + r' e'],
+                         [r'a $$' + '\n' + r'\begin{equation} b &= c \end{equation}' + '\n' + r'$$ d',
+                          r'a' + '\n' + r'\begin{equation}' + '\n' + r'b \@\forbidden\&= c' + '\n' + r'\end{equation}' + '\n' + r' d'],
+                         [r'b $$' + '\n' + r'\begin{equation}a + b &= c\end{equation}' + '\n' + r'$$ e',
+                          r'b' + '\n' + r'\begin{equation}' + '\n' + r'a + b \@\forbidden\&= c' + '\n' + r'\end{equation}' + '\n' + r' e'],
+                         [r'b $$' + '\n' + r'\begin{align}a + b \evilmath = c\end{align}' + '\n' + r'$$ e',
+                          r'b' + '\n' + r'\begin{align}' + '\n' + r'a + b \@\forbidden\evilmath = c' + '\n' + r'\end{align}' + '\n' + r' e'],
+                         [r'Bla $$' + '\n' + r'\begin{align}' + '\n' + r'a + b &= c\\' + '\n' + r'a - b &= d \end{align}' + '\n' + r'$$ Blub',
+                          r'Bla' + '\n' + r'\begin{align}' + '\n' + r'a + b &= c\\' + '\n' + r'a - b &= d' + '\n' + r'\end{align}' + '\n' + r' Blub'],
+                         [r'Matrix $\begin{pmatrix} a & b \\ c & d \end{pmatrix}$.',
+                          r'Matrix $\@\forbidden\begin{pmatrix} a \@\forbidden\& b \\ c' + '\n' + r'\@\forbidden\& d \@\forbidden\end{pmatrix}$.'],
+                         [r'Chemische Formel fuer $\ch{H3O+}$ protoniertes Wasser.',
+                          r'Chemische Formel fuer $\ch{H3O+}$ protoniertes Wasser.'] ]
 
-    evilUTF8 = [ ['Bla … blub bloink.',
-                  'Bla~\\@\\dots{} blub bloink.'],
-                 ['Bla – blub — bloink.',
-                  'Bla \\@-- blub \\@--- bloink.'],
-                 ['Bla „deutsch“ “american” ”unusual“.',
-                  'Bla \\@"`deutsch\\@"\' \\@"`american\\@"\' \\@"`unusual\\@"\'.'],
-                 ['Bla «französisch» oder « französisch ».',
-                  'Bla \\@"`französisch\\@"\' oder \\@\\@"` französisch \\@\\@"`.'],
-                 ['Bla „(deutsch,“ “(american,” ”(unusual,“.',
-                  'Bla \\@"`(deutsch,\\@"\' \\@"`(american,\\@"\' \\@"`(unusual,\\@"\'.'],
-                 ['„$einsam$ $lonely$” $quote$“ here.',
-                  '\\@"`$einsam$ $lonely$\\@"\' $quote$\\@"\' here.'],
-                 ['Bla »blub« bloink.',
-                  'Bla \\@"`blub\\@"\' bloink.'],
-                 ['\'Bla\' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
-                  '\\@\'Bla\\@\' \\@\'blub\\@\' \\@\'bloink\\@\' \\@\'blub\\@\' \\@\'bloink\\@\'.'],
-                 ['„‚Nested quotes‘”.',
-                  '\\@\\@"`\\@\'Nested quotes\\@\'\\@\\@"`.'] ]
+    evilUTF8 = [ [r'Bla … blub bloink.',
+                  r'Bla~\@\dots{} blub bloink.'],
+                 [r'Bla – blub — bloink.',
+                  r'Bla \@-- blub \@--- bloink.'],
+                 [r'Bla „deutsch“ “american” ”unusual“.',
+                  r'Bla \@"`deutsch\@"'+'\''+r' \@"`american\@"'+'\''+r' \@"`unusual\@"'+'\''+r'.'],
+                 [r'Bla «französisch» oder « französisch ».',
+                  r'Bla \@"`französisch\@"'+'\''+r' oder \@\@"` französisch \@\@"`.'],
+                 [r'Bla „(deutsch,“ “(american,” ”(unusual,“.',
+                  r'Bla \@"`(deutsch,\@"'+'\''+r' \@"`(american,\@"'+'\''+r' \@"`(unusual,\@"'+'\''+r'.'],
+                 [r'„$einsam$ $lonely$” $quote$“ here.',
+                  r'\@"`$einsam$ $lonely$\@"'+'\''+r' $quote$\@"'+'\''+r' here.'],
+                 [r'Bla »blub« bloink.',
+                  r'Bla \@"`blub\@"'+'\''+r' bloink.'],
+                 [r''+'\''+r'Bla'+'\''+r' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
+                  r'\@'+'\''+r'Bla\@'+'\''+r' \@'+'\''+r'blub\@'+'\''+r' \@'+'\''+r'bloink\@'+'\''+r' \@'+'\''+r'blub\@'+'\''+r' \@'+'\''+r'bloink\@'+'\''+r'.'],
+                 [r'„‚Nested quotes‘”.',
+                  '\@\@"`\@'+'\''+r'Nested quotes\@'+'\''+r'\@\@"`.'] ]
 
     _unicodeNonstandardSpaces = ( ' ',    # non-breaking space U+00A0
                                   ' ',    # en quad U+2000
@@ -1340,148 +1340,148 @@ class ExporterTestStrings:
                                  )
     nonstandardSpace = [ ['x x',    # standard ASCII space
                           'x x' ] ] + \
-                       [ [ f'x{i}x', 'x\\@ x'] for i in _unicodeNonstandardSpaces ]
+                       [ [ f'x{i}x', r'x\@ x'] for i in _unicodeNonstandardSpaces ]
 
-    pageReferences = [ ['Auf S. 4 Abs. 3 in Art. 7 steht',
-                        'Auf \\@S.\\,4 \\@Abs.\\,3 in \\@Art.\\,7 steht'],
-                       ['Auf Seite 4 Absatz 3 in Artikel 7 steht',
-                        'Auf Seite~4 Absatz~3 in Artikel~7 steht'],
-                       ['Auf S.4-6 steht',
-                        'Auf \\@S.\\,4\\@--6 steht'],
-                       ['Auf S.4--6 steht',
-                        'Auf \\@S.\\,4--6 steht'],
-                       ['Auf S. 4f steht',
-                        'Auf \\@S.\\,4\\,f. steht'],
-                       ['S. 4 ff. besagt',
-                        '\\@S.\\,4\\,ff. besagt'],
-                       ['Es fehlen Angaben zu S. Abs. Art.',
-                        'Es fehlen Angaben zu \\@S. \\@Abs. \\@Art.'] ]
+    pageReferences = [ [r'Auf S. 4 Abs. 3 in Art. 7 steht',
+                        r'Auf \@S.\,4 \@Abs.\,3 in \@Art.\,7 steht'],
+                       [r'Auf Seite 4 Absatz 3 in Artikel 7 steht',
+                        r'Auf Seite~4 Absatz~3 in Artikel~7 steht'],
+                       [r'Auf S.4-6 steht',
+                        r'Auf \@S.\,4\@--6 steht'],
+                       [r'Auf S.4--6 steht',
+                        r'Auf \@S.\,4--6 steht'],
+                       [r'Auf S. 4f steht',
+                        r'Auf \@S.\,4\,f. steht'],
+                       [r'S. 4 ff. besagt',
+                        r'\@S.\,4\,ff. besagt'],
+                       [r'Es fehlen Angaben zu S. Abs. Art.',
+                        r'Es fehlen Angaben zu \@S. \@Abs. \@Art.'] ]
 
     spacing = [ ['A number range 6--9 is nice.',
                  'A number range 6--9 is nice.'],
-                ['6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
-                 '6\\@--9 is as nice as 6\\@--9, 6\\@--9 and 6\\@--9 or 6\\@--9.'],
+                [r'6 -- 9 is as nice as 6-- 9, 6 --9 and 6 - 9 or 6- 9.',
+                 r'6\@--9 is as nice as 6\@--9, 6\@--9 and 6\@--9 or 6\@--9.'],
                 ['Now we do - with all due respect --, an intersperse.',
-                 'Now we do \\@-- with all due respect \\@--, an intersperse.'],
-                ['Followed by an afterthougt -- here it comes.',
-                 'Followed by an afterthougt \\@-- here it comes.'],
-                ['Followed by an afterthougt---here it comes.',
-                 'Followed by an afterthougt\\@---here it comes.'],
-                ['Here come some dots ...',
-                 'Here come some dots~\\@\\dots{}'],
-                ['Here come some dots...',
-                 'Here come some dots\\@\\dots{}'],
-                ['Dots in math $a_1,...,a_n$ should work without spacing.',
-                 'Dots in math $a_1,\\@\\dots{},a_n$ should work without spacing.'],
-                ['And dots ... in … the middle.',
-                 'And dots~\\@\\dots{} in~\\@\\dots{} the middle.'],
-                ['And dots...in the middle.',
-                 'And dots\\@\\dots{}in the middle.'],
-                ['And dots [...] for missing text.',
-                 'And dots [\\@\\ZitatEllipse] for missing text.'] ]
+                 r'Now we do \@-- with all due respect \@--, an intersperse.'],
+                [r'Followed by an afterthougt -- here it comes.',
+                 r'Followed by an afterthougt \@-- here it comes.'],
+                [r'Followed by an afterthougt---here it comes.',
+                 r'Followed by an afterthougt\@---here it comes.'],
+                [r'Here come some dots ...',
+                 r'Here come some dots~\@\dots{}'],
+                [r'Here come some dots...',
+                 r'Here come some dots\@\dots{}'],
+                [r'Dots in math $a_1,...,a_n$ should work without spacing.',
+                 r'Dots in math $a_1,\@\dots{},a_n$ should work without spacing.'],
+                [r'And dots ... in … the middle.',
+                 r'And dots~\@\dots{} in~\@\dots{} the middle.'],
+                [r'And dots...in the middle.',
+                 r'And dots\@\dots{}in the middle.'],
+                [r'And dots [...] for missing text.',
+                 r'And dots [\@\ZitatEllipse] for missing text.'] ]
 
-    lawReference = [ ['In §§1ff. HGB steht',
-                      'In §§\\,1\\,ff. \\@\\acronym{HGB} steht'],
-                     ['In § 1 f. HGB steht',
-                      'In §\\,1\\,f. \\@\\acronym{HGB} steht'],
-                     ['In § 1 Abs. 1 HGB steht',
-                      'In §\\,1 \\@Abs.\\,1 \\@\\acronym{HGB} steht'],
-                     ['In § 1 Absatz 1 Satz 2 HGB steht',
-                      'In §\\,1 Absatz~1 Satz~2 \\@\\acronym{HGB} steht'],
-                     ['In §§ 10-15 HGB steht',
-                      'In §§\\,10\\@--15 \\@\\acronym{HGB} steht'],
-                     ['Ein verlorener § und noch ein §',
-                      'Ein verlorener \\@§ und noch ein \\@§'] ]
+    lawReference = [ [r'In §§1ff. HGB steht',
+                      r'In §§\,1\,ff. \@\acronym{HGB} steht'],
+                     [r'In § 1 f. HGB steht',
+                      r'In §\,1\,f. \@\acronym{HGB} steht'],
+                     [r'In § 1 Abs. 1 HGB steht',
+                      r'In §\,1 \@Abs.\,1 \@\acronym{HGB} steht'],
+                     [r'In § 1 Absatz 1 Satz 2 HGB steht',
+                      r'In §\,1 Absatz~1 Satz~2 \@\acronym{HGB} steht'],
+                     [r'In §§ 10-15 HGB steht',
+                      r'In §§\,10\@--15 \@\acronym{HGB} steht'],
+                     [r'Ein verlorener § und noch ein §',
+                      r'Ein verlorener \@§ und noch ein \@§'] ]
 
-    numbers = [ ['We have 10000, 2000 and 3000000 and -40000 and -5000.',
-                 'We have 10\\,000, 2000 and 3\\,000\\,000 and \\@$-$40\\,000 and \\@$-$5000.'],
-                ['We are in the 21. regiment and again in the 21.regiment.',
-                 'We are in the \\@21. regiment and again in the \\@21.regiment.'],
-                ['bis zu 30 000 Einwohner',
-                 'bis zu 30 000 Einwohner'],
-                ['Kennwort 0000 ist unsicher, 00000 auch, 0000000 nicht weniger',
-                 'Kennwort 0000 ist unsicher, 00\\,000 auch, 0\\,000\\,000 nicht weniger'],
-                ['some 5,000 races',
-                 'some 5,000 races'],
-                ['pi ist 3,14159',
-                 'pi ist 3,14\\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
-                ['bla 2004-2006 blub',
-                 'bla 2004\\@--2006 blub']
+    numbers = [ [r'We have 10000, 2000 and 3000000 and -40000 and -5000.',
+                 r'We have 10\,000, 2000 and 3\,000\,000 and \@$-$40\,000 and \@$-$5000.'],
+                [r'We are in the 21. regiment and again in the 21.regiment.',
+                 r'We are in the \@21. regiment and again in the \@21.regiment.'],
+                [r'bis zu 30 000 Einwohner',
+                 r'bis zu 30 000 Einwohner'],
+                [r'Kennwort 0000 ist unsicher, 00000 auch, 0000000 nicht weniger',
+                 r'Kennwort 0000 ist unsicher, 00\,000 auch, 0\,000\,000 nicht weniger'],
+                [r'some 5,000 races',
+                 r'some 5,000 races'],
+                [r'pi ist 3,14159',
+                 r'pi ist 3,14\,159'],  # this is not really what we want, but too rare and too complex to find an automatic solution
+                [r'bla 2004-2006 blub',
+                 r'bla 2004\@--2006 blub']
               ]
 
-    dates = [ ['The date is 19.5.2012 or 19. 10. 95 for good.',
-               'The date is \\@19.\\,5.\\,2012 or \\@19.\\,10.\\,95 for good.'] ]
+    dates = [ [r'The date is 19.5.2012 or 19. 10. 95 for good.',
+               r'The date is \@19.\,5.\,2012 or \@19.\,10.\,95 for good.'] ]
 
-    units = [ ['Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
-               'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV, 13\\@--14\\,\\@TeV, 5\\,°C.'],
-              ['Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
-               'Decimal number with unit or unicode prefix: 25,4\\,mm and 1.2\\,μm.'],
-              ['Units: 21 kg, 4 MW, 1 mV , 13--14 TeV, 5 °C.',
-               'Units: 21\\,kg, 4\\,MW, 1\\,\\@mV , 13--14\\,\\@TeV, 5\\,°C.'],
-              ['Decimal number with unit: 25,4 mm.',
-               'Decimal number with unit: 25,4\\,mm.'],
-              ['Percentages like 5 % should be handled as nicely as 5%.',
-               'Percentages like 5\\@\\,\\% should be handled as nicely as 5\\,\\%.'],
-              ['90° is a right angle.',
-               '90° is a right angle.'] ]
+    units = [ [r'Units: 21kg, 4MW, 1mV, 13-14TeV, 5°C.',
+               r'Units: 21\,kg, 4\,MW, 1\,\@mV, 13\@--14\,\@TeV, 5\,°C.'],
+              [r'Decimal number with unit or unicode prefix: 25,4mm and 1.2μm.',
+               r'Decimal number with unit or unicode prefix: 25,4\,mm and 1.2\,μm.'],
+              [r'Units: 21 kg, 4 MW, 1 mV , 13--14 TeV, 5 °C.',
+               r'Units: 21\,kg, 4\,MW, 1\,\@mV , 13--14\,\@TeV, 5\,°C.'],
+              [r'Decimal number with unit: 25,4 mm.',
+               r'Decimal number with unit: 25,4\,mm.'],
+              [r'Percentages like 5 % should be handled as nicely as 5%.',
+               r'Percentages like 5\@\,\% should be handled as nicely as 5\,\%.'],
+              [r'90° is a right angle.',
+               r'90° is a right angle.'] ]
 
-    code = [ ['|increase(i)| increases |i|, by one.',
-              '\\@\\lstinline|increase(i)| increases \\@\\lstinline|i|, by one.'] ]
+    code = [ [r'|increase(i)| increases |i|, by one.',
+              r'\@\lstinline|increase(i)| increases \@\lstinline|i|, by one.'] ]
 
-    urls = [ ['http://www.google.de',
-              '\\@\\url{http://www.google.de}'],
-             ['(siehe http://www.google.de)',
-              '(siehe \\@\\url{http://www.google.de})'],
-             ['http://www.google.de bla',
-              '\\@\\url{http://www.google.de} bla'],
-             ['http://www.google.de www.bla.de',
-              '\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
-             ['http://www.google.de\nwww.bla.de',
-              '\\@\\url{http://www.google.de} \\@\\url{www.bla.de}'],
-             ['https://duckduckgo.com/?q=find&ia=web',
-              '\\@\\url{https://duckduckgo.com/?q=find&ia=web}'],
-             ['https://www.bla.com. Sowie http://www.blub.org?',
-              '\\@\\url{https://www.bla.com}. Sowie \\@\\url{http://www.blub.org}?'],
-             ['https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
-              '\\@\\url{https://commons.wikimedia.org/wiki/File:Barf\\%C3\\%BCsserArkade1.jpg}'],
-             ['https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg',
-              '\\@\\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
-             ['auf www.bla.com lesen',
-              'auf \\@\\url{www.bla.com} lesen'],
-             ['siehe www.bla.com.',
-              'siehe \\@\\url{www.bla.com}.'],
-             ['Das www.ist_keine_hervorhebung.de!',
-              'Das \\@\\url{www.ist_keine_hervorhebung.de}!'],
-             ['http://www.bla.com/foo}\\evilCommand',
-              '\\@\\url{http://www.bla.com/foo}\\@\\}\\@\\forbidden\\evilCommand']
+    urls = [ [r'http://www.google.de',
+              r'\@\url{http://www.google.de}'],
+             [r'(siehe http://www.google.de)',
+              r'(siehe \@\url{http://www.google.de})'],
+             [r'http://www.google.de bla',
+              r'\@\url{http://www.google.de} bla'],
+             [r'http://www.google.de www.bla.de',
+              r'\@\url{http://www.google.de} \@\url{www.bla.de}'],
+             [r'http://www.google.de' + '\n' + r'www.bla.de',
+              r'\@\url{http://www.google.de} \@\url{www.bla.de}'],
+             [r'https://duckduckgo.com/?q=find&ia=web',
+              r'\@\url{https://duckduckgo.com/?q=find&ia=web}'],
+             [r'https://www.bla.com. Sowie http://www.blub.org?',
+              r'\@\url{https://www.bla.com}. Sowie \@\url{http://www.blub.org}?'],
+             [r'https://commons.wikimedia.org/wiki/File:Barf%C3%BCsserArkade1.jpg', # note that % needs to be escaped (else starts comment)
+              r'\@\url{https://commons.wikimedia.org/wiki/File:Barf\%C3\%BCsserArkade1.jpg}'],
+             [r'https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg',
+              r'\@\url{https://commons.wikimedia.org/wiki/File:Barfuesser_Arkade1.jpg}'],
+             [r'auf www.bla.com lesen',
+              r'auf \@\url{www.bla.com} lesen'],
+             [r'siehe www.bla.com.',
+              r'siehe \@\url{www.bla.com}.'],
+             [r'Das www.ist_keine_hervorhebung.de!',
+              r'Das \@\url{www.ist_keine_hervorhebung.de}!'],
+             [r'http://www.bla.com/foo}\evilCommand',
+              r'\@\url{http://www.bla.com/foo}\@\}\@\forbidden\evilCommand']
              ]
 
-    sectionsAndAuthors = [ ['[foo]\n(bar)',
-                            '\\section{foo}\n\\authors{bar}'],
-                           ['[[foo]]\n\n(bar)',
-                            '\\subsection{foo}\n\n(bar)'] ]
+    sectionsAndAuthors = [ [r'[foo]' + '\n' + r'(bar)',
+                            r'\section{foo}' + '\n' + r'\authors{bar}'],
+                           [r'[[foo]]' + '\n\n' + r'(bar)',
+                            r'\subsection{foo}' + '\n\n' + r'(bar)'] ]
 
-    sectionsWithEmph = [ ['[Ola Gjeilo: _Northern Lights_]',
-                          '\\section{Ola Gjeilo: \\emph{Northern Lights}}'],
-                         ['[_Mein BAMF_ -- aus dem Kabarett]',
-                          '\\section{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
-                         ['[Max Reger: _Es waren zwei Königskinder_ hier]',
-                          '\\section{Max Reger: \\emph{Es waren zwei Königskinder} hier}'],
-                         ['[[Ola Gjeilo: _Northern Lights_]]',
-                          '\\subsection{Ola Gjeilo: \\emph{Northern Lights}}'],
-                         ['[[_Mein BAMF_ -- aus dem Kabarett]]',
-                          '\\subsection{\\emph{Mein \\@\\acronym{BAMF}} \\@-- aus dem Kabarett}'],
-                         ['[[Max Reger: _Es waren zwei Königskinder_ hier]]',
-                          '\\subsection{Max Reger: \\emph{Es waren zwei Königskinder} hier}']]
+    sectionsWithEmph = [ [r'[Ola Gjeilo: _Northern Lights_]',
+                          r'\section{Ola Gjeilo: \emph{Northern Lights}}'],
+                         [r'[_Mein BAMF_ -- aus dem Kabarett]',
+                          r'\section{\emph{Mein \@\acronym{BAMF}} \@-- aus dem Kabarett}'],
+                         [r'[Max Reger: _Es waren zwei Königskinder_ hier]',
+                          r'\section{Max Reger: \emph{Es waren zwei Königskinder} hier}'],
+                         [r'[[Ola Gjeilo: _Northern Lights_]]',
+                          r'\subsection{Ola Gjeilo: \emph{Northern Lights}}'],
+                         [r'[[_Mein BAMF_ -- aus dem Kabarett]]',
+                          r'\subsection{\emph{Mein \@\acronym{BAMF}} \@-- aus dem Kabarett}'],
+                         [r'[[Max Reger: _Es waren zwei Königskinder_ hier]]',
+                          r'\subsection{Max Reger: \emph{Es waren zwei Königskinder} hier}']]
 
-    sectionsWithOrdinals = [ ['[1. Buch Mose]',
-                              '\\section{\\@1. Buch Mose}'] ]
+    sectionsWithOrdinals = [ [r'[1. Buch Mose]',
+                              r'\section{\@1. Buch Mose}'] ]
 
     numericalScope = [ ['10\xb3 Meter sind ein km',
                         '10\xb3 Meter sind ein km'] ]
 
-    codeAndLengthyParagraph = [ ['Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet\nlirem ipsum dolor sit amet lorem ipsum dolor sit amet\nlurem ipsum dolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so weiter.',
-                                 'Larem ipsum dolor sit amet \\@\\lstinline|rhoncus| lerem ipsum dolor sit\namet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum\ndolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so\nweiter.'] ]
+    codeAndLengthyParagraph = [ [r'Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet' + '\n' + r'lirem ipsum dolor sit amet lorem ipsum dolor sit amet' + '\n' + r'lurem ipsum dolor sit amet.' + '\n\n' + r'Und hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so weiter.',
+                                 r'Larem ipsum dolor sit amet \@\lstinline|rhoncus| lerem ipsum dolor sit' + '\n' + r'amet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum' + '\n' + r'dolor sit amet.' + '\n\n' + r'Und hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so' + '\n' + r'weiter.'] ]
 
     lengthyParagraph = [ ["""Zwei lange Absätze, aber durch Leerzeile getrennt. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
 
@@ -1502,42 +1502,42 @@ Da brauchen wir auch keinen Hinweis.""",
 von Xylophonmusik quält jeden größeren Zwerg. Da brauchen wir auch
 keinen Hinweis."""],
 
-                         ["""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+                         [r"""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
 Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
 Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.""",
-                          """Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im
+                          r"""Lange Zeilen, jeweils ohne Leerzeilen dazwischen. Franz jagt im
 komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
 jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
-fume.\\@\\@\\@ Das sieht verdächtig aus. Franz jagt im komplett
+fume.\@\@\@ Das sieht verdächtig aus. Franz jagt im komplett
 verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
-the lazy dog. Portez ce vieux whisky au juge blond qui fume.\\@\\@\\@
+the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
 Hier brauchen wir Hinweise. Franz jagt im komplett verwahrlosten Taxi
 quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez
 ce vieux whisky au juge blond qui fume."""],
 
-                         ["""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
+                         [r"""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume.
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
-                          """Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen.
+                          r"""Erst eine lange Zeile, dann eine kurze, ohne Leerzeilen dazwischen.
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick
 brown fox jumps over the lazy dog. Portez ce vieux whisky au juge
 blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett
 verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over
-the lazy dog. Portez ce vieux whisky au juge blond qui fume.\\@\\@\\@
+the lazy dog. Portez ce vieux whisky au juge blond qui fume.\@\@\@
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
 
                          ["""Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen dazwischen.
 Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux whisky au juge blond qui fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
                           """Erst eine kurze Zeile, dann eine lange, ohne Leerzeilen
-dazwischen.\\@\\@\\@ Franz jagt im komplett verwahrlosten Taxi quer durch
+dazwischen.\@\@\@ Franz jagt im komplett verwahrlosten Taxi quer durch
 Bayern. The quick brown fox jumps over the lazy dog. Portez ce vieux
 whisky au juge blond qui fume. Das sieht verdächtig aus. Franz jagt im
 komplett verwahrlosten Taxi quer durch Bayern. The quick brown fox
 jumps over the lazy dog. Portez ce vieux whisky au juge blond qui
 fume. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."""],
 
-                         ["""Erst eine kurze Zeile, dann eine lange mit Mathematik.
+                         [r"""Erst eine kurze Zeile, dann eine lange mit Mathematik.
 $z$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume $x$ Das sieht verdächtig aus $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge blond qui fume $x$ Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.""",
-                          """Erst eine kurze Zeile, dann eine lange mit Mathematik.\\@\\@\\@ $z$ Franz
+                          r"""Erst eine kurze Zeile, dann eine lange mit Mathematik.\@\@\@ $z$ Franz
 jagt im komplett verwahrlosten Taxi quer durch Bayern $x$ The quick
 brown fox jumps over the lazy dog $x$ Portez ce vieux whisky au juge
 blond qui fume $x$ Das sieht verdächtig aus $x$ Franz jagt im komplett
@@ -1562,35 +1562,35 @@ blond qui fume.
 Das sieht unverdächtig aus."""],
 ]
 
-    ednoteEscape = [ ["""before
+    ednoteEscape = [ [r"""before
 
 {{
 
 Bobby Tables...
 
-\\end{ednote}
+\end{ednote}
 
-\\herebedragons
+\herebedragons
 
 }}
 
 after""",
-"""before
+r"""before
 
-\\begin{ednote}
+\begin{ednote}
 
 Bobby Tables...
 
-\\@|end{ednote}
+\@|end{ednote}
 
-\\herebedragons
+\herebedragons
 
-\\end{ednote}
+\end{ednote}
 
 after""" ] ]
 
-    multilineCaptions = [ ['Dies ist eine Bildunterschrift.\n\nSie soll zwei Absätze haben.',
-                           'Dies ist eine Bildunterschrift.\\@\\@\\@\nSie soll zwei Absätze haben.' ] ]
+    multilineCaptions = [ [r'Dies ist eine Bildunterschrift.' + '\n\n' + r'Sie soll zwei Absätze haben.',
+                           r'Dies ist eine Bildunterschrift.\@\@\@' + '\n' + r'Sie soll zwei Absätze haben.' ] ]
 
 class ExporterTestCases:
     """
