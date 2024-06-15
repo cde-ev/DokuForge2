@@ -35,4 +35,12 @@ test-exporter: test-exported-strings
 coverage: .coverage
 	${PYTHON3} -m coverage report -m test.py dokuforge/*.py
 
+
+DOKUFORGE_COMMIT_ID = $(shell git rev-parse HEAD)
+docker-build:
+	docker build -f .dockerfile-python-latest . -t dokuforge:python-latest --build-arg DOKUFORGE_COMMIT_ID=$(DOKUFORGE_COMMIT_ID)
+
+test-in-docker:
+	docker run --rm dokuforge:python-latest make coverage
+
 .PHONY: all doc clean setup test check

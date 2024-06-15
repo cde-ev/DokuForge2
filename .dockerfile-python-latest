@@ -1,0 +1,17 @@
+FROM python:latest
+
+RUN apt-get update > /dev/null
+RUN apt-get install -y rcs \
+                       libjs-mathjax
+
+ARG DOKUFORGE_COMMIT_ID
+ENV DOKUFORGE_COMMIT_ID=$DOKUFORGE_COMMIT_ID
+
+COPY .git /DokuForge2/.git
+WORKDIR /DokuForge2/
+RUN git checkout $DOKUFORGE_COMMIT_ID .
+
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir coverage
+
+EXPOSE 8800
