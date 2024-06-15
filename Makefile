@@ -47,6 +47,7 @@ test-in-docker: docker-build
 # TODO why do we run different tests and not require coverage to be installed in the ubuntu-based image?
 
 start: setup
+	cp -r /usr/share/javascript/mathjax dokuforge/static/
 	cp dokuforge.conf.sample dokuforge.conf
 	python3 -m dokuforge.serve_simple dokuforge.conf
 
