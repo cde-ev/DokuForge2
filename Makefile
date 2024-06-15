@@ -40,7 +40,14 @@ DOKUFORGE_COMMIT_ID = $(shell git rev-parse HEAD)
 docker-build:
 	docker build -f .dockerfile-python-latest . -t dokuforge:python-latest --build-arg DOKUFORGE_COMMIT_ID=$(DOKUFORGE_COMMIT_ID)
 
-test-in-docker:
+test-in-docker: docker-build
 	docker run --rm dokuforge:python-latest make coverage
+
+start: setup
+	cp dokuforge.conf.sample dokuforge.conf
+	python3 -m dokuforge.serve_simple dokuforge.conf
+
+start-in-docker: docker-build
+	docker run -d --network host dokuforge:python-latest make start
 
 .PHONY: all doc clean setup test check
