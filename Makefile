@@ -42,8 +42,8 @@ docker-build:
 	docker build -f .dockerfile-python-latest . -t dokuforge:python-latest --build-arg DOKUFORGE_COMMIT_ID=$(DOKUFORGE_COMMIT_ID)
 
 test-in-docker: docker-build
-	docker run --rm dokuforge:ubuntu-20.04  make check
-	docker run --rm dokuforge:python-latest make coverage
+	docker run --network none --user $(id -u):$(id -g) --rm dokuforge:ubuntu-20.04  make check
+	docker run --network none --user $(id -u):$(id -g) --rm dokuforge:python-latest make coverage
 # TODO why do we run different tests and not require coverage to be installed in the ubuntu-based image?
 
 start: setup
