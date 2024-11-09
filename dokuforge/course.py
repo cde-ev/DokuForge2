@@ -670,7 +670,7 @@ class Course(StorageDir):
                 blobbase = (u"blob%d" % b).encode("ascii")
                 blobdate = self.getstorage(blobbase).commitstatus()[b'date']
                 tex += u"\n\n%% blob %d\n" % b
-                tex += u"\\begin{figure}\n\\centering\n"
+                tex += u"\\begin{figure*}\n\\centering\n"
                 fileName = self._mangleBlobName(blob['filename'])
                 includegraphics = \
                     (u"\\includegraphics" +
@@ -688,7 +688,7 @@ class Course(StorageDir):
                     blob['comment']).toTex().strip()
                 tex += u"\\label{fig_%s_%d_%s}\n" % (
                     self.name.decode('ascii'), b, blob['label'])
-                tex += u"\\end{figure}\n"
+                tex += u"\\end{figure*}\n"
                 yield tarwriter.addChunk(self.name +
                                          (u"/blob_%d_" % b).encode("ascii") +
                                          self._mangleBlobName(blob['filename']).encode('utf8'),

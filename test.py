@@ -962,12 +962,12 @@ class DokuforgeExporterTests(DokuforgeWebTests):
                 self.assertIn(expectedLine, exportedCourseTexWithImages)
 
         def _checkFigureContents(exportedCourseTexWithImages):
-            expectedContent = '\\begin{figure}\n'+\
+            expectedContent = '\\begin{figure*}\n'+\
                 '\\centering\n'+\
                 '\\includegraphics[height=12\\baselineskip]{course01/blob_0_fig_platzhalter.jpg}\n'+\
                 '\\caption{Kommentar}\n'+\
                 '\\label{fig_course01_0_blob0}\n'+\
-                '\\end{figure}'
+                '\\end{figure*}'
             self.assertIn(expectedContent, exportedCourseTexWithImages)
 
         def _checkFilenamesInIncludegraphics(exportedCourseTexWithImages):
