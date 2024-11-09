@@ -11,8 +11,8 @@
 <div class="courselist">
 	{%- for course in academy.deadcourses -%}
 	    <div class="courseitem">
-	      <a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a><br>
-		  {{ button(buildurl("undeletecourse", dict(course=course.name)), "Kurs wiederherstellen") }}
+	      <a href="{{ buildurl("course", dict(course=course.name.decode('utf-8')))|e }}">{{ course.title|e }}</a><br>
+		  {{ button(buildurl("undeletecourse", dict(course=course.name.decode('utf-8'))), "Kurs wiederherstellen") }}
 		</div>
 	{%- endfor %}
 </div>
