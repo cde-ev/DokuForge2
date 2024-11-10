@@ -1162,7 +1162,7 @@ class ExporterTestStrings:
                     [r'- item' + '\n\n' + r'-nonitem',
                      r'\begin{itemize}[flushleft,joinedup,packed]' + '\n' + r'\item item' + '\n' + r'\end{itemize}' + '\n\n' + r'-nonitem'],
                     [r'1. item',
-                     r'\begin{enumerate}[flushleft,joinedup,packed]' + '\n' + r'% 1' + '\n' + r'\item item' + '\n' + r'\end{enumerate}'] ]
+                     r'\begin{enumerate}[flushleft,joinedup,packed]' + '\n% 1\n' + r'\item item' + '\n' + r'\end{enumerate}'] ]
 
     quotes = [ ['Wir haben Anf\\"uhrungszeichen "mitten" im Satz.',
                 'Wir haben Anf\\"uhrungszeichen "`mitten"\' im Satz.'],
@@ -1316,8 +1316,8 @@ class ExporterTestStrings:
                   r'\@"`$einsam$ $lonely$\@"'+'\''+r' $quote$\@"'+'\''+r' here.'],
                  [r'Bla »blub« bloink.',
                   r'Bla \@"`blub\@"'+'\''+r' bloink.'],
-                 [r''+'\''+r'Bla'+'\''+r' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.',
-                  r'\@'+'\''+r'Bla\@'+'\''+r' \@'+'\''+r'blub\@'+'\''+r' \@'+'\''+r'bloink\@'+'\''+r' \@'+'\''+r'blub\@'+'\''+r' \@'+'\''+r'bloink\@'+'\''+r'.'],
+                 [r"'Bla' ‚blub‘ ‚bloink’ ›blub‹ ‹bloink›.",
+                  r"\@'Bla\@' \@'blub\@' \@'bloink\@' \@'blub\@' \@'bloink\@'."],
                  [r'„‚Nested quotes‘”.',
                   r'\@\@"`\@'+'\''+r'Nested quotes\@'+'\''+r'\@\@"`.'] ]
 
