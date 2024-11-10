@@ -275,6 +275,8 @@ class Application:
                  methods=("POST",), endpoint="undeletecourse"),
             rule("/docs/<identifier:academy>/<identifier:course>/!createpage",
                  methods=("POST",), endpoint="createpage"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!createbefore",
+                 methods=("POST",), endpoint="createbefore"),
             rule("/docs/<identifier:academy>/<identifier:course>/!deadpages",
                  methods=("GET", "HEAD"), endpoint="showdeadpages"),
             rule("/docs/<identifier:academy>/<identifier:course>/!moveup",
@@ -807,6 +809,21 @@ class Application:
         c.undelete()
         return self.render_academy(rs, aca)
 
+    def common_createpage(self, rs, academy, course, number):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type number: int or None
+        """
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        c.newpage(user=rs.user.name, number=number)
+        return self.render_course(rs, aca, c)
+
     def do_createpage(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
@@ -814,13 +831,21 @@ class Application:
         @type course: unicode
         """
         assert academy is not None and course is not None
-        self.check_login(rs)
-        aca = self.getAcademy(academy, rs.user)
-        c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
-        c.newpage(user=rs.user.name)
-        return self.render_course(rs, aca, c)
+        return self.common_createpage(rs, academy, course, number=None)
+
+    def do_createbefore(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
+        assert academy is not None and course is not None
+        try:
+            numberstr = rs.request.form["number"]
+            number = int(numberstr)
+        except:
+            number = 0
+        return self.common_createpage(rs, academy, course, number=number)
 
     def do_delete(self, rs, academy=None, course=None, page=None):
         """

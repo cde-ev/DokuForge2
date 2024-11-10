@@ -477,7 +477,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain("Area51")
         self.res = self.res.click(href="course01/$")
-        form = self.res.forms[3]
+        form = self.res.forms[5]
         self.res = form.submit()
         self.res.mustcontain(no="Area51")
         self.res = self.res.click(href="deadcourses$")
