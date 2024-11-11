@@ -72,10 +72,12 @@
             {%- for blob in blobs %}
                 <li>
                     <a href="{{ buildurl("showblob", {'blob': blob.number})|e }}">#[{{ blob.number|string }}]
-                        ({{ blob.filename|e }})</a>
+                        ({{ blob.filename|e }})</a>, K&uuml;rzel: {{ blob.label|e }}
                     {%- if user.allowedWrite(academy, course) %}
                         {{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
                     {%- endif -%}
+                    </p>
+                    <p>Bildunterschrift/Kommentar: {{ blob.comment|e }}</p>
                 </li>
             {%- endfor %}
         </ul>
