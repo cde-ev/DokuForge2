@@ -281,6 +281,14 @@ class DokuforgeBigWebTests(DokuforgeWebTests):
         self.res.mustcontain("Example Section")
         self.is_loggedin()
 
+    def testCourseWriteNotPresent(self):
+        self.do_login(username="arthur", password="mypass")
+        self.res = self.res.click(description="Beste Akademie ever")
+        self.res = self.res.click(href="course01/$")
+        self.res.mustcontain(no=["!createbefore", "!createpage"])
+        self.is_loggedin()
+
+
 class DokuforgeSmallWebTests(DokuforgeWebTests):
     """Tests of dokuforge functionality (excluding exporting) for which a
     small instance is sufficient"""
