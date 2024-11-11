@@ -885,7 +885,8 @@ class DokuforgeExporterTests(DokuforgeWebTests):
         expectedMembers = ['texexport_xa2011-1/WARNING',
                            'texexport_xa2011-1/course01/chap.tex',
                            'texexport_xa2011-1/course02/chap.tex',
-                           'texexport_xa2011-1/contents.tex']
+                           'texexport_xa2011-1/contents.tex',
+                           'texexport_xa2011-1/fortschritt-courselist.txt']
         memberNames = tarFile.getnames()
         for filename in expectedMembers:
             self.assertIn(filename, memberNames)
@@ -898,6 +899,8 @@ class DokuforgeExporterTests(DokuforgeWebTests):
         contentsText = tarFile.extractfile("texexport_xa2011-1/contents.tex").read().decode()
         self.assertIn(r"\input{course01/chap}", contentsText)
         self.assertIn(r"\input{course02/chap}", contentsText)
+        fortschrittCourselistText = tarFile.extractfile("texexport_xa2011-1/fortschritt-courselist.txt").read().decode()
+        self.assertIn("[ ] Redaktion: NN", fortschrittCourselistText)
 
     def testAddDifferentImageBlobs(self):
         imageFilenamesUnchanged = ['fig_platzhalter.jpg',
