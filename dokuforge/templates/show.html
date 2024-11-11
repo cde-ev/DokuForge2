@@ -76,8 +76,8 @@
                     {%- if user.allowedWrite(academy, course) %}
                         {{ button(buildurl("blobdelete", {'blob': blob.number}), "Löschen", dict()) }}
                     {%- endif -%}
-                    </p>
-                    <p>Bildunterschrift/Kommentar: {{ blob.comment|e }}</p>
+                    <br>
+                    Bildunterschrift/Kommentar: {{ blob.comment|e }}
                 </li>
             {%- endfor %}
         </ul>
