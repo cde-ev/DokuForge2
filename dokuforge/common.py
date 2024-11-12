@@ -12,7 +12,7 @@ except ImportError:
     import configparser
     from configparser import ConfigParser
 import tarfile
-import datetime
+from datetime import datetime, timezone
 import calendar
 
 try:
@@ -59,18 +59,7 @@ class CheckError(Exception):
     def __str__(self):
         return self.message
 
-class UTC(datetime.tzinfo):
-    """UTC implementation taken from the Python documentation"""
-    def utcoffset(self, dt):
-        return datetime.timedelta(0)
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return datetime.timedelta(0)
-utc = UTC()
-epoch = datetime.datetime(1970, 1, 1, tzinfo=utc)
+epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
 def validateGroupstring(groupstring, allgroups):
     """
@@ -362,7 +351,7 @@ class TarWriter:
         assert isinstance(content, bytes)
         if not isinstance(name, str):
             name = name.decode("iso8859-1")
-        assert isinstance(lastchanged, datetime.datetime)
+        assert isinstance(lastchanged, datetime)
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
