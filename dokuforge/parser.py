@@ -1950,6 +1950,22 @@ def groupItems(ptrees):
 ### Features used by DokuForge
 dffeatures =  [Paragraph, Heading, Author, Subheading, Item, EnumerateItem, Description, Ednote]
 
+
+class PSequenceWithAuthorPostprocessing(PSequence):
+    def __init__(self, parts):
+        PSequence.__init__(self, parts)
+
+    def toTex(self):
+        result = ''
+        previousPartWasHeading = False
+        for part in self.parts:
+            if previousPartWasHeading and not isinstance(part, PAuthor):
+                result += '\\noauthor\n'
+            result = result + part.toTex()
+            previousPartWasHeading = isinstance(part, PHeading)
+        return result
+
+
 def dfLineGroupParser(text):
     """
     @type text: unicode
@@ -1958,7 +1974,7 @@ def dfLineGroupParser(text):
     ptrees = [g.parse() for g in groups]
     ptrees = groupItems(ptrees)
     ptrees = removeEmpty(ptrees)
-    return PSequence(ptrees)
+    return PSequenceWithAuthorPostprocessing(ptrees)
 
 titlefeatures =  [Paragraph]
 
