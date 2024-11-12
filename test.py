@@ -748,7 +748,10 @@ permissions = df_superadmin True,df_admin True"""
 
     def testAddBlob(self):
         self._uploadExampleBlob()
-        self.res.mustcontain("Zugeordnete Bilder", "#[0] (README-rlog.txt)")
+        self.res.mustcontain("Zugeordnete Bilder",
+                             "#[0] (README-rlog.txt)",
+                             "K&uuml;rzel: blob",
+                             "Bildunterschrift/Kommentar: Shiny blob")
         self.is_loggedin()
 
     def testShowBlob(self):
