@@ -1455,10 +1455,17 @@ class ExporterTestStrings:
               '\\@\\url{http://www.bla.com/foo}\\@\\}\\@\\forbidden\\evilCommand']
              ]
 
-    sectionsAndAuthors = [ ['[foo]\n(bar)',
-                            '\\section{foo}\n\\authors{bar}'],
-                           ['[[foo]]\n\n(bar)',
-                            '\\subsection{foo}\n\n(bar)'] ]
+    _sectionsAndAuthors_ = [ ['[Überschrift]\n(Au Tor)\nText',
+                              '\\section{Überschrift}\n\\authors{Au Tor}\n\nText'],
+                             ['[Überschrift]\n\nText ohne Autor',
+                              '\\section{Überschrift}\n\\noauthor\n\nText ohne Autor']]
+    _sectionsAndAuthors = _sectionsAndAuthors_ + \
+                          [[i.replace('\nText', '\n\nText'), j] for i, j in _sectionsAndAuthors_] + \
+                          [['[Überschrift]\n\n(Autor zu Spät)',
+                           '\\section{Überschrift}\n\\noauthor\n\n(Autor zu Spät)']]
+
+    sectionsAndAuthors = _sectionsAndAuthors + \
+                         [[i.replace('[', '[[').replace(']', ']]').replace('Über', 'Unterüber'), j.replace('\\section', '\\subsection').replace('Über', 'Unterüber')] for i, j in _sectionsAndAuthors_]
 
     sectionsWithEmph = [ ['[Ola Gjeilo: _Northern Lights_]',
                           '\\section{Ola Gjeilo: \\emph{Northern Lights}}'],
