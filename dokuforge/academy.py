@@ -187,7 +187,7 @@ for your reference
         fortschrittCourselist = ""
         for course in self.listCourses():
             contents += u"\\input{%s/chap}\n" % course.name.decode("ascii")
-            fortschrittCourselist += f"Kurs {course.number: 3d} .... {course.gettitle()}\n[ ] Redaktion: NN\n[ ] Bilder/Grafiken: NN\n\n"
+            fortschrittCourselist += f"Kurs {course.number:02d}      {course.gettitle()}\n[ ] Redaktion: NN\n[ ] Bilder/Grafiken: NN\n\n"
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
         yield tarwriter.addChunk(b"contents.tex",
