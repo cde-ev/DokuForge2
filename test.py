@@ -907,7 +907,8 @@ class DokuforgeExporterTests(DokuforgeWebTests):
         expectedMembers = ['texexport_xa2011-1/WARNING',
                            'texexport_xa2011-1/course01/chap.tex',
                            'texexport_xa2011-1/course02/chap.tex',
-                           'texexport_xa2011-1/contents.tex']
+                           'texexport_xa2011-1/contents.tex',
+                           'texexport_xa2011-1/fortschritt-courselist.txt']
         memberNames = tarFile.getnames()
         for filename in expectedMembers:
             self.assertIn(filename, memberNames)
@@ -920,6 +921,8 @@ class DokuforgeExporterTests(DokuforgeWebTests):
         contentsText = tarFile.extractfile("texexport_xa2011-1/contents.tex").read().decode()
         self.assertIn(r"\input{course01/chap}", contentsText)
         self.assertIn(r"\input{course02/chap}", contentsText)
+        fortschrittCourselistText = tarFile.extractfile("texexport_xa2011-1/fortschritt-courselist.txt").read().decode()
+        self.assertIn("[ ] Redaktion: NN", fortschrittCourselistText)
 
     def testAddDifferentImageBlobs(self):
         imageFilenamesUnchanged = ['fig_platzhalter.jpg',
@@ -982,6 +985,15 @@ class DokuforgeExporterTests(DokuforgeWebTests):
                 expectedLine = "%% Original-Dateiname: %s" % (filename,)
                 self.assertIn(expectedLine, exportedCourseTexWithImages)
 
+        def _checkFigureContents(exportedCourseTexWithImages):
+            expectedContent = '\\begin{figure*}\n'+\
+                '\\centering\n'+\
+                '\\includegraphics[height=12\\baselineskip]{course01/blob_0_fig_platzhalter.jpg}\n'+\
+                '\\caption{Kommentar}\n'+\
+                '\\label{fig_course01_0_blob0}\n'+\
+                '\\end{figure*}'
+            self.assertIn(expectedContent, exportedCourseTexWithImages)
+
         def _checkFilenamesInIncludegraphics(exportedCourseTexWithImages):
             filenamesExpectedInIncludegraphics = imageFilenamesToBeChanged.values()
             for filename in filenamesExpectedInIncludegraphics:
@@ -1009,6 +1021,7 @@ class DokuforgeExporterTests(DokuforgeWebTests):
 
         exportedCourseTexWithImages = tarFile.extractfile("texexport_xa2011-1/course01/chap.tex").read().decode()
         _checkFilenamesInComment(exportedCourseTexWithImages)
+        _checkFigureContents(exportedCourseTexWithImages)
         _checkFilenamesInIncludegraphics(exportedCourseTexWithImages)
         _checkFilenamesExpectedNotIncluded(exportedCourseTexWithImages)
 
