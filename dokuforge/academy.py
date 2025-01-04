@@ -184,10 +184,15 @@ for your reference
             for chunk in tarwriter.addDirChunk(b"", static, excludes=[b".svn"]):
                 yield chunk
         contents = u""
+        fortschrittCourselist = ""
         for course in self.listCourses():
             contents += u"\\input{%s/chap}\n" % course.name.decode("ascii")
+            fortschrittCourselist += f"Kurs {course.number:02d}      {course.gettitle()}\n[ ] Redaktion: NN\n[ ] Bilder/Grafiken: NN\n\n"
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
         yield tarwriter.addChunk(b"contents.tex",
                                  contents.encode("utf8"),
+                                 timeStampNow)
+        yield tarwriter.addChunk(b"fortschritt-courselist.txt",
+                                 fortschrittCourselist.encode("utf8"),
                                  timeStampNow)
