@@ -11,7 +11,7 @@
 	{%- for course in academy.courses -%}
 	    {%- if user.allowedRead(academy, course) %}
 	    <div class="courseitem">
-	      <a href="{{ buildurl("course", dict(course=course.name))|e }}">{{ course.title|e }}</a><br>
+	      <a href="{{ buildurl("course", dict(course=course.name.decode('utf-8')))|e }}">{{ course.title|e }}</a><br>
           {{ course.name.decode("ascii")|e }};
 	      Letzte Änderung am {{ course.timestamp.strftime("%Y/%m/%d %H:%M:%S %Z") | e }}
 	    </div>

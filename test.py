@@ -281,6 +281,14 @@ class DokuforgeBigWebTests(DokuforgeWebTests):
         self.res.mustcontain("Example Section")
         self.is_loggedin()
 
+    def testCourseWriteNotPresent(self):
+        self.do_login(username="arthur", password="mypass")
+        self.res = self.res.click(description="Beste Akademie ever")
+        self.res = self.res.click(href="course01/$")
+        self.res.mustcontain(no=["!createbefore", "!createpage"])
+        self.is_loggedin()
+
+
 class DokuforgeSmallWebTests(DokuforgeWebTests):
     """Tests of dokuforge functionality (excluding exporting) for which a
     small instance is sufficient"""
@@ -390,10 +398,21 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.do_login()
         self.res = self.res.click(description="X-Akademie")
         self.res = self.res.click(href="course01/$")
-        form = self.res.forms[2]
+        form = self.res.forms[4]  # neuen Teil hinzufügen -> at the end
         self.res = form.submit()
         self.is_loggedin()
         self.res.mustcontain("Teil&nbsp;#2")
+        self.assertLess(str(self.res).index("/docs/xa2011-1/course01/1/"), str(self.res).index("/docs/xa2011-1/course01/2/"))
+
+    def testCreatePageBefore(self):
+        self.do_login()
+        self.res = self.res.click(description="X-Akademie")
+        self.res = self.res.click(href="course01/$")
+        form = self.res.forms[2]  # create before
+        self.res = form.submit()
+        self.is_loggedin()
+        self.res.mustcontain("Teil&nbsp;#2")
+        self.assertLess(str(self.res).index("/docs/xa2011-1/course01/2/"), str(self.res).index("/docs/xa2011-1/course01/1/"))
 
     def testCourseTitle(self):
         self.do_login()
@@ -477,7 +496,7 @@ chars like < > & " to be escaped and an { ednote \\end{ednote} }
         self.res = self.res.click(description="X-Akademie")
         self.res.mustcontain("Area51")
         self.res = self.res.click(href="course01/$")
-        form = self.res.forms[3]
+        form = self.res.forms[5]
         self.res = form.submit()
         self.res.mustcontain(no="Area51")
         self.res = self.res.click(href="deadcourses$")

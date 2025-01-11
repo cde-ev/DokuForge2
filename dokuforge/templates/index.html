@@ -11,7 +11,7 @@
         {%- for academy in academies[group] -%}
             {%- if user.allowedRead(academy) %}
                 <li>
-                    <a href="{{ buildurl("academy", dict(academy=academy.name))|e }}">
+                    <a href="{{ buildurl("academy", dict(academy=academy.name.decode('utf-8')))|e }}">
                         {{ academy.title|e }}
                     </a>
                 </li>
