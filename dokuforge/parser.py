@@ -176,6 +176,33 @@ def acronym(word):
     concat_left += word
     yield concat_left
 
+def ligatures(word):
+    """
+    Add zero-width non-joiners ("|) at locations where we can be
+    reasonably certain that no ligature should be typeset in
+    German text
+    """
+
+    zwnj = '"|'
+    exceptions = ('Aufl', 'Aufl.')
+    if word in exceptions:
+        yield word
+    else:
+        prefix_auf_re = '(.*[Aa]uf)([fihlt].*)'
+        if re.compile(prefix_auf_re).match(word):
+            word = re.sub(prefix_auf_re, r'\1'+zwnj+r'\2', word)
+
+        suffix_lich_re = '(.*f)(lich)(.*)'
+        if re.compile(suffix_lich_re).match(word):
+            word = re.sub(suffix_lich_re, r'\1'+zwnj+r'\2\3', word)
+
+        suffix_lung_re = '(.*f)(lung)(.*)'
+        if re.compile(suffix_lung_re).match(word):
+            word = re.sub(suffix_lung_re, r'\1'+zwnj+r'\2\3', word)
+
+        yield word
+
+
 def formatDashes(word):
     r"""
     Replace " - " by " -- " and annotate dashes with "\@"
@@ -809,7 +836,8 @@ def defaultMicrotype(text):
                 ## no splitting at '-' before numbers
                 SplitSeparators(separators[-1]), # separator '-' only
                 openQuotationMark, closeQuotationMark,
-                acronym, # after quotation marks are handled
+                acronym, # after quotation marks have been handled
+                ligatures, # after quotation marks have been handled
                 escapeCommands, # escapeCommands last before explode
                 explode, # prepare final character replacements
                 ReplaceSuspiciousCharacter(unicodeQuotationMarks, '"`') ]
