@@ -1521,6 +1521,28 @@ class ExporterTestStrings:
     numericalScope = [ ['10\xb3 Meter sind ein km',
                         '10\xb3 Meter sind ein km'] ]
 
+    ligatures = [ ['Aufl. Aufl fischen grafisch',
+                   'Aufl. Aufl fischen grafisch'] ]
+
+    nonLigatures = [ ['bla Auffällig blub',
+                      'bla Auf"|fällig blub'],
+                     ['bla auffallen blub',
+                      'bla auf"|fallen blub' ],
+                     ['bla aufhalten blub',
+                      'bla auf"|halten blub' ],
+                     ['bla aufteilen blub',
+                      'bla auf"|teilen blub' ],
+                     ['bla daraufhin blub',
+                      'bla darauf"|hin blub' ],
+                     ['bla Verzweiflung blub',
+                      'bla Verzweif"|lung blub' ],
+                     ['bla Verzweiflungshandlung blub',
+                      'bla Verzweif"|lungshandlung blub' ],
+                     ['bla höflich blub',
+                      'bla höf"|lich blub' ],
+                     ['bla aufintegrieren blub',
+                      'bla auf"|integrieren blub'] ]
+
     codeAndLengthyParagraph = [ ['Larem ipsum dolor sit amet |rhoncus| lerem ipsum dolor sit amet\nlirem ipsum dolor sit amet lorem ipsum dolor sit amet\nlurem ipsum dolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so weiter.',
                                  'Larem ipsum dolor sit amet \\@\\lstinline|rhoncus| lerem ipsum dolor sit\namet lirem ipsum dolor sit amet lorem ipsum dolor sit amet lurem ipsum\ndolor sit amet.\n\nUnd hier ist noch ein Absatz. Lorem ipsum dolor sit amet. Und so\nweiter.'] ]
 
@@ -1653,7 +1675,10 @@ class ExporterTestCases:
                         ExporterTestStrings.dates,
                         ExporterTestStrings.units,
                         ExporterTestStrings.urls,
-                        ExporterTestStrings.numericalScope ]
+                        ExporterTestStrings.numericalScope,
+                        ExporterTestStrings.ligatures,
+                        ExporterTestStrings.nonLigatures,
+                       ]
 
     # Text vs. Titles
     testsInText = testsEverywhere + \
