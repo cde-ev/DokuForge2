@@ -37,7 +37,7 @@ name: recent-python
 
 steps:
 - name: test
-  image: python:latest
+  image: python:3.13
   commands:
   # install non-python dependencies
   - apt-get update > /dev/null
