@@ -1,6 +1,6 @@
 FROM python:latest
 
-RUN apt-get update > /dev/null
+RUN apt-get update
 RUN apt-get install -y rcs \
                        libjs-mathjax
 
