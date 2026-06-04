@@ -12,7 +12,8 @@ except ImportError:
     import configparser
     from configparser import ConfigParser
 import tarfile
-import datetime
+from datetime import datetime, timezone
+import calendar
 
 try:
     check_output = subprocess.check_output
@@ -58,18 +59,7 @@ class CheckError(Exception):
     def __str__(self):
         return self.message
 
-class UTC(datetime.tzinfo):
-    """UTC implementation taken from the Python documentation"""
-    def utcoffset(self, dt):
-        return datetime.timedelta(0)
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return datetime.timedelta(0)
-utc = UTC()
-epoch = datetime.datetime(1970, 1, 1, tzinfo=utc)
+epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
 def validateGroupstring(groupstring, allgroups):
     """
@@ -218,6 +208,14 @@ def validateExistence(path, name):
 def sanitizeBlobFilename(name):
     return u"einedatei.dat"
 
+def _assertConsistsOfValidCharacters(config: unicode) -> None:
+    assert isinstance(config, unicode)
+    allowedCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöüß0123456789,=-_[].!$ \n\r\t'
+    if not set(config).issubset(set(allowedCharacters)):
+        illegalCharacters = ''.join(set(config).difference(set(allowedCharacters)))
+        raise CheckError(u"Ungültige Zeichen enthalten! Es sind nur A-ZÄÖÜa-zäöüß0-9,=-_[].!$ Leerzeichen, Tab und Newline erlaubt.",
+                         u"Bitte entferne die folgenden Zeichen: %s" % illegalCharacters)
+
 def validateUserConfig(config):
     """
     Try parsing the supplied config with ConfigParser. If this fails
@@ -225,13 +223,18 @@ def validateUserConfig(config):
 
     @type config: unicode
     """
-    assert isinstance(config, unicode)
+    _assertConsistsOfValidCharacters(config)
+
     parser = ConfigParser()
     try:
-        parser.readfp(io.StringIO(config))
+        parser.read_file(io.StringIO(config))
     except configparser.ParsingError as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
-                         u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+                         u"Der Fehler lautete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+    except configparser.DuplicateSectionError as err:
+        raise CheckError(u"Doppelter Nutzername!",
+                         u"Der Fehler lautete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+
     try:
         for name in parser.sections():
             for perm in parser.get(name, u'permissions').split(u','):
@@ -253,13 +256,15 @@ def validateGroupConfig(config):
 
     @type config: unicode
     """
-    assert isinstance(config, unicode)
+    _assertConsistsOfValidCharacters(config)
+
     parser = ConfigParser()
     try:
-        parser.readfp(io.StringIO(config))
+        parser.read_file(io.StringIO(config))
     except configparser.Error as err:
         raise CheckError(u"Es ist ein allgemeiner Parser-Fehler aufgetreten!",
                          u"Der Fehler lautetete: %s. Bitte korrigiere ihn und speichere erneut." % err.message)
+
     try:
         for name in parser.sections():
             parser.get(name, u'title')
@@ -332,7 +337,7 @@ class TarWriter:
         self.io.truncate(0)
         return data
 
-    def addChunk(self, name, content):
+    def addChunk(self, name, content, lastchanged):
         """
         Add a file with given content and return some tar content generated
         along the way.
@@ -340,14 +345,17 @@ class TarWriter:
         @type name: bytes
         @type content: bytes
         @rtype: bytes
+        @lastchanged: datetime
         """
         assert isinstance(name, bytes)
         assert isinstance(content, bytes)
         if not isinstance(name, str):
             name = name.decode("iso8859-1")
+        assert isinstance(lastchanged, datetime)
 
         info = tarfile.TarInfo(self.prefix + name)
         info.size = len(content)
+        info.mtime = calendar.timegm(lastchanged.utctimetuple())
         self.tar.addfile(info, io.BytesIO(content))
         return self.read()
 
@@ -365,6 +373,7 @@ class TarWriter:
         with open(filename, "rb") as infile:
             infile.seek(0, 2)
             info.size = infile.tell()
+            info.mtime = os.path.getmtime(filename)
             infile.seek(0)
             self.tar.addfile(info, infile)
         return self.read()
@@ -379,7 +388,8 @@ class TarWriter:
         @type dirname: bytes
         @param excludes: an object that provides __contains__
         """
-        self.pushd(name)
+        if name:
+            self.pushd(name)
         try:
             for entry in os.listdir(dirname):
                 if entry in excludes:
@@ -392,7 +402,8 @@ class TarWriter:
                                                   excludes=excludes):
                         yield chunk
         finally:
-            self.popd()
+            if name:
+                self.popd()
 
     def close(self):
         """

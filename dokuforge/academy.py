@@ -1,6 +1,6 @@
-
 import os
 import operator
+from datetime import datetime, timezone
 
 import werkzeug.exceptions
 
@@ -154,7 +154,7 @@ class Academy(StorageDir):
     def view(self, extrafunctions=dict()):
         """
         @rtype: LazyView
-        @returns: a mapping providing the keys: name(str), title(unicode),
+        @returns: a mapping providing the keys: name(bytes), title(unicode),
             courses([Course.view()]), groups([unicode])
         """
         functions = dict(courses=self.viewCourses,
@@ -169,6 +169,8 @@ class Academy(StorageDir):
         """
         yield a tar archive containing the tex-export of the academy.
         """
+        timeStampNow = datetime.now(timezone.utc)
+        timeStampNow.replace(tzinfo=timezone.utc)
         yield tarwriter.addChunk(b"WARNING",
 (u"""The precise semantics of the exporter is still
 subject to discussion and may change in future versions.
@@ -177,13 +179,20 @@ same exporter semantics, keep the following version string
 for your reference
 
 %s
-""" % commitid).encode("ascii"))
+""" % commitid).encode("ascii"),timeStampNow)
         if static is not None:
             for chunk in tarwriter.addDirChunk(b"", static, excludes=[b".svn"]):
                 yield chunk
         contents = u""
+        fortschrittCourselist = ""
         for course in self.listCourses():
-            contents += u"\\include{%s/chap}\n" % course.name
+            contents += u"\\input{%s/chap}\n" % course.name.decode("ascii")
+            fortschrittCourselist += f"Kurs {course.number:02d}      {course.gettitle()}\n[ ] Redaktion: NN\n[ ] Bilder/Grafiken: NN\n\n"
             for chunk in course.texExportIterator(tarwriter):
                 yield chunk
-        yield tarwriter.addChunk(b"contents.tex", contents.encode("utf8"))
+        yield tarwriter.addChunk(b"contents.tex",
+                                 contents.encode("utf8"),
+                                 timeStampNow)
+        yield tarwriter.addChunk(b"fortschritt-courselist.txt",
+                                 fortschrittCourselist.encode("utf8"),
+                                 timeStampNow)

@@ -1,0 +1,186 @@
+%!
+%%BoundingBox: 20 525 240 730
+
+%% Dokuforge Logo, von Hand (in eps) gezeichnet von Klaus Aehlig
+
+gsave
+-50 750 translate
+1 -1 scale
+%% Einheit sind Zehntel Pixel wie auf dem Bild des Dokuforge Huts
+
+/dot
+{
+        newpath
+        5 0 360 arc
+        fill
+} bind def
+
+
+3 setlinewidth
+
+newpath % linker Schenkel
+157 23 moveto     %% Hutspitze
+153 28 lineto
+152 56 lineto
+140 88 lineto
+134 123 lineto
+127 150 lineto
+122 167 lineto    %% linksunten
+stroke
+
+newpath % rechter Schenkel
+157 23 moveto     %% Hutspitze
+168 55 lineto
+170 62 lineto
+174 77 lineto
+182 104 lineto
+192 129 lineto
+199 152 lineto
+207 164 lineto    %% rechtsunten
+stroke
+
+2 setlinewidth
+
+newpath % aeussere Hutkrempe
+127 150 moveto
+119 147 lineto
+122 167 %% linksunten
+122 167 %% linksunten
+94 182 curveto
+123 183
+133 190
+141 212 curveto
+169 190 
+171 190 
+202 204 curveto
+194 176 
+197 179 
+231 171 curveto
+207 164     %% rechtsunten
+207 164     %% rechtsunten
+216 147 curveto
+199 152 lineto
+stroke
+
+94 182  dot
+141 212 dot
+202 204 dot
+231 171 dot
+119 147 dot
+216 147 dot
+
+3 setlinewidth
+
+newpath % innere Hutkrempe
+122 167 moveto    %% linksunten
+142 190
+192 185
+207 164           %% rechtsunten
+curveto
+stroke
+
+1 setlinewidth
+
+gsave
+0 -4 translate
+newpath %% unterer Stern
+166 145 moveto
+162 158 lineto
+148 158 lineto
+159 168 lineto
+156 182 lineto
+169 176 lineto
+180 179 lineto
+175 168 lineto
+182 156 lineto
+172 158 lineto
+closepath
+stroke
+grestore
+
+
+newpath %% linker Stern
+140 88 moveto
+141 109 lineto
+150 114 lineto
+140 120 lineto
+138 135 lineto
+134 123 lineto
+stroke
+
+newpath %% rechter Stern
+182 104 moveto
+176 118 lineto
+184 118 lineto
+192 129 lineto
+stroke
+
+newpath %% oberer Stern
+158 40 moveto
+149 64 lineto    %% auf dem linken Schenkel
+147.5 68 lineto  %% auf dem linken Schenkel
+153 72 lineto
+151 88 lineto
+162 75 lineto
+174 77 lineto
+166 66 lineto
+170 62 lineto
+168 55 lineto
+160 54 lineto
+closepath
+stroke
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Wand & Doppelpunkt
+gsave
+35 30 translate
+
+
+%% explodierter Doppelpunkt
+1 setlinewidth
+gsave
+220 70 translate
+
+gsave
+20 rotate
+0 1 12 {
+pop
+30 rotate
+newpath
+0 10 moveto
+0 20 rlineto
+stroke
+} for
+grestore
+grestore
+
+%% unter Punkt
+newpath 220 120 10 0 360 arc fill
+
+%%% Wand of deletion
+gsave
+8 setlinewidth
+220 70 translate
+-24 rotate
+
+gsave
+-6 0 translate
+newpath
+0 0 moveto
+-170 0 lineto
+stroke
+
+1 1 1 setrgbcolor
+4 setlinewidth
+newpath -2 0 moveto -20 0 lineto stroke
+newpath -168 0 moveto -150 0 lineto stroke
+ 
+grestore
+grestore
+%% Ende: Wand of deletion
+
+grestore
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende Wand & Doppelpunkt
+
+grestore
+

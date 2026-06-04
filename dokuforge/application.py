@@ -16,6 +16,7 @@ import operator
 import os
 import random
 import sqlite3
+import sys
 import time
 import urllib
 try:
@@ -104,7 +105,7 @@ class SessionHandler:
             cur.execute("UPDATE sessions SET updated = ? WHERE sid = ?;",
                              (now, sid))
             self.db.commit()
-        logger.debug("SessionHandler.get: cookie %r matches user %r", sid, 
+        logger.debug("SessionHandler.get: cookie %r matches user %r", sid,
                 username)
         self.db.commit()
         cur.close()
@@ -229,6 +230,7 @@ class Application:
             rule("/docs/", methods=("GET", "HEAD"), endpoint="index"),
             rule("/admin/", methods=("GET", "HEAD"), endpoint="admin"),
             rule("/admin/!save", methods=("POST",), endpoint="adminsave"),
+            rule("/admin/!rcs", methods=("GET", "HEAD"), endpoint="adminrcs"),
             rule("/createacademy", methods=("GET", "HEAD"),
                  endpoint="createacademyquiz"),
             rule("/createacademy", methods=("POST",),
@@ -236,12 +238,11 @@ class Application:
             rule("/groups/", methods=("GET", "HEAD"), endpoint="groups"),
             rule("/groups/!save", methods=("POST",),
                  endpoint="groupssave"),
+            rule("/groups/!rcs", methods=("GET", "HEAD"), endpoint="groupsrcs"),
             rule("/style/", methods=("GET", "HEAD"),
                  endpoint="styleguide"),
             rule("/style/<identifier:topic>", methods=("GET", "HEAD"),
                  endpoint="styleguidetopic"),
-            rule("/groups/<identifier:group>", methods=("GET", "HEAD"),
-                 endpoint="groupindex"),
 
             # academy specific pages
             rule("/docs/<identifier:academy>/", methods=("GET", "HEAD"),
@@ -274,6 +275,8 @@ class Application:
                  methods=("POST",), endpoint="undeletecourse"),
             rule("/docs/<identifier:academy>/<identifier:course>/!createpage",
                  methods=("POST",), endpoint="createpage"),
+            rule("/docs/<identifier:academy>/<identifier:course>/!createbefore",
+                 methods=("POST",), endpoint="createbefore"),
             rule("/docs/<identifier:academy>/<identifier:course>/!deadpages",
                  methods=("GET", "HEAD"), endpoint="showdeadpages"),
             rule("/docs/<identifier:academy>/<identifier:course>/!moveup",
@@ -460,7 +463,7 @@ class Application:
         """
         try:
             config = ConfigParser()
-            config.readfp(io.StringIO(self.groupstore.content().decode("utf8")))
+            config.read_file(io.StringIO(self.groupstore.content().decode("utf8")))
         except configparser.ParsingError as err:
             return {}
         ret = {}
@@ -478,7 +481,7 @@ class Application:
             ## grab a copy of the parameters for url building
             rs.endpoint_args = args
             return getattr(self, "do_%s" % endpoint)(rs, **args)
-        except werkzeug.routing.HTTPException as e:
+        except werkzeug.exceptions.HTTPException as e:
             return e
 
     def check_login(self, rs):
@@ -548,6 +551,21 @@ class Application:
             savehook()
         return self.render_file(rs, template, version, content, ok=True,
                                 extraparams=extraparams)
+
+    def do_rcsview(self, rs, filestore, filename):
+        """
+        Function to generally return the rcs-file of a storage container.
+
+        @type rs: RequestState
+        @type filestore: Storage
+        @type filename: string
+        """
+        content = filestore.asrcs()
+        rs.response.content_type = "application/octet-stream"
+        rs.response.data = content
+        rs.response.headers['Content-Disposition'] = \
+                "attachement; filename=%s,v" %(filename)
+        return rs.response
 
     def do_property(self, rs, getter, template, extraparams=dict()):
         """
@@ -632,15 +650,7 @@ class Application:
         @type rs: RequestState
         """
         self.check_login(rs)
-        return self.render_index(rs, None)
-
-    def do_groupindex(self, rs, group=None):
-        """
-        @type rs: RequestState
-        @type group: None or unicode
-        """
-        self.check_login(rs)
-        return self.render_index(rs, group)
+        return self.render_index(rs)
 
     def do_academy(self, rs, academy = None):
         """
@@ -799,6 +809,21 @@ class Application:
         c.undelete()
         return self.render_academy(rs, aca)
 
+    def common_createpage(self, rs, academy, course, number):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        @type number: int or None
+        """
+        self.check_login(rs)
+        aca = self.getAcademy(academy, rs.user)
+        c = self.getCourse(aca, course, rs.user)
+        if not rs.user.allowedWrite(aca, c):
+            return werkzeug.exceptions.Forbidden()
+        c.newpage(user=rs.user.name, number=number)
+        return self.render_course(rs, aca, c)
+
     def do_createpage(self, rs, academy=None, course=None):
         """
         @type rs: RequestState
@@ -806,13 +831,21 @@ class Application:
         @type course: unicode
         """
         assert academy is not None and course is not None
-        self.check_login(rs)
-        aca = self.getAcademy(academy, rs.user)
-        c = self.getCourse(aca, course, rs.user)
-        if not rs.user.allowedWrite(aca, c):
-            return werkzeug.exceptions.Forbidden()
-        c.newpage(user=rs.user.name)
-        return self.render_course(rs, aca, c)
+        return self.common_createpage(rs, academy, course, number=None)
+
+    def do_createbefore(self, rs, academy=None, course=None):
+        """
+        @type rs: RequestState
+        @type academy: unicode
+        @type course: unicode
+        """
+        assert academy is not None and course is not None
+        try:
+            numberstr = rs.request.form["number"]
+            number = int(numberstr)
+        except:
+            number = 0
+        return self.common_createpage(rs, academy, course, number=number)
 
     def do_delete(self, rs, academy=None, course=None, page=None):
         """
@@ -1030,13 +1063,16 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         rs.response.content_type = "application/octet-stream"
         def export_iterator(course):
-            tarwriter = common.TarWriter()
+            tarwriter = common.TarWriter(gzip=True)
             for chunk in course.rawExportIterator(tarwriter):
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(c)
+        filename = b"%s_%s.tar.gz" % (aca.name, c.name)
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s_%s.tar" % (aca.name, c.name)
+                "attachment; filename=" + filename
         return rs.response
 
     def do_rawacademy(self, rs, academy=None):
@@ -1058,8 +1094,11 @@ class Application:
                 yield chunk
             yield tarwriter.close()
         rs.response.response = export_iterator(aca)
+        filename = b"%s.tar.gz" % aca.name
+        if sys.version_info >= (3,):
+            filename = filename.decode("ascii")
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % (aca.name,)
+                "attachment; filename=" + filename
         return rs.response
 
     def do_export(self, rs, academy=None):
@@ -1084,8 +1123,10 @@ class Application:
             yield tarwriter.close()
         rs.response.response = export_iterator(aca, self.staticexportdir,
                                                prefix)
+        filename_prefix = \
+            prefix.decode("ascii") if sys.version_info >= (3,) else prefix
         rs.response.headers['Content-Disposition'] = \
-                "attachment; filename=%s.tar.gz" % prefix
+                "attachment; filename=%s.tar.gz" % filename_prefix
         return rs.response
 
     def do_moveup(self, rs, academy=None, course=None):
@@ -1369,6 +1410,15 @@ class Application:
                                 checkhook = common.validateUserConfig,
                                 savehook = self.userdb.load)
 
+    def do_adminrcs(self, rs):
+        """
+        @type rs: RequestState
+        """
+        self.check_login(rs)
+        if not rs.user.isAdmin():
+            return werkzeug.exceptions.Forbidden()
+        return self.do_rcsview(rs,self.userdb.storage,"userdb")
+
     def do_groups(self, rs):
         """
         @type rs: RequestState
@@ -1387,6 +1437,15 @@ class Application:
             return werkzeug.exceptions.Forbidden()
         return self.do_filesave(rs, self.groupstore, "groups.html",
                                 checkhook = common.validateGroupConfig)
+
+    def do_groupsrcs(self, rs):
+        """
+        @type rs: RequestState
+        """
+        self.check_login(rs)
+        if not rs.user.isSuperAdmin():
+            return werkzeug.exceptions.Forbidden()
+        return self.do_rcsview(rs,self.groupstore,"groupdb")
 
     ### here come the renderer
 
@@ -1437,17 +1496,21 @@ class Application:
         return self.render("edit.html", rs, params)
 
 
-    def render_index(self, rs, group = None):
+    def render_index(self, rs):
         """
         @type rs: RequestState
-        @type group: None or unicode
         """
-        if group is None:
-            group = rs.user.defaultGroup()
+        groups = {group: title for group, title in self.listGroups().items()
+                  if rs.user.allowedList(group) or group == rs.user.defaultGroup()}
+        all_academies = self.listAcademies()
+        academies = {
+            group: [academy.view() for academy in all_academies
+                    if group in academy.view()["groups"]]
+            for group in groups
+        }
         params = dict(
-            academies=[academy.view() for academy in self.listAcademies()],
-            allgroups=self.listGroups(),
-            group=group)
+            academies=academies,
+            groups=groups)
         return self.render("index.html", rs, params)
 
     def render_academy(self, rs, theacademy):

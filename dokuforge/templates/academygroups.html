@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block subheading %}
-{{ academy.title|e }}
+    Gruppen bearbeiten
 {% endblock %}
 {% block location%}
 {{ navbar([("academy", {}, academy.title),
@@ -22,5 +22,5 @@
 	<input type="hidden" name="contentreceived" value="true">
 	<input type="submit" name="saveedit" value="Speichern und Editieren">
 </form>
-<a href="{{ buildurl("academygroups")|e }}">Abbrechen</a>
+<a href="{{ buildurl("academy")|e }}">Abbrechen</a>
 {% endblock %}

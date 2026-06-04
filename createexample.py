@@ -78,27 +78,30 @@ title = Archiv aelterer CdE-Akademien
                         [(u'course01',u"Internethumor und seine Schuld am Weltuntergang", 3),
                          (u'course02', u"Helenistische Heldenideale", 2)])
         (version, cont) = aca.getCourse(u'course01').editpage(0)
-        aca.getCourse(u'course01').savepage(0, version, 
+        aca.getCourse(u'course01').savepage(0, version,
 u"""[Example Section]
 This is an example with some nice math: $e^{i\pi}+1=0$.
 
 And even a mathematical limmerick!
 
 $$\int_1^{\sqrt[3]{3}} z^2 dz \cdot \cos(\\frac{3\pi}{9}) = \ln(\sqrt[3]{e})$$
-""", 
+""",
         u"init")
-        aca.getCourse(u'course01').attachblob(0,
-                FileStorage(filename="academy.py",
-                            stream=open("./dokuforge/academy.py", mode="rb")),
-                u"Ein lustiges Bild", u"myx", user=u"init")
-        aca.getCourse(u'course01').attachblob(1,
-                FileStorage(filename="storage.py",
-                            stream=open("./dokuforge/storage.py", mode="rb")),
-                u"Ein anderes lustiges Bild", u"somey", user=u"init")
-        aca.getCourse(u'course01').attachblob(0,
-                FileStorage(filename="course.py",
-                            stream=open("./dokuforge/course.py", mode="rb")),
-                u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
+        with open("./dokuforge/academy.py", mode="rb") as academy_py:
+            aca.getCourse(u'course01').attachblob(0,
+                    FileStorage(filename="academy.py",
+                                stream=academy_py),
+                    u"Ein lustiges Bild", u"myx", user=u"init")
+        with open("./dokuforge/storage.py", mode="rb") as storage_py:
+            aca.getCourse(u'course01').attachblob(1,
+                    FileStorage(filename="storage.py",
+                                stream=storage_py),
+                    u"Ein anderes lustiges Bild", u"somey", user=u"init")
+        with open("./dokuforge/course.py", mode="rb") as course_py:
+            aca.getCourse(u'course01').attachblob(0,
+                    FileStorage(filename="course.py",
+                                stream=course_py),
+                    u"Noch ein lustiges Bild", u"ultimatez", user=u"init")
     if size > 25:
         aca = createaca(app, u"ya2011-1", u"Why? Akademie", [u"qed", u"cde"],
                         [(u'course01',u"Kursqualitaet und ihre Kontrolle", 2),
@@ -154,7 +157,7 @@ for(i=0, i< 10; i++) {
 }
 
 ))}
-  
+
 { Ednote }
 Hier beginnt ein neuer Absatz.
 

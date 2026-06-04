@@ -1,0 +1,53 @@
+<div class="body">
+<h1>Tabellen</h1>
+<p>Wenn du eine Tabelle einfügen möchtest, tue dies bitte in einer
+Ednote. Dabei hast du zwei Möglichkeiten: Erstens kannst du sie durch
+das Einfügen von Leerzeichen an den richtigen Stellen nach ASCII-Art
+formatieren, wobei deutlich werden sollte, was wie zusammengehört.</p>
+<p>Zweitens kanst du auch, wenn du dich hier schon etwas auskennst, in so einer
+ASCII-Art-Tabelle noch ein paar <code>&amp;</code> und <code>\\</code> an die richtigen Stellen setzen,
+ein <code>\begin{tabular}</code> und ein <code>\toprule</code> oben drüber und ein
+<code>\bottomrule</code> sowie ein <code>\end{tabular}</code> unten drunter. Bei Bedarf noch
+ein <code>\midrule</code> zwischendrin (wir verwenden booktabs.sty).</p>
+<p>Auf die genaue Positionierung der Tabellen hast du keinen Einfluss,
+genauso wie bei Abbildungen. Bitte verweise aus diesem Grund nicht direkt
+auf Tabellen ("in folgender Tabelle"), sondern binde Tabellen über eine
+Referenz der Form "<code>In TABELLE:Kürzel ist aufgelistet ...</code>"
+auf die entsprechende Tabelle.</p>
+<p>Zu einer Tabelle gehört deswegen neben einer Tabellenüberschrift auch ein Kürzel.</p>
+
+<pre>In TABELLE:akzente sind Akzentmöglichkeiten gelistet.
+
+{ TABELLE:akzente
+  Mögliche Stellungen griechischer Akzente
+  ohne Berücksichtigung der Silbenlänge
+
+Akzent            | Akut | Gravis | Zirkumflex
+-----------------------------------------------
+letzte Silbe      |  x   |   x    |     x
+vorletzte Silbe   |  x   |   -    |     x
+drittletzte Silbe |  x   |   -    |     -
+}
+</pre>
+
+<pre>
+{( TABELLE:akzente
+  Mögliche Stellungen griechischer Akzente
+  ohne Berücksichtigung der Silbenlänge
+
+\begin{tabular}{lccc}
+\toprule
+Akzent            & Akut & Gravis & Zirkumflex \\
+\midrule
+letzte Silbe      &  x   &   x    &    x   \\
+vorletzte Silbe   &  x   &   --   &    x   \\
+drittletzte Silbe &  x   &   --   &    --  \\
+\bottomrule
+\end{tabular}
+)}
+</pre>
+
+<p>Damit die Ednote im zweiten Beispiel nicht zu früh durch eine
+schließende Klammer beendet wird, muss diese mit einer
+Klammerkombination geöffnet und geschlossen werden, siehe dazu auch
+den Abschnitt über Ednotes. Hier wurde <code>{( ... )}</code> gewählt.</p></div>

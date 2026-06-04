@@ -156,7 +156,7 @@ class User:
         ## a bit care has to be taken since we need the groups too
         if isinstance(aca, LazyView):
             groups = aca["groups"]
-            aca = aca["name"]
+            aca = aca["name"].decode("ascii")
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
@@ -164,7 +164,7 @@ class User:
         if course is None:
             pass
         elif isinstance(course, LazyView):
-            course = course["name"]
+            course = course["name"].decode("ascii")
         else:
             assert isinstance(course, Course)
             course = course.name.decode("ascii")
@@ -211,7 +211,7 @@ class User:
         ## a bit care has to be taken since we need the groups too
         if isinstance(aca, LazyView):
             groups = aca["groups"]
-            aca = aca["name"]
+            aca = aca["name"].decode("ascii")
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
@@ -219,7 +219,7 @@ class User:
         if course is None:
             pass
         elif isinstance(course, LazyView):
-            course = course["name"]
+            course = course["name"].decode("ascii")
         else:
             assert isinstance(course, Course)
             course = course.name.decode("ascii")
@@ -259,7 +259,7 @@ class User:
         ## a bit care has to be taken since we need the groups too
         if isinstance(aca, LazyView):
             groups = aca["groups"]
-            aca = aca["name"]
+            aca = aca["name"].decode("ascii")
         else:
             assert isinstance(aca, Academy)
             groups = aca.getgroups()
@@ -319,15 +319,13 @@ class User:
         return self.hasPermission(u"df_superadmin")
 
     def defaultGroup(self):
-        """
-        Return the default group of a user. Currently this is a trivial
-        function since we have just one possible group at the moment. This
-        could be expanded in the future.
+        """Return the default group of a user. This is the first part (separated by
+        underscore) of the status.
 
         @rtype: unicode
         """
-        # FIXME we should add support for jgw
-        return u"cde"
+        ret = self.status.split('_')[0]
+        return ret
 
 class UserDB:
     """
@@ -393,7 +391,7 @@ class UserDB:
         content = io.StringIO(self.storage.content().decode("utf8"))
         ## update time, since we read the new content
         self.timestamp = self.storage.cachedtime
-        config.readfp(content)
+        config.read_file(content)
         ## clear after we read the new config, better safe than sorry
         self.db.clear()
         for name in config.sections():

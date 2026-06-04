@@ -1,7 +1,24 @@
 Prerequisites:
 ~~~~~~~~~~~~~~
 
- * Python (version >= 2.6)
+Dokuforge has the following dependencies:
+ * Python (version >= 3.6)
+ * rcs
+   Required: yes
+   Homepage: http://www.cs.purdue.edu/homes/trinkle/RCS/
+   Debian: rcs
+   FreeBSD: included in base system
+   Gentoo: dev-vcs/rcs
+ * mathjax
+   Required: only for rendering math
+   Homepage: http://www.mathjax.org/
+   Debian: libjs-mathjax
+   FreeBSD: suggested (PR ports/153195)
+   Gentoo: not packaged
+   Download: http://github.com/mathjax/MathJax/zipball/v1.1a
+
+Additionally, the following python packages are required. The minimal version can be
+taken from the `requirements.txt` file:
  * werkzeug
    Required: yes
    Homepage: http://werkzeug.pocoo.org/
@@ -14,12 +31,6 @@ Prerequisites:
    Debian: python-jinja2
    FreeBSD: devel/py-Jinja2
    Gentoo: dev-python/jinja
- * rcs
-   Required: yes
-   Homepage: http://www.cs.purdue.edu/homes/trinkle/RCS/
-   Debian: rcs
-   FreeBSD: included in base system
-   Gentoo: dev-vcs/rcs
  * webtest
    Required: only for the test suite
    Homepage: http://webtest.pythonpaste.org
@@ -33,13 +44,6 @@ Prerequisites:
    FreeBSD: devel/py-wsgitools
    Gentoo: not packaged
    Download: http://www.subdivi.de/~helmut/darcs/wsgitools/dist/wsgitools-0.2.2.tar.gz
- * mathjax
-   Required: only for rendering math
-   Homepage: http://www.mathjax.org/
-   Debian: libjs-mathjax
-   FreeBSD: suggested (PR ports/153195)
-   Gentoo: not packaged
-   Download: http://github.com/mathjax/MathJax/zipball/v1.1a
  * epydoc
    Required:
    Homepage: http://epydoc.sourceforge.net/

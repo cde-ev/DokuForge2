@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 import io
 import logging
 import os, errno
@@ -11,7 +11,7 @@ try:
 except NameError:
     unicode = str
 
-from dokuforge.common import check_output, utc, epoch
+from dokuforge.common import check_output, epoch
 from dokuforge.common import validateRcsRevision
 from dokuforge.common import RcsUserInputError
 
@@ -54,11 +54,11 @@ def rloghead(filename):
     """
     assert isinstance(filename, bytes)
     logger.debug("rloghead: looking up head revision info for %r" % filename)
-    
+
     # Amzingly enough, the "official" way to obtain revision information
     # is to parse the output of rlog. This statement is obtained from
     # Thien-Thi Nguyen <ttn@gnuvola.org> (maintainer of GNU RCS) in an private
-    # email on Oct 16, 2011 that also promised that such a script will never 
+    # email on Oct 16, 2011 that also promised that such a script will never
     # be broken by any future releases.
     answer = {}
 
@@ -78,9 +78,9 @@ def rloghead(filename):
         if len(keyvalue) > 1:
             answer[keyvalue[0].lstrip()]=keyvalue[1]
 
-    date = datetime.datetime.strptime(answer[b"date"].decode("ascii"),
-                                      "%Y/%m/%d %H:%M:%S")
-    answer[b"date"] = date.replace(tzinfo=utc)
+    date = datetime.strptime(answer[b"date"].decode("ascii"),
+                             "%Y/%m/%d %H:%M:%S")
+    answer[b"date"] = date.replace(tzinfo=timezone.utc)
     return answer
 
 class LockDir:
@@ -155,29 +155,31 @@ class Storage(object):
     def lock(self):
         return LockDir(self.fullpath(prefix=b"#lock."))
 
-    def store(self, content, user=None, message="store called", havelock=None):
+    def store(self, content, user=None, message=b"store called", havelock=None):
         """
         Store the given contents; rcs file is create if it does not
         exist already.
 
-        @type content: bytes or raw filelike 
+        @type content: bytes or raw filelike
         @param content: the content of the file
-        @type message: str
+        @type message: bytes
+        @type user: None or bytes
         """
         assert not isinstance(content, unicode)
+        assert isinstance(message, bytes)
         if isinstance(content, bytes):
             content = io.BytesIO(content)
         logger.debug("storing %r" % self.fullpath())
 
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
-            subprocess.check_call(["co", "-f", "-q", "-l", self.fullpath()],
+            subprocess.check_call([b'co', b'-f', b'-q', b'-l', self.fullpath()],
                                   env=RCSENV)
             with open(self.fullpath(), "wb") as objfile:
                 shutil.copyfileobj(content, objfile)
-            args = ["ci", "-q", "-f", "-m%s" % message]
+            args = [b'ci', b'-q', b'-f', b'-m%s' % message]
             if user is not None:
-                args.append("-w%s" % user)
+                args.append(b'-w%s' % user)
             args.append(self.fullpath())
             subprocess.check_call(args, env=RCSENV)
 
@@ -277,7 +279,7 @@ class Storage(object):
         validateRcsRevision(version)
 
         ## Transform text to Unix line ending
-        newcontent = b"\n".join(newcontent.splitlines()) + b"\n"
+        newcontent = b"".join(map(b"%s\n".__mod__, newcontent.splitlines()))
         with havelock or self.lock as gotlock:
             self.ensureexistence(havelock = gotlock)
             currentversion = self.status(havelock = gotlock)
@@ -290,7 +292,7 @@ class Storage(object):
             logger.debug("storing conflict %r current=%r vs edited=%r" %
                          (self.fullpath(), currentversion, version))
             try:
-                subprocess.check_call(["co", "-f", "-q", "-l%s" % version,
+                subprocess.check_call([b"co", b"-f", b"-q", b"-l%s" % version,
                                        self.fullpath()], env=RCSENV)
             except CalledProcessError:
                 raise RcsUserInputError(u"specified rcs version does not exist",
@@ -305,7 +307,7 @@ class Storage(object):
             subprocess.check_call(args, env=RCSENV)
             # 2.) merge in head
             os.chmod(self.fullpath(), 0o600)
-            subprocess.call(["rcsmerge", "-q", "-r%s" % version,
+            subprocess.call([b"rcsmerge", b"-q", b"-r%s" % version,
                              self.fullpath()]) # Note: non-zero exit status is
                                                # OK!
             with open(self.fullpath(), "rb") as objfile:
@@ -320,8 +322,8 @@ class Storage(object):
         """
         self.ensureexistence(havelock = havelock)
         ts = os.path.getmtime(self.fullpath(postfix=b",v"))
-        ts = datetime.datetime.utcfromtimestamp(ts)
-        return ts.replace(tzinfo=utc)
+        ts = datetime.fromtimestamp(ts, tz=timezone.utc)
+        return ts.replace(tzinfo=timezone.utc)
 
 class CachingStorage(Storage):
     """

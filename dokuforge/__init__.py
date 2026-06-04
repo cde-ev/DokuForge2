@@ -1,6 +1,10 @@
 import os.path
 
-from werkzeug.wsgi import SharedDataMiddleware
+try:
+    from werkzeug.middleware.shared_data import SharedDataMiddleware
+except ImportError:
+    # previous location for <werkzeug-1.0.0
+    from werkzeug.wsgi import SharedDataMiddleware
 
 from dokuforge.application import Application
 from dokuforge.paths import PathConfig
