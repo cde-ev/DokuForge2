@@ -34,8 +34,10 @@ Seitensch&auml;tzer: {{estimate.pages | round(2) | e}} Seiten,
                 {%- endfor -%}
 		</td>
 		<td>
-		{%- if not loop.first -%}
-		   {%- if user.allowedWrite(academy, course) %}
+	       {%- if user.allowedWrite(academy, course) %}
+	          {{ button(buildurl("createbefore"), "+",
+	                    dict(number=loop.index0)) }}
+		  {%- if not loop.first -%}
 		      {{ button(buildurl("moveup"), "Hochrücken",
 	              	 dict(number=loop.index0)) }}
 		   {%- endif -%}

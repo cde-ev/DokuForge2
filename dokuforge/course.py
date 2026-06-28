@@ -296,10 +296,11 @@ class Course(StorageDir):
         page = (u"page%d" % page).encode("ascii")
         return self.getstorage(page).asrcs()
 
-    def newpage(self, user=None):
+    def newpage(self, user=None, number=None):
         """
         create a new page in this course and return its internal number
         @type user: None or unicode
+        @type number: int or None
         @rtype: int
         """
         if user is not None:
@@ -315,7 +316,14 @@ class Course(StorageDir):
                 indexcontents = index.content(havelock = gotlockindex)
                 if indexcontents == b"\n":
                     indexcontents = b""
-                indexcontents += (u"%s\n" % newnumber).encode("ascii")
+                if number is not None:
+                    indexlines = indexcontents.splitlines()
+                    indexcontents = b"\n".join(
+                        indexlines[:number]
+                        + [(u"%s" % newnumber).encode("ascii")]
+                        + indexlines[number:]) + b"\n"
+                else:
+                    indexcontents += (u"%s\n" % newnumber).encode("ascii")
                 index.store(indexcontents, havelock = gotlockindex, user = user)
                 return newnumber
 
