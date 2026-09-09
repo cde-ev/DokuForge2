@@ -14,17 +14,23 @@ Programm Notepad bzw. einen anderen Texteditor im Plain-Text-Modus zu
 verwenden. Ansonsten müssen die eingegebenen Texte unbedingt von Hand
 an die allgemein gültigen Standards angepasst werden.</p>
 <p>Bist du fertig mit deiner Eingabe, lies den Text bitte noch einmal
-Korrektur und gib dann dem für dich zuständigen Eingabekontrolleur
+Korrektur und gib dann der dokubeauftragten Person deines Kurses
 Bescheid.</p>
-<p>Bei Problemen und Fragen kannst und sollst du dich an deinen
-Eingabekontrolleur wenden oder einfach eine E-Mail an
+<p>Wenn du von deinem Kurs für die Doku beauftragt wurdest, überprüfst du, 
+dass alle Texte bis zum Ablauf der Eingabe-Deadline eingegeben sind, und 
+sagst dann bei der Eingabekontrolle Bescheid. Das ist normalerweise eine 
+Person aus dem Dokuteam. Kontaktdaten erhältst du nach der Akademie per Mail.</p>
+<p>Nachdem alle Texte eingegeben wurden, erhält die Kursleitung die Möglichkeit,
+die Texte korrekturzulesen und ggf. anzupassen.</p>
+<p>Bei Problemen und Fragen kannst und sollst du dich an deine
+Eingabekontrolle wenden oder einfach eine E-Mail an
 doku (at) lists.cde-ev.de schreiben. Wir helfen dir gerne weiter und sind auch
 für die Weiterentwicklung von DokuForge auf dein Feedback angewiesen.</p>
 <p><a name="toc"></a></p>
 <ul>
 <li><a href="#absaetze">Absätze</a></li>
 <li><a href="#ueberschriften">Überschriften</a></li>
-<li><a href="#autoren">Autoren</a></li>
+<li><a href="#autorinnen">Autor:innen</a></li>
 <li><a href="#hervorhebungen">Hervorhebungen</a></li>
 <li><a href="#schlagworte">Schlagworte</a></li>
 <li><a href="#aufzaehlungen">Aufzählungen</a></li>
@@ -75,12 +81,12 @@ verweisen, sondern auf den Titel. Beispiel: &quot;Wie in der Einleitung
 dargestellt.&quot;</p>
 <p>Es gibt nur eine Überschriftenebene! Also keine Unterüberschriften
 (weder kursiv noch als Schlagwort oder noch anders).</p>
-<h2><a name="autoren"></a> Autoren</h2>
-<p>Direkt unter eine Überschrift (und nur da) kann nach einem einfachen
-Zeilenumbruch eine Autorenangabe gesetzt werden. Autorenangaben
-gehören in runde Klammern.</p>
-<p>Bitte setze kein &quot;von&quot; an den Beginn, nenne die Autoren mit Komma
-getrennt sowie mit einem &quot;und&quot; vor dem letzten Autorennamen.</p>
+<h2><a name="autorinnen"></a> Autor:innen</h2>
+<p>Direkt unter einer Überschrift (und nur da) kann nach einem einfachen
+Zeilenumbruch eine Autor:innenangabe gesetzt werden. Diese
+gehört in runde Klammern.</p>
+<p>Bitte setze kein &quot;von&quot; an den Beginn, nenne die Autor:innen mit Komma
+getrennt sowie mit einem &quot;und&quot; vor dem letzten Namen.</p>
 <table width="80%">
 <tr>
     <td width="40%">Eingabe:</td>
@@ -110,7 +116,7 @@ Wort als Schlagwort auszuzeichnen, indem man es in <code>*Sternchen*</code>
 einschließt.</p>
 <h2><a name="aufzaehlungen"></a> Aufzählungen</h2>
 <p>Aufzählungen funktionieren denkbar einfach: Ein einzelner Bindestrich
-bzw. eine Zahl mit einem Punkt dahinter am Anfang einer Zeile führt
+bzw. eine Zahl mit einem Punkt dahinter am Anfang einer Zeile führen
 zum gewünschten Ergebnis.</p>
 <table width="80%">
 <tr>
@@ -182,11 +188,13 @@ Leerzeichen! Dieses bitte direkt an die Zahl schreiben.</p>
 <tr>
     <td><span class="tex2jax_ignore"><pre>1 m ist noch nicht so viel.
 1 m$^2$ ist schon mehr.
-Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.</pre></span></td>
+Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
+50% sehen so aus, 30°C so</pre></span></td>
     <td>
         1 m ist noch nicht so viel.<br>
         1 m$^2$ ist schon mehr.<br>
         Es gibt aber auch so etwas wie 5&nbsp;l, 12&nbsp;kWh oder 300&nbsp;eV.
+        50% sehen so aus, 30°C so
         </td>
 </tr>
 </table>
