@@ -1,18 +1,33 @@
+TLDR for running a simple DokuForge2-Server on local machine for testing purposes:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Install required packages, see "Short forms for installation" in this README-document for your respective system
+ * Recommended: Make a work copy of DokuForge2-repository to not make any unwanted changes
+ * Open Terminal in DokuForge2 work copy folder
+ * Command: python createexample.py (creates a basic data set for testing purposes)
+ * Command: cp dokuforge.conf.sample dokuforge.conf (creates a copy of dokuforge.conf.sample and renames it into dokuforge.conf)
+ * Command: python -m dokuforge.serve_simple dokuforge.conf (starts server, Terminal window needs to stay open)
+ * In browser, navigate to http://localhost:8800
+ * Login with username: bob, password: secret
+ * To stop server, go back to Terminal window and hit CTRL+C
+
+
 Prerequisites:
 ~~~~~~~~~~~~~~
 
 Dokuforge has the following dependencies:
  * Python (version >= 3.6)
+   Ubuntu: python3 + python-is-python3
+      Info: Since DokuForge2 works with "python"-commands, it is necessary to install "python-is-python3" to make python work properly
  * rcs
    Required: yes
    Homepage: http://www.cs.purdue.edu/homes/trinkle/RCS/
-   Debian: rcs
+   Debian/Ubuntu: rcs
    FreeBSD: included in base system
    Gentoo: dev-vcs/rcs
  * mathjax
    Required: only for rendering math
    Homepage: http://www.mathjax.org/
-   Debian: libjs-mathjax
+   Debian/Ubuntu: libjs-mathjax
    FreeBSD: suggested (PR ports/153195)
    Gentoo: not packaged
    Download: http://github.com/mathjax/MathJax/zipball/v1.1a
@@ -23,43 +38,47 @@ taken from the `requirements.txt` file:
    Required: yes
    Homepage: http://werkzeug.pocoo.org/
    Debian: python-werkzeug
+   Ubuntu: python3-werkzeug
    FreeBSD: www/py-werkzeug
    Gentoo: dev-python/werkzeug
  * jinja (version 2.x)
    Required: yes
    Homepage: http://jinja.pocoo.org/
    Debian: python-jinja2
+   Ubuntu: python3-jinja2
    FreeBSD: devel/py-Jinja2
    Gentoo: dev-python/jinja
  * webtest
    Required: only for the test suite
    Homepage: http://webtest.pythonpaste.org
    Debian: python-webtest
+   Ubuntu: python3-webtest
    FreeBSD: www/py-WebTest
    Gentoo: dev-python/webtest
  * wsgitools
-   Required: for using serve_* except serve_debug
+   Required: for using serve_* except serve_debug, not required for simply running DokuForge2 locally
    Homepage: http://www.subdivi.de/~helmut/wsgitools/
-   Debian: not packaged
+   Debian/Ubuntu: not packaged
    FreeBSD: devel/py-wsgitools
    Gentoo: not packaged
    Download: http://www.subdivi.de/~helmut/darcs/wsgitools/dist/wsgitools-0.2.2.tar.gz
  * epydoc
-   Required:
+   Required: not required for simply running DokuForge2 locally
    Homepage: http://epydoc.sourceforge.net/
-   Debian: python-epydoc
+   Debian/Ubuntu: python-epydoc
    FreeBSD: devel/epydoc
    Gentoo: dev-python/epydoc
 
- Short forms:
+ Short forms for installation:
   * Debian: aptitude install python-werkzeug python-jinja2 rcs python-webtest python-epydoc libjs-mathjax
+  * Ubuntu: sudo apt install python3 python-is-python3 rcs libjs-mathjax python3-werkzeug python3-jinja2 python3-webtest
   * FreeBSD: ... www/py-werkzeug devel/py-Jinja2 www/py-WebTest devel/epydoc devel/py-wsgitools
   * Gentoo: emerge dev-python/werkzeug dev-python/jinja dev-vcs/rcs dev-python/webtest dev-python/epydoc
 
 Configuration:
 ~~~~~~~~~~~~~~
-Copy dokuforge.conf.sample and update it. A basic data set for testing can be
-created by invoking python createexample.py.
+Copy dokuforge.conf.sample, rename to dokuforge.conf and update it if necessary.
+A basic data set for testing can be created by invoking python createexample.py.
 
 Running:
 ~~~~~~~~
