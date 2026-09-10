@@ -79,7 +79,7 @@ title = Archiv aelterer CdE-Akademien
                          (u'course02', u"Helenistische Heldenideale", 2)])
         (version, cont) = aca.getCourse(u'course01').editpage(0)
         aca.getCourse(u'course01').savepage(0, version,
-u"""[Example Section]
+r"""[Example Section]
 This is an example with some nice math: $e^{i\pi}+1=0$.
 
 And even a mathematical limmerick!
@@ -112,7 +112,7 @@ $$\int_1^{\sqrt[3]{3}} z^2 dz \cdot \cos(\\frac{3\pi}{9}) = \ln(\sqrt[3]{e})$$
         aca = createaca(app, u"xa2011-1", u"X-Akademie", [u"cde"],
                         [(u'course01', u"Area51", 2), (u"course02", u"Markup test", 3)])
         (version, cont) = aca.getCourse(u'course02').editpage(1)
-        aca.getCourse(u'course02').savepage(1, version, u"""
+        aca.getCourse(u'course02').savepage(1, version, r"""
 [Ueberschrift]
 (Autor)
 
@@ -153,7 +153,7 @@ Bla bla bla ...
 Fancy Ednote, containing Code
 
 for(i=0, i< 10; i++) {
-  printf("%d\\n", i);
+  printf("%d\n", i);
 }
 
 ))}
@@ -189,7 +189,7 @@ oder auch $x_1 + x_2$.
 
 Und dieser Absatz enthaelt boese
 Mathematik wie $ \$ $ oder
-$ \\\\$.
+$ \\$.
 
 *Modularitaet* ist die Wesentliche Idee hinter
 diesem Ansatz der Groupierung von Zeilen.
