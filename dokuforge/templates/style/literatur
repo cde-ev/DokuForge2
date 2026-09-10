@@ -98,9 +98,9 @@ brauchst du daher nicht mitkopieren. </p>
 {({
 @BOOK{fischer97,                  % Kurzform
   title      = "Lineare Algebra", % Vollständiger Titel der Monographie
-  author     = "Fischer, Gerd",   % Name der Autoren: Nachname, Vorname (optional)
-  editor     = "Rühmann, Heinz",  % Editor des Werkes: Nachname, Vorname (optional)
-  translator = "Braun, Wilhelm",  % Übersetzer des Werkes
+  author     = "Fischer, Gerd",   % Name der Autor:innen: Nachname, Vorname (optional)
+  editor     = "Rühmann, Heinz",  % Editor:in des Werkes: Nachname, Vorname (optional)
+  translator = "Braun, Wilhelm",  % Übersetzer:in des Werkes
   year       = "1997",            % Veröffentlichungsjahr
   address    = "Berlin",          % Ort der Veröffentlichung
   publisher  = "Vieweg Studium",  % Verlag (optional)
@@ -114,7 +114,7 @@ angeben):</p>
 <pre>
 {[{
 @ARTICLE{heisenbergDeutung,                                % Kurzform
-  author  = "Heisenberg, Werner and Bohr, Niels",          % Name der Autoren: Nachname, Vorname
+  author  = "Heisenberg, Werner and Bohr, Niels",          % Name der Autor:innen: Nachname, Vorname
   title   = "Die Kopenhagener Deutung der Quantentheorie", % Vollständiger Titel des Artikels
   journal = "Physik und Philosophie",                      % Name des Journals, in dem der Artikel veröffentlicht wurde
   volume  = "12",                                          % Nummer des Jahrgangs/Journals
@@ -129,9 +129,9 @@ Artikel in Lexika) lautet die Syntax:</p>
 <pre>
 {[{
 @INCOLLECTION{brodersen,                             % Kurzform
-  author    = "Brodersen, Kai",                      % Name der Autoren: Nachname, Vorname
+  author    = "Brodersen, Kai",                      % Name der Autor:innen: Nachname, Vorname
   title     = "Gebet und Fluch, Zeichen und Traum.", % Titel des Aufsatzes
-  editor    = "Brodersen, Kai",                      % Name der Herausgeber: Nachname, Vorname
+  editor    = "Brodersen, Kai",                      % Name der Herausgeber:in: Nachname, Vorname
   booktitle = "Briefe in die Unterwelt.",            % Name des Sammelwerkes/Lexikons
   address   = "Münster",                             % Ort der Veröffentlichung
   year      = "1990",                                % Jahr der Veröffentlichung
@@ -147,7 +147,7 @@ Artikel in Lexika) lautet die Syntax:</p>
   url     = "http://www.mpg.de/180882/Jahresbericht",         % Internetadresse
   urldate = "2012-07-02",                                     % Datum des Abrufes: YYYY-MM-DD
   title   = "Jahresbericht der Max-Planck-Gesellschaft 2010", % Titel der Internetreferenz
-  author  = "Max-Planck-Gesellschaft",                        % Namen der Autoren (optional)
+  author  = "Max-Planck-Gesellschaft",                        % Namen der Autor:innen (optional)
 }
 })}
 </pre>

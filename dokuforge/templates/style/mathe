@@ -12,7 +12,7 @@ verwendet. Viele gängige Mathematikbefehle sind erlaub. Es können bei
 Bedarf kursspezifisch neue Befehle erlaubt bzw. definiert werden.</p>
 <p>Die wichtigsten LaTeX-Mathematikbefehle können beispielsweise hier
 nachgeschlagen werden:
-<a href="http://web.ift.uib.no/Teori/KURS/WRK/TeX/symALL.html">LaTeX-Symbole</a>.</p>
+<a href="https://latexmathsymbols.com/">LaTeX-Symbole</a>.</p>
 <p>Die Vorschau von Formeln wird im Browser erzeugt, was je nach Umfang
 der Formeln, Browser und Computer mit beträchtlichem Rechenaufwand
 verbunden sein kann. Aus diesem Grund ist die Vorschau standardmäßig
